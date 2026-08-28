@@ -120,5 +120,7 @@ class DatabaseSeeder extends Seeder
         Setting::set('contact_phone', Setting::get('contact_phone', ''));
         Setting::set('contact_email', Setting::get('contact_email', ''));
         Setting::set('contact_whatsapp', Setting::get('contact_whatsapp', ''));
+
+        $this->call(JourneySeeder::class);
     }
 }

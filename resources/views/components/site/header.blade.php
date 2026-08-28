@@ -14,10 +14,10 @@
         </nav>
 
         <div class="hidden items-center gap-3 lg:flex">
-            <x-ui.button :tag="Route::has('apply.start') ? 'a' : 'button'" :href="Route::has('apply.start') ? route('apply.start') : null" variant="secondary" size="sm">
+            <x-ui.button tag="a" :href="route('contact')" variant="secondary" size="sm">
                 Talk to us
             </x-ui.button>
-            <x-ui.button :tag="Route::has('eligibility.index') ? 'a' : 'button'" :href="Route::has('eligibility.index') ? route('eligibility.index') : null" size="sm">
+            <x-ui.button tag="a" :href="route('eligibility.index')" size="sm">
                 Check Eligibility
             </x-ui.button>
         </div>
@@ -48,10 +48,10 @@
                 <x-site.nav-link route="about" label="About" />
             </nav>
             <div class="mt-5 flex flex-col gap-3">
-                <x-ui.button :tag="Route::has('apply.start') ? 'a' : 'button'" :href="Route::has('apply.start') ? route('apply.start') : null" variant="secondary">
+                <x-ui.button tag="a" :href="route('contact')" variant="secondary">
                     Talk to us
                 </x-ui.button>
-                <x-ui.button :tag="Route::has('eligibility.index') ? 'a' : 'button'" :href="Route::has('eligibility.index') ? route('eligibility.index') : null">
+                <x-ui.button tag="a" :href="route('eligibility.index')">
                     Check Eligibility
                 </x-ui.button>
             </div>

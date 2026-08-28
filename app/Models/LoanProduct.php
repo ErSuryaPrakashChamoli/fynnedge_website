@@ -7,6 +7,7 @@ use App\Enums\PublishStatus;
 use App\Models\Concerns\HasPublicId;
 use App\Models\Concerns\Publishable;
 use App\Models\Concerns\Seoable;
+use App\Modules\Journey\Models\JourneyDefinition;
 use Database\Factories\LoanProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -46,5 +47,10 @@ class LoanProduct extends Model
     public function faqs(): MorphMany
     {
         return $this->morphMany(Faq::class, 'faqable')->orderBy('sort_order');
+    }
+
+    public function journeyDefinitions(): HasMany
+    {
+        return $this->hasMany(JourneyDefinition::class);
     }
 }

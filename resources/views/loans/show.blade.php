@@ -11,7 +11,7 @@
         @endif
 
         <div class="mt-8 flex flex-wrap gap-3">
-            <x-ui.button :tag="Route::has('eligibility.index') ? 'a' : 'button'" :href="Route::has('eligibility.index') ? route('eligibility.index') : null" size="lg">
+            <x-ui.button tag="a" :href="route('loans.apply', $loanProduct)" size="lg">
                 Check Your Eligibility
             </x-ui.button>
             <x-ui.button tag="a" :href="route('calculators.index')" variant="secondary" size="lg">
