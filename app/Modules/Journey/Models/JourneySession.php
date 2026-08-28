@@ -5,6 +5,7 @@ namespace App\Modules\Journey\Models;
 use App\Models\Concerns\HasPublicId;
 use App\Models\LoanProduct;
 use App\Modules\Customers\Models\Customer;
+use App\Modules\Eligibility\Models\EligibilityResult;
 use App\Modules\Journey\Enums\JourneySessionStatus;
 use Database\Factories\JourneySessionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -59,6 +60,11 @@ class JourneySession extends Model
     public function responses(): HasMany
     {
         return $this->hasMany(JourneyResponse::class);
+    }
+
+    public function eligibilityResults(): HasMany
+    {
+        return $this->hasMany(EligibilityResult::class);
     }
 
     /**

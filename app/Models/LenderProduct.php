@@ -4,11 +4,14 @@ namespace App\Models;
 
 use App\Enums\LenderStatus;
 use App\Models\Concerns\HasPublicId;
+use App\Modules\Eligibility\Enums\EligibilityRuleSetStatus;
+use App\Modules\Eligibility\Models\EligibilityRuleSet;
 use Database\Factories\LenderProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'lender_id', 'loan_product_id', 'min_amount', 'max_amount',
@@ -39,5 +42,20 @@ class LenderProduct extends Model
     public function loanProduct(): BelongsTo
     {
         return $this->belongsTo(LoanProduct::class);
+    }
+
+    public function eligibilityRuleSets(): HasMany
+    {
+        return $this->hasMany(EligibilityRuleSet::class);
+    }
+
+    public function activeEligibilityRuleSet(): ?EligibilityRuleSet
+    {
+        return $this->eligibilityRuleSets()
+            ->where('status', EligibilityRuleSetStatus::Active)
+            ->where(fn ($query) => $query->whereNull('effective_from')->orWhere('effective_from', '<=', now()))
+            ->where(fn ($query) => $query->whereNull('effective_until')->orWhere('effective_until', '>=', now()))
+            ->latest('version')
+            ->first();
     }
 }

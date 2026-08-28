@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\LenderStatus;
 use App\Models\Concerns\HasPublicId;
+use App\Modules\Eligibility\Models\EmployerCategory;
+use App\Modules\Eligibility\Models\EmployerRating;
 use Database\Factories\LenderFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,5 +30,15 @@ class Lender extends Model
     public function lenderProducts(): HasMany
     {
         return $this->hasMany(LenderProduct::class);
+    }
+
+    public function employerCategories(): HasMany
+    {
+        return $this->hasMany(EmployerCategory::class)->orderBy('order');
+    }
+
+    public function employerRatings(): HasMany
+    {
+        return $this->hasMany(EmployerRating::class);
     }
 }

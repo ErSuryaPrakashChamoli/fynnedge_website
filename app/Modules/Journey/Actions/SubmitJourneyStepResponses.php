@@ -3,6 +3,7 @@
 namespace App\Modules\Journey\Actions;
 
 use App\Modules\Customers\Models\Customer;
+use App\Modules\Eligibility\Services\EligibilityEngine;
 use App\Modules\Journey\Enums\JourneySessionStatus;
 use App\Modules\Journey\Models\JourneyResponse;
 use App\Modules\Journey\Models\JourneySession;
@@ -11,7 +12,10 @@ use App\Modules\Journey\Services\JourneyStepResolver;
 
 class SubmitJourneyStepResponses
 {
-    public function __construct(private readonly JourneyStepResolver $resolver) {}
+    public function __construct(
+        private readonly JourneyStepResolver $resolver,
+        private readonly EligibilityEngine $eligibilityEngine,
+    ) {}
 
     /**
      * @param  array<string, mixed>  $validated
@@ -40,6 +44,8 @@ class SubmitJourneyStepResponses
             'status' => JourneySessionStatus::Completed,
             'completed_at' => now(),
         ]);
+
+        $this->eligibilityEngine->evaluateSession($session);
 
         return $step;
     }

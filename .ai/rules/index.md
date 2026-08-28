@@ -11,5 +11,6 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Filament/Resources/Faqs/**,app/Filament/Resources/LoanProducts/** | .ai/rules/loan-products.md |
 | app/Models/**,app/Filament/** | .ai/rules/models-filament.md |
 | app/Modules/**/Models/*.php | .ai/rules/models.md |
+| app/Filament/Pages/** | .ai/rules/pages.md |
 | tests/** | .ai/rules/tests.md |
 | resources/css/**,resources/views/** | .ai/rules/views.md |

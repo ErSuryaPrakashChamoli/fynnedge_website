@@ -39,7 +39,13 @@ class JourneyController extends Controller
         $session->load(['loanProduct', 'journeyDefinition.steps.fields', 'currentStep']);
 
         if ($session->status === JourneySessionStatus::Completed || ! $session->currentStep) {
-            return view('journey.complete', ['session' => $session]);
+            return view('journey.complete', [
+                'session' => $session,
+                'results' => $session->eligibilityResults()
+                    ->with(['lenderProduct.lender', 'reasons'])
+                    ->get()
+                    ->sortByDesc(fn ($result) => $result->status->value === 'eligible'),
+            ]);
         }
 
         $responses = $session->responsesByKey();

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Lenders;
 use App\Filament\Resources\Lenders\Pages\CreateLender;
 use App\Filament\Resources\Lenders\Pages\EditLender;
 use App\Filament\Resources\Lenders\Pages\ListLenders;
+use App\Filament\Resources\Lenders\RelationManagers\EmployerCategoriesRelationManager;
 use App\Filament\Resources\Lenders\Schemas\LenderForm;
 use App\Filament\Resources\Lenders\Tables\LendersTable;
 use App\Models\Lender;
@@ -37,7 +38,7 @@ class LenderResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            EmployerCategoriesRelationManager::class,
         ];
     }
 

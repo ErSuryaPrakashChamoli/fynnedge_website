@@ -122,5 +122,6 @@ class DatabaseSeeder extends Seeder
         Setting::set('contact_whatsapp', Setting::get('contact_whatsapp', ''));
 
         $this->call(JourneySeeder::class);
+        $this->call(EligibilitySeeder::class);
     }
 }
