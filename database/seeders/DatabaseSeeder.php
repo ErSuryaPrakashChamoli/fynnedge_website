@@ -10,6 +10,7 @@ use App\Models\LoanProduct;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,14 +19,23 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::query()->updateOrCreate(
-            ['email' => 'fynnedge@gmail.com'],
-            [
-                'name' => 'FynnEdge Admin',
-                'password' => 'dLAR82i9OYLa1k8vY48y',
-                'is_admin' => true,
-            ],
-        );
+        $admin = User::query()->firstOrNew(['email' => 'fynnedge@gmail.com']);
+        $isNewAdmin = ! $admin->exists;
+
+        $admin->name = 'FynnEdge Admin';
+        $admin->is_admin = true;
+
+        if ($isNewAdmin) {
+            $password = Str::password(20);
+            $admin->password = $password;
+        }
+
+        $admin->save();
+
+        if ($isNewAdmin && $this->command) {
+            $this->command->warn("Admin account created — email: fynnedge@gmail.com / password: {$password}");
+            $this->command->warn('This password is shown once and is not stored in any committed file.');
+        }
 
         $personalLoan = LoanProduct::factory()->published()->create([
             'name' => 'Personal Loan',
