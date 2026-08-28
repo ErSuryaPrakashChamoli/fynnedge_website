@@ -4,6 +4,7 @@ namespace App\Modules\Journey\Models;
 
 use App\Models\Concerns\HasPublicId;
 use App\Models\LoanProduct;
+use App\Modules\CreditBureau\Models\CreditConsent;
 use App\Modules\Customers\Models\Customer;
 use App\Modules\Eligibility\Models\EligibilityResult;
 use App\Modules\Journey\Enums\JourneySessionStatus;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable([
     'loan_product_id', 'customer_id', 'journey_definition_id', 'current_step_id', 'status',
@@ -65,6 +67,11 @@ class JourneySession extends Model
     public function eligibilityResults(): HasMany
     {
         return $this->hasMany(EligibilityResult::class);
+    }
+
+    public function creditConsent(): HasOne
+    {
+        return $this->hasOne(CreditConsent::class);
     }
 
     /**

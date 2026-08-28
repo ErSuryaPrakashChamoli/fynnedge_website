@@ -2,6 +2,7 @@
 
 namespace App\Modules\Journey\Actions;
 
+use App\Modules\CreditBureau\Actions\RecordCreditConsent;
 use App\Modules\Customers\Models\Customer;
 use App\Modules\Eligibility\Services\EligibilityEngine;
 use App\Modules\Journey\Enums\JourneySessionStatus;
@@ -15,12 +16,13 @@ class SubmitJourneyStepResponses
     public function __construct(
         private readonly JourneyStepResolver $resolver,
         private readonly EligibilityEngine $eligibilityEngine,
+        private readonly RecordCreditConsent $recordCreditConsent,
     ) {}
 
     /**
      * @param  array<string, mixed>  $validated
      */
-    public function handle(JourneySession $session, JourneyStep $step, array $validated): JourneyStep
+    public function handle(JourneySession $session, JourneyStep $step, array $validated, ?string $ipAddress = null): JourneyStep
     {
         foreach ($validated as $key => $value) {
             JourneyResponse::query()->updateOrCreate(
@@ -30,6 +32,7 @@ class SubmitJourneyStepResponses
         }
 
         $this->linkCustomer($session, $validated);
+        $this->recordCreditConsentIfGiven($session, $validated, $ipAddress);
 
         $responses = $session->responsesByKey();
         $next = $this->resolver->nextStep($session->journeyDefinition, $step, $responses);
@@ -73,5 +76,21 @@ class SubmitJourneyStepResponses
         if ($session->customer_id !== $customer->id) {
             $session->update(['customer_id' => $customer->id]);
         }
+    }
+
+    /**
+     * The "accepted" validation rule on credit_check_consent already guarantees the
+     * value is truthy if it's present in $validated at all — its presence alone means
+     * consent was given. We never perform a bureau check here, only record the consent.
+     *
+     * @param  array<string, mixed>  $validated
+     */
+    private function recordCreditConsentIfGiven(JourneySession $session, array $validated, ?string $ipAddress): void
+    {
+        if (! array_key_exists('credit_check_consent', $validated)) {
+            return;
+        }
+
+        $this->recordCreditConsent->handle($session, $ipAddress);
     }
 }

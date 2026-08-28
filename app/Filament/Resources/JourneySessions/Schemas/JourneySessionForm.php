@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\JourneySessions\Schemas;
 
 use App\Modules\Journey\Enums\JourneySessionStatus;
+use App\Modules\Journey\Models\JourneySession;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -32,6 +33,17 @@ class JourneySessionForm
                             ->disabled(),
                         DateTimePicker::make('completed_at')
                             ->disabled(),
+                    ]),
+
+                Section::make('Credit bureau consent')
+                    ->relationship('creditConsent')
+                    ->visible(fn (?JourneySession $record) => $record?->creditConsent !== null)
+                    ->columns(3)
+                    ->components([
+                        TextInput::make('purpose')->disabled()->columnSpanFull(),
+                        TextInput::make('terms_version')->label('Terms version')->disabled(),
+                        TextInput::make('ip_address')->label('IP address')->disabled(),
+                        DateTimePicker::make('consented_at')->disabled(),
                     ]),
 
                 Section::make('Attribution')

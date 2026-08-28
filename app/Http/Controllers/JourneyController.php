@@ -77,7 +77,7 @@ class JourneyController extends Controller
 
         $validated = Validator::make($request->all(), $rules)->validate();
 
-        $action->handle($session, $session->currentStep, $validated);
+        $action->handle($session, $session->currentStep, $validated, $request->ip());
 
         return redirect()->route('journey.show', $session);
     }

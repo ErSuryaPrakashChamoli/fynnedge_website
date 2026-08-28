@@ -1,5 +1,7 @@
 <?php
 
+use App\Modules\CreditBureau\Providers\NullCreditBureauProvider;
+
 return [
 
     /*
@@ -33,6 +35,14 @@ return [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
+    ],
+
+    'credit_bureau' => [
+        // No real bureau is contracted yet — swap this to a concrete provider class
+        // (implementing App\Modules\CreditBureau\Contracts\CreditBureauProvider) once
+        // one is, and add its credentials here rather than hard-coding them anywhere.
+        'provider' => env('CREDIT_BUREAU_PROVIDER', NullCreditBureauProvider::class),
+        'terms_version' => env('CREDIT_BUREAU_TERMS_VERSION', 'v1'),
     ],
 
 ];

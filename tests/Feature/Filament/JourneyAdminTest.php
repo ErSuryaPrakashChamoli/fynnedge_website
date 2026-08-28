@@ -4,6 +4,7 @@ use App\Filament\Resources\JourneyDefinitions\Pages\EditJourneyDefinition;
 use App\Filament\Resources\JourneyDefinitions\RelationManagers\StepsRelationManager;
 use App\Models\LoanProduct;
 use App\Models\User;
+use App\Modules\CreditBureau\Models\CreditConsent;
 use App\Modules\Journey\Enums\FieldType;
 use App\Modules\Journey\Enums\JourneyDefinitionStatus;
 use App\Modules\Journey\Models\JourneyDefinition;
@@ -79,4 +80,21 @@ it('renders the journey applications index and view pages', function () {
 
     $this->get('/admin/journey-sessions')->assertOk();
     $this->get("/admin/journey-sessions/{$session->public_id}")->assertOk();
+});
+
+it('renders the credit consent section on an application with consent', function () {
+    $this->actingAs($this->admin);
+
+    $product = LoanProduct::factory()->create();
+    $definition = JourneyDefinition::create([
+        'loan_product_id' => $product->id, 'version' => 1, 'status' => JourneyDefinitionStatus::Active,
+    ]);
+    $session = JourneySession::create([
+        'loan_product_id' => $product->id, 'journey_definition_id' => $definition->id,
+    ]);
+    CreditConsent::factory()->create(['journey_session_id' => $session->id]);
+
+    $this->get("/admin/journey-sessions/{$session->public_id}")
+        ->assertOk()
+        ->assertSee('Credit bureau consent');
 });

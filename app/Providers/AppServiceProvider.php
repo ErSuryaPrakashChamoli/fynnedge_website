@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\LoanProduct;
+use App\Modules\CreditBureau\Contracts\CreditBureauProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -13,7 +14,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(
+            CreditBureauProvider::class,
+            fn () => $this->app->make(config('services.credit_bureau.provider')),
+        );
     }
 
     /**
