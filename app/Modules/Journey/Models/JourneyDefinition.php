@@ -18,6 +18,11 @@ class JourneyDefinition extends Model
     /** @use HasFactory<JourneyDefinitionFactory> */
     use HasFactory, HasPublicId;
 
+    protected static function newFactory(): JourneyDefinitionFactory
+    {
+        return JourneyDefinitionFactory::new();
+    }
+
     protected function casts(): array
     {
         return [

@@ -17,6 +17,10 @@ class JourneySessionsTable
                 TextColumn::make('loanProduct.name')
                     ->label('Product')
                     ->searchable(),
+                TextColumn::make('customer.full_name')
+                    ->label('Customer')
+                    ->searchable()
+                    ->description(fn ($record) => $record->customer?->email),
                 TextColumn::make('currentStep.title')
                     ->label('Current step'),
                 TextColumn::make('status')

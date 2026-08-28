@@ -4,6 +4,7 @@ namespace App\Modules\Journey\Models;
 
 use App\Models\Concerns\HasPublicId;
 use App\Models\LoanProduct;
+use App\Modules\Customers\Models\Customer;
 use App\Modules\Journey\Enums\JourneySessionStatus;
 use Database\Factories\JourneySessionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
-    'loan_product_id', 'journey_definition_id', 'current_step_id', 'status',
+    'loan_product_id', 'customer_id', 'journey_definition_id', 'current_step_id', 'status',
     'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content',
     'referrer', 'landing_page', 'completed_at',
 ])]
@@ -21,6 +22,11 @@ class JourneySession extends Model
 {
     /** @use HasFactory<JourneySessionFactory> */
     use HasFactory, HasPublicId;
+
+    protected static function newFactory(): JourneySessionFactory
+    {
+        return JourneySessionFactory::new();
+    }
 
     protected function casts(): array
     {
@@ -33,6 +39,11 @@ class JourneySession extends Model
     public function loanProduct(): BelongsTo
     {
         return $this->belongsTo(LoanProduct::class);
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
     }
 
     public function journeyDefinition(): BelongsTo

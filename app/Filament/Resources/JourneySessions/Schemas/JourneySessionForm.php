@@ -21,6 +21,9 @@ class JourneySessionForm
                         Select::make('loan_product_id')
                             ->relationship('loanProduct', 'name')
                             ->disabled(),
+                        Select::make('customer_id')
+                            ->relationship('customer', 'email')
+                            ->disabled(),
                         Select::make('status')
                             ->options(JourneySessionStatus::class)
                             ->disabled(),

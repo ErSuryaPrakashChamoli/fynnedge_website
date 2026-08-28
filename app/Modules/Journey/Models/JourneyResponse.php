@@ -14,6 +14,11 @@ class JourneyResponse extends Model
     /** @use HasFactory<JourneyResponseFactory> */
     use HasFactory;
 
+    protected static function newFactory(): JourneyResponseFactory
+    {
+        return JourneyResponseFactory::new();
+    }
+
     protected function casts(): array
     {
         return [

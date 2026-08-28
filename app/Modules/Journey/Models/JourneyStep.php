@@ -17,6 +17,11 @@ class JourneyStep extends Model
     /** @use HasFactory<JourneyStepFactory> */
     use EvaluatesCondition, HasFactory, HasPublicId;
 
+    protected static function newFactory(): JourneyStepFactory
+    {
+        return JourneyStepFactory::new();
+    }
+
     protected function casts(): array
     {
         return [

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Journey\Actions;
 
+use App\Modules\Customers\Models\Customer;
 use App\Modules\Journey\Enums\JourneySessionStatus;
 use App\Modules\Journey\Models\JourneyResponse;
 use App\Modules\Journey\Models\JourneySession;
@@ -24,6 +25,8 @@ class SubmitJourneyStepResponses
             );
         }
 
+        $this->linkCustomer($session, $validated);
+
         $responses = $session->responsesByKey();
         $next = $this->resolver->nextStep($session->journeyDefinition, $step, $responses);
 
@@ -39,5 +42,30 @@ class SubmitJourneyStepResponses
         ]);
 
         return $step;
+    }
+
+    /**
+     * Identifies the customer by email — whichever step collects it — and dedupes
+     * across products, so the same person applying for two loans is one customer.
+     *
+     * @param  array<string, mixed>  $validated
+     */
+    private function linkCustomer(JourneySession $session, array $validated): void
+    {
+        if (! array_key_exists('email', $validated) || blank($validated['email'])) {
+            return;
+        }
+
+        $customer = Customer::query()->updateOrCreate(
+            ['email' => $validated['email']],
+            array_filter([
+                'full_name' => $validated['full_name'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+            ], fn ($value) => $value !== null),
+        );
+
+        if ($session->customer_id !== $customer->id) {
+            $session->update(['customer_id' => $customer->id]);
+        }
     }
 }

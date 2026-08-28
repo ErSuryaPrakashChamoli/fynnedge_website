@@ -17,6 +17,11 @@ class JourneyStepField extends Model
     /** @use HasFactory<JourneyStepFieldFactory> */
     use EvaluatesCondition, HasFactory, HasPublicId;
 
+    protected static function newFactory(): JourneyStepFieldFactory
+    {
+        return JourneyStepFieldFactory::new();
+    }
+
     protected function casts(): array
     {
         return [
