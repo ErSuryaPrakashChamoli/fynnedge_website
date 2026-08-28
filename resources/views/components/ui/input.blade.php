@@ -11,7 +11,8 @@
         type="{{ $type }}"
         name="{{ $name }}"
         id="{{ $name }}"
-        {{ $attributes->class([
+        value="{{ old($name, $attributes->get('value')) }}"
+        {{ $attributes->except('value')->class([
             'rounded-lg border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint transition-colors',
             'focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent',
             'border-line-strong' => ! $errorBag,

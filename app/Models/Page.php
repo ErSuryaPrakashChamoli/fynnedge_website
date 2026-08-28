@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PublishStatus;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\Publishable;
 use App\Models\Concerns\Seoable;
 use Database\Factories\PageFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Page extends Model
 {
     /** @use HasFactory<PageFactory> */
-    use HasFactory, HasPublicId, Seoable, SoftDeletes;
+    use HasFactory, HasPublicId, Publishable, Seoable, SoftDeletes;
 
     protected function casts(): array
     {

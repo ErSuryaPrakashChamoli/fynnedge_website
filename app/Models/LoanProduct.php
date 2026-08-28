@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\Publishable;
 use App\Models\Concerns\Seoable;
 use Database\Factories\LoanProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -22,7 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class LoanProduct extends Model
 {
     /** @use HasFactory<LoanProductFactory> */
-    use HasFactory, HasPublicId, Seoable, SoftDeletes;
+    use HasFactory, HasPublicId, Publishable, Seoable, SoftDeletes;
 
     protected function casts(): array
     {

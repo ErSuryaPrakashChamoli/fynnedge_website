@@ -9,6 +9,7 @@
         'primary' => 'bg-accent text-white hover:bg-accent-strong focus-visible:outline-accent',
         'secondary' => 'bg-transparent text-accent border border-line-strong hover:bg-surface-2 focus-visible:outline-accent',
         'ghost' => 'bg-transparent text-ink-muted hover:text-ink hover:bg-surface-2 focus-visible:outline-accent',
+        'inverse' => 'bg-white text-accent hover:bg-white/90 focus-visible:outline-white',
     ];
 
     $sizes = [

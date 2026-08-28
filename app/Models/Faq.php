@@ -6,6 +6,7 @@ use App\Enums\PublishStatus;
 use App\Models\Concerns\HasPublicId;
 use Database\Factories\FaqFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -26,5 +27,10 @@ class Faq extends Model
     public function faqable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function scopePublished(Builder $query): void
+    {
+        $query->where('status', PublishStatus::Published);
     }
 }

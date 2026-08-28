@@ -10,10 +10,11 @@
             <div>
                 <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Loans</p>
                 <ul class="mt-3 flex flex-col gap-2">
-                    <li><x-site.nav-link route="loans.personal-loan" label="Personal Loan" /></li>
-                    <li><x-site.nav-link route="loans.home-loan" label="Home Loan" /></li>
-                    <li><x-site.nav-link route="loans.business-loan" label="Business Loan" /></li>
-                    <li><x-site.nav-link route="loans.loan-against-property" label="Loan Against Property" /></li>
+                    @forelse ($loanProducts ?? [] as $product)
+                        <li><a href="{{ route('loans.show', $product) }}" class="text-sm font-medium text-ink-muted transition-colors hover:text-ink">{{ $product->name }}</a></li>
+                    @empty
+                        <li><x-site.nav-link route="loans.index" label="Browse loans" /></li>
+                    @endforelse
                 </ul>
             </div>
 

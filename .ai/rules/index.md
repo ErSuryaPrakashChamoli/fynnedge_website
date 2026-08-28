@@ -9,4 +9,5 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Enums/**,app/Filament/** | .ai/rules/filament.md |
 | app/Filament/Resources/Faqs/**,app/Filament/Resources/LoanProducts/** | .ai/rules/loan-products.md |
 | app/Models/**,app/Filament/** | .ai/rules/models-filament.md |
+| tests/** | .ai/rules/tests.md |
 | resources/css/**,resources/views/** | .ai/rules/views.md |

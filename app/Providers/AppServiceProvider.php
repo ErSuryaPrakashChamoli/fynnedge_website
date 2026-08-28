@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\LoanProduct;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        View::composer(
+            ['components.site.header', 'components.site.footer'],
+            fn ($view) => $view->with('loanProducts', LoanProduct::query()->published()->orderBy('name')->get()),
+        );
     }
 }
