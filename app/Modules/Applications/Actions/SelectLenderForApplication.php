@@ -2,6 +2,8 @@
 
 namespace App\Modules\Applications\Actions;
 
+use App\Modules\Analytics\Enums\AnalyticsEventKey;
+use App\Modules\Analytics\Services\AnalyticsEventDispatcher;
 use App\Modules\Applications\Enums\ApplicationStatus;
 use App\Modules\Applications\Models\Application;
 use App\Modules\Eligibility\Enums\EligibilityStatus;
@@ -9,6 +11,8 @@ use App\Modules\Eligibility\Models\EligibilityResult;
 
 class SelectLenderForApplication
 {
+    public function __construct(private readonly AnalyticsEventDispatcher $analytics) {}
+
     /**
      * Idempotent per (journey session, lender product) — revisiting the same
      * selection reuses the existing application instead of creating a duplicate.
@@ -19,7 +23,7 @@ class SelectLenderForApplication
             return null;
         }
 
-        return Application::query()->firstOrCreate(
+        $application = Application::query()->firstOrCreate(
             [
                 'journey_session_id' => $result->journey_session_id,
                 'lender_product_id' => $result->lender_product_id,
@@ -30,5 +34,15 @@ class SelectLenderForApplication
                 'status' => ApplicationStatus::LenderSelected,
             ],
         );
+
+        if ($application->wasRecentlyCreated) {
+            $this->analytics->track(
+                AnalyticsEventKey::LenderSelected,
+                session: $result->journeySession,
+                lenderProduct: $result->lenderProduct,
+            );
+        }
+
+        return $application;
     }
 }

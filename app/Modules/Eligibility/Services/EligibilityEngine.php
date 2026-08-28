@@ -5,6 +5,8 @@ namespace App\Modules\Eligibility\Services;
 use App\Enums\LenderStatus;
 use App\Models\LenderProduct;
 use App\Models\LoanProduct;
+use App\Modules\Analytics\Enums\AnalyticsEventKey;
+use App\Modules\Analytics\Services\AnalyticsEventDispatcher;
 use App\Modules\Customers\DataTransferObjects\CustomerProfile;
 use App\Modules\Customers\Services\ProfileNormalizer;
 use App\Modules\Eligibility\DataTransferObjects\EligibilityEvaluation;
@@ -21,6 +23,7 @@ class EligibilityEngine
         private readonly ProfileNormalizer $normalizer,
         private readonly FoirCalculator $foirCalculator,
         private readonly RuleGroupEvaluator $ruleGroupEvaluator,
+        private readonly AnalyticsEventDispatcher $analytics,
     ) {}
 
     /**
@@ -137,6 +140,13 @@ class EligibilityEngine
         foreach ($evaluation->reasons as $reason) {
             $result->reasons()->create($reason);
         }
+
+        $this->analytics->track(
+            AnalyticsEventKey::EligibilityEvaluated,
+            session: $session,
+            lenderProduct: $lenderProduct,
+            properties: ['status' => $evaluation->status->value],
+        );
 
         return $result->load(['reasons', 'lenderProduct.lender']);
     }

@@ -1,5 +1,7 @@
 <?php
 
+use App\Modules\Analytics\Enums\AnalyticsEventKey;
+use App\Modules\Analytics\Models\AnalyticsEvent;
 use App\Modules\Applications\Actions\UploadApplicationDocument;
 use App\Modules\Applications\Enums\DocumentStatus;
 use App\Modules\Applications\Models\Application;
@@ -23,6 +25,7 @@ it('stores an uploaded document against the application', function () {
     expect($document->status)->toBe(DocumentStatus::Uploaded);
     expect($document->original_filename)->toBe('pan.pdf');
     Storage::disk('local')->assertExists($document->path);
+    expect(AnalyticsEvent::query()->where('event_key', AnalyticsEventKey::DocumentUploaded)->count())->toBe(1);
 });
 
 it('replaces the previous file when re-uploading against the same document type', function () {

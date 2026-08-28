@@ -2,6 +2,8 @@
 
 namespace App\Modules\Journey\Actions;
 
+use App\Modules\Analytics\Enums\AnalyticsEventKey;
+use App\Modules\Analytics\Services\AnalyticsEventDispatcher;
 use App\Modules\CreditBureau\Actions\RecordCreditConsent;
 use App\Modules\Customers\Models\Customer;
 use App\Modules\Eligibility\Services\EligibilityEngine;
@@ -17,6 +19,7 @@ class SubmitJourneyStepResponses
         private readonly JourneyStepResolver $resolver,
         private readonly EligibilityEngine $eligibilityEngine,
         private readonly RecordCreditConsent $recordCreditConsent,
+        private readonly AnalyticsEventDispatcher $analytics,
     ) {}
 
     /**
@@ -34,6 +37,8 @@ class SubmitJourneyStepResponses
         $this->linkCustomer($session, $validated);
         $this->recordCreditConsentIfGiven($session, $validated, $ipAddress);
 
+        $this->analytics->track(AnalyticsEventKey::JourneyStepCompleted, session: $session, properties: ['step_key' => $step->key]);
+
         $responses = $session->responsesByKey();
         $next = $this->resolver->nextStep($session->journeyDefinition, $step, $responses);
 
@@ -47,6 +52,8 @@ class SubmitJourneyStepResponses
             'status' => JourneySessionStatus::Completed,
             'completed_at' => now(),
         ]);
+
+        $this->analytics->track(AnalyticsEventKey::JourneyCompleted, session: $session);
 
         $this->eligibilityEngine->evaluateSession($session);
 

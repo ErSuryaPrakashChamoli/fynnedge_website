@@ -2,6 +2,8 @@
 
 namespace App\Modules\Applications\Actions;
 
+use App\Modules\Analytics\Enums\AnalyticsEventKey;
+use App\Modules\Analytics\Services\AnalyticsEventDispatcher;
 use App\Modules\Applications\Enums\DocumentStatus;
 use App\Modules\Applications\Models\Application;
 use App\Modules\Applications\Models\ApplicationDocument;
@@ -11,6 +13,8 @@ use Illuminate\Http\UploadedFile;
 class UploadApplicationDocument
 {
     private const DISK = 'local';
+
+    public function __construct(private readonly AnalyticsEventDispatcher $analytics) {}
 
     /**
      * Re-uploading against the same document type replaces the previous file —
@@ -27,7 +31,7 @@ class UploadApplicationDocument
 
         $path = $file->store("applications/{$application->id}", self::DISK);
 
-        return ApplicationDocument::query()->updateOrCreate(
+        $document = ApplicationDocument::query()->updateOrCreate(
             ['application_id' => $application->id, 'document_type_id' => $documentType->id],
             [
                 'disk' => self::DISK,
@@ -41,5 +45,14 @@ class UploadApplicationDocument
                 'verified_at' => null,
             ],
         );
+
+        $this->analytics->track(
+            AnalyticsEventKey::DocumentUploaded,
+            session: $application->journeySession,
+            lenderProduct: $application->lenderProduct,
+            properties: ['document_type_id' => $documentType->id],
+        );
+
+        return $document;
     }
 }

@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\LenderProduct;
+use App\Modules\Analytics\Enums\AnalyticsEventKey;
+use App\Modules\Analytics\Models\AnalyticsEvent;
 use App\Modules\Applications\Actions\SelectLenderForApplication;
 use App\Modules\Applications\Enums\ApplicationStatus;
 use App\Modules\Applications\Models\Application;
@@ -57,4 +59,13 @@ it('is idempotent for the same session and lender product', function () {
 
     expect($second->id)->toBe($first->id);
     expect(Application::query()->count())->toBe(1);
+});
+
+it('tracks a lender_selected analytics event only once, not on the idempotent re-selection', function () {
+    $result = EligibilityResult::factory()->create(['status' => EligibilityStatus::Eligible]);
+
+    app(SelectLenderForApplication::class)->handle($result);
+    app(SelectLenderForApplication::class)->handle($result);
+
+    expect(AnalyticsEvent::query()->where('event_key', AnalyticsEventKey::LenderSelected)->count())->toBe(1);
 });

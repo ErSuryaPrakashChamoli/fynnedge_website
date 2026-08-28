@@ -3,6 +3,8 @@
 namespace App\Modules\Journey\Actions;
 
 use App\Models\LoanProduct;
+use App\Modules\Analytics\Enums\AnalyticsEventKey;
+use App\Modules\Analytics\Services\AnalyticsEventDispatcher;
 use App\Modules\Journey\Enums\JourneyDefinitionStatus;
 use App\Modules\Journey\Models\JourneyDefinition;
 use App\Modules\Journey\Models\JourneySession;
@@ -11,7 +13,10 @@ use Illuminate\Http\Request;
 
 class StartJourneySession
 {
-    public function __construct(private readonly JourneyStepResolver $resolver) {}
+    public function __construct(
+        private readonly JourneyStepResolver $resolver,
+        private readonly AnalyticsEventDispatcher $analytics,
+    ) {}
 
     public function handle(LoanProduct $loanProduct, Request $request): ?JourneySession
     {
@@ -27,7 +32,7 @@ class StartJourneySession
 
         $firstStep = $this->resolver->firstStep($definition);
 
-        return JourneySession::query()->create([
+        $session = JourneySession::query()->create([
             'loan_product_id' => $loanProduct->id,
             'journey_definition_id' => $definition->id,
             'current_step_id' => $firstStep?->id,
@@ -39,5 +44,9 @@ class StartJourneySession
             'referrer' => $request->headers->get('referer'),
             'landing_page' => $request->fullUrl(),
         ]);
+
+        $this->analytics->track(AnalyticsEventKey::JourneyStarted, session: $session);
+
+        return $session;
     }
 }

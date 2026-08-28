@@ -1,5 +1,7 @@
 <?php
 
+use App\Modules\Analytics\Enums\AnalyticsEventKey;
+use App\Modules\Analytics\Models\AnalyticsEvent;
 use App\Modules\Applications\Actions\SubmitApplication;
 use App\Modules\Applications\Enums\ApplicationStatus;
 use App\Modules\Applications\Models\Application;
@@ -20,6 +22,7 @@ it('refuses to submit when required documents are missing', function () {
 
     expect($errors)->not->toBeEmpty();
     expect($application->fresh()->status)->not->toBe(ApplicationStatus::Submitted);
+    expect(AnalyticsEvent::query()->where('event_key', AnalyticsEventKey::ApplicationSubmitted)->count())->toBe(0);
 });
 
 it('submits once every required document is uploaded', function () {
@@ -40,6 +43,7 @@ it('submits once every required document is uploaded', function () {
     expect($errors)->toBeEmpty();
     expect($application->fresh()->status)->toBe(ApplicationStatus::Submitted);
     expect($application->fresh()->submitted_at)->not->toBeNull();
+    expect(AnalyticsEvent::query()->where('event_key', AnalyticsEventKey::ApplicationSubmitted)->count())->toBe(1);
 });
 
 it('ignores optional documents when checking submission readiness', function () {
