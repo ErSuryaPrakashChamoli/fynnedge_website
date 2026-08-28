@@ -5,7 +5,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | Applies to | Rule file |
 | --- | --- |
 | app/** | .ai/rules/app.md |
-| config/database.php,.env*, config/cache.php,config/queue.php,config/session.php,.env* | .ai/rules/config.md |
+| config/database.php,.env*, config/cache.php,config/queue.php,config/session.php,.env*, config/{cache,queue,session}.php | .ai/rules/config.md |
 | app/Enums/**,app/Filament/** | .ai/rules/filament.md |
 | app/Http/Controllers/JourneyController.php,app/Modules/Journey/** | .ai/rules/journey.md |
 | app/Filament/Resources/Faqs/**,app/Filament/Resources/LoanProducts/** | .ai/rules/loan-products.md |
