@@ -9,6 +9,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Enums/**,app/Filament/** | .ai/rules/filament.md |
 | app/Http/Controllers/JourneyController.php,app/Modules/Journey/** | .ai/rules/journey.md |
 | app/Filament/Resources/Faqs/**,app/Filament/Resources/LoanProducts/** | .ai/rules/loan-products.md |
+| app/Http/Middleware/SecurityHeaders.php | .ai/rules/middleware.md |
 | database/migrations/** | .ai/rules/migrations.md |
 | app/Models/**,app/Filament/** | .ai/rules/models-filament.md |
 | app/Modules/**/Models/*.php | .ai/rules/models.md |
