@@ -6,3 +6,4 @@ Before planning or editing, find the row whose globs match the file's path and r
 | --- | --- |
 | app/** | .ai/rules/app.md |
 | config/database.php,.env*, config/cache.php,config/queue.php,config/session.php,.env* | .ai/rules/config.md |
+| resources/css/**,resources/views/** | .ai/rules/views.md |

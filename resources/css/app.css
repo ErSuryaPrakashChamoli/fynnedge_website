@@ -4,6 +4,72 @@
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Fraunces', ui-serif, Georgia, 'Times New Roman', serif;
+    --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+    --color-bg: #f5f4ef;
+    --color-surface: #ffffff;
+    --color-surface-2: #eeece4;
+    --color-ink: #171a1f;
+    --color-ink-muted: #5a6270;
+    --color-ink-faint: #8a90a0;
+    --color-accent: #1e3a5f;
+    --color-accent-strong: #14283f;
+    --color-accent-soft: #dde6f0;
+    --color-pass: #2f7a54;
+    --color-pass-soft: #e0efe6;
+    --color-warn: #a8671f;
+    --color-warn-soft: #f3e6d3;
+    --color-line: #dedcd2;
+    --color-line-strong: #c7c4b6;
+}
+
+/*
+ * Theming uses CSS custom properties, not `dark:` utility variants: every
+ * component reads --color-* tokens, and only the two blocks below ever
+ * redefine them. This keeps a large component library themeable from one
+ * place instead of doubling every class. See .ai/rules for the standing rule.
+ */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+        --color-bg: #0b0e13;
+        --color-surface: #12161d;
+        --color-surface-2: #171c24;
+        --color-ink: #e8eaee;
+        --color-ink-muted: #9aa3b0;
+        --color-ink-faint: #6b7280;
+        --color-accent: #7fa8d9;
+        --color-accent-strong: #a9c5e8;
+        --color-accent-soft: #1c2836;
+        --color-pass: #68c495;
+        --color-pass-soft: #16261e;
+        --color-warn: #e0a95c;
+        --color-warn-soft: #2a2013;
+        --color-line: #232935;
+        --color-line-strong: #323b4a;
+    }
+}
+
+:root[data-theme='dark'] {
+    --color-bg: #0b0e13;
+    --color-surface: #12161d;
+    --color-surface-2: #171c24;
+    --color-ink: #e8eaee;
+    --color-ink-muted: #9aa3b0;
+    --color-ink-faint: #6b7280;
+    --color-accent: #7fa8d9;
+    --color-accent-strong: #a9c5e8;
+    --color-accent-soft: #1c2836;
+    --color-pass: #68c495;
+    --color-pass-soft: #16261e;
+    --color-warn: #e0a95c;
+    --color-warn-soft: #2a2013;
+    --color-line: #232935;
+    --color-line-strong: #323b4a;
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
 }
