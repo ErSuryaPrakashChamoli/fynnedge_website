@@ -68,6 +68,13 @@
                                 @endforeach
                             </ul>
                         @endif
+
+                        @if ($result->status->value === 'eligible')
+                            <form method="POST" action="{{ route('applications.select', $result) }}" class="mt-4">
+                                @csrf
+                                <x-ui.button type="submit" size="sm">Continue with {{ $result->lenderProduct->lender->name }}</x-ui.button>
+                            </form>
+                        @endif
                     </x-ui.card>
                 @endforeach
             </div>

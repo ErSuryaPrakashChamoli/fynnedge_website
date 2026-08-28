@@ -8,6 +8,7 @@ use App\Modules\Eligibility\Enums\EligibilityRuleSetStatus;
 use App\Modules\Eligibility\Enums\RuleLogic;
 use App\Modules\Eligibility\Enums\RuleOperator;
 use App\Modules\Eligibility\Enums\RulePriority;
+use App\Modules\Eligibility\Models\EligibilityResult;
 use App\Modules\Eligibility\Models\EligibilityRule;
 use App\Modules\Eligibility\Models\EligibilityRuleCondition;
 use App\Modules\Eligibility\Models\EligibilityRuleSet;
@@ -90,4 +91,12 @@ it('hides the warning reason when the flagged condition is absent', function () 
     $response->assertOk();
     $response->assertDontSee('existing loan EMIs');
     $response->assertSee('Warning Test Bank');
+});
+
+it('offers a continue-with-lender action only for eligible results', function () {
+    $response = completeJourneyWithEmiAnswer('no');
+
+    $response->assertOk();
+    $response->assertSee('Continue with Warning Test Bank');
+    $response->assertSee(route('applications.select', EligibilityResult::query()->latest('id')->firstOrFail()), false);
 });

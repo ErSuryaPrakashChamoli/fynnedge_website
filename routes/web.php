@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\CalculatorController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
@@ -19,6 +20,11 @@ Route::get('/eligibility', [JourneyController::class, 'pickProduct'])->name('eli
 Route::get('/journey/{session}', [JourneyController::class, 'show'])->name('journey.show');
 Route::post('/journey/{session}', [JourneyController::class, 'update'])->name('journey.update');
 Route::post('/journey/{session}/back', [JourneyController::class, 'back'])->name('journey.back');
+
+Route::post('/eligibility-results/{eligibilityResult}/select', [ApplicationController::class, 'select'])->name('applications.select');
+Route::get('/applications/{application}', [ApplicationController::class, 'show'])->name('applications.show');
+Route::post('/applications/{application}/documents', [ApplicationController::class, 'uploadDocuments'])->name('applications.documents.upload');
+Route::post('/applications/{application}/submit', [ApplicationController::class, 'submit'])->name('applications.submit');
 
 Route::get('/calculators', CalculatorController::class)->name('calculators.index');
 

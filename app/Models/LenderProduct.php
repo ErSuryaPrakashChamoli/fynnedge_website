@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\LenderStatus;
 use App\Models\Concerns\HasPublicId;
+use App\Modules\Applications\Models\LenderProductDocumentRequirement;
 use App\Modules\Eligibility\Enums\EligibilityRuleSetStatus;
 use App\Modules\Eligibility\Models\EligibilityRuleSet;
 use Database\Factories\LenderProductFactory;
@@ -57,5 +58,10 @@ class LenderProduct extends Model
             ->where(fn ($query) => $query->whereNull('effective_until')->orWhere('effective_until', '>=', now()))
             ->latest('version')
             ->first();
+    }
+
+    public function documentRequirements(): HasMany
+    {
+        return $this->hasMany(LenderProductDocumentRequirement::class)->orderBy('order');
     }
 }
