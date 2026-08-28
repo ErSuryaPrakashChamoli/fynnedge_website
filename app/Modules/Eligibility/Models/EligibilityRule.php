@@ -2,6 +2,7 @@
 
 namespace App\Modules\Eligibility\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
 use App\Modules\Eligibility\Enums\RuleLogic;
 use App\Modules\Eligibility\Enums\RulePriority;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class EligibilityRule extends Model
 {
     /** @use HasFactory<EligibilityRuleFactory> */
-    use HasFactory, HasPublicId;
+    use Auditable, HasFactory, HasPublicId;
 
     protected static function newFactory(): EligibilityRuleFactory
     {

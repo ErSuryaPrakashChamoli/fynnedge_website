@@ -3,11 +3,13 @@
 use App\Enums\LenderStatus;
 use App\Filament\Pages\EligibilityTester;
 use App\Filament\Resources\EligibilityRuleSets\Pages\EditEligibilityRuleSet;
+use App\Filament\Resources\EligibilityRuleSets\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\EligibilityRuleSets\RelationManagers\RulesRelationManager;
 use App\Models\Lender;
 use App\Models\LenderProduct;
 use App\Models\LoanProduct;
 use App\Models\User;
+use App\Modules\Eligibility\Enums\EligibilityRuleSetStatus;
 use App\Modules\Eligibility\Enums\RuleLogic;
 use App\Modules\Eligibility\Enums\RuleOperator;
 use App\Modules\Eligibility\Enums\RulePriority;
@@ -97,4 +99,46 @@ it('lets an admin evaluate a sample profile on the eligibility tester', function
         ])
         ->call('evaluate')
         ->assertHasNoFormErrors();
+});
+
+it('publishes a well-formed draft rule set from the edit page and blocks an empty one', function () {
+    $lenderProduct = LenderProduct::factory()->create();
+    $emptyDraft = EligibilityRuleSet::factory()->create([
+        'lender_product_id' => $lenderProduct->id,
+        'status' => EligibilityRuleSetStatus::Draft,
+    ]);
+
+    Livewire::test(EditEligibilityRuleSet::class, ['record' => $emptyDraft->getRouteKey()])
+        ->callAction('publish');
+
+    expect($emptyDraft->fresh()->status)->toBe(EligibilityRuleSetStatus::Draft);
+
+    $readyDraft = EligibilityRuleSet::factory()->create([
+        'lender_product_id' => LenderProduct::factory()->create()->id,
+        'status' => EligibilityRuleSetStatus::Draft,
+    ]);
+    $rule = EligibilityRule::factory()->create([
+        'eligibility_rule_set_id' => $readyDraft->id,
+        'priority' => RulePriority::Mandatory,
+    ]);
+    EligibilityRuleCondition::factory()->create(['eligibility_rule_id' => $rule->id]);
+
+    Livewire::test(EditEligibilityRuleSet::class, ['record' => $readyDraft->getRouteKey()])
+        ->callAction('publish');
+
+    expect($readyDraft->fresh()->status)->toBe(EligibilityRuleSetStatus::Active);
+});
+
+it('shows the audit history for a rule set', function () {
+    $ruleSet = EligibilityRuleSet::factory()->create([
+        'lender_product_id' => LenderProduct::factory()->create()->id,
+        'status' => EligibilityRuleSetStatus::Draft,
+    ]);
+    $ruleSet->update(['status' => EligibilityRuleSetStatus::Active]);
+
+    Livewire::test(AuditLogsRelationManager::class, [
+        'ownerRecord' => $ruleSet,
+        'pageClass' => EditEligibilityRuleSet::class,
+    ])
+        ->assertCanSeeTableRecords($ruleSet->auditLogs);
 });

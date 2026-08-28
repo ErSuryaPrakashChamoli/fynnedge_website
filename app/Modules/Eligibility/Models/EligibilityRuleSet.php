@@ -2,6 +2,7 @@
 
 namespace App\Modules\Eligibility\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
 use App\Models\LenderProduct;
 use App\Models\User;
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class EligibilityRuleSet extends Model
 {
     /** @use HasFactory<EligibilityRuleSetFactory> */
-    use HasFactory, HasPublicId;
+    use Auditable, HasFactory, HasPublicId;
 
     protected static function newFactory(): EligibilityRuleSetFactory
     {
