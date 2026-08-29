@@ -2,6 +2,7 @@
 
 use App\Enums\LoanCategory;
 use App\Support\Calculators\EmiCalculator;
+use App\Support\Formatting\IndianNumberFormatter;
 use Livewire\Livewire;
 
 beforeEach(function () {
@@ -23,7 +24,7 @@ it('defaults to the Personal Loan preset when mounted with no category', functio
     Livewire::test('emi-calculator')
         ->assertSet('category', LoanCategory::PersonalLoan->value)
         ->assertSet('principal', 500000.0)
-        ->assertSet('annualRate', 13.5)
+        ->assertSet('annualRate', 10.49) // Personal Loan's minimum ROI
         ->assertSet('tenureYears', 3)
         ->assertOk();
 });
@@ -32,7 +33,7 @@ it('mounts with the given category and its preset defaults', function () {
     Livewire::test('emi-calculator', ['category' => LoanCategory::HomeLoan->value])
         ->assertSet('category', LoanCategory::HomeLoan->value)
         ->assertSet('principal', 4000000.0)
-        ->assertSet('annualRate', 8.9)
+        ->assertSet('annualRate', 7.00) // Home Loan's minimum ROI
         ->assertSet('tenureYears', 20)
         ->assertOk();
 });
@@ -41,7 +42,7 @@ it('mounts with the new Car Loan category and its preset defaults', function () 
     Livewire::test('emi-calculator', ['category' => LoanCategory::CarLoan->value])
         ->assertSet('category', LoanCategory::CarLoan->value)
         ->assertSet('principal', 800000.0)
-        ->assertSet('annualRate', 9.75)
+        ->assertSet('annualRate', 9.10) // Car Loan's minimum ROI
         ->assertSet('tenureYears', 5)
         ->assertOk();
 });
@@ -56,7 +57,14 @@ it('recalculates the EMI when the loan amount changes', function () {
 it('clamps an interest rate typed above the active category\'s maximum, rather than computing an EMI from it', function () {
     Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
         ->set('annualRate', 50)
-        ->assertSet('annualRate', 30.0) // Personal Loan's max_interest_rate
+        ->assertSet('annualRate', 24.0) // Personal Loan's max_interest_rate
+        ->assertHasErrors(['annualRate']);
+});
+
+it('clamps an interest rate typed below the active category\'s minimum, rather than computing an EMI from it', function () {
+    Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
+        ->set('annualRate', 2)
+        ->assertSet('annualRate', 10.49) // Personal Loan's min_interest_rate
         ->assertHasErrors(['annualRate']);
 });
 
@@ -85,11 +93,11 @@ it('never computes an EMI from an out-of-range value — the result reflects the
     $component = Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
         ->set('principal', 50_000_000); // 10x the ₹50L maximum
 
-    $clampedResult = EmiCalculator::calculate(5_000_000, 13.5, 36); // max_amount, unchanged default rate/tenure
-    $bypassedResult = EmiCalculator::calculate(50_000_000, 13.5, 36);
+    $clampedResult = EmiCalculator::calculate(5_000_000, 10.49, 36); // max_amount, unchanged default rate/tenure
+    $bypassedResult = EmiCalculator::calculate(50_000_000, 10.49, 36);
 
-    $component->assertSeeText('₹'.number_format($clampedResult['emi']));
-    $component->assertDontSeeText('₹'.number_format($bypassedResult['emi']));
+    $component->assertSeeText('₹'.IndianNumberFormatter::format($clampedResult['emi']));
+    $component->assertDontSeeText('₹'.IndianNumberFormatter::format($bypassedResult['emi']));
 });
 
 it('clears the clamp error once the value is back in range', function () {
@@ -110,14 +118,30 @@ it('computes the same result the calculator service would return', function () {
     expect(EmiCalculator::calculate(200000, 12, 24)['emi'])->toBeGreaterThan(0);
 });
 
-it('resets amount, rate and tenure to the new category\'s preset when the category is switched', function () {
+it('resets amount and tenure to the new category\'s preset when the category is switched', function () {
     Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
         ->set('principal', 1000000)
         ->call('selectCategory', LoanCategory::BusinessLoan->value)
         ->assertSet('category', LoanCategory::BusinessLoan->value)
-        ->assertSet('principal', 1000000.0)
-        ->assertSet('annualRate', 15.0)
-        ->assertSet('tenureYears', 5);
+        ->assertSet('principal', 1000000.0) // Business Loan's default_amount
+        ->assertSet('tenureYears', 5); // Business Loan's default_tenure_months / 12
+});
+
+it('keeps the current interest rate when switching to a category whose range still covers it', function () {
+    // Personal Loan mounts at its minimum, 10.49% — Business Loan's own range (9.60%–24.00%) also covers 10.49%.
+    Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
+        ->assertSet('annualRate', 10.49)
+        ->call('selectCategory', LoanCategory::BusinessLoan->value)
+        ->assertSet('annualRate', 10.49);
+});
+
+it('resets the interest rate to the new category\'s minimum when the previous rate falls outside its range', function () {
+    // Car Loan's range (9.10%–15.00%) allows 12%, but Home Loan's range (7.00%–10.50%) does not.
+    Livewire::test('emi-calculator', ['category' => LoanCategory::CarLoan->value])
+        ->set('annualRate', 12)
+        ->assertSet('annualRate', 12.0)
+        ->call('selectCategory', LoanCategory::HomeLoan->value)
+        ->assertSet('annualRate', 7.00); // Home Loan's minimum ROI
 });
 
 it('renders the amortization table and pie chart split', function () {
@@ -129,9 +153,9 @@ it('renders the amortization table and pie chart split', function () {
 
 it('shows the maximum amount, maximum tenure and indicative rate range near the calculator fields', function () {
     Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
-        ->assertSee('Maximum loan amount: ₹5,000,000')
+        ->assertSee('Maximum loan amount: ₹50,00,000') // Indian digit grouping, not 5,000,000
         ->assertSee('Maximum tenure: 7 years (84 months)')
-        ->assertSee('10.49% – 24%+');
+        ->assertSee('10.49% – 24.00%');
 });
 
 it('shows a paired number input alongside each range slider', function () {

@@ -1,4 +1,4 @@
-<x-layouts.app title="EMI Calculator" description="Estimate your monthly EMI for a personal loan, home loan, business loan or loan against property.">
+<x-layouts.app title="EMI Calculator" description="Estimate your monthly EMI for a personal loan, home loan, car loan, business loan or loan against property.">
     <section class="mx-auto max-w-4xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Calculators' => null]" />
 

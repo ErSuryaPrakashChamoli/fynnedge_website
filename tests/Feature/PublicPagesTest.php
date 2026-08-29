@@ -13,6 +13,21 @@ it('renders the homepage', function () {
     $this->get('/')->assertOk()->assertSee('Simplifying loans');
 });
 
+it('shows active lenders in the homepage trust marquee, but not inactive ones', function () {
+    Lender::factory()->create(['name' => 'Alpha Finance', 'status' => LenderStatus::Active]);
+    Lender::factory()->create(['name' => 'Dormant Capital', 'status' => LenderStatus::Inactive]);
+
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('Trusted by leading banks &amp; NBFCs', false)
+        ->assertSee('Alpha Finance')
+        ->assertDontSee('Dormant Capital');
+});
+
+it('omits the trust marquee when there are no active lenders', function () {
+    $this->get('/')->assertOk()->assertDontSee('Trusted by leading banks');
+});
+
 it('renders the loans index with only published products', function () {
     $published = LoanProduct::factory()->published()->create(['name' => 'Home Loan', 'category' => LoanCategory::HomeLoan]);
     $draft = LoanProduct::factory()->create(['name' => 'Draft Product', 'status' => PublishStatus::Draft]);

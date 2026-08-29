@@ -1,22 +1,54 @@
 <x-layouts.app>
-    <section class="mx-auto max-w-7xl px-6 pb-20 pt-16 lg:px-8 lg:pt-24">
-        <p class="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-accent">FynnEdge Advisory (OPC) Pvt Ltd</p>
-        <h1 class="mt-5 max-w-3xl text-balance font-display text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-6xl">
-            Simplifying loans.
-            <span class="text-accent">Amplifying trust.</span>
-        </h1>
-        <p class="mt-6 max-w-xl text-lg text-ink-muted">
-            FynnEdge connects you with suitable banks and NBFCs for personal loans, home loans,
-            business loans and loans against property — with clear, upfront eligibility before you apply.
-        </p>
+    <section class="relative overflow-hidden">
+        <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+            <div class="absolute -top-32 left-1/2 h-[32rem] w-[32rem] -translate-x-1/2 rounded-full bg-accent/10 blur-3xl"></div>
+            <div class="absolute -right-24 top-1/3 h-72 w-72 rounded-full bg-pass/10 blur-3xl"></div>
+            <div class="absolute inset-0 [background-image:radial-gradient(var(--color-line-strong)_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_0%,black,transparent)] opacity-40"></div>
+        </div>
 
-        <div class="mt-8 flex flex-wrap gap-3">
-            <x-ui.button :tag="Route::has('eligibility.index') ? 'a' : 'button'" :href="Route::has('eligibility.index') ? route('eligibility.index') : null" size="lg">
-                Check Your Eligibility
-            </x-ui.button>
-            <x-ui.button tag="a" :href="route('loans.index')" variant="secondary" size="lg">
-                Explore Loan Products
-            </x-ui.button>
+        <div class="mx-auto max-w-7xl px-6 pb-20 pt-16 lg:px-8 lg:pt-24">
+            <p class="inline-flex items-center gap-2 rounded-full border border-line bg-surface/80 px-3 py-1 font-mono text-xs font-semibold uppercase tracking-[0.14em] text-accent shadow-sm backdrop-blur">
+                FynnEdge Advisory (OPC) Pvt Ltd
+            </p>
+            <h1 class="mt-6 max-w-3xl text-balance font-display text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-6xl">
+                Simplifying loans.
+                <span class="text-accent">Amplifying trust.</span>
+            </h1>
+            <p class="mt-6 max-w-xl text-lg text-ink-muted">
+                FynnEdge connects you with suitable banks and NBFCs for personal loans, home loans, car loans,
+                business loans and loans against property — with clear, upfront eligibility before you apply.
+            </p>
+
+            <div class="mt-8 flex flex-wrap gap-3">
+                <x-ui.button :tag="Route::has('eligibility.index') ? 'a' : 'button'" :href="Route::has('eligibility.index') ? route('eligibility.index') : null" size="lg">
+                    Check Your Eligibility
+                </x-ui.button>
+                <x-ui.button tag="a" :href="route('loans.index')" variant="secondary" size="lg">
+                    Explore Loan Products
+                </x-ui.button>
+            </div>
+
+            @if ($lenders->isNotEmpty())
+                <div class="mt-16">
+                    <p class="text-center font-mono text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink-faint sm:text-left">
+                        Trusted by leading banks &amp; NBFCs
+                    </p>
+                    <div class="relative mt-5 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+                        <div class="flex w-max animate-marquee items-center gap-12 hover:[animation-play-state:paused] motion-reduce:animate-none">
+                            @for ($copy = 0; $copy < 2; $copy++)
+                                <div class="flex shrink-0 items-center gap-12" @if ($copy === 1) aria-hidden="true" @endif>
+                                    @foreach ($lenders as $lender)
+                                        <div class="flex shrink-0 items-center gap-2.5">
+                                            <x-ui.lender-logo :lender="$lender" size="sm" />
+                                            <span class="font-display text-sm font-medium text-ink-muted">{{ $lender->name }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endfor
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </section>
 

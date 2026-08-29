@@ -3,6 +3,7 @@
 use App\Enums\LoanCategory;
 use App\Support\Calculators\EmiCalculator;
 use App\Support\Calculators\LoanCalculatorPreset;
+use App\Support\Formatting\IndianNumberFormatter;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -122,10 +123,26 @@ new class extends Component
         return LoanCalculatorPreset::supportedCategories();
     }
 
+    /**
+     * Amount and tenure reset to the new category's own defaults on every
+     * switch — a personal loan's ₹5L default means nothing as a home loan
+     * amount. The interest rate is different: each category's minimum ROI is
+     * itself a meaningful, comparable figure (it's what gets advertised), so
+     * a rate the visitor already dialed in is kept as long as it still falls
+     * inside the new category's [min_rate, max_rate] band, and only snapped
+     * to the new minimum when it doesn't.
+     */
     public function selectCategory(string $categoryValue): void
     {
-        $this->category = LoanCategory::from($categoryValue)->value;
-        $this->applyPresetDefaults();
+        $preset = LoanCalculatorPreset::for(LoanCategory::from($categoryValue));
+
+        $this->category = $categoryValue;
+        $this->principal = (float) $preset['default_amount'];
+        $this->tenureYears = $preset['default_years'];
+
+        if ($this->annualRate < $preset['min_rate'] || $this->annualRate > $preset['max_rate']) {
+            $this->annualRate = $preset['min_rate'];
+        }
     }
 
     private function applyPresetDefaults(): void
@@ -135,6 +152,15 @@ new class extends Component
         $this->principal = (float) $preset['default_amount'];
         $this->annualRate = $preset['default_rate'];
         $this->tenureYears = $preset['default_years'];
+    }
+
+    /**
+     * Indian digit-grouping (₹8,00,000, not ₹800,000) for every currency
+     * figure the calculator displays.
+     */
+    public function formatAmount(int|float $amount): string
+    {
+        return IndianNumberFormatter::format($amount);
     }
 
     /**
@@ -210,7 +236,7 @@ new class extends Component
                             min="{{ $this->preset['min_amount'] }}"
                             max="{{ $this->preset['max_amount'] }}"
                             step="1000"
-                            wire:model.live="principal"
+                            wire:model.live.debounce.400ms="principal"
                             class="w-28 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                         >
                     </div>
@@ -224,7 +250,7 @@ new class extends Component
                     wire:model.live="principal"
                     class="mt-2 w-full accent-accent"
                 >
-                <p class="mt-1 text-xs text-ink-faint">Maximum loan amount: ₹{{ number_format($this->preset['max_amount']) }}</p>
+                <p class="mt-1 text-xs text-ink-faint">Maximum loan amount: ₹{{ $this->formatAmount($this->preset['max_amount']) }}</p>
                 @error('principal') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
 
@@ -239,7 +265,7 @@ new class extends Component
                             min="{{ $this->preset['min_rate'] }}"
                             max="{{ $this->preset['max_rate'] }}"
                             step="0.01"
-                            wire:model.live="annualRate"
+                            wire:model.live.debounce.400ms="annualRate"
                             class="w-20 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                         >
                         %
@@ -271,7 +297,7 @@ new class extends Component
                             min="{{ $this->preset['min_years'] }}"
                             max="{{ $this->preset['max_years'] }}"
                             step="1"
-                            wire:model.live="tenureYears"
+                            wire:model.live.debounce.400ms="tenureYears"
                             class="w-16 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                         >
                         {{ Str::plural('year', $tenureYears) }}
@@ -294,16 +320,16 @@ new class extends Component
         <div class="flex flex-col justify-center gap-5 rounded-2xl border border-line bg-surface-2 p-7">
             <div>
                 <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Monthly EMI</p>
-                <p class="mt-1 font-display text-4xl font-semibold text-accent">₹{{ number_format($this->result['emi']) }}</p>
+                <p class="mt-1 font-display text-4xl font-semibold text-accent">₹{{ $this->formatAmount($this->result['emi']) }}</p>
             </div>
             <div class="grid grid-cols-2 gap-4 border-t border-line pt-5">
                 <div>
                     <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Total interest</p>
-                    <p class="mt-1 text-lg font-medium text-ink">₹{{ number_format($this->result['total_interest']) }}</p>
+                    <p class="mt-1 text-lg font-medium text-ink">₹{{ $this->formatAmount($this->result['total_interest']) }}</p>
                 </div>
                 <div>
                     <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Total payment</p>
-                    <p class="mt-1 text-lg font-medium text-ink">₹{{ number_format($this->result['total_payment']) }}</p>
+                    <p class="mt-1 text-lg font-medium text-ink">₹{{ $this->formatAmount($this->result['total_payment']) }}</p>
                 </div>
             </div>
             <p class="text-xs text-ink-faint">Indicative only — your actual EMI depends on the lender's exact rate and terms at sanction.</p>
@@ -347,7 +373,7 @@ new class extends Component
                             $principalShare = $yearTotal > 0 ? $row['principal_paid'] / $yearTotal * 100 : 0;
                             $interestShare = 100 - $principalShare;
                         @endphp
-                        <div class="flex w-8 shrink-0 flex-col items-center gap-1.5" title="{{ $this->yearLabel($this->monthsByYear[$row['year']]) }}: ₹{{ number_format($row['principal_paid']) }} principal, ₹{{ number_format($row['interest_paid']) }} interest">
+                        <div class="flex w-8 shrink-0 flex-col items-center gap-1.5" title="{{ $this->yearLabel($this->monthsByYear[$row['year']]) }}: ₹{{ $this->formatAmount($row['principal_paid']) }} principal, ₹{{ $this->formatAmount($row['interest_paid']) }} interest">
                             <div class="flex w-full flex-col justify-end overflow-hidden rounded-t" style="height: 10rem">
                                 <div style="height: {{ $barHeight }}%" class="flex w-full flex-col justify-end overflow-hidden">
                                     <div class="w-full bg-warn" style="height: {{ $interestShare }}%"></div>
@@ -378,9 +404,9 @@ new class extends Component
                         <summary class="grid cursor-pointer list-none grid-cols-2 items-center gap-1 px-4 py-3 text-sm hover:bg-surface-2 sm:grid-cols-[2rem_1fr_1fr_1fr_1fr]">
                             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5 text-ink-faint transition-transform group-open:rotate-90"><path stroke-linecap="round" stroke-linejoin="round" d="M7 4l6 6-6 6" /></svg>
                             <span class="font-medium text-ink">{{ $this->yearLabel($this->monthsByYear[$row['year']]) }}</span>
-                            <span class="text-right font-mono text-ink sm:text-right">₹{{ number_format($row['principal_paid']) }}</span>
-                            <span class="text-right font-mono text-ink sm:text-right">₹{{ number_format($row['interest_paid']) }}</span>
-                            <span class="col-span-2 text-right font-mono text-ink-muted sm:col-span-1">₹{{ number_format($row['total_paid']) }}</span>
+                            <span class="text-right font-mono text-ink sm:text-right">₹{{ $this->formatAmount($row['principal_paid']) }}</span>
+                            <span class="text-right font-mono text-ink sm:text-right">₹{{ $this->formatAmount($row['interest_paid']) }}</span>
+                            <span class="col-span-2 text-right font-mono text-ink-muted sm:col-span-1">₹{{ $this->formatAmount($row['total_paid']) }}</span>
                         </summary>
 
                         <div class="overflow-x-auto border-t border-line bg-surface px-4 py-3">
@@ -398,10 +424,10 @@ new class extends Component
                                     @foreach ($this->monthsByYear[$row['year']] as $monthRow)
                                         <tr class="border-t border-line/60">
                                             <td class="py-1.5 pr-3 text-ink-muted">{{ $this->monthDate($monthRow['month'])->format('M Y') }}</td>
-                                            <td class="py-1.5 pr-3 text-right font-mono text-ink">₹{{ number_format($monthRow['principal_paid']) }}</td>
-                                            <td class="py-1.5 pr-3 text-right font-mono text-ink">₹{{ number_format($monthRow['interest_paid']) }}</td>
-                                            <td class="py-1.5 pr-3 text-right font-mono text-ink-muted">₹{{ number_format($monthRow['total_paid']) }}</td>
-                                            <td class="py-1.5 text-right font-mono text-ink-muted">₹{{ number_format($monthRow['balance']) }}</td>
+                                            <td class="py-1.5 pr-3 text-right font-mono text-ink">₹{{ $this->formatAmount($monthRow['principal_paid']) }}</td>
+                                            <td class="py-1.5 pr-3 text-right font-mono text-ink">₹{{ $this->formatAmount($monthRow['interest_paid']) }}</td>
+                                            <td class="py-1.5 pr-3 text-right font-mono text-ink-muted">₹{{ $this->formatAmount($monthRow['total_paid']) }}</td>
+                                            <td class="py-1.5 text-right font-mono text-ink-muted">₹{{ $this->formatAmount($monthRow['balance']) }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>

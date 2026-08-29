@@ -1,8 +1,14 @@
 <header class="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur">
     <div x-data="{ open: false }" class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 lg:px-8">
-        <a href="{{ route('home') }}" class="flex items-baseline gap-2 font-display text-xl font-semibold tracking-tight text-ink">
-            FynnEdge
-            <span class="hidden font-mono text-[0.62rem] font-medium uppercase tracking-[0.14em] text-ink-faint sm:inline">Advisory</span>
+        <a href="{{ route('home') }}" class="flex flex-col text-ink">
+            <span class="flex items-center gap-2 font-display text-xl font-semibold tracking-tight">
+                <img src="{{ asset('fynnedge-icon.png') }}" alt="" class="h-9 w-9" width="36" height="36">
+                <span class="flex items-baseline gap-2">
+                    FynnEdge
+                    <span class="hidden font-mono text-[0.62rem] font-medium uppercase tracking-[0.14em] text-ink-faint sm:inline">Advisory</span>
+                </span>
+            </span>
+            <span class="mt-0.5 font-display text-[0.65rem] italic text-accent">Simplifying Loan, Amplifying Trust</span>
         </a>
 
         <nav class="hidden items-center gap-8 lg:flex" aria-label="Primary">

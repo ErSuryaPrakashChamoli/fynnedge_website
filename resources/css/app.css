@@ -23,6 +23,14 @@
     --color-warn-soft: #f3e6d3;
     --color-line: #dedcd2;
     --color-line-strong: #c7c4b6;
+
+    --animate-marquee: marquee 32s linear infinite;
+
+    @keyframes marquee {
+        to {
+            transform: translateX(-50%);
+        }
+    }
 }
 
 /*

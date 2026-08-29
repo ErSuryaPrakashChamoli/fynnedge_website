@@ -1,4 +1,4 @@
-<x-layouts.app :title="'Loan Products'" description="Compare personal loans, home loans, business loans, loans against property and credit cards — matched to lenders based on your profile.">
+<x-layouts.app :title="'Loan Products'" description="Compare personal loans, home loans, car loans, business loans, loans against property and credit cards — matched to lenders based on your profile.">
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Loans' => null]" />
 

@@ -59,9 +59,9 @@ class DatabaseSeeder extends Seeder
                 'max_tenure_months' => 84,
                 'default_tenure_months' => 36,
                 'min_interest_rate' => 10.49,
-                'max_interest_rate' => 30.00,
-                'default_interest_rate' => 13.50,
-                'interest_rate_note' => '10.49% – 24%+',
+                'max_interest_rate' => 24.00,
+                'default_interest_rate' => 10.49,
+                'interest_rate_note' => null,
             ],
         );
 

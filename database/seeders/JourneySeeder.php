@@ -40,8 +40,8 @@ class JourneySeeder extends Seeder
                 'default_tenure_months' => 240,
                 'min_interest_rate' => 7.00,
                 'max_interest_rate' => 10.50,
-                'default_interest_rate' => 8.90,
-                'interest_rate_note' => '~7.0% – 10.5%',
+                'default_interest_rate' => 7.00,
+                'interest_rate_note' => null,
             ],
         );
 
@@ -67,8 +67,8 @@ class JourneySeeder extends Seeder
                 'default_tenure_months' => 60,
                 'min_interest_rate' => 9.10,
                 'max_interest_rate' => 15.00,
-                'default_interest_rate' => 9.75,
-                'interest_rate_note' => '~9.1% – 15%',
+                'default_interest_rate' => 9.10,
+                'interest_rate_note' => null,
             ],
         );
 
@@ -93,9 +93,9 @@ class JourneySeeder extends Seeder
                 'max_tenure_months' => 180,
                 'default_tenure_months' => 120,
                 'min_interest_rate' => 9.50,
-                'max_interest_rate' => 18.00,
-                'default_interest_rate' => 10.50,
-                'interest_rate_note' => '~9.5% – 14%+',
+                'max_interest_rate' => 14.00,
+                'default_interest_rate' => 9.50,
+                'interest_rate_note' => null,
             ],
         );
 
@@ -120,9 +120,9 @@ class JourneySeeder extends Seeder
                 'max_tenure_months' => 84,
                 'default_tenure_months' => 60,
                 'min_interest_rate' => 9.60,
-                'max_interest_rate' => 30.00,
-                'default_interest_rate' => 15.00,
-                'interest_rate_note' => '~9.6% – 24%+',
+                'max_interest_rate' => 24.00,
+                'default_interest_rate' => 9.60,
+                'interest_rate_note' => null,
             ],
         );
 

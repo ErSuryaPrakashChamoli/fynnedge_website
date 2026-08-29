@@ -2,7 +2,10 @@
     <div class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <div class="grid grid-cols-2 gap-10 sm:grid-cols-4">
             <div class="col-span-2 sm:col-span-1">
-                <p class="font-display text-lg font-semibold text-ink">FynnEdge</p>
+                <div class="flex items-center gap-2">
+                    <img src="{{ asset('fynnedge-icon.png') }}" alt="" class="h-8 w-8" width="32" height="32">
+                    <p class="font-display text-lg font-semibold text-ink">FynnEdge</p>
+                </div>
                 <p class="mt-2 font-display text-sm italic text-accent">Simplifying Loan, Amplifying Trust.</p>
                 <p class="mt-4 text-xs text-ink-faint">FynnEdge Advisory (OPC) Pvt Ltd</p>
             </div>
