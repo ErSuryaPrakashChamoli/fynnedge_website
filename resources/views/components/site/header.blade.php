@@ -10,6 +10,7 @@
             <x-site.nav-link route="eligibility.index" label="Eligibility" />
             <x-site.nav-link route="calculators.index" label="Calculators" />
             <x-site.nav-link route="resources.index" label="Resources" />
+            <x-site.nav-link route="faqs.index" label="FAQs" />
             <x-site.nav-link route="about" label="About" />
         </nav>
 
@@ -45,6 +46,7 @@
                 <x-site.nav-link route="eligibility.index" label="Eligibility" />
                 <x-site.nav-link route="calculators.index" label="Calculators" />
                 <x-site.nav-link route="resources.index" label="Resources" />
+                <x-site.nav-link route="faqs.index" label="FAQs" />
                 <x-site.nav-link route="about" label="About" />
             </nav>
             <div class="mt-5 flex flex-col gap-3">

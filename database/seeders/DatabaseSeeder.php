@@ -124,5 +124,6 @@ class DatabaseSeeder extends Seeder
         $this->call(JourneySeeder::class);
         $this->call(EligibilitySeeder::class);
         $this->call(LegalPageSeeder::class);
+        $this->call(ArticleSeeder::class);
     }
 }

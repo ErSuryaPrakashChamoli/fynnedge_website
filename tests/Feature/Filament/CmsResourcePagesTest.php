@@ -1,6 +1,7 @@
 <?php
 
 use App\Filament\Resources\Faqs\Pages\ListFaqs;
+use App\Models\Article;
 use App\Models\ContactEnquiry;
 use App\Models\Faq;
 use App\Models\Lender;
@@ -22,6 +23,7 @@ it('renders every CMS resource index page', function () {
     $this->get('/admin/faqs')->assertOk();
     $this->get('/admin/settings')->assertOk();
     $this->get('/admin/contact-enquiries')->assertOk();
+    $this->get('/admin/articles')->assertOk();
 });
 
 it('lets an admin view a contact enquiry but not create one manually', function () {
@@ -40,11 +42,13 @@ it('renders edit pages for existing records', function () {
     $loanProduct = LoanProduct::factory()->create();
     $lender = Lender::factory()->create();
     $faq = Faq::factory()->create();
+    $article = Article::factory()->create();
 
     $this->get("/admin/pages/{$page->public_id}/edit")->assertOk();
     $this->get("/admin/loan-products/{$loanProduct->public_id}/edit")->assertOk();
     $this->get("/admin/lenders/{$lender->public_id}/edit")->assertOk();
     $this->get("/admin/faqs/{$faq->public_id}/edit")->assertOk();
+    $this->get("/admin/articles/{$article->public_id}/edit")->assertOk();
 });
 
 it('scopes the general FAQ resource to FAQs without a parent', function () {

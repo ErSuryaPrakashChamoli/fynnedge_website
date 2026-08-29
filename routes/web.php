@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CalculatorController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JourneyController;
 use App\Http\Controllers\LoanProductController;
@@ -35,6 +37,11 @@ Route::middleware('throttle:public-forms')->group(function (): void {
 });
 
 Route::get('/calculators', CalculatorController::class)->name('calculators.index');
+
+Route::get('/resources', [ArticleController::class, 'index'])->name('resources.index');
+Route::get('/resources/{article:slug}', [ArticleController::class, 'show'])->name('resources.show');
+
+Route::get('/faqs', [FaqController::class, 'index'])->name('faqs.index');
 
 Route::get('/contact', [ContactController::class, 'show'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store')->middleware('throttle:contact-form');
