@@ -27,3 +27,11 @@ it('sends the same Content-Security-Policy on the admin panel and a public page'
 
     expect($adminCsp)->toBe($publicCsp);
 });
+
+it('still applies security headers to the login redirect an unauthenticated admin request becomes', function () {
+    $response = $this->get('/admin');
+
+    $response->assertRedirect();
+    $response->assertHeader('X-Frame-Options', 'DENY');
+    $response->assertHeader('Content-Security-Policy');
+});

@@ -26,6 +26,14 @@ use Symfony\Component\HttpFoundation\Response;
  * policy, since this environment can't drive a real browser; if something in
  * Alpine/Livewire silently breaks, it will only show up as a browser console
  * error, not a failed request.
+ *
+ * apply() is also called from bootstrap/app.php's exception `respond()` hook —
+ * a response built by Laravel's exception handler (e.g. the redirect an
+ * unauthenticated admin route request becomes via AuthenticationException)
+ * never passes back out through this middleware's `$next()` return, since the
+ * exception unwinds outside the middleware pipeline entirely. Without that
+ * second call site, every such redirect would silently ship with none of these
+ * headers — found live while verifying this via curl, not theoretical.
  */
 class SecurityHeaders
 {
@@ -45,8 +53,11 @@ class SecurityHeaders
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $response = $next($request);
+        return self::apply($next($request));
+    }
 
+    public static function apply(Response $response): Response
+    {
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('X-Frame-Options', 'DENY');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
