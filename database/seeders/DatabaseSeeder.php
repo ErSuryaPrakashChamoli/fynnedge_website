@@ -52,6 +52,16 @@ class DatabaseSeeder extends Seeder
                 'process_steps' => ['Check eligibility', 'Compare lenders', 'Apply online', 'Upload documents', 'Get sanctioned'],
                 'status' => PublishStatus::Published,
                 'published_at' => now(),
+                'min_amount' => 25_000,
+                'max_amount' => 5_000_000,
+                'default_amount' => 500_000,
+                'min_tenure_months' => 12,
+                'max_tenure_months' => 84,
+                'default_tenure_months' => 36,
+                'min_interest_rate' => 10.49,
+                'max_interest_rate' => 30.00,
+                'default_interest_rate' => 13.50,
+                'interest_rate_note' => '10.49% – 24%+',
             ],
         );
 
@@ -103,8 +113,8 @@ class DatabaseSeeder extends Seeder
                 'excerpt' => 'FynnEdge Advisory (OPC) Pvt Ltd helps you find the right lender for your loan — clearly, and on your terms.',
                 'body' => <<<'HTML'
                     <p>FynnEdge Advisory (OPC) Pvt Ltd is a loan advisory and distribution business. We connect
-                    customers with suitable banks and NBFCs across personal loans, home loans, business loans,
-                    loans against property and credit cards.</p>
+                    customers with suitable banks and NBFCs across personal loans, home loans, car loans,
+                    business loans, loans against property and credit cards.</p>
                     <h2>How we work</h2>
                     <p>Rather than applying to lenders one at a time, you share your profile once. We match it
                     against participating lenders' published criteria and show you which ones you're likely

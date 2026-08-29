@@ -43,4 +43,50 @@ class LoanProductFactory extends Factory
             'published_at' => now(),
         ]);
     }
+
+    /**
+     * Realistic EMI calculator limits, matching what's actually seeded in
+     * production for each category — so a test exercising the calculator
+     * isn't inventing its own numbers that could drift from real config.
+     */
+    public function withCalculatorLimits(): static
+    {
+        return $this->state(function (array $attributes) {
+            $category = $attributes['category'] ?? LoanCategory::PersonalLoan;
+
+            return match ($category) {
+                LoanCategory::PersonalLoan => [
+                    'min_amount' => 25_000, 'max_amount' => 5_000_000, 'default_amount' => 500_000,
+                    'min_tenure_months' => 12, 'max_tenure_months' => 84, 'default_tenure_months' => 36,
+                    'min_interest_rate' => 10.49, 'max_interest_rate' => 30.00, 'default_interest_rate' => 13.50,
+                    'interest_rate_note' => '10.49% – 24%+',
+                ],
+                LoanCategory::HomeLoan => [
+                    'min_amount' => 500_000, 'max_amount' => 100_000_000, 'default_amount' => 4_000_000,
+                    'min_tenure_months' => 60, 'max_tenure_months' => 360, 'default_tenure_months' => 240,
+                    'min_interest_rate' => 7.00, 'max_interest_rate' => 10.50, 'default_interest_rate' => 8.90,
+                    'interest_rate_note' => '~7.0% – 10.5%',
+                ],
+                LoanCategory::CarLoan => [
+                    'min_amount' => 100_000, 'max_amount' => 10_000_000, 'default_amount' => 800_000,
+                    'min_tenure_months' => 12, 'max_tenure_months' => 96, 'default_tenure_months' => 60,
+                    'min_interest_rate' => 9.10, 'max_interest_rate' => 15.00, 'default_interest_rate' => 9.75,
+                    'interest_rate_note' => '~9.1% – 15%',
+                ],
+                LoanCategory::LoanAgainstProperty => [
+                    'min_amount' => 500_000, 'max_amount' => 75_000_000, 'default_amount' => 3_000_000,
+                    'min_tenure_months' => 60, 'max_tenure_months' => 180, 'default_tenure_months' => 120,
+                    'min_interest_rate' => 9.50, 'max_interest_rate' => 18.00, 'default_interest_rate' => 10.50,
+                    'interest_rate_note' => '~9.5% – 14%+',
+                ],
+                LoanCategory::BusinessLoan => [
+                    'min_amount' => 100_000, 'max_amount' => 20_000_000, 'default_amount' => 1_000_000,
+                    'min_tenure_months' => 12, 'max_tenure_months' => 84, 'default_tenure_months' => 60,
+                    'min_interest_rate' => 9.60, 'max_interest_rate' => 30.00, 'default_interest_rate' => 15.00,
+                    'interest_rate_note' => '~9.6% – 24%+',
+                ],
+                LoanCategory::CreditCard => [],
+            };
+        });
+    }
 }

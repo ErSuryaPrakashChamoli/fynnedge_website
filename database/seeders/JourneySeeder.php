@@ -32,6 +32,43 @@ class JourneySeeder extends Seeder
                 'process_steps' => ['Check eligibility', 'Compare lenders', 'Apply online', 'Property & legal verification', 'Get sanctioned'],
                 'status' => PublishStatus::Published,
                 'published_at' => now(),
+                'min_amount' => 500_000,
+                'max_amount' => 100_000_000,
+                'default_amount' => 4_000_000,
+                'min_tenure_months' => 60,
+                'max_tenure_months' => 360,
+                'default_tenure_months' => 240,
+                'min_interest_rate' => 7.00,
+                'max_interest_rate' => 10.50,
+                'default_interest_rate' => 8.90,
+                'interest_rate_note' => '~7.0% – 10.5%',
+            ],
+        );
+
+        $carLoan = LoanProduct::query()->updateOrCreate(
+            ['slug' => 'car-loan'],
+            [
+                'name' => 'Car Loan',
+                'category' => LoanCategory::CarLoan,
+                'summary' => 'Finance a new or used car, matched to lenders based on the vehicle and your income profile.',
+                'body' => '<p>FynnEdge helps you compare car loan offers from multiple lenders, whether you\'re buying '
+                    .'new or pre-owned, based on the vehicle\'s value and your income profile.</p>',
+                'features' => ['Funding for new and used cars', 'Competitive interest rates', 'Fast approval turnaround'],
+                'eligibility_points' => ['Salaried or self-employed with a regular income', 'Minimum age as per lender policy', 'Reasonable existing obligations relative to income'],
+                'documents_required' => ['PAN Card', 'Address Proof', 'Income Proof', 'Bank Statements (last 3 months)', 'Vehicle Quotation/Invoice'],
+                'process_steps' => ['Check eligibility', 'Compare lenders', 'Apply online', 'Upload documents', 'Get sanctioned'],
+                'status' => PublishStatus::Published,
+                'published_at' => now(),
+                'min_amount' => 100_000,
+                'max_amount' => 10_000_000,
+                'default_amount' => 800_000,
+                'min_tenure_months' => 12,
+                'max_tenure_months' => 96,
+                'default_tenure_months' => 60,
+                'min_interest_rate' => 9.10,
+                'max_interest_rate' => 15.00,
+                'default_interest_rate' => 9.75,
+                'interest_rate_note' => '~9.1% – 15%',
             ],
         );
 
@@ -49,6 +86,16 @@ class JourneySeeder extends Seeder
                 'process_steps' => ['Check eligibility', 'Compare lenders', 'Apply online', 'Property valuation & verification', 'Get sanctioned'],
                 'status' => PublishStatus::Published,
                 'published_at' => now(),
+                'min_amount' => 500_000,
+                'max_amount' => 75_000_000,
+                'default_amount' => 3_000_000,
+                'min_tenure_months' => 60,
+                'max_tenure_months' => 180,
+                'default_tenure_months' => 120,
+                'min_interest_rate' => 9.50,
+                'max_interest_rate' => 18.00,
+                'default_interest_rate' => 10.50,
+                'interest_rate_note' => '~9.5% – 14%+',
             ],
         );
 
@@ -66,6 +113,16 @@ class JourneySeeder extends Seeder
                 'process_steps' => ['Check eligibility', 'Compare lenders', 'Apply online', 'Business & banking verification', 'Get sanctioned'],
                 'status' => PublishStatus::Published,
                 'published_at' => now(),
+                'min_amount' => 100_000,
+                'max_amount' => 20_000_000,
+                'default_amount' => 1_000_000,
+                'min_tenure_months' => 12,
+                'max_tenure_months' => 84,
+                'default_tenure_months' => 60,
+                'min_interest_rate' => 9.60,
+                'max_interest_rate' => 30.00,
+                'default_interest_rate' => 15.00,
+                'interest_rate_note' => '~9.6% – 24%+',
             ],
         );
 
@@ -130,6 +187,26 @@ class JourneySeeder extends Seeder
                 ['key' => 'preferred_tenure_months', 'label' => 'Preferred tenure (months)', 'type' => FieldType::Number, 'validation_rules' => ['required', 'integer', 'min:12', 'max:360']],
             ]],
             ['key' => 'consent', 'title' => 'Consent', 'description' => 'One last step before we match you with lenders.', 'fields' => $this->consentField('home loan')],
+        ]);
+
+        $this->createJourney($carLoan, [
+            ['key' => 'basic-details', 'title' => 'Basic details', 'fields' => $this->basicDetailsFields()],
+            ['key' => 'employment-details', 'title' => 'Employment details', 'fields' => $this->employmentFields()],
+            ['key' => 'income-details', 'title' => 'Income details', 'fields' => $this->incomeFields()],
+            ['key' => 'vehicle-details', 'title' => 'Vehicle details', 'fields' => [
+                ['key' => 'vehicle_condition', 'label' => 'Vehicle condition', 'type' => FieldType::Select, 'validation_rules' => ['required'], 'options' => [
+                    ['value' => 'new', 'label' => 'New'],
+                    ['value' => 'used', 'label' => 'Used'],
+                ]],
+                ['key' => 'vehicle_value', 'label' => 'Estimated on-road price (₹)', 'type' => FieldType::Number, 'validation_rules' => ['required', 'numeric', 'min:100000']],
+                ['key' => 'own_contribution', 'label' => 'Your own contribution (₹)', 'type' => FieldType::Number, 'validation_rules' => ['required', 'numeric', 'min:0'], 'help_text' => 'Also known as the down payment.'],
+            ]],
+            ['key' => 'existing-obligations', 'title' => 'Existing obligations', 'fields' => $this->obligationsFields()],
+            ['key' => 'loan-requirement', 'title' => 'Loan requirement', 'fields' => [
+                ['key' => 'loan_amount', 'label' => 'Loan amount required (₹)', 'type' => FieldType::Number, 'validation_rules' => ['required', 'numeric', 'min:100000']],
+                ['key' => 'preferred_tenure_months', 'label' => 'Preferred tenure (months)', 'type' => FieldType::Number, 'validation_rules' => ['required', 'integer', 'min:12', 'max:96']],
+            ]],
+            ['key' => 'consent', 'title' => 'Consent', 'description' => 'One last step before we match you with lenders.', 'fields' => $this->consentField('car loan')],
         ]);
 
         $this->createJourney($lap, [

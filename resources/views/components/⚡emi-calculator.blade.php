@@ -138,24 +138,41 @@ new class extends Component
     }
 
     /**
-     * @return array<string, array<int, string>>
+     * Applies to both the slider and its paired number input — the slider's
+     * own min/max attributes stop a drag from going out of range, but a
+     * typed number has no such native enforcement, so this is the actual
+     * backstop. It clamps the value to the product's real limit rather than
+     * just flagging an error and leaving an out-of-range figure sitting in
+     * $this->principal — the EMI shown must never be computed from a value
+     * above what the product actually allows, whether that value arrived by
+     * slider, by typing, or by a direct request to this Livewire component
+     * (there's no separate "frontend-only" path to bypass; every property
+     * update round-trips through this same server-side method).
      */
-    public function rules(): array
-    {
-        $preset = $this->preset;
-
-        return [
-            'principal' => ['required', 'numeric', "min:{$preset['min_amount']}", "max:{$preset['max_amount']}"],
-            'annualRate' => ['required', 'numeric', "min:{$preset['min_rate']}", "max:{$preset['max_rate']}"],
-            'tenureYears' => ['required', 'integer', "min:{$preset['min_years']}", "max:{$preset['max_years']}"],
-        ];
-    }
-
     public function updated(string $property): void
     {
-        if (in_array($property, ['principal', 'annualRate', 'tenureYears'], true)) {
-            $this->validateOnly($property);
+        if (! in_array($property, ['principal', 'annualRate', 'tenureYears'], true)) {
+            return;
         }
+
+        $preset = $this->preset;
+        [$min, $max, $label] = match ($property) {
+            'principal' => [$preset['min_amount'], $preset['max_amount'], 'loan amount'],
+            'annualRate' => [$preset['min_rate'], $preset['max_rate'], 'interest rate'],
+            'tenureYears' => [$preset['min_years'], $preset['max_years'], 'tenure'],
+        };
+
+        $value = $this->{$property};
+
+        if ($value < $min || $value > $max) {
+            $clamped = max($min, min($max, $value));
+            $this->{$property} = $property === 'tenureYears' ? (int) $clamped : (float) $clamped;
+            $this->addError($property, "Adjusted the {$label} to stay within {$this->preset['label']}'s allowed range.");
+
+            return;
+        }
+
+        $this->resetErrorBag($property);
     }
 };
 ?>
@@ -182,53 +199,94 @@ new class extends Component
     <div class="mt-8 grid gap-8 lg:grid-cols-2">
         <div class="flex flex-col gap-6">
             <div>
-                <div class="flex items-baseline justify-between">
+                <div class="flex items-baseline justify-between gap-3">
                     <label for="principal" class="text-sm font-medium text-ink">Loan amount</label>
-                    <span class="font-mono text-sm text-ink-muted">₹{{ number_format($principal) }}</span>
+                    <div class="flex items-center gap-1 font-mono text-sm text-ink-muted">
+                        ₹
+                        <input
+                            id="principal"
+                            type="number"
+                            inputmode="numeric"
+                            min="{{ $this->preset['min_amount'] }}"
+                            max="{{ $this->preset['max_amount'] }}"
+                            step="1000"
+                            wire:model.live="principal"
+                            class="w-28 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
+                        >
+                    </div>
                 </div>
                 <input
-                    id="principal"
                     type="range"
+                    aria-label="Loan amount"
                     min="{{ $this->preset['min_amount'] }}"
                     max="{{ $this->preset['max_amount'] }}"
                     step="{{ max((int) (($this->preset['max_amount'] - $this->preset['min_amount']) / 200), 1000) }}"
                     wire:model.live="principal"
                     class="mt-2 w-full accent-accent"
                 >
+                <p class="mt-1 text-xs text-ink-faint">Maximum loan amount: ₹{{ number_format($this->preset['max_amount']) }}</p>
                 @error('principal') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
 
             <div>
-                <div class="flex items-baseline justify-between">
+                <div class="flex items-baseline justify-between gap-3">
                     <label for="annualRate" class="text-sm font-medium text-ink">Interest rate (p.a.)</label>
-                    <span class="font-mono text-sm text-ink-muted">{{ number_format($annualRate, 1) }}%</span>
+                    <div class="flex items-center gap-1 font-mono text-sm text-ink-muted">
+                        <input
+                            id="annualRate"
+                            type="number"
+                            inputmode="decimal"
+                            min="{{ $this->preset['min_rate'] }}"
+                            max="{{ $this->preset['max_rate'] }}"
+                            step="0.01"
+                            wire:model.live="annualRate"
+                            class="w-20 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
+                        >
+                        %
+                    </div>
                 </div>
                 <input
-                    id="annualRate"
                     type="range"
+                    aria-label="Interest rate"
                     min="{{ $this->preset['min_rate'] }}"
                     max="{{ $this->preset['max_rate'] }}"
                     step="0.1"
                     wire:model.live="annualRate"
                     class="mt-2 w-full accent-accent"
                 >
+                <p class="mt-1 text-xs text-ink-faint">
+                    Indicative range for {{ $this->preset['label'] }}: {{ $this->preset['rate_note'] ?? number_format($this->preset['min_rate'], 2).'% – '.number_format($this->preset['max_rate'], 2).'%' }}
+                </p>
                 @error('annualRate') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
 
             <div>
-                <div class="flex items-baseline justify-between">
+                <div class="flex items-baseline justify-between gap-3">
                     <label for="tenureYears" class="text-sm font-medium text-ink">Tenure</label>
-                    <span class="font-mono text-sm text-ink-muted">{{ $tenureYears }} {{ Str::plural('year', $tenureYears) }}</span>
+                    <div class="flex items-center gap-1 font-mono text-sm text-ink-muted">
+                        <input
+                            id="tenureYears"
+                            type="number"
+                            inputmode="numeric"
+                            min="{{ $this->preset['min_years'] }}"
+                            max="{{ $this->preset['max_years'] }}"
+                            step="1"
+                            wire:model.live="tenureYears"
+                            class="w-16 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
+                        >
+                        {{ Str::plural('year', $tenureYears) }}
+                    </div>
                 </div>
                 <input
-                    id="tenureYears"
                     type="range"
+                    aria-label="Tenure in years"
                     min="{{ $this->preset['min_years'] }}"
                     max="{{ $this->preset['max_years'] }}"
                     step="1"
                     wire:model.live="tenureYears"
                     class="mt-2 w-full accent-accent"
                 >
+                <p class="mt-1 text-xs text-ink-faint">Maximum tenure: {{ $this->preset['max_years'] }} {{ Str::plural('year', $this->preset['max_years']) }} ({{ $this->preset['max_years'] * 12 }} months)</p>
                 @error('tenureYears') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
         </div>

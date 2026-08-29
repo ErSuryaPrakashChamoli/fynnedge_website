@@ -4,6 +4,21 @@ use App\Enums\LoanCategory;
 use App\Support\Calculators\EmiCalculator;
 use Livewire\Livewire;
 
+beforeEach(function () {
+    // Every category the calculator supports, seeded with the same limits
+    // production ships — most tests exercise Personal Loan by default, and
+    // several also switch to another category mid-test.
+    foreach ([
+        LoanCategory::PersonalLoan,
+        LoanCategory::HomeLoan,
+        LoanCategory::CarLoan,
+        LoanCategory::LoanAgainstProperty,
+        LoanCategory::BusinessLoan,
+    ] as $category) {
+        seedCalculatorProduct($category);
+    }
+});
+
 it('defaults to the Personal Loan preset when mounted with no category', function () {
     Livewire::test('emi-calculator')
         ->assertSet('category', LoanCategory::PersonalLoan->value)
@@ -22,6 +37,15 @@ it('mounts with the given category and its preset defaults', function () {
         ->assertOk();
 });
 
+it('mounts with the new Car Loan category and its preset defaults', function () {
+    Livewire::test('emi-calculator', ['category' => LoanCategory::CarLoan->value])
+        ->assertSet('category', LoanCategory::CarLoan->value)
+        ->assertSet('principal', 800000.0)
+        ->assertSet('annualRate', 9.75)
+        ->assertSet('tenureYears', 5)
+        ->assertOk();
+});
+
 it('recalculates the EMI when the loan amount changes', function () {
     Livewire::test('emi-calculator')
         ->set('principal', 1000000)
@@ -29,10 +53,51 @@ it('recalculates the EMI when the loan amount changes', function () {
         ->assertOk();
 });
 
-it('rejects an interest rate above the active category\'s allowed maximum', function () {
+it('clamps an interest rate typed above the active category\'s maximum, rather than computing an EMI from it', function () {
     Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
         ->set('annualRate', 50)
+        ->assertSet('annualRate', 30.0) // Personal Loan's max_interest_rate
         ->assertHasErrors(['annualRate']);
+});
+
+it('clamps a loan amount typed above the active category\'s maximum', function () {
+    Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
+        ->set('principal', 50_000_000)
+        ->assertSet('principal', 5_000_000.0) // Personal Loan's max_amount
+        ->assertHasErrors(['principal']);
+});
+
+it('clamps a tenure typed above the active category\'s maximum', function () {
+    Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
+        ->set('tenureYears', 50)
+        ->assertSet('tenureYears', 7) // Personal Loan's max_years (84 months)
+        ->assertHasErrors(['tenureYears']);
+});
+
+it('clamps a value typed below the active category\'s minimum', function () {
+    Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
+        ->set('principal', 100)
+        ->assertSet('principal', 25_000.0) // Personal Loan's min_amount
+        ->assertHasErrors(['principal']);
+});
+
+it('never computes an EMI from an out-of-range value — the result reflects the clamped amount', function () {
+    $component = Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
+        ->set('principal', 50_000_000); // 10x the ₹50L maximum
+
+    $clampedResult = EmiCalculator::calculate(5_000_000, 13.5, 36); // max_amount, unchanged default rate/tenure
+    $bypassedResult = EmiCalculator::calculate(50_000_000, 13.5, 36);
+
+    $component->assertSeeText('₹'.number_format($clampedResult['emi']));
+    $component->assertDontSeeText('₹'.number_format($bypassedResult['emi']));
+});
+
+it('clears the clamp error once the value is back in range', function () {
+    Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
+        ->set('principal', 50_000_000)
+        ->assertHasErrors(['principal'])
+        ->set('principal', 1_000_000)
+        ->assertHasNoErrors(['principal']);
 });
 
 it('computes the same result the calculator service would return', function () {
@@ -60,6 +125,21 @@ it('renders the amortization table and pie chart split', function () {
         ->assertSee('Full breakdown, starting this month')
         ->assertSee('Principal vs. interest')
         ->assertSee('Principal & interest paid per year');
+});
+
+it('shows the maximum amount, maximum tenure and indicative rate range near the calculator fields', function () {
+    Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
+        ->assertSee('Maximum loan amount: ₹5,000,000')
+        ->assertSee('Maximum tenure: 7 years (84 months)')
+        ->assertSee('10.49% – 24%+');
+});
+
+it('shows a paired number input alongside each range slider', function () {
+    $html = Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])->html();
+
+    expect($html)->toContain('id="principal"')->toContain('type="number"')
+        ->toContain('id="annualRate"')
+        ->toContain('id="tenureYears"');
 });
 
 it('labels each period and month with real calendar dates starting from the current month', function () {

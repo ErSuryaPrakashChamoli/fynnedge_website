@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\LoanCategory;
+use App\Models\LoanProduct;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -44,7 +46,24 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+/**
+ * The EMI calculator reads its limits from a published LoanProduct row —
+ * there's no hardcoded fallback (that would be exactly the "same limits
+ * duplicated in multiple places" the calculator is meant to avoid). Since
+ * Feature tests get a fresh, empty database, any test exercising the
+ * calculator needs a real row to read from — this seeds one with the same
+ * calculator limits production actually ships.
+ */
+function seedCalculatorProduct(LoanCategory $category, array $overrides = []): LoanProduct
 {
-    // ..
+    // category must be set via state() *before* withCalculatorLimits(), not just
+    // passed to create() — factory state closures only see attributes resolved by
+    // prior states in the chain, not the final create() overrides, so
+    // withCalculatorLimits() would otherwise read whatever random category the
+    // base definition() happened to pick.
+    return LoanProduct::factory()
+        ->published()
+        ->state(['category' => $category])
+        ->withCalculatorLimits()
+        ->create($overrides);
 }
