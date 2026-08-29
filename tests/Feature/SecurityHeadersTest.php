@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\SecurityHeaders;
+
 it('applies security headers to every response', function () {
     $response = $this->get('/');
 
@@ -17,8 +19,25 @@ it('applies a Content-Security-Policy that only trusts self-hosted assets', func
     expect($csp)->toContain("script-src 'self' 'unsafe-eval'");
     expect($csp)->toContain("style-src 'self' 'unsafe-inline'");
     expect($csp)->toContain("frame-ancestors 'none'");
-    expect($csp)->not->toContain('http://');
     expect($csp)->not->toContain('https://cdn');
+});
+
+it('widens script/style/connect-src to the Vite dev server origin when public/hot is present', function () {
+    $origins = SecurityHeaders::parseHotFileUrl('http://127.0.0.1:5173');
+
+    expect($origins['http'])->toBe('http://127.0.0.1:5173');
+    expect($origins['ws'])->toBe('ws://127.0.0.1:5173');
+});
+
+it('uses wss for the HMR websocket when the dev server URL is https', function () {
+    $origins = SecurityHeaders::parseHotFileUrl('https://127.0.0.1:5173');
+
+    expect($origins['ws'])->toBe('wss://127.0.0.1:5173');
+});
+
+it('adds nothing when the hot file is empty or unparseable', function () {
+    expect(SecurityHeaders::parseHotFileUrl(''))->toBe(['http' => '', 'ws' => '']);
+    expect(SecurityHeaders::parseHotFileUrl('not a url'))->toBe(['http' => '', 'ws' => '']);
 });
 
 it('sends the same Content-Security-Policy on the admin panel and a public page', function () {
