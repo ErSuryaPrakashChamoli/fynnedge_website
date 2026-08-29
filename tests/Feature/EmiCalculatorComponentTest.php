@@ -55,25 +55,31 @@ it('resets amount, rate and tenure to the new category\'s preset when the catego
         ->assertSet('tenureYears', 5);
 });
 
-it('renders the yearly amortization table and pie chart split', function () {
+it('renders the amortization table and pie chart split', function () {
     Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
-        ->assertSee('Full yearly breakdown')
+        ->assertSee('Full breakdown, starting this month')
         ->assertSee('Principal vs. interest')
         ->assertSee('Principal & interest paid per year');
 });
 
-it('lists every month of every year in the expandable monthly detail', function () {
+it('labels each period and month with real calendar dates starting from the current month', function () {
     $component = Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
         ->set('tenureYears', 2);
 
-    // 2 years -> Year 1 and Year 2 headers, and all 24 individual months rendered underneath them.
-    $component->assertSee('Year 1')->assertSee('Year 2');
+    $instance = $component->instance();
+    $months = $instance->monthsByYear()[1];
 
-    for ($month = 1; $month <= 12; $month++) {
-        $component->assertSeeInOrder(["Month {$month}"]);
+    // The schedule starts THIS month, not some abstract "Month 1" counted from a hypothetical disbursal date.
+    expect($instance->monthDate(1)->isSameMonth(now()))->toBeTrue();
+
+    foreach ($months as $monthRow) {
+        $component->assertSee($instance->monthDate($monthRow['month'])->format('M Y'));
     }
 
-    $component->assertSee('Click a year to see every month within it');
+    $component->assertSee($instance->yearLabel($instance->monthsByYear()[1]));
+    $component->assertSee($instance->yearLabel($instance->monthsByYear()[2]));
+    $component->assertSee('Assumes your first EMI falls this month');
+    $component->assertDontSee('Year 1')->assertDontSee('Month 1');
 });
 
 it('keeps the monthly detail totals consistent with the yearly summary row', function () {
@@ -89,6 +95,28 @@ it('keeps the monthly detail totals consistent with the yearly summary row', fun
     expect($monthsByYear[1])->toHaveCount(12);
     expect($summedPrincipal)->toBe($yearly[0]['principal_paid']);
     expect($summedInterest)->toBe($yearly[0]['interest_paid']);
+});
+
+it('labels a full 12-month period as a single month when it starts and ends in the same month, otherwise as a range', function () {
+    $instance = Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])->instance();
+
+    expect($instance->yearLabel([['month' => 1]]))->toBe($instance->monthDate(1)->format('M Y'));
+    expect($instance->yearLabel([['month' => 1], ['month' => 12]]))
+        ->toBe($instance->monthDate(1)->format('M Y').' – '.$instance->monthDate(12)->format('M Y'));
+});
+
+it('gives the partial final period of a non-whole-year tenure a range covering only its own leftover months', function () {
+    $instance = Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])->instance();
+    $months = EmiCalculator::monthlySchedule(500000, 10.5, 14);
+
+    $byPeriod = [];
+    foreach ($months as $row) {
+        $byPeriod[$row['year']][] = $row;
+    }
+
+    expect($byPeriod[2])->toHaveCount(2);
+    expect($instance->yearLabel($byPeriod[2]))
+        ->toBe($instance->monthDate(13)->format('M Y').' – '.$instance->monthDate(14)->format('M Y'));
 });
 
 it('has no calculator for credit cards, so mounting with that category falls back to Personal Loan', function () {

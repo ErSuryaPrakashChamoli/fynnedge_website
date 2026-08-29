@@ -77,6 +77,28 @@ new class extends Component
         return $byYear;
     }
 
+    /**
+     * The calendar month a given absolute schedule month (1 = the current
+     * month) falls on — so the schedule reads as real dates starting from
+     * whenever someone is actually looking at it, rather than an abstract
+     * "Year 1 / Month 1" counted from a hypothetical disbursal date.
+     */
+    public function monthDate(int $absoluteMonth): \Illuminate\Support\Carbon
+    {
+        return now()->startOfMonth()->addMonths($absoluteMonth - 1);
+    }
+
+    /**
+     * @param  array<int, array{month: int}>  $monthsInYear
+     */
+    public function yearLabel(array $monthsInYear): string
+    {
+        $first = $this->monthDate($monthsInYear[0]['month']);
+        $last = $this->monthDate(end($monthsInYear)['month']);
+
+        return $first->isSameMonth($last) ? $first->format('M Y') : "{$first->format('M Y')} – {$last->format('M Y')}";
+    }
+
     #[Computed]
     public function principalPercent(): float
     {
@@ -267,28 +289,28 @@ new class extends Component
                             $principalShare = $yearTotal > 0 ? $row['principal_paid'] / $yearTotal * 100 : 0;
                             $interestShare = 100 - $principalShare;
                         @endphp
-                        <div class="flex w-8 shrink-0 flex-col items-center gap-1.5" title="Year {{ $row['year'] }}: ₹{{ number_format($row['principal_paid']) }} principal, ₹{{ number_format($row['interest_paid']) }} interest">
+                        <div class="flex w-8 shrink-0 flex-col items-center gap-1.5" title="{{ $this->yearLabel($this->monthsByYear[$row['year']]) }}: ₹{{ number_format($row['principal_paid']) }} principal, ₹{{ number_format($row['interest_paid']) }} interest">
                             <div class="flex w-full flex-col justify-end overflow-hidden rounded-t" style="height: 10rem">
                                 <div style="height: {{ $barHeight }}%" class="flex w-full flex-col justify-end overflow-hidden">
                                     <div class="w-full bg-warn" style="height: {{ $interestShare }}%"></div>
                                     <div class="w-full bg-accent" style="height: {{ $principalShare }}%"></div>
                                 </div>
                             </div>
-                            <span class="font-mono text-[0.6rem] text-ink-faint">{{ $row['year'] }}</span>
+                            <span class="font-mono text-[0.6rem] text-ink-faint">{{ $this->monthDate($this->monthsByYear[$row['year']][0]['month'])->format('Y') }}</span>
                         </div>
                     @endforeach
                 </div>
-                <p class="mt-2 text-xs text-ink-faint">Year on the x-axis, amount repaid on the y-axis — early years lean toward interest, later years toward principal.</p>
+                <p class="mt-2 text-xs text-ink-faint">Time on the x-axis, amount repaid on the y-axis — early on leans toward interest, later on toward principal.</p>
             </div>
         </div>
 
         <div class="mt-10">
-            <p class="font-display text-lg font-semibold text-ink">Full yearly breakdown</p>
-            <p class="mt-1 text-xs text-ink-faint">Click a year to see every month within it.</p>
+            <p class="font-display text-lg font-semibold text-ink">Full breakdown, starting this month</p>
+            <p class="mt-1 text-xs text-ink-faint">Assumes your first EMI falls this month — click a period to see every month within it.</p>
             <div class="mt-4 rounded-xl border border-line">
                 <div class="hidden border-b border-line bg-surface-2 px-4 py-2.5 text-left text-xs font-medium text-ink-muted sm:grid sm:grid-cols-[2rem_1fr_1fr_1fr_1fr]">
                     <span></span>
-                    <span>Year</span>
+                    <span>Period</span>
                     <span class="text-right">Principal paid</span>
                     <span class="text-right">Interest paid</span>
                     <span class="text-right">Total paid</span>
@@ -297,7 +319,7 @@ new class extends Component
                     <details class="group border-b border-line last:border-0 odd:bg-surface even:bg-surface-2/50">
                         <summary class="grid cursor-pointer list-none grid-cols-2 items-center gap-1 px-4 py-3 text-sm hover:bg-surface-2 sm:grid-cols-[2rem_1fr_1fr_1fr_1fr]">
                             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5 text-ink-faint transition-transform group-open:rotate-90"><path stroke-linecap="round" stroke-linejoin="round" d="M7 4l6 6-6 6" /></svg>
-                            <span class="font-medium text-ink">Year {{ $row['year'] }}</span>
+                            <span class="font-medium text-ink">{{ $this->yearLabel($this->monthsByYear[$row['year']]) }}</span>
                             <span class="text-right font-mono text-ink sm:text-right">₹{{ number_format($row['principal_paid']) }}</span>
                             <span class="text-right font-mono text-ink sm:text-right">₹{{ number_format($row['interest_paid']) }}</span>
                             <span class="col-span-2 text-right font-mono text-ink-muted sm:col-span-1">₹{{ number_format($row['total_paid']) }}</span>
@@ -317,7 +339,7 @@ new class extends Component
                                 <tbody>
                                     @foreach ($this->monthsByYear[$row['year']] as $monthRow)
                                         <tr class="border-t border-line/60">
-                                            <td class="py-1.5 pr-3 text-ink-muted">Month {{ $monthRow['month_in_year'] }}</td>
+                                            <td class="py-1.5 pr-3 text-ink-muted">{{ $this->monthDate($monthRow['month'])->format('M Y') }}</td>
                                             <td class="py-1.5 pr-3 text-right font-mono text-ink">₹{{ number_format($monthRow['principal_paid']) }}</td>
                                             <td class="py-1.5 pr-3 text-right font-mono text-ink">₹{{ number_format($monthRow['interest_paid']) }}</td>
                                             <td class="py-1.5 pr-3 text-right font-mono text-ink-muted">₹{{ number_format($monthRow['total_paid']) }}</td>
@@ -331,7 +353,7 @@ new class extends Component
                 @endforeach
 
                 <div class="border-t border-line bg-surface-2 px-4 py-2.5 text-xs text-ink-faint">
-                    Balance remaining after the last month of each year shown above.
+                    Balance remaining after the last month of each period shown above.
                 </div>
             </div>
         </div>

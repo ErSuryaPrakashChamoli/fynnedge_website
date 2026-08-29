@@ -84,7 +84,7 @@ it('embeds a matching calculator on a loan product page for each EMI-style categ
     $this->get("/loans/calc-test-{$category->value}")
         ->assertOk()
         ->assertSee('EMI calculator')
-        ->assertSee('Full yearly breakdown');
+        ->assertSee('Full breakdown, starting this month');
 })->with([
     LoanCategory::PersonalLoan,
     LoanCategory::HomeLoan,
