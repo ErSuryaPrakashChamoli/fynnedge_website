@@ -72,8 +72,33 @@ it('404s the about page when no about content is published', function () {
     $this->get('/about')->assertNotFound();
 });
 
-it('renders the EMI calculator page', function () {
-    $this->get('/calculators')->assertOk()->assertSee('EMI Calculator');
+it('renders the EMI calculator page with a tab for every EMI-style loan type', function () {
+    $response = $this->get('/calculators')->assertOk()->assertSee('EMI Calculator');
+
+    $response->assertSee('Personal Loan')->assertSee('Home Loan')->assertSee('Business Loan')->assertSee('Loan Against Property');
+});
+
+it('embeds a matching calculator on a loan product page for each EMI-style category', function (LoanCategory $category) {
+    $product = LoanProduct::factory()->published()->create(['category' => $category, 'slug' => "calc-test-{$category->value}"]);
+
+    $this->get("/loans/calc-test-{$category->value}")
+        ->assertOk()
+        ->assertSee('EMI calculator')
+        ->assertSee('Full yearly breakdown');
+})->with([
+    LoanCategory::PersonalLoan,
+    LoanCategory::HomeLoan,
+    LoanCategory::BusinessLoan,
+    LoanCategory::LoanAgainstProperty,
+]);
+
+it('does not embed an EMI calculator on the credit card product page', function () {
+    $product = LoanProduct::factory()->published()->create(['category' => LoanCategory::CreditCard, 'slug' => 'calc-test-credit-card']);
+
+    $this->get('/loans/calc-test-credit-card')
+        ->assertOk()
+        ->assertDontSee('EMI calculator')
+        ->assertDontSee('Full yearly breakdown');
 });
 
 it('renders each legal/company page from a published CMS page by slug', function (string $slug) {

@@ -6,8 +6,8 @@
             EMI Calculator
         </h1>
         <p class="mt-3 max-w-xl text-ink-muted">
-            Adjust the loan amount, interest rate and tenure to estimate your monthly instalment.
-            Works for any loan type — the same math applies whether it's personal, home, business or against property.
+            Pick a loan type, then adjust the amount, interest rate and tenure to see your monthly EMI —
+            plus the full year-by-year principal and interest breakdown.
         </p>
 
         <div class="mt-10">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\LenderStatus;
 use App\Enums\PublishStatus;
 use App\Models\LoanProduct;
+use App\Support\Calculators\LoanCalculatorPreset;
 use Illuminate\Contracts\View\View;
 
 class LoanProductController extends Controller
@@ -25,6 +26,9 @@ class LoanProductController extends Controller
             'faqs' => fn ($query) => $query->published(),
         ]);
 
-        return view('loans.show', ['loanProduct' => $loanProduct]);
+        return view('loans.show', [
+            'loanProduct' => $loanProduct,
+            'calculatorSupported' => LoanCalculatorPreset::for($loanProduct->category) !== null,
+        ]);
     }
 }

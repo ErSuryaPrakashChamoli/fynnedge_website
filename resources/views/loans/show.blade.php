@@ -76,6 +76,16 @@
             </div>
         @endif
 
+        @if ($calculatorSupported)
+            <div class="mt-12">
+                <h2 class="font-display text-xl font-semibold text-ink">{{ $loanProduct->name }} EMI calculator</h2>
+                <p class="mt-2 text-sm text-ink-faint">Estimate your monthly instalment and see the full year-by-year principal and interest breakdown.</p>
+                <div class="mt-6">
+                    <livewire:emi-calculator :category="$loanProduct->category->value" :key="'calc-'.$loanProduct->id" />
+                </div>
+            </div>
+        @endif
+
         @if ($loanProduct->lenderProducts->isNotEmpty())
             <div class="mt-12">
                 <h2 class="font-display text-xl font-semibold text-ink">Lenders offering this product</h2>
