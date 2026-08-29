@@ -62,6 +62,35 @@ it('renders the yearly amortization table and pie chart split', function () {
         ->assertSee('Principal & interest paid per year');
 });
 
+it('lists every month of every year in the expandable monthly detail', function () {
+    $component = Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
+        ->set('tenureYears', 2);
+
+    // 2 years -> Year 1 and Year 2 headers, and all 24 individual months rendered underneath them.
+    $component->assertSee('Year 1')->assertSee('Year 2');
+
+    for ($month = 1; $month <= 12; $month++) {
+        $component->assertSeeInOrder(["Month {$month}"]);
+    }
+
+    $component->assertSee('Click a year to see every month within it');
+});
+
+it('keeps the monthly detail totals consistent with the yearly summary row', function () {
+    $component = Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
+        ->set('tenureYears', 1);
+
+    $monthsByYear = $component->instance()->monthsByYear();
+    $yearly = $component->instance()->schedule();
+
+    $summedPrincipal = round(array_sum(array_column($monthsByYear[1], 'principal_paid')), 2);
+    $summedInterest = round(array_sum(array_column($monthsByYear[1], 'interest_paid')), 2);
+
+    expect($monthsByYear[1])->toHaveCount(12);
+    expect($summedPrincipal)->toBe($yearly[0]['principal_paid']);
+    expect($summedInterest)->toBe($yearly[0]['interest_paid']);
+});
+
 it('has no calculator for credit cards, so mounting with that category falls back to Personal Loan', function () {
     Livewire::test('emi-calculator', ['category' => LoanCategory::CreditCard->value])
         ->assertSet('category', LoanCategory::PersonalLoan->value);

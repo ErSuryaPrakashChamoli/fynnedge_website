@@ -50,12 +50,31 @@ new class extends Component
     }
 
     /**
-     * @return array<int, array{year: int, principal_paid: float, interest_paid: float, balance: float}>
+     * @return array<int, array{year: int, principal_paid: float, interest_paid: float, total_paid: float, balance: float}>
      */
     #[Computed]
     public function schedule(): array
     {
         return EmiCalculator::yearlySchedule($this->principal, $this->annualRate, $this->tenureYears * 12);
+    }
+
+    /**
+     * The monthly schedule, grouped by year so each year's <details> block can
+     * list only the months that belong to it.
+     *
+     * @return array<int, array<int, array{month: int, year: int, month_in_year: int, principal_paid: float, interest_paid: float, total_paid: float, balance: float}>>
+     */
+    #[Computed]
+    public function monthsByYear(): array
+    {
+        $months = EmiCalculator::monthlySchedule($this->principal, $this->annualRate, $this->tenureYears * 12);
+
+        $byYear = [];
+        foreach ($months as $row) {
+            $byYear[$row['year']][] = $row;
+        }
+
+        return $byYear;
     }
 
     #[Computed]
@@ -265,29 +284,55 @@ new class extends Component
 
         <div class="mt-10">
             <p class="font-display text-lg font-semibold text-ink">Full yearly breakdown</p>
-            <div class="mt-4 overflow-x-auto rounded-xl border border-line">
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="border-b border-line bg-surface-2 text-left text-ink-muted">
-                            <th class="px-4 py-2.5 font-medium">Year</th>
-                            <th class="px-4 py-2.5 text-right font-medium">Principal paid</th>
-                            <th class="px-4 py-2.5 text-right font-medium">Interest paid</th>
-                            <th class="px-4 py-2.5 text-right font-medium">Total paid</th>
-                            <th class="px-4 py-2.5 text-right font-medium">Balance remaining</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($this->schedule as $row)
-                            <tr class="border-b border-line last:border-0 odd:bg-surface even:bg-surface-2/50">
-                                <td class="px-4 py-2.5 font-medium text-ink">{{ $row['year'] }}</td>
-                                <td class="px-4 py-2.5 text-right font-mono text-ink">₹{{ number_format($row['principal_paid']) }}</td>
-                                <td class="px-4 py-2.5 text-right font-mono text-ink">₹{{ number_format($row['interest_paid']) }}</td>
-                                <td class="px-4 py-2.5 text-right font-mono text-ink-muted">₹{{ number_format($row['principal_paid'] + $row['interest_paid']) }}</td>
-                                <td class="px-4 py-2.5 text-right font-mono text-ink-muted">₹{{ number_format($row['balance']) }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <p class="mt-1 text-xs text-ink-faint">Click a year to see every month within it.</p>
+            <div class="mt-4 rounded-xl border border-line">
+                <div class="hidden border-b border-line bg-surface-2 px-4 py-2.5 text-left text-xs font-medium text-ink-muted sm:grid sm:grid-cols-[2rem_1fr_1fr_1fr_1fr]">
+                    <span></span>
+                    <span>Year</span>
+                    <span class="text-right">Principal paid</span>
+                    <span class="text-right">Interest paid</span>
+                    <span class="text-right">Total paid</span>
+                </div>
+                @foreach ($this->schedule as $row)
+                    <details class="group border-b border-line last:border-0 odd:bg-surface even:bg-surface-2/50">
+                        <summary class="grid cursor-pointer list-none grid-cols-2 items-center gap-1 px-4 py-3 text-sm hover:bg-surface-2 sm:grid-cols-[2rem_1fr_1fr_1fr_1fr]">
+                            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5 text-ink-faint transition-transform group-open:rotate-90"><path stroke-linecap="round" stroke-linejoin="round" d="M7 4l6 6-6 6" /></svg>
+                            <span class="font-medium text-ink">Year {{ $row['year'] }}</span>
+                            <span class="text-right font-mono text-ink sm:text-right">₹{{ number_format($row['principal_paid']) }}</span>
+                            <span class="text-right font-mono text-ink sm:text-right">₹{{ number_format($row['interest_paid']) }}</span>
+                            <span class="col-span-2 text-right font-mono text-ink-muted sm:col-span-1">₹{{ number_format($row['total_paid']) }}</span>
+                        </summary>
+
+                        <div class="overflow-x-auto border-t border-line bg-surface px-4 py-3">
+                            <table class="w-full text-xs">
+                                <thead>
+                                    <tr class="text-left text-ink-faint">
+                                        <th class="py-1.5 pr-3 font-medium">Month</th>
+                                        <th class="py-1.5 pr-3 text-right font-medium">Principal paid</th>
+                                        <th class="py-1.5 pr-3 text-right font-medium">Interest paid</th>
+                                        <th class="py-1.5 pr-3 text-right font-medium">Total paid</th>
+                                        <th class="py-1.5 text-right font-medium">Balance remaining</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($this->monthsByYear[$row['year']] as $monthRow)
+                                        <tr class="border-t border-line/60">
+                                            <td class="py-1.5 pr-3 text-ink-muted">Month {{ $monthRow['month_in_year'] }}</td>
+                                            <td class="py-1.5 pr-3 text-right font-mono text-ink">₹{{ number_format($monthRow['principal_paid']) }}</td>
+                                            <td class="py-1.5 pr-3 text-right font-mono text-ink">₹{{ number_format($monthRow['interest_paid']) }}</td>
+                                            <td class="py-1.5 pr-3 text-right font-mono text-ink-muted">₹{{ number_format($monthRow['total_paid']) }}</td>
+                                            <td class="py-1.5 text-right font-mono text-ink-muted">₹{{ number_format($monthRow['balance']) }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+                @endforeach
+
+                <div class="border-t border-line bg-surface-2 px-4 py-2.5 text-xs text-ink-faint">
+                    Balance remaining after the last month of each year shown above.
+                </div>
             </div>
         </div>
     @endif

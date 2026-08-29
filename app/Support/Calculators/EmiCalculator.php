@@ -31,13 +31,12 @@ class EmiCalculator
     }
 
     /**
-     * Year-by-year reducing-balance amortization. The final year covers
-     * whatever's left of the tenure (e.g. a 66-month tenure produces 5 full
-     * years plus one 6-month year) rather than padding to a whole year.
+     * Month-by-month reducing-balance amortization — the source of truth the
+     * yearly schedule is aggregated from.
      *
-     * @return array<int, array{year: int, principal_paid: float, interest_paid: float, balance: float}>
+     * @return array<int, array{month: int, year: int, month_in_year: int, principal_paid: float, interest_paid: float, total_paid: float, balance: float}>
      */
-    public static function yearlySchedule(float $principal, float $annualRatePercent, int $tenureMonths): array
+    public static function monthlySchedule(float $principal, float $annualRatePercent, int $tenureMonths): array
     {
         if ($principal <= 0 || $tenureMonths <= 0) {
             return [];
@@ -45,11 +44,7 @@ class EmiCalculator
 
         $emi = self::calculate($principal, $annualRatePercent, $tenureMonths)['emi'];
         $monthlyRate = $annualRatePercent / 12 / 100;
-
         $balance = $principal;
-        $year = 1;
-        $yearPrincipal = 0.0;
-        $yearInterest = 0.0;
         $schedule = [];
 
         for ($month = 1; $month <= $tenureMonths; $month++) {
@@ -61,23 +56,49 @@ class EmiCalculator
             $principalComponent = $month === $tenureMonths ? $balance : min($emi - $interestComponent, $balance);
             $balance = max($balance - $principalComponent, 0.0);
 
-            $yearPrincipal += $principalComponent;
-            $yearInterest += $interestComponent;
-
-            if ($month % 12 === 0 || $month === $tenureMonths) {
-                $schedule[] = [
-                    'year' => $year,
-                    'principal_paid' => round($yearPrincipal, 2),
-                    'interest_paid' => round($yearInterest, 2),
-                    'balance' => round($balance, 2),
-                ];
-
-                $year++;
-                $yearPrincipal = 0.0;
-                $yearInterest = 0.0;
-            }
+            $schedule[] = [
+                'month' => $month,
+                'year' => (int) ceil($month / 12),
+                'month_in_year' => (($month - 1) % 12) + 1,
+                'principal_paid' => round($principalComponent, 2),
+                'interest_paid' => round($interestComponent, 2),
+                'total_paid' => round($principalComponent + $interestComponent, 2),
+                'balance' => round($balance, 2),
+            ];
         }
 
         return $schedule;
+    }
+
+    /**
+     * Year-by-year totals, aggregated from monthlySchedule() so a year's totals
+     * always match the sum of the individual months shown for it. The final
+     * year covers whatever's left of the tenure (e.g. a 66-month tenure
+     * produces 5 full years plus one 6-month year) rather than padding to a
+     * whole year.
+     *
+     * @return array<int, array{year: int, principal_paid: float, interest_paid: float, total_paid: float, balance: float}>
+     */
+    public static function yearlySchedule(float $principal, float $annualRatePercent, int $tenureMonths): array
+    {
+        $months = self::monthlySchedule($principal, $annualRatePercent, $tenureMonths);
+
+        $years = [];
+
+        foreach ($months as $row) {
+            $year = $row['year'];
+            $years[$year]['year'] ??= $year;
+            $years[$year]['principal_paid'] = ($years[$year]['principal_paid'] ?? 0.0) + $row['principal_paid'];
+            $years[$year]['interest_paid'] = ($years[$year]['interest_paid'] ?? 0.0) + $row['interest_paid'];
+            $years[$year]['balance'] = $row['balance'];
+        }
+
+        return array_values(array_map(fn (array $year) => [
+            'year' => $year['year'],
+            'principal_paid' => round($year['principal_paid'], 2),
+            'interest_paid' => round($year['interest_paid'], 2),
+            'total_paid' => round($year['principal_paid'] + $year['interest_paid'], 2),
+            'balance' => round($year['balance'], 2),
+        ], $years));
     }
 }
