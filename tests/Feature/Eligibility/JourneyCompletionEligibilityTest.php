@@ -91,6 +91,7 @@ it('hides the warning reason when the flagged condition is absent', function () 
     $response->assertOk();
     $response->assertDontSee('existing loan EMIs');
     $response->assertSee('Warning Test Bank');
+    $response->assertSee('WT');
 });
 
 it('offers a continue-with-lender action only for eligible results', function () {

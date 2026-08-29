@@ -82,7 +82,10 @@
                 <div class="mt-4 grid gap-4 sm:grid-cols-2">
                     @foreach ($loanProduct->lenderProducts as $offer)
                         <x-ui.card>
-                            <p class="font-medium text-ink">{{ $offer->lender->name }}</p>
+                            <div class="flex items-center gap-3">
+                                <x-ui.lender-logo :lender="$offer->lender" size="sm" />
+                                <p class="font-medium text-ink">{{ $offer->lender->name }}</p>
+                            </div>
                             <dl class="mt-3 grid grid-cols-2 gap-y-1.5 font-mono text-xs text-ink-muted">
                                 @if ($offer->min_amount || $offer->max_amount)
                                     <dt>Amount</dt>

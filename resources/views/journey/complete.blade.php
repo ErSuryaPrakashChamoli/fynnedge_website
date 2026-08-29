@@ -37,7 +37,10 @@
                 @foreach ($results as $result)
                     <x-ui.card>
                         <div class="flex items-center justify-between gap-4">
-                            <p class="font-display text-lg font-semibold text-ink">{{ $result->lenderProduct->lender->name }}</p>
+                            <div class="flex items-center gap-3">
+                                <x-ui.lender-logo :lender="$result->lenderProduct->lender" size="sm" />
+                                <p class="font-display text-lg font-semibold text-ink">{{ $result->lenderProduct->lender->name }}</p>
+                            </div>
                             <x-ui.badge :tone="$result->status->value === 'eligible' ? 'pass' : 'warn'">
                                 {{ $result->status->getLabel() }}
                             </x-ui.badge>

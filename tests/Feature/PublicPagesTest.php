@@ -1,9 +1,13 @@
 <?php
 
+use App\Enums\LenderStatus;
 use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
+use App\Models\Lender;
+use App\Models\LenderProduct;
 use App\Models\LoanProduct;
 use App\Models\Page;
+use Illuminate\Support\Facades\Storage;
 
 it('renders the homepage', function () {
     $this->get('/')->assertOk()->assertSee('Simplifying loans');
@@ -30,6 +34,30 @@ it('404s for a draft loan product on the public site', function () {
     LoanProduct::factory()->create(['slug' => 'draft-product', 'status' => PublishStatus::Draft]);
 
     $this->get('/loans/draft-product')->assertNotFound();
+});
+
+it('shows an initials avatar for a lender with no logo uploaded', function () {
+    $product = LoanProduct::factory()->published()->create(['slug' => 'lender-avatar-test']);
+    $lender = Lender::factory()->create(['name' => 'Alpha Finance', 'logo_path' => null, 'status' => LenderStatus::Active]);
+    LenderProduct::factory()->create(['loan_product_id' => $product->id, 'lender_id' => $lender->id, 'status' => LenderStatus::Active]);
+
+    $this->get('/loans/lender-avatar-test')
+        ->assertOk()
+        ->assertSee('Alpha Finance')
+        ->assertSee('AF');
+});
+
+it('shows the uploaded logo image for a lender that has one', function () {
+    Storage::fake('public');
+    Storage::disk('public')->put('lenders/logo.png', 'fake-image-content');
+
+    $product = LoanProduct::factory()->published()->create(['slug' => 'lender-logo-test']);
+    $lender = Lender::factory()->create(['logo_path' => 'lenders/logo.png', 'status' => LenderStatus::Active]);
+    LenderProduct::factory()->create(['loan_product_id' => $product->id, 'lender_id' => $lender->id, 'status' => LenderStatus::Active]);
+
+    $this->get('/loans/lender-logo-test')
+        ->assertOk()
+        ->assertSee(Storage::disk('public')->url('lenders/logo.png'), false);
 });
 
 it('renders the about page from a published CMS page', function () {

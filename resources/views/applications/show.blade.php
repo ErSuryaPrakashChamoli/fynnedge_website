@@ -2,13 +2,18 @@
     <section class="mx-auto max-w-3xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Application' => null]" />
 
-        <h1 class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            {{ $application->lenderProduct->lender->name }}
-        </h1>
-        <p class="mt-3 text-ink-muted">
-            {{ $application->lenderProduct->loanProduct->name }} application —
-            <x-ui.badge tone="accent">{{ $application->status->getLabel() }}</x-ui.badge>
-        </p>
+        <div class="mt-5 flex items-center gap-4">
+            <x-ui.lender-logo :lender="$application->lenderProduct->lender" size="lg" />
+            <div>
+                <h1 class="text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+                    {{ $application->lenderProduct->lender->name }}
+                </h1>
+                <p class="mt-2 text-ink-muted">
+                    {{ $application->lenderProduct->loanProduct->name }} application —
+                    <x-ui.badge tone="accent">{{ $application->status->getLabel() }}</x-ui.badge>
+                </p>
+            </div>
+        </div>
 
         @if (session('status'))
             <x-ui.alert tone="accent" class="mt-6">{{ session('status') }}</x-ui.alert>

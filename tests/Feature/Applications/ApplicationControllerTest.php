@@ -34,7 +34,7 @@ it('walks an eligible result through selecting a lender, uploading documents, an
     expect($application->status)->toBe(ApplicationStatus::LenderSelected);
 
     $showResponse = $this->get(route('applications.show', $application));
-    $showResponse->assertOk()->assertSee('PAN Card');
+    $showResponse->assertOk()->assertSee('PAN Card')->assertSee($lenderProduct->lender->name);
 
     $uploadResponse = $this->post(route('applications.documents.upload', $application), [
         'documents' => [

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 #[Fillable(['name', 'slug', 'logo_path', 'description', 'status', 'serviceable_locations'])]
 class Lender extends Model
@@ -25,6 +26,11 @@ class Lender extends Model
             'status' => LenderStatus::class,
             'serviceable_locations' => 'array',
         ];
+    }
+
+    public function logoUrl(): ?string
+    {
+        return $this->logo_path ? Storage::disk('public')->url($this->logo_path) : null;
     }
 
     public function lenderProducts(): HasMany
