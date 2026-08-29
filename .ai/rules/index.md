@@ -15,6 +15,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Models/**,app/Filament/** | .ai/rules/models-filament.md |
 | app/Modules/**/Models/*.php | .ai/rules/models.md |
 | app/Filament/Pages/** | .ai/rules/pages.md |
+| app/Http/Middleware/SecurityHeaders.php,app/Providers/Filament/AdminPanelProvider.php | .ai/rules/providers-filament.md |
 | app/Filament/Resources/** | .ai/rules/resources.md |
 | tests/** | .ai/rules/tests.md |
 | resources/css/**,resources/views/** | .ai/rules/views.md |
