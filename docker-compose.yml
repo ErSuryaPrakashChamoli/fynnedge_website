@@ -1,0 +1,56 @@
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "8000:80"
+        environment:
+            APP_NAME: "${APP_NAME:-FynnEdge}"
+            APP_ENV: "${APP_ENV:-production}"
+            APP_KEY: "${APP_KEY}"
+            APP_DEBUG: "${APP_DEBUG:-false}"
+            APP_URL: "${APP_URL:-http://localhost:8000}"
+            DB_CONNECTION: mysql
+            DB_HOST: mysql
+            DB_PORT: 3306
+            DB_DATABASE: "${DB_DATABASE:-fynnedge}"
+            DB_USERNAME: "${DB_USERNAME:-fynnedge}"
+            DB_PASSWORD: "${DB_PASSWORD:-fynnedge}"
+            SESSION_DRIVER: "${SESSION_DRIVER:-database}"
+            CACHE_STORE: "${CACHE_STORE:-database}"
+            QUEUE_CONNECTION: "${QUEUE_CONNECTION:-database}"
+            REDIS_HOST: redis
+            REDIS_PORT: 6379
+        depends_on:
+            mysql:
+                condition: service_healthy
+            redis:
+                condition: service_started
+        volumes:
+            - storage_data:/var/www/html/storage/app
+
+    mysql:
+        image: mysql:8.4
+        environment:
+            MYSQL_DATABASE: "${DB_DATABASE:-fynnedge}"
+            MYSQL_USER: "${DB_USERNAME:-fynnedge}"
+            MYSQL_PASSWORD: "${DB_PASSWORD:-fynnedge}"
+            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+        volumes:
+            - db_data:/var/lib/mysql
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+
+    redis:
+        image: redis:7-alpine
+        volumes:
+            - redis_data:/data
+
+volumes:
+    db_data:
+    redis_data:
+    storage_data:
