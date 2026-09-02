@@ -24,6 +24,7 @@ final readonly class CustomerProfile
         public float $existingEmiAmount,
         public ?float $loanAmountRequested,
         public ?int $preferredTenureMonths,
+        public ?int $creditScore,
         /** @var array<string, mixed> raw responses, for product-specific fields (property, business, …) */
         public array $raw,
     ) {}

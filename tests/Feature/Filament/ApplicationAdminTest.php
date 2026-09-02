@@ -1,7 +1,7 @@
 <?php
 
+use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\Applications\Pages\EditApplication;
-use App\Filament\Resources\Applications\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\Applications\RelationManagers\DocumentsRelationManager;
 use App\Models\LenderProduct;
 use App\Models\User;

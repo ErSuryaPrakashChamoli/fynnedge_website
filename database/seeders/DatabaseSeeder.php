@@ -12,6 +12,7 @@ use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -32,6 +33,7 @@ class DatabaseSeeder extends Seeder
         }
 
         $admin->save();
+        $admin->assignRole(Role::findOrCreate('super_admin'));
 
         if ($isNewAdmin && $this->command) {
             $this->command->warn("Admin account created — email: fynnedge@gmail.com / password: {$password}");
@@ -83,27 +85,13 @@ class DatabaseSeeder extends Seeder
             ],
         );
 
-        Faq::query()->updateOrCreate(
-            ['faqable_type' => null, 'faqable_id' => null, 'question' => 'What does FynnEdge do?'],
-            [
-                'answer' => 'FynnEdge is a loan advisory business — we help you compare suitable banks and NBFCs for your loan, based on your profile, rather than you applying to each one separately.',
-                'sort_order' => 1,
-                'status' => PublishStatus::Published,
-            ],
-        );
-
-        Faq::query()->updateOrCreate(
-            ['faqable_type' => null, 'faqable_id' => null, 'question' => 'Is there a fee to use FynnEdge?'],
-            [
-                'answer' => 'Checking your eligibility on FynnEdge is free. Any lender fees (processing fees, etc.) are disclosed by the lender before you proceed with an application.',
-                'sort_order' => 2,
-                'status' => PublishStatus::Published,
-            ],
-        );
-
         LenderProduct::query()->firstOrCreate(
             ['loan_product_id' => $personalLoan->id],
-            LenderProduct::factory()->make()->toArray() + ['loan_product_id' => $personalLoan->id],
+            // Overriding loan_product_id via array union (`+`) after toArray() silently no-ops —
+            // the key already exists from the factory's own LoanProduct::factory() default, and
+            // `+` keeps the left-hand value on a key collision. It must be passed into make()
+            // itself so the factory never resolves (and persists) a throwaway LoanProduct at all.
+            LenderProduct::factory()->make(['loan_product_id' => $personalLoan->id])->toArray(),
         );
 
         Page::query()->updateOrCreate(
@@ -130,10 +118,22 @@ class DatabaseSeeder extends Seeder
         Setting::set('contact_phone', Setting::get('contact_phone', ''));
         Setting::set('contact_email', Setting::get('contact_email', ''));
         Setting::set('contact_whatsapp', Setting::get('contact_whatsapp', ''));
+        Setting::set('contact_address', Setting::get('contact_address', ''));
+        Setting::set('contact_map_url', Setting::get('contact_map_url', ''));
 
+        $this->call(RoleSeeder::class);
+        $this->call(CalculatorLoanProductSeeder::class);
         $this->call(JourneySeeder::class);
+        $this->call(LoanLandingPageSeeder::class);
         $this->call(EligibilitySeeder::class);
+        $this->call(LenderRosterSeeder::class);
+        $this->call(FlexiHybridTermLoanSeeder::class);
+        $this->call(DocumentRequirementSeeder::class);
         $this->call(LegalPageSeeder::class);
+        $this->call(CalculatorPageSeeder::class);
+        $this->call(JobOpeningSeeder::class);
         $this->call(ArticleSeeder::class);
+        $this->call(FaqSeeder::class);
+        $this->call(TestimonialSeeder::class);
     }
 }

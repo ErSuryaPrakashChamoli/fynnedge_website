@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Articles\Schemas;
 
+use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
 use App\Filament\Schemas\SeoFormSection;
 use App\Models\Article;
@@ -32,6 +33,9 @@ class ArticleForm
                         TextInput::make('excerpt')
                             ->maxLength(160)
                             ->columnSpanFull(),
+                        Select::make('category')
+                            ->options(LoanCategory::class)
+                            ->helperText('Leave blank to show as a general resource across all loan types.'),
                         Select::make('status')
                             ->options(PublishStatus::class)
                             ->default(PublishStatus::Draft)
@@ -39,6 +43,8 @@ class ArticleForm
                             ->live(),
                         DateTimePicker::make('published_at')
                             ->visible(fn (callable $get) => $get('status') === PublishStatus::Published->value),
+                        DateTimePicker::make('expires_at')
+                            ->helperText('Optional. The article stops appearing publicly after this time.'),
                     ]),
 
                 RichEditor::make('body'),

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\LenderStatus;
+use App\Enums\LenderType;
+use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
 use App\Modules\Eligibility\Models\EmployerCategory;
 use App\Modules\Eligibility\Models\EmployerRating;
@@ -14,16 +16,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['name', 'slug', 'logo_path', 'description', 'status', 'serviceable_locations'])]
+#[Fillable(['name', 'slug', 'logo_path', 'description', 'status', 'type', 'serviceable_locations'])]
 class Lender extends Model
 {
     /** @use HasFactory<LenderFactory> */
-    use HasFactory, HasPublicId, SoftDeletes;
+    use Auditable, HasFactory, HasPublicId, SoftDeletes;
 
     protected function casts(): array
     {
         return [
             'status' => LenderStatus::class,
+            'type' => LenderType::class,
             'serviceable_locations' => 'array',
         ];
     }

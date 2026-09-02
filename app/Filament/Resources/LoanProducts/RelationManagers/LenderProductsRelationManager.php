@@ -3,12 +3,13 @@
 namespace App\Filament\Resources\LoanProducts\RelationManagers;
 
 use App\Enums\LenderStatus;
+use App\Filament\Resources\LenderProducts\Schemas\LenderProductForm;
+use App\Models\LenderProduct;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -29,17 +30,7 @@ class LenderProductsRelationManager extends RelationManager
                     ->relationship('lender', 'name')
                     ->required()
                     ->searchable(),
-                Select::make('status')
-                    ->options(LenderStatus::class)
-                    ->default(LenderStatus::Active)
-                    ->required(),
-                TextInput::make('min_amount')->numeric()->prefix('₹'),
-                TextInput::make('max_amount')->numeric()->prefix('₹'),
-                TextInput::make('min_tenure_months')->numeric()->suffix('months'),
-                TextInput::make('max_tenure_months')->numeric()->suffix('months'),
-                TextInput::make('interest_rate_from')->numeric()->suffix('%'),
-                TextInput::make('interest_rate_to')->numeric()->suffix('%'),
-                TextInput::make('processing_fee_note')->columnSpanFull(),
+                ...LenderProductForm::offerAndEligibilityComponents(),
             ]);
     }
 
@@ -55,6 +46,10 @@ class LenderProductsRelationManager extends RelationManager
                 TextColumn::make('max_amount')->money('INR')->sortable(),
                 TextColumn::make('interest_rate_from')->suffix('%')->label('Rate from'),
                 TextColumn::make('interest_rate_to')->suffix('%')->label('Rate to'),
+                TextColumn::make('processing_fee')
+                    ->label('Fee')
+                    ->getStateUsing(fn (LenderProduct $record) => $record->processingFeeDisplay())
+                    ->toggleable(),
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn (LenderStatus $state) => match ($state) {

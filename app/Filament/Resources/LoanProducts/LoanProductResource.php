@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\LoanProducts;
 
+use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\LoanProducts\Pages\CreateLoanProduct;
 use App\Filament\Resources\LoanProducts\Pages\EditLoanProduct;
 use App\Filament\Resources\LoanProducts\Pages\ListLoanProducts;
@@ -41,6 +42,7 @@ class LoanProductResource extends Resource
         return [
             LenderProductsRelationManager::class,
             FaqsRelationManager::class,
+            AuditLogsRelationManager::class,
         ];
     }
 

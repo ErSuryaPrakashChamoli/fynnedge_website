@@ -168,6 +168,7 @@ class EligibilityEngine
             'existing_emi_amount' => $profile->existingEmiAmount,
             'loan_amount_requested' => $profile->loanAmountRequested,
             'preferred_tenure_months' => $profile->preferredTenureMonths,
+            'credit_score' => $profile->creditScore,
         ];
     }
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Modules\CreditBureau\Providers\NullCreditBureauProvider;
+use App\Modules\CreditScore\Providers\DemoCreditScoreProvider;
 
 return [
 
@@ -43,6 +44,13 @@ return [
         // one is, and add its credentials here rather than hard-coding them anywhere.
         'provider' => env('CREDIT_BUREAU_PROVIDER', NullCreditBureauProvider::class),
         'terms_version' => env('CREDIT_BUREAU_TERMS_VERSION', 'v1'),
+    ],
+
+    'credit_score' => [
+        // Backs the public "check your free credit score" page. Demo-by-default —
+        // unlike credit_bureau above — because that page's whole purpose today is
+        // to show a sample score; swap this once a real bureau is contracted.
+        'provider' => env('CREDIT_SCORE_PROVIDER', DemoCreditScoreProvider::class),
     ],
 
 ];

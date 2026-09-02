@@ -10,16 +10,42 @@ use Symfony\Component\HttpFoundation\Response;
  * The CSP is deliberately not stricter than this. Everything the site loads is
  * self-hosted through Vite (no external CDN scripts/styles/fonts anywhere in the
  * codebase — verified by grep, not assumed), so script-src/style-src/font-src can
- * all stay 'self' in production. Two exceptions are load-bearing, not oversights:
+ * all stay 'self' in production. Three exceptions are load-bearing, not oversights:
  *   - script-src needs 'unsafe-eval' because Alpine.js evaluates directive
  *     expressions (x-data, @click, etc.) via `new Function(...)`. Swapping to
  *     Alpine's separate CSP-safe build is a bigger, riskier change than what was
  *     asked for here.
+ *   - script-src also needs 'unsafe-inline' because Filament's own panel views
+ *     (e.g. the sidebar) inject inline <script> blocks — for example, to seed the
+ *     collapsed-navigation-group state into localStorage before Alpine boots.
+ *     Without it the browser silently drops those scripts (no console-visible
+ *     network failure, just a swallowed Alpine expression error downstream),
+ *     leaving Alpine's sidebar store null instead of an array and breaking
+ *     every navigation-group toggle. Confirmed for real: the admin sidebar's
+ *     Catalog/Content groups rendered empty and their collapse buttons did
+ *     nothing until this was added, with "Executing inline script violates ...
+ *     script-src" CSP warnings in the console.
  *   - style-src needs 'unsafe-inline' because Livewire injects an inline <style>
  *     block on every page, and a couple of progress-bar views set inline
  *     `style="width: ...%"` directly.
+ * frame-src allows Google's map domains (https://www.google.com and
+ * https://maps.google.com) because the contact page embeds an admin-configured
+ * Google Maps iframe (Setting `contact_map_url`, set via Filament Settings).
+ * default-src has no frame-src fallback exception, so without this the browser
+ * blocks the iframe outright with a console-only CSP violation — no failed
+ * network request, just a blank box where the map should render.
  * img-src allows https: in addition to self/data: so admin-authored rich-text
- * body content (Page/LoanProduct) can still reference an external image.
+ * body content (Page/LoanProduct) can still reference an external image. It
+ * also allows blob: — Filament's FileUpload field (FilePond under the hood)
+ * renders the local file preview from a blob: URL before the file is even
+ * uploaded; without blob: here, the browser refuses to read that preview and
+ * the upload can hang. connect-src and worker-src also allow blob: for the
+ * same feature — FilePond can read the selected file's size/hash off a Web
+ * Worker constructed from a blob: script URL, which falls under worker-src
+ * (not covered by img-src's blob: allowance), and Firefox has been observed
+ * enforcing this gap more strictly than Chromium for the same upload widget —
+ * a page that uploads fine in one browser can still hang in the other if only
+ * img-src is widened.
  *
  * Local dev with `npm run dev` (or `composer run dev`) is a second, genuinely
  * different origin: Vite's dev server serves JS/CSS with live HMR from its own
@@ -60,10 +86,10 @@ class SecurityHeaders
     {
         $viteOrigins = self::viteDevServerOrigins();
 
-        $scriptSrc = trim("'self' 'unsafe-eval' {$viteOrigins['http']}");
+        $scriptSrc = trim("'self' 'unsafe-eval' 'unsafe-inline' {$viteOrigins['http']}");
         $styleSrc = trim("'self' 'unsafe-inline' {$viteOrigins['http']}");
-        $imgSrc = trim("'self' data: https: {$viteOrigins['http']}");
-        $connectSrc = trim("'self' {$viteOrigins['http']} {$viteOrigins['ws']}");
+        $imgSrc = trim("'self' data: blob: https: {$viteOrigins['http']}");
+        $connectSrc = trim("'self' blob: {$viteOrigins['http']} {$viteOrigins['ws']}");
 
         return "default-src 'self'; "
             ."script-src {$scriptSrc}; "
@@ -71,6 +97,8 @@ class SecurityHeaders
             ."img-src {$imgSrc}; "
             ."font-src 'self'; "
             ."connect-src {$connectSrc}; "
+            ."frame-src 'self' https://www.google.com https://maps.google.com; "
+            ."worker-src 'self' blob:; "
             ."object-src 'none'; "
             ."base-uri 'self'; "
             ."form-action 'self'; "

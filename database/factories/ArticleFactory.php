@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
 use App\Models\Article;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -24,6 +25,7 @@ class ArticleFactory extends Factory
             'slug' => Str::slug($title),
             'excerpt' => $this->faker->sentence(),
             'body' => collect($this->faker->paragraphs(3))->map(fn ($p) => "<p>{$p}</p>")->implode(''),
+            'category' => null,
             'status' => PublishStatus::Draft,
             'published_at' => null,
         ];
@@ -35,5 +37,10 @@ class ArticleFactory extends Factory
             'status' => PublishStatus::Published,
             'published_at' => now(),
         ]);
+    }
+
+    public function forCategory(LoanCategory $category): static
+    {
+        return $this->state(fn () => ['category' => $category]);
     }
 }

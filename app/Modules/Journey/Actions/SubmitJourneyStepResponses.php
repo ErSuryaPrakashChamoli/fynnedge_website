@@ -5,6 +5,8 @@ namespace App\Modules\Journey\Actions;
 use App\Modules\Analytics\Enums\AnalyticsEventKey;
 use App\Modules\Analytics\Services\AnalyticsEventDispatcher;
 use App\Modules\CreditBureau\Actions\RecordCreditConsent;
+use App\Modules\CreditBureau\Actions\RunCreditBureauCheck;
+use App\Modules\CreditBureau\Enums\CreditCheckStatus;
 use App\Modules\Customers\Models\Customer;
 use App\Modules\Eligibility\Services\EligibilityEngine;
 use App\Modules\Journey\Enums\JourneySessionStatus;
@@ -19,6 +21,7 @@ class SubmitJourneyStepResponses
         private readonly JourneyStepResolver $resolver,
         private readonly EligibilityEngine $eligibilityEngine,
         private readonly RecordCreditConsent $recordCreditConsent,
+        private readonly RunCreditBureauCheck $runCreditBureauCheck,
         private readonly AnalyticsEventDispatcher $analytics,
     ) {}
 
@@ -27,6 +30,10 @@ class SubmitJourneyStepResponses
      */
     public function handle(JourneySession $session, JourneyStep $step, array $validated, ?string $ipAddress = null): JourneyStep
     {
+        if (isset($validated['pan_number']) && is_string($validated['pan_number'])) {
+            $validated['pan_number'] = strtoupper($validated['pan_number']);
+        }
+
         foreach ($validated as $key => $value) {
             JourneyResponse::query()->updateOrCreate(
                 ['journey_session_id' => $session->id, 'field_key' => $key],
@@ -88,7 +95,11 @@ class SubmitJourneyStepResponses
     /**
      * The "accepted" validation rule on credit_check_consent already guarantees the
      * value is truthy if it's present in $validated at all — its presence alone means
-     * consent was given. We never perform a bureau check here, only record the consent.
+     * consent was given. Consent authorizes an actual bureau check attempt (via
+     * whichever CreditBureauProvider is bound — NullCreditBureauProvider by default,
+     * which honestly records a Failed CreditCheck rather than fabricate a score). Only
+     * a genuinely Completed check ever produces a credit_score JourneyResponse, so a
+     * fabricated/unavailable score can never silently affect eligibility.
      *
      * @param  array<string, mixed>  $validated
      */
@@ -98,6 +109,20 @@ class SubmitJourneyStepResponses
             return;
         }
 
-        $this->recordCreditConsent->handle($session, $ipAddress);
+        $consent = $this->recordCreditConsent->handle(
+            $session,
+            $validated['pan_number'] ?? null,
+            $session->responsesByKey()['date_of_birth'] ?? null,
+            $ipAddress,
+        );
+
+        $check = $this->runCreditBureauCheck->handle($consent);
+
+        if ($check->status === CreditCheckStatus::Completed && $check->score !== null) {
+            JourneyResponse::query()->updateOrCreate(
+                ['journey_session_id' => $session->id, 'field_key' => 'credit_score'],
+                ['value' => $check->score],
+            );
+        }
     }
 }

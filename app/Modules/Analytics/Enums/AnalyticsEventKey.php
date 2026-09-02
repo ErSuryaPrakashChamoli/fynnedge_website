@@ -17,6 +17,7 @@ enum AnalyticsEventKey: string implements HasLabel
     case JourneyCompleted = 'journey_completed';
     case EligibilityEvaluated = 'eligibility_evaluated';
     case LenderSelected = 'lender_selected';
+    case LoanExpertRequested = 'loan_expert_requested';
     case DocumentUploaded = 'document_uploaded';
     case ApplicationSubmitted = 'application_submitted';
 
@@ -28,6 +29,7 @@ enum AnalyticsEventKey: string implements HasLabel
             self::JourneyCompleted => 'Journey completed',
             self::EligibilityEvaluated => 'Eligibility evaluated',
             self::LenderSelected => 'Lender selected',
+            self::LoanExpertRequested => 'Loan expert requested',
             self::DocumentUploaded => 'Document uploaded',
             self::ApplicationSubmitted => 'Application submitted',
         };

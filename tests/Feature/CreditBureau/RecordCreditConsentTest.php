@@ -8,7 +8,7 @@ use App\Modules\Journey\Models\JourneySession;
 it('records consent with the loan product name in the purpose', function () {
     $session = JourneySession::factory()->create();
 
-    $consent = app(RecordCreditConsent::class)->handle($session, '198.51.100.1');
+    $consent = app(RecordCreditConsent::class)->handle($session, ipAddress: '198.51.100.1');
 
     expect($consent->purpose)->toContain($session->loanProduct->name);
     expect($consent->ip_address)->toBe('198.51.100.1');
@@ -19,10 +19,19 @@ it('records consent with the loan product name in the purpose', function () {
 it('is idempotent per session — calling twice does not create two consents', function () {
     $session = JourneySession::factory()->create();
 
-    app(RecordCreditConsent::class)->handle($session, '198.51.100.1');
-    app(RecordCreditConsent::class)->handle($session, '198.51.100.1');
+    app(RecordCreditConsent::class)->handle($session, ipAddress: '198.51.100.1');
+    app(RecordCreditConsent::class)->handle($session, ipAddress: '198.51.100.1');
 
     expect(CreditConsent::query()->where('journey_session_id', $session->id)->count())->toBe(1);
+});
+
+it('records the PAN and date of birth used for the check', function () {
+    $session = JourneySession::factory()->create();
+
+    $consent = app(RecordCreditConsent::class)->handle($session, panNumber: 'ABCDE1234F', dateOfBirth: '1990-01-15');
+
+    expect($consent->pan_number)->toBe('ABCDE1234F');
+    expect($consent->date_of_birth->toDateString())->toBe('1990-01-15');
 });
 
 it('records the configured terms version', function () {

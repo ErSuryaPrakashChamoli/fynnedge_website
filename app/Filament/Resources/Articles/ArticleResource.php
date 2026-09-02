@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Articles;
 
+use App\Filament\RelationManagers\RestorableAuditLogsRelationManager;
 use App\Filament\Resources\Articles\Pages\CreateArticle;
 use App\Filament\Resources\Articles\Pages\EditArticle;
 use App\Filament\Resources\Articles\Pages\ListArticles;
@@ -37,7 +38,7 @@ class ArticleResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RestorableAuditLogsRelationManager::class,
         ];
     }
 

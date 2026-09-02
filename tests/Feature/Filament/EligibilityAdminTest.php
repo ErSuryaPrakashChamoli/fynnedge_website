@@ -2,9 +2,10 @@
 
 use App\Enums\LenderStatus;
 use App\Filament\Pages\EligibilityTester;
+use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\EligibilityRuleSets\Pages\EditEligibilityRuleSet;
-use App\Filament\Resources\EligibilityRuleSets\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\EligibilityRuleSets\RelationManagers\RulesRelationManager;
+use App\Filament\Resources\Lenders\Pages\EditLender;
 use App\Models\Lender;
 use App\Models\LenderProduct;
 use App\Models\LoanProduct;
@@ -127,6 +128,17 @@ it('publishes a well-formed draft rule set from the edit page and blocks an empt
         ->callAction('publish');
 
     expect($readyDraft->fresh()->status)->toBe(EligibilityRuleSetStatus::Active);
+});
+
+it('shows the audit history for a lender', function () {
+    $lender = Lender::factory()->create(['name' => 'Acme Finance']);
+    $lender->update(['name' => 'Acme Finance Ltd']);
+
+    Livewire::test(AuditLogsRelationManager::class, [
+        'ownerRecord' => $lender,
+        'pageClass' => EditLender::class,
+    ])
+        ->assertCanSeeTableRecords($lender->auditLogs);
 });
 
 it('shows the audit history for a rule set', function () {

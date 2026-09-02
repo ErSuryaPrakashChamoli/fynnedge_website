@@ -2,6 +2,7 @@
 
 namespace App\Modules\Eligibility\Models;
 
+use App\Models\Concerns\Auditable;
 use App\Modules\Eligibility\Enums\RuleOperator;
 use Database\Factories\EligibilityRuleConditionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class EligibilityRuleCondition extends Model
 {
     /** @use HasFactory<EligibilityRuleConditionFactory> */
-    use HasFactory;
+    use Auditable, HasFactory;
 
     protected static function newFactory(): EligibilityRuleConditionFactory
     {

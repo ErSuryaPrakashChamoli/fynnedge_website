@@ -2,10 +2,10 @@
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Loans' => null]" />
 
-        <h1 class="mt-5 max-w-2xl text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <h1 data-reveal="up" class="mt-5 max-w-2xl text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             Find the right loan for you
         </h1>
-        <p class="mt-3 max-w-xl text-ink-muted">
+        <p data-reveal="up" class="mt-3 max-w-xl text-ink-muted">
             Every product below is matched to suitable lenders based on your income, credit profile and location.
         </p>
 
@@ -16,8 +16,8 @@
         @else
             <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($loanProducts as $product)
-                    <a href="{{ route('loans.show', $product) }}" class="group">
-                        <x-ui.card class="h-full transition-shadow group-hover:shadow-md">
+                    <a href="{{ route('loans.show', $product) }}" data-reveal="zoom stagger" class="group">
+                        <x-ui.card class="card-lift h-full transition-colors transition-shadow group-hover:bg-accent-soft group-hover:shadow-md group-hover:animate-card-swing">
                             <x-ui.badge tone="accent">{{ $product->category->getLabel() }}</x-ui.badge>
                             <p class="mt-3 font-display text-xl font-semibold text-ink group-hover:text-accent">{{ $product->name }}</p>
                             @if ($product->summary)

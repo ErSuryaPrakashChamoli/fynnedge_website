@@ -2,10 +2,10 @@
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Resources' => null]" />
 
-        <h1 class="mt-5 max-w-2xl text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <h1 data-reveal="up" class="mt-5 max-w-2xl text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             Guides &amp; resources
         </h1>
-        <p class="mt-3 max-w-xl text-ink-muted">
+        <p data-reveal="up" class="mt-3 max-w-xl text-ink-muted">
             Plain-language guides on loans, eligibility and the application process.
         </p>
 
@@ -16,8 +16,8 @@
         @else
             <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($articles as $article)
-                    <a href="{{ route('resources.show', $article) }}" class="group">
-                        <x-ui.card class="h-full transition-shadow group-hover:shadow-md">
+                    <a href="{{ route('resources.show', $article) }}" data-reveal="up stagger" class="group">
+                        <x-ui.card class="card-lift h-full transition-colors transition-shadow group-hover:bg-accent-soft group-hover:shadow-md group-hover:animate-card-swing">
                             @if ($article->published_at)
                                 <p class="font-mono text-xs text-ink-faint">{{ $article->published_at->format('d M Y') }}</p>
                             @endif

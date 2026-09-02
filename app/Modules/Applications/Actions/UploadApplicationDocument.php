@@ -17,14 +17,18 @@ class UploadApplicationDocument
     public function __construct(private readonly AnalyticsEventDispatcher $analytics) {}
 
     /**
-     * Re-uploading against the same document type replaces the previous file —
-     * both on disk and in the database — rather than accumulating duplicates.
+     * Re-uploading against the same document type and slot replaces the
+     * previous file — both on disk and in the database — rather than
+     * accumulating duplicates. A document type with `allow_multiple` gets
+     * several independent slots (e.g. 3 payslips, or as many "Other"
+     * documents as the customer adds).
      */
-    public function handle(Application $application, DocumentType $documentType, UploadedFile $file): ApplicationDocument
+    public function handle(Application $application, DocumentType $documentType, UploadedFile $file, int $slot = 0, ?string $customLabel = null): ApplicationDocument
     {
         $existing = ApplicationDocument::query()
             ->where('application_id', $application->id)
             ->where('document_type_id', $documentType->id)
+            ->where('slot', $slot)
             ->first();
 
         $existing?->deleteStoredFile();
@@ -32,8 +36,9 @@ class UploadApplicationDocument
         $path = $file->store("applications/{$application->id}", self::DISK);
 
         $document = ApplicationDocument::query()->updateOrCreate(
-            ['application_id' => $application->id, 'document_type_id' => $documentType->id],
+            ['application_id' => $application->id, 'document_type_id' => $documentType->id, 'slot' => $slot],
             [
+                'custom_label' => $customLabel,
                 'disk' => self::DISK,
                 'path' => $path,
                 'original_filename' => $file->getClientOriginalName(),

@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources\EligibilityRuleSets;
 
+use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\EligibilityRuleSets\Pages\CreateEligibilityRuleSet;
 use App\Filament\Resources\EligibilityRuleSets\Pages\EditEligibilityRuleSet;
 use App\Filament\Resources\EligibilityRuleSets\Pages\ListEligibilityRuleSets;
-use App\Filament\Resources\EligibilityRuleSets\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\EligibilityRuleSets\RelationManagers\RulesRelationManager;
 use App\Filament\Resources\EligibilityRuleSets\Schemas\EligibilityRuleSetForm;
 use App\Filament\Resources\EligibilityRuleSets\Tables\EligibilityRuleSetsTable;

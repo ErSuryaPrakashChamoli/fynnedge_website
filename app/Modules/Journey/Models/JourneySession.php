@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable([
     'loan_product_id', 'customer_id', 'journey_definition_id', 'current_step_id', 'status',
+    'phone_number', 'phone_verified_at',
     'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content',
     'referrer', 'landing_page', 'completed_at',
 ])]
@@ -35,6 +36,7 @@ class JourneySession extends Model
     {
         return [
             'status' => JourneySessionStatus::class,
+            'phone_verified_at' => 'datetime',
             'completed_at' => 'datetime',
         ];
     }

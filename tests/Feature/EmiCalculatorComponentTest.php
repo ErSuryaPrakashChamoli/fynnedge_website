@@ -1,6 +1,10 @@
 <?php
 
 use App\Enums\LoanCategory;
+use App\Enums\PublishStatus;
+use App\Models\Article;
+use App\Models\Faq;
+use App\Models\LoanProduct;
 use App\Support\Calculators\EmiCalculator;
 use App\Support\Formatting\IndianNumberFormatter;
 use Livewire\Livewire;
@@ -226,4 +230,124 @@ it('gives the partial final period of a non-whole-year tenure a range covering o
 it('has no calculator for credit cards, so mounting with that category falls back to Personal Loan', function () {
     Livewire::test('emi-calculator', ['category' => LoanCategory::CreditCard->value])
         ->assertSet('category', LoanCategory::PersonalLoan->value);
+});
+
+it('shows the loan details panel by default, with the explanation, comparison tables and CTAs', function () {
+    // beforeEach already seeded a Personal Loan product — update it in place
+    // rather than seeding a second one, since productFor() resolves the
+    // lowest-id product for the category and would otherwise pick up the
+    // original, unmodified row instead of this one.
+    $product = LoanProduct::query()->where('category', LoanCategory::PersonalLoan)->firstOrFail();
+    $product->update(['calculator_explanation' => '<p>How a Personal Loan EMI is worked out.</p>']);
+
+    Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
+        ->assertSee('About the Personal Loan')
+        ->assertSee('How a Personal Loan EMI is worked out.', false)
+        ->assertSee('Find your ideal Tenure')
+        ->assertSee('Compare Rates & Savings')
+        ->assertSee('Check Your Eligibility')
+        ->assertSee('Apply for this loan')
+        ->assertSeeHtml(route('loans.apply', $product))
+        ->assertSeeHtml(route('calculators.eligibility', LoanCategory::PersonalLoan->value));
+});
+
+it('hides the loan details panel when show-loan-details is false', function () {
+    Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value, 'showLoanDetails' => false])
+        ->assertDontSee('About the Personal Loan')
+        ->assertDontSee('Find your ideal Tenure');
+});
+
+it('falls back to the general eligibility picker for a category the eligibility calculator does not cover', function () {
+    Livewire::test('emi-calculator', ['category' => LoanCategory::BusinessLoan->value])
+        ->assertSeeHtml(route('eligibility.index'))
+        ->assertDontSeeHtml(route('calculators.eligibility', LoanCategory::BusinessLoan->value));
+});
+
+it('defaults the tenure comparison to 3 tenures spread across the preset range, computed at the current amount and rate', function () {
+    $component = Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value]);
+    $instance = $component->instance();
+
+    expect($instance->compareTenureYears)->toHaveCount(3);
+
+    $rows = $instance->tenureComparison();
+
+    expect($rows)->toHaveCount(3);
+    expect(array_column($rows, 'years'))->toContain($instance->preset()['min_years'], $instance->preset()['max_years']);
+    foreach ($rows as $row) {
+        expect($row)
+            ->toBe(['years' => $row['years'], ...EmiCalculator::calculate($instance->principal, $instance->annualRate, $row['years'] * 12)]);
+    }
+});
+
+it('lets the visitor pick a different tenure to compare without touching the main calculator\'s own tenure', function () {
+    $component = Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value]);
+    $maxYears = $component->instance()->preset()['max_years'];
+
+    $component->set('compareTenureYears.0', $maxYears)
+        ->assertSet('tenureYears', 3); // untouched — the visitor's pick only affects the comparison row
+
+    $rows = $component->instance()->tenureComparison();
+
+    expect($rows[0])->toBe([
+        'years' => $maxYears,
+        ...EmiCalculator::calculate($component->instance()->principal, $component->instance()->annualRate, $maxYears * 12),
+    ]);
+});
+
+it('defaults the rate comparison to 3 rates spread across the preset range, computed at the current amount and tenure', function () {
+    $component = Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value]);
+    $instance = $component->instance();
+
+    expect($instance->compareRates)->toHaveCount(3);
+
+    $rows = $instance->rateComparison();
+
+    expect($rows)->toHaveCount(3);
+    expect(array_column($rows, 'rate'))->toContain($instance->preset()['min_rate'], $instance->preset()['max_rate']);
+    foreach ($rows as $row) {
+        expect($row)
+            ->toBe(['rate' => $row['rate'], ...EmiCalculator::calculate($instance->principal, $row['rate'], $instance->tenureYears * 12)]);
+    }
+});
+
+it('lets the visitor pick a different rate to compare without touching the main calculator\'s own rate', function () {
+    $component = Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value]);
+    $maxRate = $component->instance()->preset()['max_rate'];
+
+    $component->set('compareRates.0', $maxRate)
+        ->assertSet('annualRate', 10.49); // untouched — the visitor's pick only affects the comparison row
+
+    $rows = $component->instance()->rateComparison();
+
+    expect($rows[0])->toBe([
+        'rate' => $maxRate,
+        ...EmiCalculator::calculate($component->instance()->principal, $maxRate, $component->instance()->tenureYears * 12),
+    ]);
+});
+
+it('shows related guides tagged to the active loan category, falling back to general ones', function () {
+    seedCalculatorProduct(LoanCategory::PersonalLoan);
+
+    $tagged = Article::factory()->published()->forCategory(LoanCategory::PersonalLoan)->create(['title' => 'Personal Loan tagged guide']);
+    $otherCategory = Article::factory()->published()->forCategory(LoanCategory::HomeLoan)->create(['title' => 'Home Loan tagged guide']);
+    $general = Article::factory()->published()->create(['title' => 'General money guide']);
+
+    Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
+        ->assertSee($tagged->title)
+        ->assertSee($general->title)
+        ->assertDontSee($otherCategory->title);
+});
+
+it('shows the product FAQs and matching FAQPage JSON-LD in the loan details panel', function () {
+    $product = LoanProduct::query()->where('category', LoanCategory::PersonalLoan)->firstOrFail();
+    $faq = Faq::factory()->for($product, 'faqable')->create([
+        'question' => 'Does prepaying reduce my EMI?',
+        'answer' => 'Yes, prepayment reduces either your tenure or your EMI.',
+        'status' => PublishStatus::Published,
+    ]);
+
+    Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
+        ->assertSee($faq->question)
+        ->assertSee('application/ld+json', false)
+        ->assertSee('FAQPage', false);
 });

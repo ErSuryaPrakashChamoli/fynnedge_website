@@ -55,7 +55,7 @@ class RulesRelationManager extends RelationManager
                     ->schema([
                         TextInput::make('attribute')
                             ->required()
-                            ->helperText('age, total_monthly_income, city, employer_category, foir — or any journey field key.'),
+                            ->helperText('age, total_monthly_income, city, employer_category, foir, credit_score — or any journey field key.'),
                         Select::make('operator')
                             ->options(RuleOperator::class)
                             ->required()

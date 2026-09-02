@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Faqs\Schemas;
 
 use App\Enums\PublishStatus;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -27,7 +28,13 @@ class FaqForm
                 Select::make('status')
                     ->options(PublishStatus::class)
                     ->default(PublishStatus::Draft)
-                    ->required(),
+                    ->required()
+                    ->live(),
+                DateTimePicker::make('published_at')
+                    ->helperText('Leave blank to publish immediately once status is Published.')
+                    ->visible(fn (callable $get) => $get('status') === PublishStatus::Published->value),
+                DateTimePicker::make('expires_at')
+                    ->helperText('Optional. The FAQ stops appearing publicly after this time.'),
             ]);
     }
 }

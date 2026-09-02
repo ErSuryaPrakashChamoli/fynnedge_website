@@ -12,6 +12,7 @@ enum FieldType: string implements HasLabel
     case Tel = 'tel';
     case Date = 'date';
     case Select = 'select';
+    case SearchableSelect = 'searchable_select';
     case Radio = 'radio';
     case Checkbox = 'checkbox';
     case Textarea = 'textarea';
@@ -25,6 +26,7 @@ enum FieldType: string implements HasLabel
             self::Tel => 'Phone',
             self::Date => 'Date',
             self::Select => 'Select (dropdown)',
+            self::SearchableSelect => 'Searchable dropdown (with "Other")',
             self::Radio => 'Radio buttons',
             self::Checkbox => 'Checkbox',
             self::Textarea => 'Long text',
@@ -33,6 +35,6 @@ enum FieldType: string implements HasLabel
 
     public function usesOptions(): bool
     {
-        return in_array($this, [self::Select, self::Radio]);
+        return in_array($this, [self::Select, self::SearchableSelect, self::Radio]);
     }
 }

@@ -12,7 +12,19 @@
                 />
             </aside>
 
-            <div>
+            <div
+                x-data="journeyStep(
+                    @js(collect($fields)->mapWithKeys(fn ($f) => [$f->key => old($f->key, $responses[$f->key] ?? null)])),
+                    @js(collect($fields)->mapWithKeys(fn ($f) => [$f->key => $f->conditional_on])),
+                    @js([
+                        'required' => $fields->contains('key', 'phone'),
+                        'verified' => $session->phone_verified_at !== null,
+                        'verifiedNumber' => $session->phone_number,
+                        'sendOtpUrl' => route('journey.phone.send-otp', $session),
+                        'verifyOtpUrl' => route('journey.phone.verify-otp', $session),
+                    ]),
+                )"
+            >
                 <div class="mb-6 lg:hidden">
                     <p class="font-mono text-xs text-ink-faint">
                         Step {{ $progress['completed'] + 1 }} of {{ $progress['total'] }}
@@ -32,10 +44,7 @@
                     method="POST"
                     action="{{ route('journey.update', $session) }}"
                     class="mt-8 grid gap-5 sm:grid-cols-2"
-                    x-data="journeyStep(
-                        @js(collect($fields)->mapWithKeys(fn ($f) => [$f->key => old($f->key, $responses[$f->key] ?? null)])),
-                        @js(collect($fields)->mapWithKeys(fn ($f) => [$f->key => $f->conditional_on])),
-                    )"
+                    x-on:submit="stripCurrencyCommas($el)"
                 >
                     @csrf
 
@@ -53,7 +62,7 @@
                     @else
                         <span></span>
                     @endif
-                    <x-ui.button type="submit" form="journey-step-form">Continue</x-ui.button>
+                    <x-ui.button type="submit" form="journey-step-form" x-bind:disabled="phoneRequiresVerification && ! phoneVerified">Continue</x-ui.button>
                 </div>
 
                 <p class="mt-8 text-xs text-ink-faint">

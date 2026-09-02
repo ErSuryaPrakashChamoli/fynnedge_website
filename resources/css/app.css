@@ -8,27 +8,61 @@
     --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
     --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
-    --color-bg: #f5f4ef;
-    --color-surface: #ffffff;
-    --color-surface-2: #eeece4;
-    --color-ink: #171a1f;
-    --color-ink-muted: #5a6270;
-    --color-ink-faint: #8a90a0;
-    --color-accent: #1e3a5f;
-    --color-accent-strong: #14283f;
-    --color-accent-soft: #dde6f0;
-    --color-pass: #2f7a54;
-    --color-pass-soft: #e0efe6;
-    --color-warn: #a8671f;
-    --color-warn-soft: #f3e6d3;
-    --color-line: #dedcd2;
-    --color-line-strong: #c7c4b6;
+    /*
+     * Body copy across the site is built almost entirely on text-xs/text-sm
+     * (helper text, disclaimers, form hints, footer legal copy) rather than
+     * text-base — so those are the two tiers raised here for readability.
+     * Headings and larger tiers are left at Tailwind's defaults.
+     */
+    --text-xs: 0.8125rem;
+    --text-xs--line-height: 1.25rem;
+    --text-sm: 0.9375rem;
+    --text-sm--line-height: 1.5rem;
 
-    --animate-marquee: marquee 32s linear infinite;
+    --color-bg: #f7f8fa;
+    --color-surface: #ffffff;
+    --color-surface-2: #eef1f6;
+    --color-ink: #101828;
+    --color-ink-muted: #4c5a70;
+    --color-ink-faint: #838fa1;
+    --color-accent: #163a63;
+    --color-accent-strong: #0d2340;
+    --color-accent-soft: #e1e8f4;
+    --color-pass: #1f7a4d;
+    --color-pass-soft: #e1f2e7;
+    --color-warn: #b3791f;
+    --color-warn-soft: #f7ecd4;
+    --color-line: #e2e5ec;
+    --color-line-strong: #c7cdd9;
+
+    --animate-marquee: marquee 80s linear infinite;
+    --animate-marquee-reverse: marquee-reverse 40s linear infinite;
+    --animate-card-swing: card-swing 0.4s ease-in-out;
 
     @keyframes marquee {
         to {
             transform: translateX(-50%);
+        }
+    }
+
+    @keyframes marquee-reverse {
+        from {
+            transform: translateX(-50%);
+        }
+        to {
+            transform: translateX(0%);
+        }
+    }
+
+    @keyframes card-swing {
+        0%, 100% {
+            transform: rotate(0deg);
+        }
+        25% {
+            transform: rotate(-1.5deg);
+        }
+        75% {
+            transform: rotate(1.5deg);
         }
     }
 }
@@ -41,43 +75,172 @@
  */
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme='light']) {
-        --color-bg: #0b0e13;
-        --color-surface: #12161d;
-        --color-surface-2: #171c24;
-        --color-ink: #e8eaee;
-        --color-ink-muted: #9aa3b0;
-        --color-ink-faint: #6b7280;
-        --color-accent: #7fa8d9;
-        --color-accent-strong: #a9c5e8;
-        --color-accent-soft: #1c2836;
-        --color-pass: #68c495;
-        --color-pass-soft: #16261e;
-        --color-warn: #e0a95c;
-        --color-warn-soft: #2a2013;
-        --color-line: #232935;
-        --color-line-strong: #323b4a;
+        --color-bg: #080b10;
+        --color-surface: #10151d;
+        --color-surface-2: #161c26;
+        --color-ink: #eef1f6;
+        --color-ink-muted: #9aa6ba;
+        --color-ink-faint: #6c7789;
+        --color-accent: #86aee0;
+        --color-accent-strong: #b7d3f2;
+        --color-accent-soft: #1c2c40;
+        --color-pass: #6ecb9a;
+        --color-pass-soft: #14261c;
+        --color-warn: #e3ac66;
+        --color-warn-soft: #2c2214;
+        --color-line: #212836;
+        --color-line-strong: #333d4d;
     }
 }
 
 :root[data-theme='dark'] {
-    --color-bg: #0b0e13;
-    --color-surface: #12161d;
-    --color-surface-2: #171c24;
-    --color-ink: #e8eaee;
-    --color-ink-muted: #9aa3b0;
-    --color-ink-faint: #6b7280;
-    --color-accent: #7fa8d9;
-    --color-accent-strong: #a9c5e8;
-    --color-accent-soft: #1c2836;
-    --color-pass: #68c495;
-    --color-pass-soft: #16261e;
-    --color-warn: #e0a95c;
-    --color-warn-soft: #2a2013;
-    --color-line: #232935;
-    --color-line-strong: #323b4a;
+    --color-bg: #080b10;
+    --color-surface: #10151d;
+    --color-surface-2: #161c26;
+    --color-ink: #eef1f6;
+    --color-ink-muted: #9aa6ba;
+    --color-ink-faint: #6c7789;
+    --color-accent: #86aee0;
+    --color-accent-strong: #b7d3f2;
+    --color-accent-soft: #1c2c40;
+    --color-pass: #6ecb9a;
+    --color-pass-soft: #14261c;
+    --color-warn: #e3ac66;
+    --color-warn-soft: #2c2214;
+    --color-line: #212836;
+    --color-line-strong: #333d4d;
 }
 
 body {
     background-color: var(--color-bg);
     color: var(--color-ink);
+}
+
+/*
+ * The footer is a fixed brand element — always a deep slate-navy panel,
+ * regardless of light/dark mode — achieved by redeclaring the same --color-*
+ * tokens scoped to <footer>. Every Tailwind utility already resolves through
+ * these custom properties (see .ai/rules/theme-filament-pages.md), so this
+ * re-themes the whole footer subtree without touching footer.blade.php.
+ */
+footer {
+    --color-surface: #0d2340;
+    --color-surface-2: #17335a;
+    --color-ink: #f4f7fb;
+    --color-ink-muted: #b7c6dd;
+    --color-ink-faint: #8aa0bf;
+    --color-accent: #9dc4f2;
+    --color-accent-soft: #1c3f6c;
+    --color-line: #1e3c65;
+    --color-line-strong: #2c5482;
+}
+
+/*
+ * Shared premium brand panel for every Flexi Hybrid Term Loan promotional
+ * surface (the product page hero and the homepage ticker strip) — the same
+ * deep slate-navy palette as the footer, regardless of light/dark mode, via
+ * the identical scoped --color-* redeclaration trick, so both read as one
+ * consistent, bold brand treatment rather than plain content sections.
+ */
+.flexi-hybrid-panel {
+    --color-surface: #0d2340;
+    --color-surface-2: #17335a;
+    --color-ink: #f4f7fb;
+    --color-ink-muted: #b7c6dd;
+    --color-ink-faint: #8aa0bf;
+    --color-accent: #9dc4f2;
+    --color-accent-soft: #1c3f6c;
+    --color-line: #1e3c65;
+    --color-line-strong: #2c5482;
+}
+
+/*
+ * Nav dropdown panels (Loans mega menu, Credit Score, Calculators) run a
+ * step smaller than the rest of the header — same --text-sm scoping trick
+ * as the footer/header color and weight overrides above, applied via the
+ * `nav-dropdown-panel` marker class on each panel's outer wrapper.
+ */
+.nav-dropdown-panel {
+    --text-sm: 0.8125rem;
+    --text-sm--line-height: 1.25rem;
+}
+
+/*
+ * Alpine's x-cloak directive does nothing on its own — it only hides an
+ * element once this rule exists. Without it, every x-cloak'd panel (header
+ * dropdowns, mobile nav) is visible in the initial HTML and only hidden
+ * once Alpine's deferred module script finishes evaluating x-show, causing
+ * a flash of open dropdowns/menus on every full page navigation.
+ */
+[x-cloak] {
+    display: none !important;
+}
+
+/*
+ * Scroll reveal — paired with the plain-JS reveal init in app.js. Deliberately
+ * NOT a single animation: the first token of `data-reveal="<variant> ..."`
+ * picks a different entrance style (up/down/left/right/zoom/fade) so sections
+ * read as distinct from each other rather than one effect repeated down the
+ * page.
+ *
+ * The hidden state is styled directly off the `[data-reveal]` attribute
+ * selector — present in the server-rendered HTML from the very first paint —
+ * rather than a class added by JS after the fact. That matters: a transition
+ * only plays when a property changes value on an element that already had a
+ * prior committed style: if JS added the hidden class itself, that add is
+ * itself a style change and starts a transition immediately (fading OUT from
+ * 1 to 0) — and for anything already in the viewport on load, JS then adds
+ * `reveal-visible` a moment later while that fade-out is still mid-flight,
+ * cancelling and reversing it into a visible flicker instead of one clean
+ * fade in (confirmed by instrumenting transitionrun/cancel/end events).
+ * Styling the hidden state from first paint means there is no "before"
+ * style to transition from — CSS transitions never play on initial render —
+ * so the only transition that ever runs is the real one: hidden → visible.
+ * Guarded by `prefers-reduced-motion` so those users never see the hidden
+ * state at all (JS never adds `reveal-visible` for them, so the element must
+ * not depend on JS to become visible).
+ */
+@media (prefers-reduced-motion: no-preference) {
+    [data-reveal] {
+        opacity: 0;
+        transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /*
+     * Distances/scale are deliberately large enough to read as real motion
+     * at a glance, not just a fade — that's what was getting lost before.
+     * The expo-ish easing above front-loads the motion (fast start, long
+     * settle) so it stays visible even for someone scrolling quickly.
+     */
+    [data-reveal^='up'] { transform: translateY(64px); }
+    [data-reveal^='down'] { transform: translateY(-64px); }
+    [data-reveal^='left'] { transform: translateX(-96px); }
+    [data-reveal^='right'] { transform: translateX(96px); }
+    [data-reveal^='zoom'] { transform: scale(0.75); }
+    [data-reveal^='fade'] { transform: none; }
+
+    [data-reveal].reveal-visible {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/*
+ * Shared hover-lift for card grids across the marketing pages — a subtle
+ * rise plus a stronger shadow reads as "premium" without needing per-card
+ * bespoke animation. `.card-lift` only (no motion) for prefers-reduced-motion.
+ */
+.card-lift {
+    transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
+}
+
+.card-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .card-lift:hover {
+        transform: none;
+    }
 }

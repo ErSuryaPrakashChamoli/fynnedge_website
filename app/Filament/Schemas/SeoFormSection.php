@@ -39,7 +39,10 @@ class SeoFormSection
                 FileUpload::make('og_image_path')
                     ->label('Social share image')
                     ->image()
+                    ->disk('public')
                     ->directory('seo')
+                    ->maxSize(2048)
+                    ->helperText('Recommended 1200×630px, up to 2MB. Falls back to the site default SEO image if left blank.')
                     ->columnSpanFull(),
             ]);
     }

@@ -6,6 +6,7 @@ use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
 use App\Models\LenderProduct;
 use App\Modules\Applications\Enums\ApplicationStatus;
+use App\Modules\Applications\Enums\AssistancePreference;
 use App\Modules\Customers\Models\Customer;
 use App\Modules\Eligibility\Models\EligibilityResult;
 use App\Modules\Journey\Models\JourneySession;
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 
-#[Fillable(['journey_session_id', 'customer_id', 'lender_product_id', 'eligibility_result_id', 'status', 'submitted_at'])]
+#[Fillable(['journey_session_id', 'customer_id', 'lender_product_id', 'eligibility_result_id', 'status', 'assistance_preference', 'assistance_requested_at', 'submitted_at'])]
 class Application extends Model
 {
     /** @use HasFactory<ApplicationFactory> */
@@ -32,6 +33,8 @@ class Application extends Model
     {
         return [
             'status' => ApplicationStatus::class,
+            'assistance_preference' => AssistancePreference::class,
+            'assistance_requested_at' => 'datetime',
             'submitted_at' => 'datetime',
         ];
     }
@@ -62,23 +65,40 @@ class Application extends Model
     }
 
     /**
+     * All document slots a customer may fill in for this application — both
+     * required and optional (e.g. "Other document"), in display order.
+     *
      * @return Collection<int, LenderProductDocumentRequirement>
      */
-    public function requiredDocuments(): Collection
+    public function documentRequirements(): Collection
     {
         return LenderProductDocumentRequirement::query()
             ->where('lender_product_id', $this->lender_product_id)
-            ->where('is_required', true)
             ->with('documentType')
             ->orderBy('order')
             ->get();
     }
 
+    /**
+     * @return Collection<int, LenderProductDocumentRequirement>
+     */
+    public function requiredDocuments(): Collection
+    {
+        return $this->documentRequirements()->where('is_required', true)->values();
+    }
+
     public function hasAllRequiredDocuments(): bool
     {
-        $requiredTypeIds = $this->requiredDocuments()->pluck('document_type_id');
-        $uploadedTypeIds = $this->documents()->pluck('document_type_id');
+        $uploadedCountsByType = $this->documents()->get()->countBy('document_type_id');
 
-        return $requiredTypeIds->diff($uploadedTypeIds)->isEmpty();
+        foreach ($this->requiredDocuments() as $requirement) {
+            $uploadedCount = $uploadedCountsByType->get($requirement->document_type_id, 0);
+
+            if ($uploadedCount < max($requirement->min_slots, 1)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

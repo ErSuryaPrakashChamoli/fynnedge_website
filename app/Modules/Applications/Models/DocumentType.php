@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['key', 'label', 'description', 'order'])]
+#[Fillable(['key', 'label', 'description', 'order', 'allow_multiple', 'allow_custom_label'])]
 class DocumentType extends Model
 {
     /** @use HasFactory<DocumentTypeFactory> */
@@ -18,6 +18,14 @@ class DocumentType extends Model
     protected static function newFactory(): DocumentTypeFactory
     {
         return DocumentTypeFactory::new();
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'allow_multiple' => 'boolean',
+            'allow_custom_label' => 'boolean',
+        ];
     }
 
     public function requirements(): HasMany

@@ -2,11 +2,17 @@
 
 namespace App\Providers;
 
+use App\Enums\LoanCategory;
 use App\Models\LoanProduct;
+use App\Models\NavigationLink;
+use App\Models\Setting;
 use App\Modules\CreditBureau\Contracts\CreditBureauProvider;
+use App\Modules\CreditScore\Contracts\CreditScoreProvider;
+use App\Support\Theme\SiteThemeStyles;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,6 +27,11 @@ class AppServiceProvider extends ServiceProvider
             CreditBureauProvider::class,
             fn () => $this->app->make(config('services.credit_bureau.provider')),
         );
+
+        $this->app->bind(
+            CreditScoreProvider::class,
+            fn () => $this->app->make(config('services.credit_score.provider')),
+        );
     }
 
     /**
@@ -28,9 +39,84 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Gold Loan, Two Wheeler, Term, Tractor and Mudra loans are excluded here to keep
+        // this list short — they stay listed everywhere else (home, /loans, header mega-menu).
         View::composer(
             ['components.site.header', 'components.site.footer'],
-            fn ($view) => $view->with('loanProducts', LoanProduct::query()->published()->orderBy('name')->get()),
+            fn ($view) => $view->with(
+                'loanProducts',
+                LoanProduct::query()->published()->orderedForDisplay()
+                    ->whereNotIn('category', [
+                        LoanCategory::GoldLoan,
+                        LoanCategory::TwoWheelerLoan,
+                        LoanCategory::TermLoan,
+                        LoanCategory::TractorLoan,
+                        LoanCategory::MudraLoan,
+                    ])
+                    ->get(),
+            ),
+        );
+
+        // Shared across header, footer and the base layout (browser tab title) so the
+        // name/logo/tagline/favicon an admin sets on the Settings page stays in sync
+        // everywhere it appears, instead of three independently hard-coded copies.
+        View::composer(
+            ['components.site.header', 'components.site.footer', 'components.layouts.app'],
+            fn ($view) => $view->with('siteBranding', [
+                'name' => Setting::get('site_name', 'FynnEdge'),
+                'tagline' => Setting::get('site_tagline', 'Simplifying Loan, Amplifying Trust'),
+                'logoUrl' => static::settingFileUrl('site_logo') ?? asset('fynnedge-icon.png'),
+                'faviconUrl' => static::settingFileUrl('site_favicon') ?? asset('favicon.ico'),
+                'faviconIsCustom' => (bool) Setting::get('site_favicon'),
+                'defaultOgImageUrl' => static::settingFileUrl('seo_default_og_image'),
+            ]),
+        );
+
+        View::composer(
+            'components.site.footer',
+            fn ($view) => $view->with('socialLinks', [
+                'Instagram' => Setting::get('social_instagram'),
+                'Facebook' => Setting::get('social_facebook'),
+                'WhatsApp' => Setting::get('social_whatsapp'),
+                'LinkedIn' => Setting::get('social_linkedin'),
+                'X' => Setting::get('social_x'),
+            ]),
+        );
+
+        View::composer(
+            'components.site.footer',
+            fn ($view) => $view->with('contactDetails', [
+                'address' => Setting::get('contact_address'),
+                'phone' => Setting::get('contact_phone'),
+                'email' => Setting::get('contact_email'),
+            ]),
+        );
+
+        View::composer(
+            'components.site.footer',
+            fn ($view) => $view->with('footerLegal', [
+                'name' => Setting::get('footer_legal_name', 'FynnEdge Advisory (OPC) Pvt Ltd'),
+                'disclaimer' => Setting::get('footer_disclaimer', 'Loan approval is subject to lender policies, documentation and underwriting. Eligibility results shown on this site are indicative, not a guarantee of approval.'),
+            ]),
+        );
+
+        // Admin-managed links appended alongside the footer's existing hardcoded
+        // Company/Legal columns — never a replacement for them. Empty by default,
+        // so an unconfigured install renders exactly as before.
+        View::composer(
+            'components.site.footer',
+            fn ($view) => $view->with(
+                'navigationLinks',
+                NavigationLink::query()->active()->forLocation('footer')->whereNull('parent_id')->orderBy('sort_order')->get(),
+            ),
+        );
+
+        // Renders once, in the <head>, as a scoped <style> block overriding the
+        // header/footer/main-content CSS variables an admin set on the Settings
+        // page's Appearance section. Empty string (nothing rendered) when unset.
+        View::composer(
+            'components.layouts.app',
+            fn ($view) => $view->with('siteThemeStyles', SiteThemeStyles::render()),
         );
 
         // Generous enough for a real applicant working through a multi-step journey with
@@ -44,5 +130,12 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('contact-form', fn (Request $request) => app()->runningUnitTests()
             ? Limit::none()
             : Limit::perMinute(5)->by($request->ip()));
+    }
+
+    private static function settingFileUrl(string $key): ?string
+    {
+        $path = Setting::get($key);
+
+        return $path ? Storage::disk('public')->url($path) : null;
     }
 }

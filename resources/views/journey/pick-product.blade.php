@@ -1,11 +1,11 @@
 <x-layouts.app title="Check Your Eligibility" description="Tell us what you're looking to finance and we'll take you through a short profile to check suitable lenders.">
-    <section class="mx-auto max-w-4xl px-6 py-14 lg:px-8">
+    <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Check Your Eligibility' => null]" />
 
-        <h1 class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             What are you looking to finance?
         </h1>
-        <p class="mt-3 max-w-xl text-ink-muted">
+        <p data-reveal="up" class="mt-3 max-w-xl text-ink-muted">
             Pick a product to start — it takes a few minutes to tell us about yourself.
         </p>
 
@@ -14,10 +14,10 @@
                 Applications aren't open yet. Check back shortly.
             </x-ui.alert>
         @else
-            <div class="mt-10 grid gap-5 sm:grid-cols-2">
+            <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($loanProducts as $product)
-                    <a href="{{ route('loans.apply', $product) }}" class="group">
-                        <x-ui.card class="h-full transition-shadow group-hover:shadow-md">
+                    <a href="{{ route('loans.apply', $product) }}" data-reveal="zoom stagger" class="group">
+                        <x-ui.card class="card-lift h-full transition-colors transition-shadow group-hover:bg-accent-soft group-hover:shadow-md group-hover:animate-card-swing">
                             <x-ui.badge tone="accent">{{ $product->category->getLabel() }}</x-ui.badge>
                             <p class="mt-3 font-display text-lg font-semibold text-ink group-hover:text-accent">{{ $product->name }}</p>
                             @if ($product->summary)

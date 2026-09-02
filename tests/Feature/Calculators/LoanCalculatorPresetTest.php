@@ -22,6 +22,11 @@ it('reads a preset from the published LoanProduct row for every EMI-style loan c
     LoanCategory::CarLoan,
     LoanCategory::BusinessLoan,
     LoanCategory::LoanAgainstProperty,
+    LoanCategory::GoldLoan,
+    LoanCategory::TwoWheelerLoan,
+    LoanCategory::TermLoan,
+    LoanCategory::TractorLoan,
+    LoanCategory::MudraLoan,
 ]);
 
 it('has no EMI preset for credit cards, which do not repay on a fixed schedule', function () {

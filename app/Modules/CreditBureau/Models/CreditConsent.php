@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['journey_session_id', 'purpose', 'terms_version', 'ip_address', 'status', 'consented_at'])]
+#[Fillable(['journey_session_id', 'pan_number', 'date_of_birth', 'purpose', 'terms_version', 'ip_address', 'status', 'consented_at'])]
 class CreditConsent extends Model
 {
     /** @use HasFactory<CreditConsentFactory> */
@@ -28,6 +28,7 @@ class CreditConsent extends Model
         return [
             'status' => ConsentStatus::class,
             'consented_at' => 'datetime',
+            'date_of_birth' => 'date',
         ];
     }
 

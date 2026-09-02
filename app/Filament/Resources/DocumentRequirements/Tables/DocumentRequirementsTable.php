@@ -19,6 +19,7 @@ class DocumentRequirementsTable
                 TextColumn::make('lenderProduct.loanProduct.name')->label('Product')->searchable(),
                 TextColumn::make('documentType.label')->label('Document')->searchable(),
                 IconColumn::make('is_required')->label('Required')->boolean(),
+                TextColumn::make('min_slots')->label('Min. uploads'),
                 TextColumn::make('order')->sortable(),
             ])
             ->defaultSort('order')

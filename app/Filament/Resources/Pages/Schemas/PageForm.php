@@ -39,6 +39,8 @@ class PageForm
                             ->live(),
                         DateTimePicker::make('published_at')
                             ->visible(fn (callable $get) => $get('status') === PublishStatus::Published->value),
+                        DateTimePicker::make('expires_at')
+                            ->helperText('Optional. The page stops appearing publicly after this time.'),
                     ]),
 
                 RichEditor::make('body'),

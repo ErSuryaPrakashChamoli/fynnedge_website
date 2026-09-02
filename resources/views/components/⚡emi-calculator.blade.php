@@ -1,9 +1,12 @@
 <?php
 
 use App\Enums\LoanCategory;
+use App\Models\Article;
+use App\Models\LoanProduct;
 use App\Support\Calculators\EmiCalculator;
 use App\Support\Calculators\LoanCalculatorPreset;
 use App\Support\Formatting\IndianNumberFormatter;
+use Illuminate\Support\Facades\Route;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -18,17 +21,44 @@ new class extends Component
     public int $tenureYears;
 
     /**
+     * The 3 tenures the visitor is comparing in the "Find your ideal Tenure"
+     * table — independent of $tenureYears above, so picking a tenure to
+     * compare there never touches the main calculator's own result.
+     *
+     * @var array<int, int>
+     */
+    public array $compareTenureYears = [];
+
+    /**
+     * The 3 rates the visitor is comparing in "Compare Rates & Savings" —
+     * independent of $annualRate above, for the same reason.
+     *
+     * @var array<int, float>
+     */
+    public array $compareRates = [];
+
+    /**
+     * Renders the "About this loan" panel (explanation, tenure/rate
+     * comparison, CTAs, related resources, FAQs) below the calculator. Only
+     * the standalone /calculators/emi/{category} page turns this on — loan
+     * product pages already show an equivalent section of their own and
+     * would otherwise duplicate it.
+     */
+    public bool $showLoanDetails = true;
+
+    /**
      * Accepts a plain string (or a LoanCategory, e.g. from `:category="$loanProduct->category"`
      * in a Blade component tag) rather than requiring a typed LoanCategory — Livewire's test
      * harness assigns initial params to typed public properties directly, before mount() runs,
      * so a strict LoanCategory type here would reject the raw enum/string it's given.
      */
-    public function mount(string|LoanCategory $category = ''): void
+    public function mount(string|LoanCategory $category = '', bool $showLoanDetails = true): void
     {
         $category = $category instanceof LoanCategory ? $category : LoanCategory::tryFrom($category);
         $category = ($category && LoanCalculatorPreset::for($category)) ? $category : LoanCategory::PersonalLoan;
 
         $this->category = $category->value;
+        $this->showLoanDetails = $showLoanDetails;
         $this->applyPresetDefaults();
     }
 
@@ -124,6 +154,156 @@ new class extends Component
     }
 
     /**
+     * The published LoanProduct backing the active category — source for the
+     * calculator explanation copy, CTAs, and FAQs shown in the loan details
+     * panel. Always resolves for a category that made it into $this->categories,
+     * but guarded nullable since that's the contract LoanCalculatorPreset sets.
+     */
+    #[Computed]
+    public function product(): ?LoanProduct
+    {
+        return LoanCalculatorPreset::productFor(LoanCategory::from($this->category));
+    }
+
+    /**
+     * Every whole-year tenure the active category's preset allows — the
+     * options offered in each of the 3 "Find your ideal Tenure" dropdowns.
+     *
+     * @return array<int, int>
+     */
+    #[Computed]
+    public function tenureOptions(): array
+    {
+        return $this->tenureOptionsFor($this->preset);
+    }
+
+    /**
+     * The active category's allowed rates in quarter-point steps — the
+     * options offered in each of the 3 "Compare Rates & Savings" dropdowns.
+     *
+     * @return array<int, float>
+     */
+    #[Computed]
+    public function rateOptions(): array
+    {
+        return $this->rateOptionsFor($this->preset);
+    }
+
+    /**
+     * EMI for each of the visitor's 3 chosen tenures, at the current amount
+     * and rate — so "4 years vs 6 years vs 7 years" reflects tenures the
+     * visitor actually picked, not ones the system guessed at.
+     *
+     * @return array<int, array{years: int, emi: float, total_interest: float, total_payment: float}>
+     */
+    #[Computed]
+    public function tenureComparison(): array
+    {
+        return collect($this->compareTenureYears)
+            ->map(fn (int $years) => [
+                'years' => $years,
+                ...EmiCalculator::calculate($this->principal, $this->annualRate, $years * 12),
+            ])
+            ->all();
+    }
+
+    /**
+     * EMI for each of the visitor's 3 chosen rates, at the current amount
+     * and tenure.
+     *
+     * @return array<int, array{rate: float, emi: float, total_interest: float, total_payment: float}>
+     */
+    #[Computed]
+    public function rateComparison(): array
+    {
+        return collect($this->compareRates)
+            ->map(fn (float $rate) => [
+                'rate' => $rate,
+                ...EmiCalculator::calculate($this->principal, $rate, $this->tenureYears * 12),
+            ])
+            ->all();
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    private function tenureOptionsFor(array $preset): array
+    {
+        return range($preset['min_years'], $preset['max_years']);
+    }
+
+    /**
+     * @return array<int, float>
+     */
+    private function rateOptionsFor(array $preset): array
+    {
+        $options = [];
+
+        for ($rate = $preset['min_rate']; $rate < $preset['max_rate']; $rate += 0.25) {
+            $options[] = round($rate, 2);
+        }
+        $options[] = round($preset['max_rate'], 2);
+
+        return array_values(array_unique($options));
+    }
+
+    /**
+     * The 3 starting selections shown in a comparison's dropdowns before the
+     * visitor changes any of them — spread across the low, middle and high
+     * end of whatever options are available.
+     *
+     * @param  array<int, int|float>  $options
+     * @return array<int, int|float>
+     */
+    private function defaultCompareSelections(array $options): array
+    {
+        $last = count($options) - 1;
+        $middle = intdiv($last, 2);
+
+        return [$options[0], $options[$middle], $options[$last]];
+    }
+
+    /**
+     * Guides tagged to this loan category, falling back to general
+     * (untagged) resources so the panel always has something to show.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, Article>
+     */
+    #[Computed]
+    public function relatedArticles(): \Illuminate\Database\Eloquent\Collection
+    {
+        return Article::query()
+            ->published()
+            ->forCategoryOrGeneral(LoanCategory::from($this->category))
+            ->latest('published_at')
+            ->limit(3)
+            ->get();
+    }
+
+    /**
+     * The lightweight eligibility calculator only covers Personal and Home
+     * Loan today — every other category falls back to the general
+     * eligibility picker, which still lets a visitor check eligibility.
+     */
+    #[Computed]
+    public function eligibilityUrl(): ?string
+    {
+        $category = LoanCategory::from($this->category);
+
+        if (Route::has('calculators.eligibility') && in_array($category, [LoanCategory::PersonalLoan, LoanCategory::HomeLoan], true)) {
+            return route('calculators.eligibility', $category->value);
+        }
+
+        return Route::has('eligibility.index') ? route('eligibility.index') : null;
+    }
+
+    #[Computed]
+    public function applyUrl(): ?string
+    {
+        return ($this->product && Route::has('loans.apply')) ? route('loans.apply', $this->product) : null;
+    }
+
+    /**
      * Amount and tenure reset to the new category's own defaults on every
      * switch — a personal loan's ₹5L default means nothing as a home loan
      * amount. The interest rate is different: each category's minimum ROI is
@@ -139,6 +319,8 @@ new class extends Component
         $this->category = $categoryValue;
         $this->principal = (float) $preset['default_amount'];
         $this->tenureYears = $preset['default_years'];
+        $this->compareTenureYears = $this->defaultCompareSelections($this->tenureOptionsFor($preset));
+        $this->compareRates = $this->defaultCompareSelections($this->rateOptionsFor($preset));
 
         if ($this->annualRate < $preset['min_rate'] || $this->annualRate > $preset['max_rate']) {
             $this->annualRate = $preset['min_rate'];
@@ -152,6 +334,8 @@ new class extends Component
         $this->principal = (float) $preset['default_amount'];
         $this->annualRate = $preset['default_rate'];
         $this->tenureYears = $preset['default_years'];
+        $this->compareTenureYears = $this->defaultCompareSelections($this->tenureOptionsFor($preset));
+        $this->compareRates = $this->defaultCompareSelections($this->rateOptionsFor($preset));
     }
 
     /**
@@ -231,12 +415,14 @@ new class extends Component
                         ₹
                         <input
                             id="principal"
-                            type="number"
+                            type="text"
                             inputmode="numeric"
-                            min="{{ $this->preset['min_amount'] }}"
-                            max="{{ $this->preset['max_amount'] }}"
-                            step="1000"
+                            autocomplete="off"
                             wire:model.live.debounce.400ms="principal"
+                            wire:ignore.self
+                            x-effect="const v = $wire.principal; if (document.activeElement !== $el) $el.value = formatIndianNumber(String(v ?? ''))"
+                            x-on:focus="$el.value = $el.value.replace(/[^0-9]/g, '')"
+                            x-on:blur="$el.value = formatIndianNumber($el.value.replace(/[^0-9]/g, ''))"
                             class="w-28 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                         >
                     </div>
@@ -250,6 +436,7 @@ new class extends Component
                     wire:model.live="principal"
                     class="mt-2 w-full accent-accent"
                 >
+                <p class="mt-1 text-xs text-ink-faint" x-text="numberToIndianWords(String($wire.principal)) + ' Rupees only'"></p>
                 <p class="mt-1 text-xs text-ink-faint">Maximum loan amount: ₹{{ $this->formatAmount($this->preset['max_amount']) }}</p>
                 @error('principal') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
@@ -440,6 +627,127 @@ new class extends Component
                     Balance remaining after the last month of each period shown above.
                 </div>
             </div>
+        </div>
+    @endif
+
+    @if ($this->showLoanDetails && $this->product)
+        @php($product = $this->product)
+        <div class="mt-14 border-t border-line pt-10">
+            <h2 class="font-display text-2xl font-semibold text-ink">About the {{ $this->preset['label'] }}</h2>
+
+            @if ($product->calculator_explanation || $product->summary)
+                <div class="prose prose-neutral mt-4 max-w-2xl text-ink-muted [&_h3]:font-display [&_h3]:text-ink [&_p]:leading-relaxed">
+                    {!! $product->calculator_explanation ?: '<p>'.e($product->summary).'</p>' !!}
+                </div>
+            @endif
+
+            <div class="mt-10 grid gap-8 lg:grid-cols-2">
+                <div>
+                    <h3 class="font-display text-lg font-semibold text-ink">Find your ideal Tenure</h3>
+                    <p class="mt-1 text-xs text-ink-faint">
+                        Pick 3 tenures to compare — same ₹{{ $this->formatAmount($this->principal) }} at {{ number_format($this->annualRate, 2) }}% each time.
+                    </p>
+                    <div class="mt-4 overflow-x-auto rounded-xl border border-line">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-line bg-surface-2 text-left text-xs text-ink-muted">
+                                    <th class="px-3 py-2 font-medium">Tenure</th>
+                                    <th class="px-3 py-2 text-right font-medium">EMI</th>
+                                    <th class="px-3 py-2 text-right font-medium">Total interest</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($this->tenureComparison as $index => $row)
+                                    <tr class="border-t border-line/60">
+                                        <td class="px-3 py-2 text-ink">
+                                            <select
+                                                wire:model.live="compareTenureYears.{{ $index }}"
+                                                aria-label="Tenure option {{ $index + 1 }}"
+                                                class="rounded-md border border-line-strong bg-surface px-2 py-1 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
+                                            >
+                                                @foreach ($this->tenureOptions as $option)
+                                                    <option value="{{ $option }}">{{ $option }} {{ Str::plural('year', $option) }}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td class="px-3 py-2 text-right font-mono text-ink">₹{{ $this->formatAmount($row['emi']) }}</td>
+                                        <td class="px-3 py-2 text-right font-mono text-ink-muted">₹{{ $this->formatAmount($row['total_interest']) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-display text-lg font-semibold text-ink">Compare Rates &amp; Savings</h3>
+                    <p class="mt-1 text-xs text-ink-faint">
+                        Pick 3 rates to compare — same ₹{{ $this->formatAmount($this->principal) }} over {{ $this->tenureYears }} {{ Str::plural('year', $this->tenureYears) }} each time.
+                    </p>
+                    <div class="mt-4 overflow-x-auto rounded-xl border border-line">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-line bg-surface-2 text-left text-xs text-ink-muted">
+                                    <th class="px-3 py-2 font-medium">Rate</th>
+                                    <th class="px-3 py-2 text-right font-medium">EMI</th>
+                                    <th class="px-3 py-2 text-right font-medium">Total interest</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($this->rateComparison as $index => $row)
+                                    <tr class="border-t border-line/60">
+                                        <td class="px-3 py-2 text-ink">
+                                            <select
+                                                wire:model.live="compareRates.{{ $index }}"
+                                                aria-label="Rate option {{ $index + 1 }}"
+                                                class="rounded-md border border-line-strong bg-surface px-2 py-1 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
+                                            >
+                                                @foreach ($this->rateOptions as $option)
+                                                    <option value="{{ $option }}">{{ number_format($option, 2) }}%</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td class="px-3 py-2 text-right font-mono text-ink">₹{{ $this->formatAmount($row['emi']) }}</td>
+                                        <td class="px-3 py-2 text-right font-mono text-ink-muted">₹{{ $this->formatAmount($row['total_interest']) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-10 flex flex-wrap gap-3">
+                @if ($this->eligibilityUrl)
+                    <x-ui.button tag="a" :href="$this->eligibilityUrl" size="lg">Check Your Eligibility</x-ui.button>
+                @endif
+                @if ($this->applyUrl)
+                    <x-ui.button tag="a" :href="$this->applyUrl" variant="secondary" size="lg">Apply for this loan</x-ui.button>
+                @endif
+            </div>
+
+            @if ($this->relatedArticles->isNotEmpty())
+                <div class="mt-12">
+                    <h3 class="font-display text-lg font-semibold text-ink">Guides related to {{ $this->preset['label'] }}</h3>
+                    <div class="mt-4 grid gap-4 sm:grid-cols-3">
+                        @foreach ($this->relatedArticles as $article)
+                            <a href="{{ route('resources.show', $article) }}" class="group">
+                                <x-ui.card class="h-full transition-colors transition-shadow group-hover:bg-accent-soft group-hover:shadow-md group-hover:animate-card-swing">
+                                    <p class="font-medium text-ink group-hover:text-accent">{{ $article->title }}</p>
+                                    @if ($article->excerpt)
+                                        <p class="mt-1.5 text-xs text-ink-muted">{{ $article->excerpt }}</p>
+                                    @endif
+                                </x-ui.card>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            @if ($product->faqs->isNotEmpty())
+                <x-site.faq-accordion :faqs="$product->faqs" :heading="$this->preset['label'].' EMI — frequently asked questions'" />
+                <x-site.faq-json-ld :faqs="$product->faqs" />
+            @endif
         </div>
     @endif
 </div>

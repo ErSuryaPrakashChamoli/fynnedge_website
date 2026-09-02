@@ -10,12 +10,18 @@ use Illuminate\Http\Request;
 
 class ContactController extends Controller
 {
-    public function show(): View
+    public function show(Request $request): View
     {
+        $contactMapUrl = Setting::get('contact_map_url');
+
         return view('contact', [
             'contactPhone' => Setting::get('contact_phone'),
             'contactEmail' => Setting::get('contact_email'),
             'contactWhatsapp' => Setting::get('contact_whatsapp'),
+            'contactAddress' => Setting::get('contact_address'),
+            'contactMapUrl' => $contactMapUrl,
+            'contactMapViewUrl' => self::mapViewUrl($contactMapUrl),
+            'prefillMessage' => $request->string('message')->limit(2000)->toString(),
         ]);
     }
 
@@ -33,6 +39,28 @@ class ContactController extends Controller
             'source_url' => url()->previous(),
         ]);
 
-        return back()->with('status', 'Thanks — we\'ve received your message and will get back to you shortly.');
+        return back()->with([
+            'statusTitle' => 'Your Loan Query Has Been Submitted Successfully! 🎉',
+            'status' => 'Thank you for choosing FynnEdge. Our loan expert will connect with you shortly to understand your requirement and guide you through the next steps.',
+        ]);
+    }
+
+    /**
+     * The embed variant of a `maps?q=...` link fails to load place details when clicked
+     * on a bare coordinate pin with no registered Google Business listing — the contact
+     * view catches that click with an overlay pointing here instead, to open the same
+     * location on the full Google Maps site rather than the broken embedded info window.
+     * The dedicated `/maps/embed?pb=...` variant (from Share > Embed a map) has no plain
+     * equivalent to link to, so it's left as null and the click passes through untouched.
+     */
+    private static function mapViewUrl(?string $embedUrl): ?string
+    {
+        if (! $embedUrl || str_contains($embedUrl, '/maps/embed')) {
+            return null;
+        }
+
+        $viewUrl = preg_replace('/([?&])output=embed&?/', '$1', $embedUrl);
+
+        return rtrim($viewUrl, '?&');
     }
 }

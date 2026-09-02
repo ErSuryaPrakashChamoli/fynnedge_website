@@ -34,6 +34,12 @@ class DocumentRequirementForm
                 TextInput::make('order')
                     ->numeric()
                     ->default(0),
+                TextInput::make('min_slots')
+                    ->label('Minimum uploads required')
+                    ->helperText('E.g. 3 for 3 months of payslips. Only applies while "Required" is on.')
+                    ->numeric()
+                    ->minValue(1)
+                    ->default(1),
                 TextInput::make('notes')
                     ->columnSpanFull(),
             ]);

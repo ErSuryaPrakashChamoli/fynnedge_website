@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Lenders\Tables;
 
 use App\Enums\LenderStatus;
+use App\Enums\LenderType;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -26,6 +27,9 @@ class LendersTable
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('type')
+                    ->badge()
+                    ->toggleable(),
                 TextColumn::make('lenderProducts_count')
                     ->label('Products')
                     ->counts('lenderProducts')
@@ -44,6 +48,7 @@ class LendersTable
             ->defaultSort('name')
             ->filters([
                 SelectFilter::make('status')->options(LenderStatus::class),
+                SelectFilter::make('type')->options(LenderType::class),
                 TrashedFilter::make(),
             ])
             ->recordActions([

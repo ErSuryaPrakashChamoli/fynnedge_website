@@ -32,6 +32,7 @@ class ProfileNormalizer
             existingEmiAmount: $hasExistingEmis ? ($this->toFloat($responses['existing_emi_amount'] ?? null) ?? 0.0) : 0.0,
             loanAmountRequested: $this->toFloat($responses['loan_amount'] ?? null),
             preferredTenureMonths: $this->toInt($responses['preferred_tenure_months'] ?? null),
+            creditScore: $this->toInt($responses['credit_score'] ?? null),
             raw: $responses,
         );
     }

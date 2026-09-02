@@ -29,6 +29,7 @@ it('creates a customer the first time an email is submitted', function () {
     $product = productWithIdentityStep('product-a');
     $this->get("/loans/{$product->slug}/apply");
     $session = JourneySession::query()->where('loan_product_id', $product->id)->firstOrFail();
+    $session->update(['phone_number' => '9998887777', 'phone_verified_at' => now()]);
 
     $this->post(route('journey.update', $session), [
         'full_name' => 'Priya Shah', 'email' => 'priya@example.com', 'phone' => '9998887777',
@@ -45,12 +46,14 @@ it('links a second application with the same email to the same customer', functi
 
     $this->get("/loans/{$productA->slug}/apply");
     $sessionA = JourneySession::query()->where('loan_product_id', $productA->id)->firstOrFail();
+    $sessionA->update(['phone_number' => '9998887777', 'phone_verified_at' => now()]);
     $this->post(route('journey.update', $sessionA), [
         'full_name' => 'Priya Shah', 'email' => 'priya@example.com', 'phone' => '9998887777',
     ]);
 
     $this->get("/loans/{$productB->slug}/apply");
     $sessionB = JourneySession::query()->where('loan_product_id', $productB->id)->firstOrFail();
+    $sessionB->update(['phone_number' => '9998887777', 'phone_verified_at' => now()]);
     $this->post(route('journey.update', $sessionB), [
         'full_name' => 'Priya Shah', 'email' => 'priya@example.com', 'phone' => '9998887777',
     ]);

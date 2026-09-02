@@ -101,3 +101,46 @@ it('offers a continue-with-lender action only for eligible results', function ()
     $response->assertSee('Continue with Warning Test Bank');
     $response->assertSee(route('applications.select', EligibilityResult::query()->latest('id')->firstOrFail()), false);
 });
+
+it('ranks eligible results by lowest interest rate and flags the cheapest as Recommended', function () {
+    $product = LoanProduct::factory()->published()->create();
+
+    // A rule set with no conditions passes everyone — only the rate differs between lenders here.
+    $makeEligibleLender = function (string $name, ?float $rate) use ($product) {
+        $lender = Lender::factory()->create(['status' => LenderStatus::Active, 'name' => $name]);
+        $lenderProduct = LenderProduct::factory()->create([
+            'lender_id' => $lender->id,
+            'loan_product_id' => $product->id,
+            'status' => LenderStatus::Active,
+            'interest_rate_from' => $rate,
+        ]);
+        EligibilityRuleSet::factory()->create([
+            'lender_product_id' => $lenderProduct->id,
+            'status' => EligibilityRuleSetStatus::Active,
+        ]);
+
+        return $lender;
+    };
+
+    $makeEligibleLender('Expensive Bank', 15.0);
+    $makeEligibleLender('Cheapest Bank', 9.5);
+    $makeEligibleLender('No Rate Bank', null);
+
+    $definition = JourneyDefinition::create(['loan_product_id' => $product->id, 'version' => 1, 'status' => JourneyDefinitionStatus::Active]);
+    $step = JourneyStep::create(['journey_definition_id' => $definition->id, 'key' => 'basic', 'title' => 'Basic', 'order' => 1]);
+    JourneyStepField::create(['journey_step_id' => $step->id, 'key' => 'monthly_income', 'label' => 'Income', 'type' => FieldType::Number, 'validation_rules' => ['required'], 'order' => 1]);
+
+    $this->get("/loans/{$product->slug}/apply");
+    $session = JourneySession::query()->where('loan_product_id', $product->id)->firstOrFail();
+    $this->post(route('journey.update', $session), ['monthly_income' => 50000]);
+
+    $response = $this->get(route('journey.show', $session));
+
+    $response->assertOk();
+    $response->assertSeeInOrder(['Cheapest Bank', 'Expensive Bank', 'No Rate Bank']);
+    $response->assertSeeTextInOrder(['Cheapest Bank', 'Recommended']);
+    $response->assertSeeText('Lowest interest rate among the lenders');
+
+    // Only the cheapest lender's card carries the Recommended badge.
+    expect(substr_count($response->getContent(), 'Recommended'))->toBe(1);
+});

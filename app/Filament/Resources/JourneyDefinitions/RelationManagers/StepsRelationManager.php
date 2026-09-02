@@ -68,7 +68,7 @@ class StepsRelationManager extends RelationManager
                             ->columnSpanFull(),
 
                         Repeater::make('options')
-                            ->visible(fn ($get) => in_array($get('type'), [FieldType::Select->value, FieldType::Radio->value]))
+                            ->visible(fn ($get) => in_array($get('type'), [FieldType::Select->value, FieldType::SearchableSelect->value, FieldType::Radio->value]))
                             ->schema([
                                 TextInput::make('value')->required(),
                                 TextInput::make('label')->required(),

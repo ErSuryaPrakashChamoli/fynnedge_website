@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\Applications;
 
+use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\Applications\Pages\EditApplication;
 use App\Filament\Resources\Applications\Pages\ListApplications;
-use App\Filament\Resources\Applications\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\Applications\RelationManagers\DocumentsRelationManager;
 use App\Filament\Resources\Applications\Schemas\ApplicationForm;
 use App\Filament\Resources\Applications\Tables\ApplicationsTable;

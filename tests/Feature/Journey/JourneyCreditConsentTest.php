@@ -1,11 +1,13 @@
 <?php
 
 use App\Models\LoanProduct;
+use App\Modules\CreditBureau\Enums\CreditCheckStatus;
 use App\Modules\CreditBureau\Models\CreditCheck;
 use App\Modules\CreditBureau\Models\CreditConsent;
 use App\Modules\Journey\Enums\FieldType;
 use App\Modules\Journey\Enums\JourneyDefinitionStatus;
 use App\Modules\Journey\Models\JourneyDefinition;
+use App\Modules\Journey\Models\JourneyResponse;
 use App\Modules\Journey\Models\JourneySession;
 use App\Modules\Journey\Models\JourneyStep;
 use App\Modules\Journey\Models\JourneyStepField;
@@ -37,7 +39,7 @@ it('records credit consent when the consent step is submitted', function () {
     expect($consent->ip_address)->not->toBeNull();
 });
 
-it('never triggers an actual credit check just from consent', function () {
+it('attempts a real credit check on consent, but the default Null provider fails it honestly rather than fabricate a score', function () {
     $product = journeyWithConsentStep();
     $this->get("/loans/{$product->slug}/apply");
     $session = JourneySession::query()->where('loan_product_id', $product->id)->firstOrFail();
@@ -45,7 +47,26 @@ it('never triggers an actual credit check just from consent', function () {
     $this->post(route('journey.update', $session), ['city' => 'Pune']);
     $this->post(route('journey.update', $session), ['credit_check_consent' => '1']);
 
-    expect(CreditCheck::query()->count())->toBe(0);
+    $check = CreditCheck::query()->first();
+    expect(CreditCheck::query()->count())->toBe(1);
+    expect($check->status)->toBe(CreditCheckStatus::Failed);
+    expect($check->score)->toBeNull();
+
+    expect(JourneyResponse::query()->where('field_key', 'credit_score')->exists())->toBeFalse();
+});
+
+it('renders the consent checkbox with real links to the compliance pages', function () {
+    $product = journeyWithConsentStep();
+    $this->get("/loans/{$product->slug}/apply");
+    $session = JourneySession::query()->where('loan_product_id', $product->id)->firstOrFail();
+    $this->post(route('journey.update', $session), ['city' => 'Pune']);
+
+    $response = $this->get(route('journey.show', $session));
+
+    $response->assertOk();
+    $response->assertSee(route('credit-report-terms'), false);
+    $response->assertSee(route('terms'), false);
+    $response->assertSee(route('privacy-policy'), false);
 });
 
 it('does not record consent for steps that never mention it', function () {

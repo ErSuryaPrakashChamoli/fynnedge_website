@@ -34,17 +34,40 @@
             </p>
         @else
             <div class="mt-10 flex flex-col gap-5">
+                @php
+                    // The results collection is already sorted eligible-first, then by lowest
+                    // interest rate — so the very first eligible row with a configured rate is,
+                    // by construction, the best-rate eligible option. Not shown when no eligible
+                    // result has a rate to compare, since "lowest of one unknown" isn't a claim.
+                    $recommendedId = optional($results->first(
+                        fn ($result) => $result->status->value === 'eligible' && $result->lenderProduct->interest_rate_from !== null,
+                    ))->id;
+                @endphp
                 @foreach ($results as $result)
-                    <x-ui.card>
+                    <x-ui.card :class="'transition-colors transition-shadow hover:bg-accent-soft hover:shadow-md hover:animate-card-swing '.($result->id === $recommendedId ? 'ring-2 ring-accent' : '')">
                         <div class="flex items-center justify-between gap-4">
                             <div class="flex items-center gap-3">
                                 <x-ui.lender-logo :lender="$result->lenderProduct->lender" size="sm" />
-                                <p class="font-display text-lg font-semibold text-ink">{{ $result->lenderProduct->lender->name }}</p>
+                                <div>
+                                    <p class="font-display text-lg font-semibold text-ink">{{ $result->lenderProduct->lender->name }}</p>
+                                    @if ($result->lenderProduct->interest_rate_from !== null)
+                                        <p class="font-mono text-xs text-ink-faint">Rate from {{ $result->lenderProduct->interest_rate_from }}% p.a.</p>
+                                    @endif
+                                </div>
                             </div>
-                            <x-ui.badge :tone="$result->status->value === 'eligible' ? 'pass' : 'warn'">
-                                {{ $result->status->getLabel() }}
-                            </x-ui.badge>
+                            <div class="flex flex-col items-end gap-1.5">
+                                <x-ui.badge :tone="$result->status->value === 'eligible' ? 'pass' : 'warn'">
+                                    {{ $result->status->getLabel() }}
+                                </x-ui.badge>
+                                @if ($result->id === $recommendedId)
+                                    <x-ui.badge tone="accent">Recommended</x-ui.badge>
+                                @endif
+                            </div>
                         </div>
+
+                        @if ($result->id === $recommendedId)
+                            <p class="mt-3 text-xs text-ink-faint">Lowest interest rate among the lenders you're eligible with.</p>
+                        @endif
 
                         @php
                             // Mandatory/preferred rules state a requirement, so passed=true is good.

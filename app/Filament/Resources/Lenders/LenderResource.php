@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Lenders;
 
+use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\Lenders\Pages\CreateLender;
 use App\Filament\Resources\Lenders\Pages\EditLender;
 use App\Filament\Resources\Lenders\Pages\ListLenders;
@@ -39,6 +40,7 @@ class LenderResource extends Resource
     {
         return [
             EmployerCategoriesRelationManager::class,
+            AuditLogsRelationManager::class,
         ];
     }
 

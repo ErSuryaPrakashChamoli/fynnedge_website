@@ -27,7 +27,7 @@ use App\Models\LoanProduct;
 class LoanCalculatorPreset
 {
     /**
-     * @return array{label: string, min_amount: float, max_amount: float, default_amount: float, min_rate: float, max_rate: float, default_rate: float, min_years: int, max_years: int, default_years: int, rate_note: ?string}|null
+     * @return array{label: string, min_amount: float, max_amount: float, default_amount: float, min_rate: float, max_rate: float, default_rate: float, min_years: int, max_years: int, default_years: int, rate_note: ?string, is_hybrid: bool, default_initial_tenure_months: ?int}|null
      */
     public static function for(LoanCategory $category): ?array
     {
@@ -65,6 +65,8 @@ class LoanCalculatorPreset
                 max(1, (int) floor($maxTenureMonths / 12)),
             ),
             'rate_note' => $product->interest_rate_note,
+            'is_hybrid' => $category->isHybridRepayment(),
+            'default_initial_tenure_months' => $product->default_initial_tenure_months,
         ];
     }
 
@@ -77,6 +79,18 @@ class LoanCalculatorPreset
             LoanCategory::cases(),
             fn (LoanCategory $category) => self::for($category) !== null,
         ));
+    }
+
+    /**
+     * The published LoanProduct record backing a category's calculator —
+     * exposed publicly (unlike the private product() lookup below) so
+     * callers that need the full model, not just the shaped preset array
+     * (e.g. the calculator's CTAs, explanation copy, FAQs), can resolve it
+     * without duplicating this query.
+     */
+    public static function productFor(LoanCategory $category): ?LoanProduct
+    {
+        return static::product($category);
     }
 
     private static function product(LoanCategory $category): ?LoanProduct

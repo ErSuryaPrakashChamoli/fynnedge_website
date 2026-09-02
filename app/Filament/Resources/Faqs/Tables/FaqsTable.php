@@ -28,6 +28,8 @@ class FaqsTable
                 TextColumn::make('sort_order')
                     ->label('Order')
                     ->sortable(),
+                TextColumn::make('published_at')->dateTime()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('expires_at')->dateTime()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('sort_order')
             ->filters([

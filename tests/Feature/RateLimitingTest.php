@@ -11,7 +11,7 @@ it('throttles the contact form route', function () {
 });
 
 it('throttles the journey and application routes as a group', function () {
-    $throttled = ['journey.show', 'journey.update', 'journey.back', 'applications.select', 'applications.show', 'applications.documents.upload', 'applications.submit'];
+    $throttled = ['journey.show', 'journey.update', 'journey.back', 'applications.select', 'applications.show', 'applications.documents.upload', 'applications.documents.delete', 'applications.submit'];
 
     foreach ($throttled as $name) {
         $route = collect(Route::getRoutes())->first(fn ($route) => $route->getName() === $name);

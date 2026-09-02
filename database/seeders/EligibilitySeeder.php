@@ -30,13 +30,46 @@ class EligibilitySeeder extends Seeder
 {
     public function run(): void
     {
-        $personalLoan = LoanProduct::query()->where('slug', 'personal-loan')->first();
+        $this->seedForProduct(
+            slug: 'personal-loan',
+            employerLabel: 'DEMO Employer Pvt Ltd',
+            criteriaNote: 'DEMO criteria seeded from typical published Indian personal loan lending patterns — not real bank criteria.',
+            minAge: 21,
+            maxAge: 60,
+            minIncome: 25000,
+            minEmploymentVintageYears: 1,
+            maxFoir: 50,
+        );
 
-        if (! $personalLoan) {
+        $this->seedForProduct(
+            slug: 'home-loan',
+            employerLabel: 'DEMO Home Finance Employer Pvt Ltd',
+            criteriaNote: 'DEMO criteria seeded from typical published Indian home loan lending patterns — not real bank criteria.',
+            minAge: 23,
+            maxAge: 65,
+            minIncome: 40000,
+            minEmploymentVintageYears: 2,
+            maxFoir: 60,
+        );
+    }
+
+    private function seedForProduct(
+        string $slug,
+        string $employerLabel,
+        string $criteriaNote,
+        int $minAge,
+        int $maxAge,
+        int $minIncome,
+        int $minEmploymentVintageYears,
+        int $maxFoir,
+    ): void {
+        $loanProduct = LoanProduct::query()->where('slug', $slug)->first();
+
+        if (! $loanProduct) {
             return;
         }
 
-        $lenderProduct = LenderProduct::query()->where('loan_product_id', $personalLoan->id)->first();
+        $lenderProduct = LenderProduct::query()->where('loan_product_id', $loanProduct->id)->first();
 
         if (! $lenderProduct) {
             return;
@@ -58,7 +91,7 @@ class EligibilitySeeder extends Seeder
         );
 
         $demoEmployer = Employer::query()->firstOrCreate(
-            ['name' => 'DEMO Employer Pvt Ltd'],
+            ['name' => $employerLabel],
             ['notes' => 'Seed data for local development and the eligibility tester — not a real company.'],
         );
         EmployerRating::query()->updateOrCreate(
@@ -70,24 +103,24 @@ class EligibilitySeeder extends Seeder
             ['lender_product_id' => $lenderProduct->id, 'version' => 1],
             [
                 'status' => EligibilityRuleSetStatus::Active,
-                'notes' => 'DEMO criteria seeded from typical published Indian personal loan lending patterns — not real bank criteria.',
+                'notes' => $criteriaNote,
             ],
         );
 
-        $this->rule($ruleSet, 'Age between 21 and 60', RulePriority::Mandatory, RuleLogic::And, [
-            ['attribute' => 'age', 'operator' => RuleOperator::Between, 'value' => [21, 60]],
+        $this->rule($ruleSet, "Age between {$minAge} and {$maxAge}", RulePriority::Mandatory, RuleLogic::And, [
+            ['attribute' => 'age', 'operator' => RuleOperator::Between, 'value' => [$minAge, $maxAge]],
         ], 'You meet the age requirement for this lender.');
 
         $this->rule($ruleSet, 'Minimum monthly income', RulePriority::Mandatory, RuleLogic::And, [
-            ['attribute' => 'total_monthly_income', 'operator' => RuleOperator::GreaterThanOrEqual, 'value' => 25000],
+            ['attribute' => 'total_monthly_income', 'operator' => RuleOperator::GreaterThanOrEqual, 'value' => $minIncome],
         ], 'Your income meets this lender\'s minimum requirement.');
 
         $this->rule($ruleSet, 'Minimum employment vintage', RulePriority::Mandatory, RuleLogic::And, [
-            ['attribute' => 'employment_vintage_years', 'operator' => RuleOperator::GreaterThanOrEqual, 'value' => 1],
+            ['attribute' => 'employment_vintage_years', 'operator' => RuleOperator::GreaterThanOrEqual, 'value' => $minEmploymentVintageYears],
         ], 'Your employment history meets the minimum requirement.');
 
         $this->rule($ruleSet, 'FOIR within limit', RulePriority::Mandatory, RuleLogic::And, [
-            ['attribute' => 'foir', 'operator' => RuleOperator::LessThanOrEqual, 'value' => 50],
+            ['attribute' => 'foir', 'operator' => RuleOperator::LessThanOrEqual, 'value' => $maxFoir],
         ], 'Your existing obligations are within this lender\'s permitted range.');
 
         $this->rule($ruleSet, 'Preferred employer category', RulePriority::Preferred, RuleLogic::And, [

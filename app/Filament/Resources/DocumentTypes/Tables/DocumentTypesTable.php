@@ -4,6 +4,7 @@ namespace App\Filament\Resources\DocumentTypes\Tables;
 
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -16,6 +17,8 @@ class DocumentTypesTable
                 TextColumn::make('key')->searchable()->sortable(),
                 TextColumn::make('label')->searchable(),
                 TextColumn::make('order')->sortable(),
+                IconColumn::make('allow_multiple')->label('Multiple')->boolean(),
+                IconColumn::make('allow_custom_label')->label('Custom label')->boolean(),
                 TextColumn::make('requirements_count')
                     ->label('Used by')
                     ->counts('requirements')

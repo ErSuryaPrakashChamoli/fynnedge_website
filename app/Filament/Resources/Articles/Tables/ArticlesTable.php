@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Articles\Tables;
 
+use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -24,6 +25,9 @@ class ArticlesTable
                     ->sortable(),
                 TextColumn::make('slug')
                     ->searchable(),
+                TextColumn::make('category')
+                    ->badge()
+                    ->placeholder('General'),
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn (PublishStatus $state) => match ($state) {
@@ -42,6 +46,7 @@ class ArticlesTable
             ->defaultSort('title')
             ->filters([
                 SelectFilter::make('status')->options(PublishStatus::class),
+                SelectFilter::make('category')->options(LoanCategory::class),
                 TrashedFilter::make(),
             ])
             ->recordActions([

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Faqs;
 
+use App\Filament\RelationManagers\RestorableAuditLogsRelationManager;
 use App\Filament\Resources\Faqs\Pages\CreateFaq;
 use App\Filament\Resources\Faqs\Pages\EditFaq;
 use App\Filament\Resources\Faqs\Pages\ListFaqs;
@@ -45,7 +46,7 @@ class FaqResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RestorableAuditLogsRelationManager::class,
         ];
     }
 

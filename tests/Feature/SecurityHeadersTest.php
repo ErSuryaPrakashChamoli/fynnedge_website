@@ -16,8 +16,9 @@ it('applies a Content-Security-Policy that only trusts self-hosted assets', func
 
     expect($csp)->not->toBeNull();
     expect($csp)->toContain("default-src 'self'");
-    expect($csp)->toContain("script-src 'self' 'unsafe-eval'");
+    expect($csp)->toContain("script-src 'self' 'unsafe-eval' 'unsafe-inline'");
     expect($csp)->toContain("style-src 'self' 'unsafe-inline'");
+    expect($csp)->toContain("frame-src 'self' https://www.google.com https://maps.google.com");
     expect($csp)->toContain("frame-ancestors 'none'");
     expect($csp)->not->toContain('https://cdn');
 });

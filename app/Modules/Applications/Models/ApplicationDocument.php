@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
 #[Fillable([
-    'application_id', 'document_type_id', 'disk', 'path', 'original_filename',
+    'application_id', 'document_type_id', 'slot', 'custom_label', 'disk', 'path', 'original_filename',
     'mime_type', 'size', 'status', 'rejection_reason', 'uploaded_at', 'verified_at',
 ])]
 class ApplicationDocument extends Model
