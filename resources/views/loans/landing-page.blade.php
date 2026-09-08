@@ -1,18 +1,26 @@
-<x-layouts.app :title="$landingPage->seoTitle()" :description="$landingPage->seoDescription()" :canonical="$landingPage->seoCanonicalUrl()" :og-image="$landingPage->seoOgImageUrl()" :robots="$landingPage->seoRobots()">
-    <section class="mx-auto max-w-5xl px-6 py-14 lg:px-8">
+<x-layouts.app :title="$landingPage->seoTitle()" :description="$landingPage->seoDescription()" :canonical="$landingPage->seoCanonicalUrl()" :og-image="$landingPage->seoOgImageUrl()" :robots="$landingPage->seoRobots()" :structured-data="$landingPage->seoStructuredData()" :schema-nodes="$schemaNodes">
+    {{--
+        Same microdata + data-ai-context treatment as loans/show.blade.php —
+        see the comment there for why the FAQ accordion is deliberately left
+        out of the microdata.
+    --}}
+    <article class="mx-auto max-w-5xl px-6 py-14 lg:px-8" itemscope itemtype="https://schema.org/Service">
         <x-ui.breadcrumbs :trail="[
             'Loans' => route('loans.index'),
             $loanProduct->name => route('loans.show', $loanProduct),
             $landingPage->title => null,
         ]" />
 
+        <link itemprop="url" href="{{ route('loans.landing-pages.show', ['loanProduct' => $loanProduct, 'landingPage' => $landingPage]) }}">
+        <meta itemprop="serviceType" content="{{ $loanProduct->category->getLabel() }}">
+
         <div data-reveal="left">
-            <x-ui.badge tone="accent" class="mt-5">{{ $loanProduct->category->getLabel() }}</x-ui.badge>
-            <h1 class="mt-4 max-w-2xl text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+            <x-ui.badge tone="accent" class="mt-5" itemprop="category">{{ $loanProduct->category->getLabel() }}</x-ui.badge>
+            <h1 itemprop="name" class="mt-4 max-w-2xl text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
                 {{ $landingPage->title }}
             </h1>
             @if ($landingPage->excerpt)
-                <p class="mt-3 max-w-2xl text-lg text-ink-muted">{{ $landingPage->excerpt }}</p>
+                <p itemprop="description" class="mt-3 max-w-2xl text-lg text-ink-muted">{{ $landingPage->excerpt }}</p>
             @endif
         </div>
 
@@ -32,7 +40,7 @@
         @endif
 
         @if ($calculatorSupported)
-            <div data-reveal="down" class="mt-12">
+            <div data-reveal="down" class="mt-12" data-ai-context="EMI Calculator">
                 <h2 class="font-display text-xl font-semibold text-ink">{{ $landingPage->title }} EMI calculator</h2>
                 <p class="mt-2 text-sm text-ink-faint">Estimate your monthly instalment and see the full year-by-year principal and interest breakdown.</p>
                 <div class="mt-6">
@@ -59,7 +67,7 @@
 
         <x-site.testimonials :testimonials="$testimonials" />
 
-        <x-site.faq-accordion :faqs="$loanProduct->faqs" />
+        <x-site.faq-accordion :faqs="$loanProduct->faqs" data-ai-context="Frequently Asked Questions" />
         <x-site.faq-json-ld :faqs="$loanProduct->faqs" />
-    </section>
+    </article>
 </x-layouts.app>

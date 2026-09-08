@@ -13,13 +13,16 @@ use App\Http\Controllers\JourneyController;
 use App\Http\Controllers\LoanLandingPageController;
 use App\Http\Controllers\LoanProductController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\SitemapController;
+use App\Support\Seo\Sitemap;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/about', AboutController::class)->name('about');
 Route::get('/careers', CareerController::class)->name('careers');
 
-foreach (['grievance', 'privacy-policy', 'terms', 'disclaimer', 'credit-report-terms'] as $slug) {
+foreach (Sitemap::ROUTED_PAGE_SLUGS as $slug) {
     Route::get("/{$slug}", [PageController::class, 'show'])->name($slug)->defaults('slug', $slug);
 }
 

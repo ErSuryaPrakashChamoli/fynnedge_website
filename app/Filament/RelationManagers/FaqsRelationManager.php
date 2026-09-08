@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\LoanProducts\RelationManagers;
+namespace App\Filament\RelationManagers;
 
 use App\Enums\PublishStatus;
 use Filament\Actions\CreateAction;
@@ -16,9 +16,16 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
+/**
+ * Shared by every model that morphs FAQs onto itself (LoanProduct, Page).
+ * Lives here rather than under one resource because the owner is the
+ * polymorphic `faqable` relation, not any single resource.
+ */
 class FaqsRelationManager extends RelationManager
 {
     protected static string $relationship = 'faqs';
+
+    protected static ?string $title = 'FAQs';
 
     public function form(Schema $schema): Schema
     {

@@ -6,17 +6,26 @@
         : null;
     $lenderNames = $loanProduct->lenderProducts->pluck('lender.name');
 @endphp
-<x-layouts.app :title="$loanProduct->seoTitle()" :description="$loanProduct->seoDescription()" :canonical="$loanProduct->seoCanonicalUrl()" :og-image="$loanProduct->seoOgImageUrl()" :robots="$loanProduct->seoRobots()">
+<x-layouts.app :title="$loanProduct->seoTitle()" :description="$loanProduct->seoDescription()" :canonical="$loanProduct->seoCanonicalUrl()" :og-image="$loanProduct->seoOgImageUrl()" :robots="$loanProduct->seoRobots()" :structured-data="$loanProduct->seoStructuredData()" :schema-nodes="$schemaNodes">
     <x-site.flexi-hybrid-hero :loan-product="$loanProduct" />
 
-    <section id="flexi-hybrid-details" class="mx-auto max-w-5xl px-6 py-14 lg:px-8">
+    {{--
+        Same microdata + data-ai-context treatment as loans/show.blade.php —
+        see the comment there for why the FAQ accordion is deliberately left
+        out of the microdata.
+    --}}
+    <article id="flexi-hybrid-details" class="mx-auto max-w-5xl px-6 py-14 lg:px-8" itemscope itemtype="https://schema.org/Service">
+        <meta itemprop="name" content="{{ $loanProduct->name }}">
+        <link itemprop="url" href="{{ route('loans.show', $loanProduct) }}">
+        <meta itemprop="serviceType" content="{{ $loanProduct->category->getLabel() }}">
+
         <x-ui.breadcrumbs :trail="['Loans' => route('loans.index'), $loanProduct->name => null]" />
 
         @if ($loanProduct->summary || $loanProduct->body)
             <div class="mt-8" data-reveal="fade">
                 <h2 class="font-display text-xl font-semibold text-ink">What is a Flexi Hybrid Term Loan?</h2>
                 @if ($loanProduct->summary)
-                    <p class="mt-3 max-w-2xl text-lg text-ink-muted">{{ $loanProduct->summary }}</p>
+                    <p itemprop="description" class="mt-3 max-w-2xl text-lg text-ink-muted">{{ $loanProduct->summary }}</p>
                 @endif
                 @if ($loanProduct->body)
                     <div class="prose prose-neutral mt-4 max-w-2xl text-ink-muted [&_h2]:font-display [&_h2]:text-ink [&_p]:leading-relaxed">
@@ -154,7 +163,7 @@
 
         <x-site.testimonials :testimonials="$testimonials" />
 
-        <x-site.faq-accordion :faqs="$loanProduct->faqs" />
+        <x-site.faq-accordion :faqs="$loanProduct->faqs" data-ai-context="Frequently Asked Questions" />
         <x-site.faq-json-ld :faqs="$loanProduct->faqs" />
-    </section>
+    </article>
 </x-layouts.app>

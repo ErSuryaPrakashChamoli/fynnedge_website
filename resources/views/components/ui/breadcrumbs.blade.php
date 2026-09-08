@@ -40,6 +40,7 @@
         {!! json_encode([
             '@@context' => 'https://schema.org',
             '@type' => 'BreadcrumbList',
+            '@id' => url()->current().'#breadcrumb',
             'itemListElement' => $breadcrumbList->all(),
         ]) !!}
     </script>

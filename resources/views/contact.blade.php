@@ -1,4 +1,4 @@
-<x-layouts.app title="Contact" description="Get in touch with FynnEdge Advisory.">
+<x-layouts.app title="Contact" description="Get in touch with FynnEdge Advisory." page-type="ContactPage">
     <section class="mx-auto max-w-3xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Contact' => null]" />
 

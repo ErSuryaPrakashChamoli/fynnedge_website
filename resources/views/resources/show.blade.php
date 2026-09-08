@@ -1,4 +1,4 @@
-<x-layouts.app :title="$article->seoTitle()" :description="$article->seoDescription()" :canonical="$article->seoCanonicalUrl()" :og-image="$article->seoOgImageUrl()" :robots="$article->seoRobots()">
+<x-layouts.app :title="$article->seoTitle()" :description="$article->seoDescription()" :canonical="$article->seoCanonicalUrl()" :og-image="$article->seoOgImageUrl()" :robots="$article->seoRobots()" :structured-data="$article->seoStructuredData()" og-type="article">
     <section class="mx-auto max-w-3xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Resources' => route('resources.index'), $article->title => null]" />
 
@@ -18,9 +18,6 @@
             </div>
         @endif
 
-        @php
-            $publisherName = \App\Models\Setting::get('site_name', 'FynnEdge');
-        @endphp
         <script type="application/ld+json">
             {!! json_encode(array_filter([
                 '@@context' => 'https://schema.org',
@@ -30,9 +27,9 @@
                 'datePublished' => $article->published_at?->toIso8601String(),
                 'dateModified' => $article->updated_at->toIso8601String(),
                 'image' => $article->seoOgImageUrl(),
-                'author' => ['@type' => 'Organization', 'name' => $publisherName],
-                'publisher' => ['@type' => 'Organization', 'name' => $publisherName],
-                'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $article->seoCanonicalUrl() ?: url()->current()],
+                'author' => ['@id' => \App\Support\Seo\SchemaGraph::organizationId()],
+                'publisher' => ['@id' => \App\Support\Seo\SchemaGraph::organizationId()],
+                'mainEntityOfPage' => ['@id' => ($article->seoCanonicalUrl() ?: url()->current()).'#webpage'],
             ])) !!}
         </script>
     </section>

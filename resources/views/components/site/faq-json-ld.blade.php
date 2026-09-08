@@ -5,6 +5,7 @@
         {!! json_encode([
             '@@context' => 'https://schema.org',
             '@type' => 'FAQPage',
+            '@id' => url()->current().'#faq',
             'mainEntity' => $faqs->map(fn ($faq) => [
                 '@type' => 'Question',
                 'name' => $faq->question,

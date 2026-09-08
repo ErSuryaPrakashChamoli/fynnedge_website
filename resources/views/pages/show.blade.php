@@ -1,4 +1,4 @@
-<x-layouts.app :title="$page->seoTitle()" :description="$page->seoDescription()" :canonical="$page->seoCanonicalUrl()" :og-image="$page->seoOgImageUrl()" :robots="$page->seoRobots()">
+<x-layouts.app :title="$page->seoTitle()" :description="$page->seoDescription()" :canonical="$page->seoCanonicalUrl()" :og-image="$page->seoOgImageUrl()" :robots="$page->seoRobots()" :structured-data="$page->seoStructuredData()">
     <section class="mx-auto max-w-3xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="[$page->title => null]" />
 
@@ -52,5 +52,8 @@
                 </table>
             </div>
         @endif
+
+        <x-site.faq-accordion :faqs="$faqs" />
+        <x-site.faq-json-ld :faqs="$faqs" />
     </section>
 </x-layouts.app>

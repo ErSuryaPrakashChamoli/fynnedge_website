@@ -6,6 +6,7 @@ use App\Enums\LenderStatus;
 use App\Models\LoanProduct;
 use App\Models\Testimonial;
 use App\Support\Calculators\LoanCalculatorPreset;
+use App\Support\Seo\SchemaGraph;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
@@ -38,6 +39,12 @@ class LoanProductController extends Controller
 
         return view($view, [
             'loanProduct' => $loanProduct,
+            'schemaNodes' => [SchemaGraph::service(
+                name: $loanProduct->name,
+                serviceType: $loanProduct->category->getLabel(),
+                url: route('loans.show', $loanProduct),
+                description: $loanProduct->summary,
+            )],
             'calculatorSupported' => LoanCalculatorPreset::for($loanProduct->category) !== null,
             'testimonials' => Testimonial::query()->published()->forCategory($loanProduct->category)->orderBy('sort_order')->get(),
         ]);

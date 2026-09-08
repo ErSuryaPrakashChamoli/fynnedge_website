@@ -11,6 +11,7 @@ use Database\Factories\PageFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable(['title', 'slug', 'excerpt', 'body', 'status', 'published_at', 'expires_at'])]
@@ -26,5 +27,10 @@ class Page extends Model
             'published_at' => 'datetime',
             'expires_at' => 'datetime',
         ];
+    }
+
+    public function faqs(): MorphMany
+    {
+        return $this->morphMany(Faq::class, 'faqable')->orderBy('sort_order');
     }
 }

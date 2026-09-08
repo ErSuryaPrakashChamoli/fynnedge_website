@@ -24,6 +24,7 @@ class PageController extends Controller
 
         return view('pages.show', [
             'page' => $page,
+            'faqs' => $page->faqs()->published()->get(),
             'grievanceLevels' => $slug === 'grievance'
                 ? GrievanceLevel::query()->published()->orderBy('sort_order')->get()
                 : new Collection,

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Pages;
 
+use App\Filament\RelationManagers\FaqsRelationManager;
 use App\Filament\RelationManagers\RestorableAuditLogsRelationManager;
 use App\Filament\Resources\Pages\Pages\CreatePage;
 use App\Filament\Resources\Pages\Pages\EditPage;
@@ -38,6 +39,7 @@ class PageResource extends Resource
     public static function getRelations(): array
     {
         return [
+            FaqsRelationManager::class,
             RestorableAuditLogsRelationManager::class,
         ];
     }

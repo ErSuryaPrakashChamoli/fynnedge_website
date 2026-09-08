@@ -1,2 +1,57 @@
+# FynnEdge Advisory (OPC) Pvt Ltd
+# Public marketing content is open to search and answer engines.
+# Authenticated, transactional and system routes are not.
+
+# --- Answer engines / AI search ---
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: PerplexityBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Anthropic-AI
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# --- Everything else ---
 User-agent: *
-Disallow:
+Allow: /
+
+# Admin panel and authentication
+Disallow: /admin
+Disallow: /login
+Disallow: /register
+Disallow: /password
+Disallow: /api
+
+# Transactional funnel: per-visitor application state, not indexable content.
+# These already send "noindex, nofollow" in the page head as well.
+Disallow: /journey/
+Disallow: /applications/
+Disallow: /credit-score/
+
+# Storage internals and health probe
+Disallow: /storage/private
+Disallow: /up
+
+# Signed draft previews generated from the admin panel
+Disallow: /*?signature=
+Disallow: /*&signature=
+
+Sitemap: https://fynnedge.com/sitemap.xml

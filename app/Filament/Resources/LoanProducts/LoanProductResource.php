@@ -3,10 +3,10 @@
 namespace App\Filament\Resources\LoanProducts;
 
 use App\Filament\RelationManagers\AuditLogsRelationManager;
+use App\Filament\RelationManagers\FaqsRelationManager;
 use App\Filament\Resources\LoanProducts\Pages\CreateLoanProduct;
 use App\Filament\Resources\LoanProducts\Pages\EditLoanProduct;
 use App\Filament\Resources\LoanProducts\Pages\ListLoanProducts;
-use App\Filament\Resources\LoanProducts\RelationManagers\FaqsRelationManager;
 use App\Filament\Resources\LoanProducts\RelationManagers\LenderProductsRelationManager;
 use App\Filament\Resources\LoanProducts\Schemas\LoanProductForm;
 use App\Filament\Resources\LoanProducts\Tables\LoanProductsTable;

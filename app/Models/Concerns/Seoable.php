@@ -33,6 +33,20 @@ trait Seoable
         return $this->seoMeta?->robots ?: null;
     }
 
+    /**
+     * Admin-authored JSON-LD for this record, decoded from the shared
+     * seo_metas row. Returns null (rather than an empty array) when nothing
+     * is set, so call sites can skip rendering the <script> tag entirely.
+     *
+     * @return array<array-key, mixed>|null
+     */
+    public function seoStructuredData(): ?array
+    {
+        $structuredData = $this->seoMeta?->structured_data;
+
+        return filled($structuredData) ? $structuredData : null;
+    }
+
     public function seoOgImageUrl(): ?string
     {
         $path = $this->seoMeta?->og_image_path;

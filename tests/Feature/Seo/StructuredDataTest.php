@@ -5,6 +5,7 @@ use App\Enums\PublishStatus;
 use App\Models\Article;
 use App\Models\Faq;
 use App\Models\LoanProduct;
+use App\Support\Seo\SchemaGraph;
 
 /**
  * Every one of these previously asserted only `@type`, never `@context` —
@@ -65,15 +66,22 @@ it('emits Article JSON-LD with reliable, non-fabricated properties', function ()
     expect($json['headline'])->toBe('A Guide To Personal Loans');
     expect($json['description'])->toBe('Everything you need to know.');
     expect($json)->not->toHaveKey('image');
-    expect($json['author']['name'])->toBe('FynnEdge');
+
+    /**
+     * author/publisher reference the Organization node in the layout's graph by
+     *
+     * @id rather than restating its name inline, so there is exactly one
+     * organization entity per page for crawlers to resolve.
+     */
+    expect($json['author'])->toBe(['@id' => SchemaGraph::organizationId()]);
+    expect($json['publisher'])->toBe($json['author']);
+    expect($json['mainEntityOfPage']['@id'])->toEndWith('#webpage');
 });
 
 it('emits sitewide Organization and WebSite JSON-LD on every page, with a valid @context', function () {
     $response = $this->get('/');
 
-    $response->assertOk()
-        ->assertSee('"@type":"Organization"', false)
-        ->assertSee('"@type":"WebSite"', false);
+    $response->assertOk();
 
     $json = collect(explode('<script type="application/ld+json">', $response->getContent()))
         ->skip(1)
@@ -81,6 +89,20 @@ it('emits sitewide Organization and WebSite JSON-LD on every page, with a valid 
         ->first(fn ($data) => isset($data['@graph']));
 
     assertValidJsonLd($json);
+
+    /**
+     * Asserted on the decoded graph rather than as `assertSee('"@type":"Organization"')`
+     * on raw HTML: the Organization node is multi-typed (Organization +
+     * FinancialService, so LocalBusiness-level areaServed/priceRange are legal
+     * on it), which no exact-string assertion survives.
+     */
+    $organization = collect($json['@graph'])->first(fn ($node) => str_ends_with($node['@id'] ?? '', '#organization'));
+    $website = collect($json['@graph'])->first(fn ($node) => ($node['@type'] ?? null) === 'WebSite');
+
+    expect($organization['@type'])->toContain('Organization');
+    expect($organization['name'])->toBe('FynnEdge');
+    expect($website)->not->toBeNull();
+    expect($website['url'])->toBe(url('/'));
 });
 
 it('emits FAQPage JSON-LD on a loan landing page that has FAQs, using the shared component, with a valid @context', function () {

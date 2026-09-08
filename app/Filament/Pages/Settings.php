@@ -47,6 +47,14 @@ class Settings extends Page
             'contact_whatsapp' => Setting::get('contact_whatsapp'),
             'contact_address' => Setting::get('contact_address'),
             'contact_map_url' => Setting::get('contact_map_url'),
+            'business_description' => Setting::get('business_description'),
+            'business_street_address' => Setting::get('business_street_address'),
+            'business_locality' => Setting::get('business_locality'),
+            'business_region' => Setting::get('business_region'),
+            'business_postal_code' => Setting::get('business_postal_code'),
+            'business_country' => Setting::get('business_country', 'IN'),
+            'business_area_served' => Setting::get('business_area_served'),
+            'business_price_range' => Setting::get('business_price_range'),
             'founder_name' => Setting::get('founder_name'),
             'founder_photo' => Setting::get('founder_photo'),
             'social_instagram' => Setting::get('social_instagram'),
@@ -182,6 +190,37 @@ class Settings extends Page
                             ->columnSpanFull()
                             ->placeholder('https://maps.google.com/maps?q=...')
                             ->helperText('Paste a Google Maps link for your location — Share → Copy link, or Share → Embed a map. Either works.'),
+                    ]),
+
+                Section::make('Business profile (structured data)')
+                    ->description('Feeds the sitewide Organization schema that Google and AI assistants read to identify the business. Leave any field blank and it is simply omitted — never guessed.')
+                    ->columns(3)
+                    ->components([
+                        Textarea::make('business_description')
+                            ->label('Business description')
+                            ->rows(2)
+                            ->maxLength(300)
+                            ->columnSpanFull()
+                            ->helperText('One or two sentences describing what the business does.'),
+                        TextInput::make('business_street_address')->label('Street address')->columnSpan(2),
+                        TextInput::make('business_locality')->label('City / locality'),
+                        TextInput::make('business_region')->label('State / region'),
+                        TextInput::make('business_postal_code')->label('PIN code'),
+                        TextInput::make('business_country')
+                            ->label('Country code')
+                            ->maxLength(2)
+                            ->placeholder('IN')
+                            ->helperText('Two-letter ISO code.'),
+                        Textarea::make('business_area_served')
+                            ->label('Areas served')
+                            ->rows(4)
+                            ->columnSpanFull()
+                            ->helperText('One place per line, e.g. Delhi NCR, Karnataka, Maharashtra.'),
+                        TextInput::make('business_price_range')
+                            ->label('Loan amount range')
+                            ->columnSpanFull()
+                            ->placeholder('₹25,000 - ₹30,00,000')
+                            ->helperText('The range of loan amounts arranged, shown to search engines as the price range.'),
                     ]),
 
                 Section::make('Founder message')
