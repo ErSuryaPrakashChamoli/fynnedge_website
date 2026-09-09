@@ -1,4 +1,4 @@
-<x-layouts.app :title="$article->seoTitle()" :description="$article->seoDescription()" :canonical="$article->seoCanonicalUrl()" :og-image="$article->seoOgImageUrl()" :robots="$article->seoRobots()" :structured-data="$article->seoStructuredData()" og-type="article">
+<x-layouts.app :title="$article->seoTitle()" :description="$article->seoDescription()" :canonical="$article->seoCanonicalUrl()" :og-image="$article->seoOgImageUrl()" :robots="$article->seoRobots()" :structured-data="$article->seoStructuredData()" :page-type="$article->seoPageType()" :schema-template="$article->seoSchemaTemplate()" og-type="article">
     <section class="mx-auto max-w-3xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Resources' => route('resources.index'), $article->title => null]" />
 

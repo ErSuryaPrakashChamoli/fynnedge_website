@@ -50,6 +50,19 @@ class RoleSeeder extends Seeder
     }
 
     /**
+     * Deliberately ungranted here: `View:StructuredData` and the
+     * `*:SchemaTemplate` set (see App\Filament\Pages\StructuredData and
+     * SchemaTemplateResource). They shape the JSON-LD every public page emits —
+     * including the graph's `@type`s — so which role, if any, gets them is an
+     * admin's decision to make in Access Control → Roles, not a default this
+     * seeder should presume. Until one is granted, only `super_admin` has them.
+     *
+     * Note this is NOT a permission the SEO role silently lost: the per-record
+     * "Custom JSON-LD" field it could already edit stays under its existing
+     * Update:Page / Update:Article / *Seo permissions.
+     */
+
+    /**
      * @param  array<int, string>  $models
      * @param  array<int, string>  $methods
      * @return Collection<int, Permission>

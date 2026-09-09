@@ -1,4 +1,4 @@
-<x-layouts.app handles-faqs :title="$landingPage->seoTitle()" :description="$landingPage->seoDescription()" :canonical="$landingPage->seoCanonicalUrl()" :og-image="$landingPage->seoOgImageUrl()" :robots="$landingPage->seoRobots()" :structured-data="$landingPage->seoStructuredData()" :schema-nodes="$schemaNodes">
+<x-layouts.app handles-faqs :title="$landingPage->seoTitle()" :description="$landingPage->seoDescription()" :canonical="$landingPage->seoCanonicalUrl()" :og-image="$landingPage->seoOgImageUrl()" :robots="$landingPage->seoRobots()" :structured-data="$landingPage->seoStructuredData()" :page-type="$landingPage->seoPageType()" :schema-template="$landingPage->seoSchemaTemplate()" :schema-nodes="$schemaNodes">
     {{--
         Same microdata + data-ai-context treatment as loans/show.blade.php —
         see the comment there for why the FAQ accordion is deliberately left

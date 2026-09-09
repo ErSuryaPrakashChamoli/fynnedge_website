@@ -2,6 +2,9 @@
 
 namespace App\Filament\Schemas;
 
+use App\Enums\SchemaPageType;
+use App\Support\Seo\SchemaGraph;
+use App\Support\Seo\SchemaTemplateRenderer;
 use Closure;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -11,6 +14,19 @@ use Filament\Schemas\Components\Section;
 
 class SeoFormSection
 {
+    /**
+     * The structured-data controls are gated on the same permission as the
+     * Structured Data settings page, so an admin decides in one place who may
+     * shape schema output. The pre-existing title/description/canonical/robots/
+     * image fields are deliberately NOT gated — they were already available to
+     * every role that can edit a record's SEO, and moving them behind a new,
+     * unassigned permission would silently revoke access the SEO role has today.
+     */
+    private static function canEditStructuredData(): bool
+    {
+        return (bool) auth()->user()?->can('View:StructuredData');
+    }
+
     public static function make(): Section
     {
         return Section::make('SEO')
@@ -45,6 +61,24 @@ class SeoFormSection
                     ->directory('seo')
                     ->maxSize(2048)
                     ->helperText('Recommended 1200×630px, up to 2MB. Falls back to the site default SEO image if left blank.')
+                    ->columnSpanFull(),
+                Select::make('page_type')
+                    ->label('Page type (schema.org)')
+                    ->options(SchemaPageType::options())
+                    ->searchable()
+                    ->native(false)
+                    ->visible(self::canEditStructuredData(...))
+                    ->placeholder('Use the sitewide default ('.SchemaGraph::defaultPageType().')')
+                    ->helperText('Sets the @type on this page\'s WebPage node in the sitewide graph. Leave blank to inherit the default.')
+                    ->columnSpanFull(),
+                Select::make('schema_template_id')
+                    ->label('Schema template')
+                    ->relationship('schemaTemplate', 'name', fn ($query) => $query->active())
+                    ->searchable()
+                    ->preload()
+                    ->native(false)
+                    ->visible(self::canEditStructuredData(...))
+                    ->helperText('Optional. Renders a reusable JSON-LD blueprint into this page\'s graph, with '.implode(', ', array_map(fn (string $token): string => '{{ '.$token.' }}', SchemaTemplateRenderer::availableTokens())).' filled in from this record. Manage blueprints under Content → Schema Templates.')
                     ->columnSpanFull(),
                 Textarea::make('structured_data')
                     ->label('Custom JSON-LD structured data')

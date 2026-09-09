@@ -9,6 +9,35 @@
         $resolvedDescription = $description ?? 'FynnEdge helps you find the right lender for your personal loan, home loan, business loan or loan against property — with clear, upfront eligibility.';
         $resolvedCanonical = $canonical ?? url()->current();
         $resolvedOgImage = $ogImage ?? $siteBranding['defaultOgImageUrl'];
+
+        /*
+         * A record's admin-chosen @type wins over the type the view hardcodes,
+         * which in turn wins over the sitewide default Setting. The schema
+         * template attached to that record is rendered here rather than in the
+         * view because this is the only place the final title, description,
+         * canonical URL and social image are all resolved — the exact values
+         * its placeholder tokens substitute.
+         */
+        $resolvedPageType = ($pageType ?? null) ?: \App\Support\Seo\SchemaGraph::defaultPageType();
+
+        $resolvedSchemaNodes = $schemaNodes ?? [];
+
+        if ($schemaTemplate ?? null) {
+            $templateNode = \App\Support\Seo\SchemaTemplateRenderer::render(
+                $schemaTemplate,
+                \App\Support\Seo\SchemaTemplateRenderer::context(
+                    title: $resolvedTitle,
+                    description: $resolvedDescription,
+                    url: $resolvedCanonical,
+                    imageUrl: $resolvedOgImage,
+                    siteName: $siteBranding['name'],
+                ),
+            );
+
+            if ($templateNode) {
+                $resolvedSchemaNodes[] = $templateNode;
+            }
+        }
     @endphp
 
     <title>{{ $resolvedTitle }}{{ isset($title) ? ' — '.$siteBranding['name'] : ' — '.$siteBranding['tagline'] }}</title>
@@ -56,8 +85,8 @@
                 pageDescription: $resolvedDescription,
                 canonicalUrl: $resolvedCanonical,
                 ogImageUrl: $resolvedOgImage,
-                pageType: $pageType ?? 'WebPage',
-                extraNodes: $schemaNodes ?? [],
+                pageType: $resolvedPageType,
+                extraNodes: $resolvedSchemaNodes,
             ),
             JSON_HEX_TAG | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
         ) !!}
