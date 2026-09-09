@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\PageFaqs\Tables;
 
-use App\Enums\FaqPlacement;
 use App\Enums\PublishStatus;
+use App\Support\Faqs\FaqPlacements;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -24,7 +24,7 @@ class PageFaqsTable
                 TextColumn::make('placements')
                     ->label('Shown on')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => FaqPlacement::tryFrom($state)?->getLabel() ?? $state),
+                    ->formatStateUsing(fn (string $state): string => FaqPlacements::label($state)),
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn (PublishStatus $state) => match ($state) {
@@ -41,7 +41,7 @@ class PageFaqsTable
                 SelectFilter::make('status')->options(PublishStatus::class),
                 SelectFilter::make('placements')
                     ->label('Page')
-                    ->options(FaqPlacement::groupedOptions())
+                    ->options(FaqPlacements::options())
                     ->query(fn (Builder $query, array $data): Builder => filled($data['value'] ?? null)
                         ? $query->forPlacement($data['value'])
                         : $query),

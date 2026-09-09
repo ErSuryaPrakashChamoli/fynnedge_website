@@ -4,6 +4,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 
 | Applies to | Rule file |
 | --- | --- |
+| app/Models/Achievement.php,app/Filament/Resources/Achievements/**,resources/views/components/site/hero-stats.blade.php | .ai/rules/achievements-views-components-site.md |
 | app/Models/Achievement.php,app/Filament/Resources/Achievements/**,resources/views/home.blade.php | .ai/rules/achievements-views.md |
 | app/Filament/**/FileUpload*,config/filesystems.php | .ai/rules/app-filament.md |
 | app/Providers/Filament/AdminPanelProvider.php | .ai/rules/app-providers-filament.md |

@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\PageFaqs\Schemas;
 
-use App\Enums\FaqPlacement;
 use App\Enums\PublishStatus;
+use App\Support\Faqs\FaqPlacements;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -29,9 +29,9 @@ class PageFaqForm
                     ->multiple()
                     ->required()
                     ->searchable()
-                    ->options(FaqPlacement::groupedOptions())
+                    ->options(FaqPlacements::options())
                     ->columnSpanFull()
-                    ->helperText('Pick one or more pages. Options covering "every ... page" apply to all URLs of that type — e.g. "Every loan product page" shows on all of them, on top of each product\'s own FAQs tab.'),
+                    ->helperText('Pick one or more pages. Every page is listed individually — e.g. "Personal Loan" under Loan product pages — and each group also has an "Every ..." option that covers all pages of that type at once.'),
                 TextInput::make('sort_order')
                     ->numeric()
                     ->default(0)

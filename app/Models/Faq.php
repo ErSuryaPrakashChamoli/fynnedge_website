@@ -40,6 +40,31 @@ class Faq extends Model
         $query->whereJsonContains('placements', $placement instanceof FaqPlacement ? $placement->value : $placement);
     }
 
+    /**
+     * Matches an FAQ pinned to ANY of the given tokens.
+     *
+     * A page resolves to more than one token — the route-wide `loans.show` and
+     * the page-specific `loans.show:personal-loan` — so an FAQ pinned to every
+     * loan page and one pinned to just this product both have to surface. See
+     * App\Support\Faqs\FaqPlacements.
+     *
+     * @param  array<int, string>  $tokens
+     */
+    public function scopeForPlacements(Builder $query, array $tokens): void
+    {
+        if ($tokens === []) {
+            $query->whereRaw('1 = 0');
+
+            return;
+        }
+
+        $query->where(function (Builder $query) use ($tokens): void {
+            foreach ($tokens as $token) {
+                $query->orWhereJsonContains('placements', $token);
+            }
+        });
+    }
+
     public function faqable(): MorphTo
     {
         return $this->morphTo();

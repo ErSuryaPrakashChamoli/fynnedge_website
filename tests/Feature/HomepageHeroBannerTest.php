@@ -100,6 +100,21 @@ it('replaces every derived figure with the admin achievements once any are publi
         ->assertDontSee('Partner banks &amp; NBFCs', false);
 });
 
+it('renders exactly the stats an admin published, in their chosen order, whatever the count', function () {
+    Achievement::factory()->published()->create(['label' => 'Cities served', 'value' => '550', 'suffix' => '+', 'sort_order' => 2]);
+    Achievement::factory()->published()->create(['label' => 'Disbursed', 'value' => '20', 'prefix' => '₹', 'suffix' => 'Cr+', 'sort_order' => 1]);
+    Achievement::factory()->published()->create(['label' => 'Happy customers', 'value' => '12000', 'suffix' => '+', 'sort_order' => 3]);
+    Achievement::factory()->create(['label' => 'Still a draft', 'value' => '99']);
+
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect(substr_count($html, 'text-ink-faint">'))->toBeGreaterThanOrEqual(3)
+        ->and($html)->not->toContain('Still a draft')
+        ->and(strpos($html, 'Disbursed'))->toBeLessThan(strpos($html, 'Cities served'))
+        ->and(strpos($html, 'Cities served'))->toBeLessThan(strpos($html, 'Happy customers'))
+        ->and($html)->toContain('₹20Cr+');
+});
+
 it('drops a derived figure that would otherwise render as zero', function () {
     Lender::query()->delete();
 

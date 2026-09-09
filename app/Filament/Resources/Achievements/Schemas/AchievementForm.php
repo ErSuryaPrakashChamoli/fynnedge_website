@@ -3,11 +3,14 @@
 namespace App\Filament\Resources\Achievements\Schemas;
 
 use App\Enums\PublishStatus;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
+/**
+ * A homepage stat is text only — prefix + value + suffix, plus its caption.
+ * The strip has no markup for an image, so no image field is offered here.
+ */
 class AchievementForm
 {
     public static function configure(Schema $schema): Schema
@@ -38,19 +41,8 @@ class AchievementForm
                 TextInput::make('sort_order')
                     ->label('Display order')
                     ->numeric()
-                    ->default(0),
-                FileUpload::make('icon_path')
-                    ->label('Icon (optional)')
-                    ->image()
-                    ->disk('public')
-                    ->directory('achievements')
-                    ->acceptedFileTypes(['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'])
-                    ->maxSize(1024)
-                    ->helperText('Optional. A small square icon, up to 1MB.'),
-                TextInput::make('icon_alt')
-                    ->label('Icon alt text')
-                    ->maxLength(120)
-                    ->helperText('Describes the icon for screen readers. Leave blank if the icon is purely decorative.'),
+                    ->default(0)
+                    ->helperText('Lowest first. Publish as many stats as you want — the row spreads them evenly.'),
                 Select::make('status')
                     ->options(PublishStatus::class)
                     ->default(PublishStatus::Draft)

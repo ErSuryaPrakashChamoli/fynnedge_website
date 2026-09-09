@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * An admin-managed headline statistic on the homepage — "Cities served: 550+",
@@ -27,8 +26,12 @@ use Illuminate\Support\Facades\Storage;
  *
  * Follows HowItWorksStep's shape — draft/publish toggle and sort_order, no
  * scheduling — since a handful of headline figures don't need to be timed.
+ *
+ * Text only, by design: the homepage strip has no markup for an icon, so the
+ * admin form offers none. Any number of rows can be published and the strip
+ * spreads whatever exists evenly across the row.
  */
-#[Fillable(['label', 'value', 'prefix', 'suffix', 'icon_path', 'icon_alt', 'sort_order', 'status'])]
+#[Fillable(['label', 'value', 'prefix', 'suffix', 'sort_order', 'status'])]
 class Achievement extends Model
 {
     /** @use HasFactory<AchievementFactory> */
@@ -44,11 +47,6 @@ class Achievement extends Model
     public function scopePublished(Builder $query): void
     {
         $query->where('status', PublishStatus::Published);
-    }
-
-    public function iconUrl(): ?string
-    {
-        return $this->icon_path ? Storage::disk('public')->url($this->icon_path) : null;
     }
 
     /**

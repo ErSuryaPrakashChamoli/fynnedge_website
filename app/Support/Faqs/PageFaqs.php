@@ -25,13 +25,22 @@ class PageFaqs
      */
     public static function forRoute(?string $routeName): Collection
     {
-        if (blank($routeName)) {
+        $current = Route::current();
+
+        // A page-specific pin ("just the Personal Loan page") needs the route
+        // parameters, not only the route name — see FaqPlacements.
+        $tokens = FaqPlacements::tokensFor(
+            $routeName,
+            $routeName === $current?->getName() ? $current->parameters() : [],
+        );
+
+        if ($tokens === []) {
             return new Collection;
         }
 
         return Faq::query()
             ->published()
-            ->forPlacement($routeName)
+            ->forPlacements($tokens)
             ->orderBy('sort_order')
             ->orderBy('id')
             ->get();

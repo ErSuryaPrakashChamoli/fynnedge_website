@@ -7,7 +7,6 @@ use App\Models\Achievement;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -18,7 +17,6 @@ class AchievementsTable
     {
         return $table
             ->columns([
-                ImageColumn::make('icon_path')->label('')->circular(),
                 TextColumn::make('sort_order')->label('Order')->sortable(),
                 TextColumn::make('label')->label('Metric name')->searchable(),
                 TextColumn::make('value')
