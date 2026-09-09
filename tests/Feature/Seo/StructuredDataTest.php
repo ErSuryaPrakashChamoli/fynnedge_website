@@ -153,3 +153,60 @@ it('emits FAQPage JSON-LD with a valid @context on the general FAQ page', functi
 
     assertValidJsonLd($json);
 });
+
+/**
+ * The homepage renders the same FAQ accordion every other FAQ-bearing view
+ * does, but was the one place that never emitted the matching FAQPage block —
+ * so the visible answers were invisible to answer engines. One source of
+ * truth (published, unattached Faq rows) must drive both.
+ */
+it('emits FAQPage JSON-LD on the homepage from the same FAQs it shows visibly', function () {
+    Faq::factory()->create([
+        'status' => PublishStatus::Published,
+        'question' => 'What is the minimum salary required for a personal loan?',
+        'answer' => 'Most private banks and NBFCs require a minimum net monthly salary of ₹25,000.',
+        'faqable_type' => null,
+        'faqable_id' => null,
+    ]);
+
+    $response = $this->get('/');
+
+    $response->assertOk()->assertSee('What is the minimum salary required for a personal loan?');
+
+    $json = collect(explode('<script type="application/ld+json">', $response->getContent()))
+        ->skip(1)
+        ->map(fn ($chunk) => json_decode(explode('</script>', $chunk)[0], true))
+        ->first(fn ($data) => ($data['@type'] ?? null) === 'FAQPage');
+
+    assertValidJsonLd($json);
+    expect($json['mainEntity'][0]['name'])->toBe('What is the minimum salary required for a personal loan?');
+    expect($json['mainEntity'][0]['acceptedAnswer']['text'])->toStartWith('Most private banks and NBFCs');
+});
+
+it('keeps draft and product-scoped FAQs out of the homepage FAQPage schema', function () {
+    Faq::factory()->create(['status' => PublishStatus::Published, 'question' => 'Live homepage question?', 'faqable_type' => null, 'faqable_id' => null]);
+    Faq::factory()->create(['status' => PublishStatus::Draft, 'question' => 'Draft homepage question?', 'faqable_type' => null, 'faqable_id' => null]);
+    Faq::factory()->for(LoanProduct::factory()->create(), 'faqable')->create(['status' => PublishStatus::Published, 'question' => 'Product-scoped question?']);
+
+    $response = $this->get('/');
+
+    $json = collect(explode('<script type="application/ld+json">', $response->getContent()))
+        ->skip(1)
+        ->map(fn ($chunk) => json_decode(explode('</script>', $chunk)[0], true))
+        ->first(fn ($data) => ($data['@type'] ?? null) === 'FAQPage');
+
+    expect(collect($json['mainEntity'])->pluck('name'))->toEqual(collect(['Live homepage question?']));
+});
+
+it('emits no FAQPage block on the homepage when no general FAQs are published', function () {
+    Faq::query()->delete();
+
+    $response = $this->get('/');
+
+    $json = collect(explode('<script type="application/ld+json">', $response->getContent()))
+        ->skip(1)
+        ->map(fn ($chunk) => json_decode(explode('</script>', $chunk)[0], true))
+        ->first(fn ($data) => ($data['@type'] ?? null) === 'FAQPage');
+
+    expect($json)->toBeNull();
+});

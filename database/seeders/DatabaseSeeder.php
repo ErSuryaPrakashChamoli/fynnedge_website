@@ -121,6 +121,7 @@ class DatabaseSeeder extends Seeder
         Setting::set('contact_address', Setting::get('contact_address', ''));
         Setting::set('contact_map_url', Setting::get('contact_map_url', ''));
 
+        $this->call(BusinessProfileSeeder::class);
         $this->call(RoleSeeder::class);
         $this->call(CalculatorLoanProductSeeder::class);
         $this->call(JourneySeeder::class);

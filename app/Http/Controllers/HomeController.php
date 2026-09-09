@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\LenderStatus;
 use App\Enums\LoanCategory;
+use App\Models\Achievement;
 use App\Models\Banner;
 use App\Models\Faq;
 use App\Models\HowItWorksStep;
@@ -20,6 +21,7 @@ class HomeController extends Controller
     {
         return view('home', [
             'flexiHybridProduct' => LoanProduct::query()->published()->where('category', LoanCategory::FlexiHybridTermLoan)->first(),
+            'achievements' => Achievement::query()->published()->orderBy('sort_order')->get(),
             'banners' => Banner::query()->published()->orderBy('sort_order')->get(),
             'loanProducts' => LoanProduct::query()->published()->orderedForDisplay()->get(),
             'lenders' => Lender::query()->where('status', LenderStatus::Active)->orderBy('name')->get(),

@@ -62,7 +62,28 @@
                     }
                 JS;
             @endphp
-            @if ($lenders->isNotEmpty() || $loanProducts->isNotEmpty())
+            {{--
+                Admin-published Achievements take over this row when any exist;
+                otherwise it falls back to the two figures the app can derive
+                from real published records. That fallback is deliberate — an
+                empty achievements table must never leave the hero claiming a
+                number nobody verified, and equally must never blank the row.
+            --}}
+            @if ($achievements->isNotEmpty())
+                <div data-reveal="zoom delay-3" class="mt-10 flex flex-wrap gap-8">
+                    @foreach ($achievements as $achievement)
+                        <div class="flex items-center gap-3">
+                            @if ($achievement->iconUrl())
+                                <img src="{{ $achievement->iconUrl() }}" alt="{{ $achievement->icon_alt }}" class="h-9 w-9 shrink-0 object-contain" width="36" height="36" @unless ($achievement->icon_alt) aria-hidden="true" @endunless>
+                            @endif
+                            <div>
+                                <p class="font-display text-4xl font-semibold tracking-tight text-ink">{{ $achievement->displayValue() }}</p>
+                                <p class="mt-0.5 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ $achievement->label }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @elseif ($lenders->isNotEmpty() || $loanProducts->isNotEmpty())
                 <div data-reveal="zoom delay-3" class="mt-10 flex flex-wrap gap-8">
                     @if ($lenders->isNotEmpty())
                         <div x-data="{{ sprintf($countUp, $lenders->count()) }}">
@@ -335,7 +356,8 @@
     <section class="border-t border-line bg-surface">
         <div class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
             <x-site.testimonials :testimonials="$testimonials" />
-            <x-site.faq-accordion :faqs="$faqs" />
+            <x-site.faq-accordion :faqs="$faqs" data-ai-context="Frequently Asked Questions" />
+            <x-site.faq-json-ld :faqs="$faqs" />
         </div>
     </section>
 </x-layouts.app>
