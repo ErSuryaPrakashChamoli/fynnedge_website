@@ -143,3 +143,37 @@ it('lets an admin save header, footer and main content appearance settings', fun
     expect(Setting::get('theme_footer_font_weight'))->toBe(700);
     expect(Setting::get('theme_main_font_style'))->toBe('italic');
 });
+
+it('lets an admin save the new link colour and font family on a section', function () {
+    Livewire::test(Settings::class)
+        ->fillForm([
+            'theme_main_link_color' => '#c62828',
+            'theme_header_font_family' => 'display',
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(Setting::get('theme_main_link_color'))->toBe('#c62828');
+    expect(Setting::get('theme_header_font_family'))->toBe('display');
+});
+
+it('lets an admin save the homepage banner appearance settings', function () {
+    Livewire::test(Settings::class)
+        ->fillForm([
+            'theme_banner_font_color' => '#ffdd00',
+            'theme_banner_font_family' => 'mono',
+            'theme_banner_font_size' => '40px',
+            'theme_banner_font_style' => 'italic',
+            'theme_banner_button_color' => '#c62828',
+            'theme_banner_button_hover_color' => '#8e0000',
+            'theme_banner_button_text_color' => '#ffffff',
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(Setting::get('theme_banner_font_color'))->toBe('#ffdd00');
+    expect(Setting::get('theme_banner_font_family'))->toBe('mono');
+    expect(Setting::get('theme_banner_font_size'))->toBe('40px');
+    expect(Setting::get('theme_banner_button_color'))->toBe('#c62828');
+    expect(Setting::get('theme_banner_button_hover_color'))->toBe('#8e0000');
+});

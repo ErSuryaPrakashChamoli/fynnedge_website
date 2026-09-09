@@ -76,9 +76,19 @@ class Settings extends Page
         foreach (['header', 'footer', 'main'] as $section) {
             $defaults["theme_{$section}_bg_color"] = Setting::get("theme_{$section}_bg_color");
             $defaults["theme_{$section}_font_color"] = Setting::get("theme_{$section}_font_color");
+            $defaults["theme_{$section}_link_color"] = Setting::get("theme_{$section}_link_color");
+            $defaults["theme_{$section}_font_family"] = Setting::get("theme_{$section}_font_family");
             $defaults["theme_{$section}_font_size"] = Setting::get("theme_{$section}_font_size");
             $defaults["theme_{$section}_font_weight"] = Setting::get("theme_{$section}_font_weight");
             $defaults["theme_{$section}_font_style"] = Setting::get("theme_{$section}_font_style");
+        }
+
+        foreach ([
+            'theme_banner_font_color', 'theme_banner_font_family', 'theme_banner_font_size',
+            'theme_banner_font_weight', 'theme_banner_font_style', 'theme_banner_button_color',
+            'theme_banner_button_hover_color', 'theme_banner_button_text_color',
+        ] as $key) {
+            $defaults[$key] = Setting::get($key);
         }
 
         return $defaults;
@@ -262,6 +272,56 @@ class Settings extends Page
                     ->description('Applies to the homepage and every other page\'s main content area (not the header or footer). Leave any field blank to keep the default site theme.')
                     ->columns(3)
                     ->components(self::themeSectionFields('main')),
+
+                Section::make('Appearance — Homepage banner')
+                    ->description('Controls the text and button on the sliding banner in the top-right of the homepage. Its text is white by default because it sits over a photo — leave a field blank to keep that default. The button matches the site\'s other buttons unless you change it here.')
+                    ->columns(3)
+                    ->components([
+                        ColorPicker::make('theme_banner_font_color')
+                            ->label('Text colour')
+                            ->hex()
+                            ->helperText('Heading and subtitle. Default: white.'),
+                        Select::make('theme_banner_font_family')
+                            ->label('Font')
+                            ->native(false)
+                            ->options([
+                                'display' => 'Fraunces — serif (default heading font)',
+                                'sans' => 'IBM Plex Sans — sans serif',
+                                'mono' => 'IBM Plex Mono — monospace',
+                            ]),
+                        Select::make('theme_banner_font_size')
+                            ->label('Heading font size')
+                            ->native(false)
+                            ->options(array_combine(SiteThemeStyles::BANNER_FONT_SIZES, SiteThemeStyles::BANNER_FONT_SIZES)),
+                        Select::make('theme_banner_font_weight')
+                            ->label('Heading font weight')
+                            ->native(false)
+                            ->options([
+                                '300' => '300 — Light',
+                                '400' => '400 — Normal',
+                                '500' => '500 — Medium',
+                                '600' => '600 — Semibold',
+                                '700' => '700 — Bold',
+                                '800' => '800 — Extra bold',
+                            ]),
+                        Select::make('theme_banner_font_style')
+                            ->label('Font style')
+                            ->native(false)
+                            ->options([
+                                'normal' => 'Normal',
+                                'italic' => 'Italic',
+                            ]),
+                        ColorPicker::make('theme_banner_button_color')
+                            ->label('Button colour')
+                            ->hex()
+                            ->helperText('Default: the site accent, matching every other button.'),
+                        ColorPicker::make('theme_banner_button_hover_color')
+                            ->label('Button hover colour')
+                            ->hex(),
+                        ColorPicker::make('theme_banner_button_text_color')
+                            ->label('Button text colour')
+                            ->hex(),
+                    ]),
             ]);
     }
 
@@ -277,6 +337,18 @@ class Settings extends Page
             ColorPicker::make("theme_{$section}_font_color")
                 ->label('Font colour')
                 ->hex(),
+            ColorPicker::make("theme_{$section}_link_color")
+                ->label('Link & accent colour')
+                ->hex()
+                ->helperText('Also recolours accent buttons in this section.'),
+            Select::make("theme_{$section}_font_family")
+                ->label('Font')
+                ->native(false)
+                ->options([
+                    'sans' => 'IBM Plex Sans — sans serif',
+                    'display' => 'Fraunces — serif',
+                    'mono' => 'IBM Plex Mono — monospace',
+                ]),
             Select::make("theme_{$section}_font_size")
                 ->label('Font size')
                 ->native(false)

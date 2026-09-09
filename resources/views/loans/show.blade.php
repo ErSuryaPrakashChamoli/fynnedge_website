@@ -1,4 +1,4 @@
-<x-layouts.app :title="$loanProduct->seoTitle()" :description="$loanProduct->seoDescription()" :canonical="$loanProduct->seoCanonicalUrl()" :og-image="$loanProduct->seoOgImageUrl()" :robots="$loanProduct->seoRobots()" :structured-data="$loanProduct->seoStructuredData()" :schema-nodes="$schemaNodes">
+<x-layouts.app handles-faqs :title="$loanProduct->seoTitle()" :description="$loanProduct->seoDescription()" :canonical="$loanProduct->seoCanonicalUrl()" :og-image="$loanProduct->seoOgImageUrl()" :robots="$loanProduct->seoRobots()" :structured-data="$loanProduct->seoStructuredData()" :schema-nodes="$schemaNodes">
     {{--
         Microdata on the page's own markup, alongside the JSON-LD in the head.
         Search crawlers and AI assistants that parse the rendered DOM rather
@@ -165,7 +165,7 @@
 
         <x-site.testimonials :testimonials="$testimonials" />
 
-        <x-site.faq-accordion :faqs="$loanProduct->faqs" data-ai-context="Frequently Asked Questions" />
-        <x-site.faq-json-ld :faqs="$loanProduct->faqs" />
+        <x-site.faq-accordion :faqs="$faqs" data-ai-context="Frequently Asked Questions" />
+        <x-site.faq-json-ld :faqs="$faqs" />
     </article>
 </x-layouts.app>

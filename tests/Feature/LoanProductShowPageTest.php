@@ -6,7 +6,7 @@ use App\Models\LoanProduct;
 use App\Models\Testimonial;
 
 it('shows processing fee and eligibility bullets for an offer that has them set', function () {
-    $product = LoanProduct::factory()->published()->create(['slug' => 'show-page-fee-test']);
+    $product = LoanProduct::factory()->published()->create(['slug' => 'show-page-fee-test', 'category' => LoanCategory::PersonalLoan]);
     LenderProduct::factory()->for($product, 'loanProduct')->create([
         'processing_fee_percent_min' => 1.5,
         'processing_fee_percent_max' => 3,
@@ -26,7 +26,7 @@ it('shows processing fee and eligibility bullets for an offer that has them set'
 });
 
 it('does not show a processing fee row on the lender card when unset', function () {
-    $product = LoanProduct::factory()->published()->create(['slug' => 'show-page-no-fee-test']);
+    $product = LoanProduct::factory()->published()->create(['slug' => 'show-page-no-fee-test', 'category' => LoanCategory::PersonalLoan]);
     LenderProduct::factory()->for($product, 'loanProduct')->create([
         'processing_fee_percent_min' => null,
         'processing_fee_percent_max' => null,

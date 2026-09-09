@@ -6,6 +6,7 @@ use App\Enums\LenderStatus;
 use App\Models\LoanProduct;
 use App\Models\Testimonial;
 use App\Support\Calculators\LoanCalculatorPreset;
+use App\Support\Faqs\PageFaqs;
 use App\Support\Seo\SchemaGraph;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -39,6 +40,7 @@ class LoanProductController extends Controller
 
         return view($view, [
             'loanProduct' => $loanProduct,
+            'faqs' => PageFaqs::merge($loanProduct->faqs),
             'schemaNodes' => [SchemaGraph::service(
                 name: $loanProduct->name,
                 serviceType: $loanProduct->category->getLabel(),

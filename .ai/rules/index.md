@@ -28,6 +28,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Models/**,app/Filament/** | .ai/rules/models-filament.md |
 | app/Modules/**/Models/*.php | .ai/rules/models.md |
 | app/Models/**,app/Modules/**/Models/*.php | .ai/rules/modules-models.md |
+| app/Enums/FaqPlacement.php,app/Support/Faqs/**,app/Filament/Resources/PageFaqs/**,resources/views/components/site/page-faqs.blade.php | .ai/rules/page-faqs-views-components-site.md |
 | app/Filament/Pages/** | .ai/rules/pages.md |
 | app/Http/Middleware/SecurityHeaders.php,app/Providers/Filament/AdminPanelProvider.php | .ai/rules/providers-filament.md |
 | app/Filament/Resources/** | .ai/rules/resources.md |

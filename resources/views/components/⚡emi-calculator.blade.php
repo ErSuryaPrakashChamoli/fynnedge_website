@@ -5,6 +5,7 @@ use App\Models\Article;
 use App\Models\LoanProduct;
 use App\Support\Calculators\EmiCalculator;
 use App\Support\Calculators\LoanCalculatorPreset;
+use App\Support\Faqs\PageFaqs;
 use App\Support\Formatting\IndianNumberFormatter;
 use Illuminate\Support\Facades\Route;
 use Livewire\Attributes\Computed;
@@ -47,6 +48,15 @@ new class extends Component
     public bool $showLoanDetails = true;
 
     /**
+     * The route name of the page this calculator was rendered on, captured at
+     * mount. Livewire re-renders arrive on the `livewire.update` route, so
+     * resolving admin-pinned FAQs from the *current* route would silently drop
+     * them as soon as the visitor moves a slider. Held as component state
+     * instead, which Livewire round-trips unchanged.
+     */
+    public string $placementRoute = '';
+
+    /**
      * Accepts a plain string (or a LoanCategory, e.g. from `:category="$loanProduct->category"`
      * in a Blade component tag) rather than requiring a typed LoanCategory — Livewire's test
      * harness assigns initial params to typed public properties directly, before mount() runs,
@@ -59,6 +69,7 @@ new class extends Component
 
         $this->category = $category->value;
         $this->showLoanDetails = $showLoanDetails;
+        $this->placementRoute = (string) Route::currentRouteName();
         $this->applyPresetDefaults();
     }
 
@@ -163,6 +174,22 @@ new class extends Component
     public function product(): ?LoanProduct
     {
         return LoanCalculatorPreset::productFor(LoanCategory::from($this->category));
+    }
+
+    /**
+     * The product's own FAQs plus any an admin pinned to this calculator page,
+     * as one list — so the page renders a single accordion and a single
+     * FAQPage entity rather than two of each.
+     *
+     * @return \Illuminate\Support\Collection<int, \App\Models\Faq>
+     */
+    #[Computed]
+    public function faqs(): \Illuminate\Support\Collection
+    {
+        return PageFaqs::merge(
+            $this->product?->faqs ?? new \Illuminate\Support\Collection,
+            $this->placementRoute,
+        );
     }
 
     /**
@@ -744,9 +771,9 @@ new class extends Component
                 </div>
             @endif
 
-            @if ($product->faqs->isNotEmpty())
-                <x-site.faq-accordion :faqs="$product->faqs" :heading="$this->preset['label'].' EMI — frequently asked questions'" />
-                <x-site.faq-json-ld :faqs="$product->faqs" />
+            @if ($this->faqs->isNotEmpty())
+                <x-site.faq-accordion :faqs="$this->faqs" :heading="$this->preset['label'].' EMI — frequently asked questions'" />
+                <x-site.faq-json-ld :faqs="$this->faqs" />
             @endif
         </div>
     @endif

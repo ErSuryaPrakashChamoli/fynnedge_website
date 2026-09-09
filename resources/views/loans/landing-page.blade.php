@@ -1,4 +1,4 @@
-<x-layouts.app :title="$landingPage->seoTitle()" :description="$landingPage->seoDescription()" :canonical="$landingPage->seoCanonicalUrl()" :og-image="$landingPage->seoOgImageUrl()" :robots="$landingPage->seoRobots()" :structured-data="$landingPage->seoStructuredData()" :schema-nodes="$schemaNodes">
+<x-layouts.app handles-faqs :title="$landingPage->seoTitle()" :description="$landingPage->seoDescription()" :canonical="$landingPage->seoCanonicalUrl()" :og-image="$landingPage->seoOgImageUrl()" :robots="$landingPage->seoRobots()" :structured-data="$landingPage->seoStructuredData()" :schema-nodes="$schemaNodes">
     {{--
         Same microdata + data-ai-context treatment as loans/show.blade.php —
         see the comment there for why the FAQ accordion is deliberately left
@@ -44,7 +44,16 @@
                 <h2 class="font-display text-xl font-semibold text-ink">{{ $landingPage->title }} EMI calculator</h2>
                 <p class="mt-2 text-sm text-ink-faint">Estimate your monthly instalment and see the full year-by-year principal and interest breakdown.</p>
                 <div class="mt-6">
-                    <livewire:emi-calculator :category="$loanProduct->category->value" :key="'calc-'.$landingPage->id" />
+                    {{--
+                        show-loan-details is false for the same reason it is on
+                        loans/show.blade.php: this page already renders the FAQ
+                        accordion, its JSON-LD, the lender comparison and the
+                        related content that the calculator's "About this loan"
+                        panel would otherwise repeat. Leaving it on emitted a
+                        second FAQPage node carrying the *same* #faq @id as the
+                        one below, and showed every FAQ twice.
+                    --}}
+                    <livewire:emi-calculator :category="$loanProduct->category->value" :show-loan-details="false" :key="'calc-'.$landingPage->id" />
                 </div>
             </div>
         @endif
@@ -67,7 +76,7 @@
 
         <x-site.testimonials :testimonials="$testimonials" />
 
-        <x-site.faq-accordion :faqs="$loanProduct->faqs" data-ai-context="Frequently Asked Questions" />
-        <x-site.faq-json-ld :faqs="$loanProduct->faqs" />
+        <x-site.faq-accordion :faqs="$faqs" data-ai-context="Frequently Asked Questions" />
+        <x-site.faq-json-ld :faqs="$faqs" />
     </article>
 </x-layouts.app>

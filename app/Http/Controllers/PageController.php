@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\GrievanceLevel;
 use App\Models\Page;
+use App\Support\Faqs\PageFaqs;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -24,7 +25,7 @@ class PageController extends Controller
 
         return view('pages.show', [
             'page' => $page,
-            'faqs' => $page->faqs()->published()->get(),
+            'faqs' => PageFaqs::merge($page->faqs()->published()->get()),
             'grievanceLevels' => $slug === 'grievance'
                 ? GrievanceLevel::query()->published()->orderBy('sort_order')->get()
                 : new Collection,

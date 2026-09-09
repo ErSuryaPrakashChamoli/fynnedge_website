@@ -89,6 +89,12 @@
 
     <main id="main-content" class="flex-1">
         {{ $slot }}
+
+        {{-- Views that render their own FAQ section pass handles-faqs and merge --}}
+        {{-- the pinned FAQs into it themselves; see x-site.page-faqs. --}}
+        @unless ($handlesFaqs ?? false)
+            <x-site.page-faqs />
+        @endunless
     </main>
 
     <x-site.footer />

@@ -1,130 +1,100 @@
-<x-layouts.app>
+<x-layouts.app handles-faqs>
     <x-site.flexi-hybrid-ticker :loan-product="$flexiHybridProduct" :marketing="$flexiHybridTicker" />
 
-    <section class="relative overflow-hidden">
+    {{--
+        Hero banner: a hardcoded-height 40/60 split.
+
+        Sizing is deliberately fixed rather than fluid so that the header, the
+        Flexi Hybrid ticker, this banner and the lender marquee beneath it all
+        land inside a desktop viewport with no scrolling. The left column is
+        static copy (Settings-driven); the right column is the admin-managed
+        sliding banner "crawler". Both columns share the same hardcoded
+        heights — change them in BOTH this file and
+        components/site/banner-carousel.blade.php or the row will jump.
+
+        `lg:grid-cols-[2fr_3fr]` is the 40/60 split: fr shares are computed
+        after the gap is subtracted, so the ratio holds exactly at any width,
+        which literal 40%/60% columns would not once a gap is added.
+
+        With no banner published the left column simply spans the full width —
+        an empty promotional slot must never render as an empty grey box.
+    --}}
+    <section class="relative overflow-hidden border-b border-line">
         <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
             <div class="absolute -top-32 left-1/2 h-[32rem] w-[32rem] -translate-x-1/2 rounded-full bg-accent/10 blur-3xl"></div>
             <div class="absolute -right-24 top-1/3 h-72 w-72 rounded-full bg-pass/10 blur-3xl"></div>
             <div class="absolute inset-0 [background-image:radial-gradient(var(--color-line-strong)_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_0%,black,transparent)] opacity-40"></div>
         </div>
 
-        <div class="mx-auto max-w-7xl px-6 pb-20 pt-16 lg:px-8 lg:pt-24">
-            @if ($hero['eyebrow'])
-                <p data-reveal="up" class="inline-flex items-center gap-2 rounded-full border border-line bg-surface/80 px-3 py-1 font-mono text-xs font-semibold uppercase tracking-[0.14em] text-accent shadow-sm backdrop-blur">
-                    {{ $hero['eyebrow'] }}
-                </p>
-            @endif
-            <h1 data-reveal="up delay-1" class="mt-6 max-w-4xl text-balance font-display text-5xl font-semibold leading-[0.98] tracking-tight text-ink sm:text-6xl lg:text-8xl">
-                {{ $hero['heading'] }}
-                <span class="text-accent">{{ $hero['headingAccent'] }}</span>
-            </h1>
-            <p data-reveal="up delay-2" class="mt-6 max-w-xl text-lg text-ink-muted">
-                {{ $hero['subheading'] }}
-            </p>
-
-            <div data-reveal="up delay-2" class="mt-8 flex flex-wrap gap-3">
-                <x-ui.button :tag="Route::has('eligibility.index') ? 'a' : 'button'" :href="Route::has('eligibility.index') ? route('eligibility.index') : null" size="lg">
-                    Check Your Eligibility
-                </x-ui.button>
-                <x-ui.button tag="a" :href="route('loans.index')" variant="secondary" size="lg">
-                    Explore Loan Products
-                </x-ui.button>
-            </div>
-
-            @php
-                // Runs unconditionally on mount rather than waiting on an
-                // IntersectionObserver — this stat row sits in the hero, always
-                // above the fold, so "wait until scrolled into view" only ever
-                // added a race against the row's own fade-in (the count could
-                // finish before the row was even visible). A fixed head start
-                // lets the reveal fade-in land first, so what the visitor
-                // actually sees is: block appears, then the numbers count up.
-                $countUp = <<<'JS'
-                    {
-                        value: 0,
-                        target: %d,
-                        init() {
-                            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                                this.value = this.target;
-                                return;
-                            }
-                            setTimeout(() => {
-                                const start = performance.now();
-                                const duration = 2600;
-                                const tick = (now) => {
-                                    const progress = Math.min((now - start) / duration, 1);
-                                    this.value = Math.round(this.target * progress);
-                                    if (progress < 1) requestAnimationFrame(tick);
-                                };
-                                requestAnimationFrame(tick);
-                            }, 400);
-                        },
-                    }
-                JS;
-            @endphp
-            {{--
-                Admin-published Achievements take over this row when any exist;
-                otherwise it falls back to the two figures the app can derive
-                from real published records. That fallback is deliberate — an
-                empty achievements table must never leave the hero claiming a
-                number nobody verified, and equally must never blank the row.
-            --}}
-            @if ($achievements->isNotEmpty())
-                <div data-reveal="zoom delay-3" class="mt-10 flex flex-wrap gap-8">
-                    @foreach ($achievements as $achievement)
-                        <div class="flex items-center gap-3">
-                            @if ($achievement->iconUrl())
-                                <img src="{{ $achievement->iconUrl() }}" alt="{{ $achievement->icon_alt }}" class="h-9 w-9 shrink-0 object-contain" width="36" height="36" @unless ($achievement->icon_alt) aria-hidden="true" @endunless>
-                            @endif
-                            <div>
-                                <p class="font-display text-4xl font-semibold tracking-tight text-ink">{{ $achievement->displayValue() }}</p>
-                                <p class="mt-0.5 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ $achievement->label }}</p>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @elseif ($lenders->isNotEmpty() || $loanProducts->isNotEmpty())
-                <div data-reveal="zoom delay-3" class="mt-10 flex flex-wrap gap-8">
-                    @if ($lenders->isNotEmpty())
-                        <div x-data="{{ sprintf($countUp, $lenders->count()) }}">
-                            <p class="font-display text-4xl font-semibold tracking-tight text-ink"><span x-text="value">0</span>+</p>
-                            <p class="mt-0.5 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Partner banks &amp; NBFCs</p>
-                        </div>
+        <div class="mx-auto max-w-7xl px-6 py-5 lg:px-8 lg:py-6">
+            <div @class([
+                'grid items-center gap-8 lg:gap-10',
+                'lg:grid-cols-[2fr_3fr]' => $banners->isNotEmpty(),
+            ])>
+                {{-- Left 40% — static, never animated. --}}
+                <div class="flex flex-col justify-center">
+                    @if ($hero['eyebrow'])
+                        <p data-reveal="up" class="inline-flex w-max items-center gap-2 rounded-full border border-line bg-surface/80 px-3 py-1 font-mono text-xs font-semibold uppercase tracking-[0.14em] text-accent shadow-sm backdrop-blur">
+                            {{ $hero['eyebrow'] }}
+                        </p>
                     @endif
-                    @if ($loanProducts->isNotEmpty())
-                        <div x-data="{{ sprintf($countUp, $loanProducts->count()) }}">
-                            <p class="font-display text-4xl font-semibold tracking-tight text-ink"><span x-text="value">0</span>+</p>
-                            <p class="mt-0.5 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Loan products compared</p>
-                        </div>
-                    @endif
-                </div>
-            @endif
-
-            <x-site.banner-carousel :banners="$banners" />
-
-            @if ($lenders->isNotEmpty())
-                <div data-reveal="fade" class="mt-16">
-                    <p class="text-center font-mono text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink-faint sm:text-left">
-                        Trusted by leading banks &amp; NBFCs
+                    <h1 data-reveal="up delay-1" class="mt-4 text-balance font-display text-3xl font-semibold leading-[1.03] tracking-tight text-ink sm:text-4xl lg:text-[2.5rem] xl:text-5xl">
+                        {{ $hero['heading'] }}
+                        <span class="text-accent">{{ $hero['headingAccent'] }}</span>
+                    </h1>
+                    <p data-reveal="up delay-2" class="mt-4 max-w-xl text-sm text-ink-muted lg:text-base">
+                        {{ $hero['subheading'] }}
                     </p>
-                    <div class="relative mt-5 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-                        <div class="flex w-max animate-marquee items-center gap-12 hover:[animation-play-state:paused] motion-reduce:animate-none">
-                            @for ($copy = 0; $copy < 2; $copy++)
-                                <div class="flex shrink-0 items-center gap-12" @if ($copy === 1) aria-hidden="true" @endif>
-                                    @foreach ($lenders as $lender)
-                                        <div class="flex shrink-0 items-center gap-2.5">
-                                            <x-ui.lender-logo :lender="$lender" size="sm" />
-                                            <span class="font-display text-sm font-semibold text-ink-muted">{{ $lender->name }}</span>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endfor
-                        </div>
+
+                    <div data-reveal="up delay-2" class="mt-6 flex flex-wrap gap-3">
+                        <x-ui.button :tag="Route::has('eligibility.index') ? 'a' : 'button'" :href="Route::has('eligibility.index') ? route('eligibility.index') : null" size="lg">
+                            Check Your Eligibility
+                        </x-ui.button>
+                        <x-ui.button tag="a" :href="route('loans.index')" variant="secondary" size="lg">
+                            Explore Loan Products
+                        </x-ui.button>
                     </div>
                 </div>
-            @endif
+
+                {{-- Right 60% — admin-managed sliding promotional banners. --}}
+                @if ($banners->isNotEmpty())
+                    <div data-reveal="zoom delay-3">
+                        <x-site.banner-carousel :banners="$banners" />
+                    </div>
+                @endif
+            </div>
         </div>
     </section>
+
+    {{--
+        Lender marquee, pulled directly beneath the banner so it is visible
+        without scrolling rather than sitting further down the hero.
+    --}}
+    @if ($lenders->isNotEmpty())
+        <section class="border-b border-line bg-surface">
+            <div data-reveal="fade" class="mx-auto max-w-7xl px-6 py-4 lg:px-8">
+                <p class="text-center font-mono text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink-faint sm:text-left">
+                    Trusted by leading banks &amp; NBFCs
+                </p>
+                <div class="relative mt-3 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+                    <div class="flex w-max animate-marquee items-center gap-12 hover:[animation-play-state:paused] motion-reduce:animate-none">
+                        @for ($copy = 0; $copy < 2; $copy++)
+                            <div class="flex shrink-0 items-center gap-12" @if ($copy === 1) aria-hidden="true" @endif>
+                                @foreach ($lenders as $lender)
+                                    <div class="flex shrink-0 items-center gap-2.5">
+                                        <x-ui.lender-logo :lender="$lender" size="sm" />
+                                        <span class="font-display text-sm font-semibold text-ink-muted">{{ $lender->name }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endfor
+                    </div>
+                </div>
+            </div>
+        </section>
+    @endif
+
+    <x-site.hero-stats :achievements="$achievements" :derived="$heroStats" />
 
     @if ($loanProducts->isNotEmpty())
         <section class="border-t border-line bg-surface">

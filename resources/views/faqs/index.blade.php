@@ -1,4 +1,4 @@
-<x-layouts.app :title="'FAQs'" description="Answers to common questions about how FynnEdge works, eligibility checks, and applying for a loan.">
+<x-layouts.app :title="'FAQs'" description="Answers to common questions about how FynnEdge works, eligibility checks, and applying for a loan." handles-faqs>
     <section class="mx-auto max-w-3xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['FAQs' => null]" />
 

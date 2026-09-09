@@ -7,6 +7,7 @@ use App\Models\LoanLandingPage;
 use App\Models\LoanProduct;
 use App\Models\Testimonial;
 use App\Support\Calculators\LoanCalculatorPreset;
+use App\Support\Faqs\PageFaqs;
 use App\Support\Seo\SchemaGraph;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -32,6 +33,7 @@ class LoanLandingPageController extends Controller
         return view('loans.landing-page', [
             'loanProduct' => $loanProduct,
             'landingPage' => $landingPage,
+            'faqs' => PageFaqs::merge($loanProduct->faqs),
             'schemaNodes' => [SchemaGraph::service(
                 name: $landingPage->title,
                 serviceType: $loanProduct->category->getLabel(),

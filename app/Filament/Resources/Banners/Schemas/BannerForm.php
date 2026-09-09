@@ -22,7 +22,7 @@ class BannerForm
                     ->directory('banners')
                     ->acceptedFileTypes(['image/png', 'image/jpeg', 'image/webp'])
                     ->maxSize(5120)
-                    ->helperText('JPG or PNG, up to 5MB. Wide/landscape images work best.')
+                    ->helperText('Recommended: 1440 × 1000px (roughly 1.4:1), JPG/PNG/WebP up to 5MB. It fills the right-hand 60% of the homepage banner — about 706 × 500px on a desktop, so 1440px wide keeps it sharp on high-DPI screens. The box is 1.2:1 on smaller laptops and 1.8:1 on tablets, and the image is centre-cropped to fit, so keep faces, logos and any text in the middle and leave room around the edges.')
                     ->required()
                     ->columnSpanFull(),
                 TextInput::make('image_alt')

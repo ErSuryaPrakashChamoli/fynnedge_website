@@ -35,7 +35,9 @@ class FaqResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->whereNull('faqable_id');
+        return parent::getEloquentQuery()
+            ->whereNull('faqable_id')
+            ->whereNull('placements');
     }
 
     public static function table(Table $table): Table

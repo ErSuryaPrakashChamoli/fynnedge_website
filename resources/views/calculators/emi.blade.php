@@ -1,4 +1,4 @@
-<x-layouts.app :title="$category->getLabel().' EMI Calculator'" :description="'Estimate your monthly EMI for a '.$category->getLabel().' and see the full year-by-year principal and interest breakdown.'">
+<x-layouts.app handles-faqs :title="$category->getLabel().' EMI Calculator'" :description="'Estimate your monthly EMI for a '.$category->getLabel().' and see the full year-by-year principal and interest breakdown.'">
     <section class="mx-auto max-w-4xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Calculators' => route('calculators.index'), $category->getLabel().' EMI Calculator' => null]" />
 
