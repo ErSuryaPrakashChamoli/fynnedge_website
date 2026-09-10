@@ -1,4 +1,4 @@
-<x-layouts.app :title="$page->seoTitle()" :description="$page->seoDescription()" :canonical="$page->seoCanonicalUrl()" :og-image="$page->seoOgImageUrl()" :robots="$page->seoRobots()" :structured-data="$page->seoStructuredData()" :page-type="$page->seoPageType()" :schema-template="$page->seoSchemaTemplate()">
+<x-layouts.app :title="$page->seoTitle()" :description="$page->seoDescription()" :canonical="$page->seoCanonicalUrl()" :og-image="$page->seoOgImageUrl()" :social="$page->seoSocial()" :robots="$page->seoRobots()" :structured-data="$page->seoStructuredData()" :page-type="$page->seoPageType()" :schema-template="$page->seoSchemaTemplate()">
     <section class="mx-auto max-w-3xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="[$page->title => null]" />
 

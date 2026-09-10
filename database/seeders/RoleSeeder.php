@@ -47,6 +47,25 @@ class RoleSeeder extends Seeder
             ->merge($this->permissionsFor(['LoanProductSeo', 'LoanLandingPageSeo'], ['ViewAny', 'View', 'Update']));
 
         Role::findOrCreate('SEO')->syncPermissions($seoPermissions);
+
+        /*
+         * Newsletter work is marketing work, so the Marketing role gets the
+         * campaign/template/segment set outright. Two deliberate exclusions:
+         *   - Delete:NewsletterSubscriber — a subscriber row is a consent
+         *     record and an unsubscribe record; deleting one is how an address
+         *     silently becomes mailable again. Read access only.
+         *   - View:NewsletterSettings — sender identity and double opt-in
+         *     decide the deliverability of every email the domain sends, which
+         *     is an admin decision rather than a campaign one.
+         */
+        $newsletterPermissions = $this->permissionsFor(
+            ['NewsletterCampaign', 'NewsletterTemplate', 'NewsletterSegment'],
+            ['ViewAny', 'View', 'Create', 'Update', 'Delete'],
+        )
+            ->merge($this->permissionsFor(['NewsletterSubscriber'], ['ViewAny', 'View']))
+            ->merge([Permission::findOrCreate('View:NewsletterDashboard')]);
+
+        Role::findOrCreate('Marketing')->givePermissionTo($newsletterPermissions);
     }
 
     /**

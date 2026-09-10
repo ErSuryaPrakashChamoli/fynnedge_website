@@ -323,6 +323,16 @@
         </div>
     </section>
 
+    <section class="border-t border-line">
+        <div class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+            <x-site.newsletter-form
+                source="homepage"
+                heading="Stay ahead of your finances"
+                description="Get practical financial insights, loan tips and useful updates from FynnEdge directly in your inbox."
+            />
+        </div>
+    </section>
+
     <section class="border-t border-line bg-surface">
         <div class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
             <x-site.testimonials :testimonials="$testimonials" />

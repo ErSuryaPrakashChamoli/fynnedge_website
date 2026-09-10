@@ -12,19 +12,42 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JourneyController;
 use App\Http\Controllers\LoanLandingPageController;
 use App\Http\Controllers\LoanProductController;
+use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\NewsletterTrackingController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SitemapController;
 use App\Support\Seo\Sitemap;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+Route::get('/robots.txt', RobotsController::class)->name('robots');
 Route::get('/about', AboutController::class)->name('about');
 Route::get('/careers', CareerController::class)->name('careers');
 
 foreach (Sitemap::ROUTED_PAGE_SLUGS as $slug) {
     Route::get("/{$slug}", [PageController::class, 'show'])->name($slug)->defaults('slug', $slug);
 }
+
+/*
+ * Newsletter. The public POST endpoints are throttled (see the `newsletter`
+ * limiter in AppServiceProvider); the token-addressed GET routes are not, since
+ * they carry a 48-character secret and are followed from an inbox, sometimes by
+ * a mail client prefetching on the reader's behalf.
+ */
+Route::middleware('throttle:newsletter')->group(function (): void {
+    Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+    Route::post('/newsletter/resend-confirmation', [NewsletterController::class, 'resendConfirmation'])->name('newsletter.resend-confirmation');
+});
+
+Route::get('/newsletter/confirm/{token}', [NewsletterController::class, 'confirm'])->name('newsletter.confirm');
+Route::get('/newsletter/unsubscribe/{token}', [NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
+Route::post('/newsletter/unsubscribe/{token}', [NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe.post');
+Route::get('/newsletter/preferences/{token}', [NewsletterController::class, 'preferences'])->name('newsletter.preferences');
+Route::post('/newsletter/preferences/{token}', [NewsletterController::class, 'updatePreferences'])->name('newsletter.preferences.update');
+Route::get('/newsletter/track/open/{recipient}/{token}', [NewsletterTrackingController::class, 'open'])->name('newsletter.track.open');
+Route::get('/newsletter/track/click/{recipient}/{token}', [NewsletterTrackingController::class, 'click'])->name('newsletter.track.click');
 
 Route::get('/loans', [LoanProductController::class, 'index'])->name('loans.index');
 Route::get('/loans/{loanProduct:slug}', [LoanProductController::class, 'show'])->name('loans.show');

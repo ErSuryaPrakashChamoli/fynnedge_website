@@ -1,4 +1,4 @@
-<x-layouts.app handles-faqs :title="$loanProduct->seoTitle()" :description="$loanProduct->seoDescription()" :canonical="$loanProduct->seoCanonicalUrl()" :og-image="$loanProduct->seoOgImageUrl()" :robots="$loanProduct->seoRobots()" :structured-data="$loanProduct->seoStructuredData()" :page-type="$loanProduct->seoPageType()" :schema-template="$loanProduct->seoSchemaTemplate()" :schema-nodes="$schemaNodes">
+<x-layouts.app handles-faqs :title="$loanProduct->seoTitle()" :description="$loanProduct->seoDescription()" :canonical="$loanProduct->seoCanonicalUrl()" :og-image="$loanProduct->seoOgImageUrl()" :social="$loanProduct->seoSocial()" :robots="$loanProduct->seoRobots()" :structured-data="$loanProduct->seoStructuredData()" :page-type="$loanProduct->seoPageType()" :schema-template="$loanProduct->seoSchemaTemplate()" :schema-nodes="$schemaNodes">
     {{--
         Microdata on the page's own markup, alongside the JSON-LD in the head.
         Search crawlers and AI assistants that parse the rendered DOM rather

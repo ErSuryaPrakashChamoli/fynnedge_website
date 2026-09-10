@@ -8,6 +8,7 @@ use App\Models\NavigationLink;
 use App\Models\Setting;
 use App\Modules\CreditBureau\Contracts\CreditBureauProvider;
 use App\Modules\CreditScore\Contracts\CreditScoreProvider;
+use App\Support\Analytics\TrackingScripts;
 use App\Support\Theme\SiteThemeStyles;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -111,6 +112,19 @@ class AppServiceProvider extends ServiceProvider
             ),
         );
 
+        // Analytics, verification and custom tracking tags, from the SEO & Analytics
+        // settings page. Composed here — onto the one layout every public page uses —
+        // rather than in each view, so a tag is injected exactly once per page and no
+        // Blade file ever holds a measurement/container ID.
+        View::composer(
+            'components.layouts.app',
+            fn ($view) => $view->with([
+                'trackingHead' => TrackingScripts::head(),
+                'trackingBodyStart' => TrackingScripts::bodyStart(),
+                'trackingBodyEnd' => TrackingScripts::bodyEnd(),
+            ]),
+        );
+
         // Renders once, in the <head>, as a scoped <style> block overriding the
         // header/footer/main-content CSS variables an admin set on the Settings
         // page's Appearance section. Empty string (nothing rendered) when unset.
@@ -126,6 +140,13 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('public-forms', fn (Request $request) => app()->runningUnitTests()
             ? Limit::none()
             : Limit::perMinute(60)->by($request->ip()));
+
+        // Tighter than the contact form: a newsletter signup triggers an email to an
+        // address the submitter chose, so an unthrottled endpoint is a mail-bombing
+        // tool aimed at third parties, not just a spam problem for us.
+        RateLimiter::for('newsletter', fn (Request $request) => app()->runningUnitTests()
+            ? Limit::none()
+            : [Limit::perMinute(5)->by($request->ip()), Limit::perDay(20)->by($request->ip())]);
 
         RateLimiter::for('contact-form', fn (Request $request) => app()->runningUnitTests()
             ? Limit::none()

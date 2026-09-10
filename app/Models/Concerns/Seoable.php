@@ -81,4 +81,28 @@ trait Seoable
 
         return $path ? Storage::disk('public')->url($path) : null;
     }
+
+    /**
+     * This record's Open Graph and Twitter/X overrides, passed to the layout as
+     * one `:social` prop rather than five separate attributes per view.
+     *
+     * Every value may be null — the layout resolves each one against the page's
+     * own title/description and then the sitewide defaults (App\Support\Seo\
+     * SeoDefaults), so a blank field here means "follow the page", never an
+     * empty tag.
+     *
+     * @return array{ogTitle: string|null, ogDescription: string|null, twitterTitle: string|null, twitterDescription: string|null, twitterImageUrl: string|null}
+     */
+    public function seoSocial(): array
+    {
+        $twitterImage = $this->seoMeta?->twitter_image_path;
+
+        return [
+            'ogTitle' => $this->seoMeta?->og_title ?: null,
+            'ogDescription' => $this->seoMeta?->og_description ?: null,
+            'twitterTitle' => $this->seoMeta?->twitter_title ?: null,
+            'twitterDescription' => $this->seoMeta?->twitter_description ?: null,
+            'twitterImageUrl' => $twitterImage ? Storage::disk('public')->url($twitterImage) : null,
+        ];
+    }
 }

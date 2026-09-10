@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-#[Fillable(['title', 'description', 'canonical_url', 'og_image_path', 'robots', 'page_type', 'schema_template_id', 'structured_data'])]
+#[Fillable(['title', 'description', 'canonical_url', 'og_image_path', 'og_title', 'og_description', 'twitter_title', 'twitter_description', 'twitter_image_path', 'robots', 'page_type', 'schema_template_id', 'structured_data'])]
 class SeoMeta extends Model
 {
     protected function casts(): array

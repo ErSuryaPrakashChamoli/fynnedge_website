@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\Analytics\TrackingScripts;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,6 +48,16 @@ use Symfony\Component\HttpFoundation\Response;
  * a page that uploads fine in one browser can still hang in the other if only
  * img-src is widened.
  *
+ * Analytics is the one part of this policy that is not static: Google
+ * Analytics/Tag Manager and any custom tracking script an admin enables in
+ * Admin → Website Settings → SEO & Analytics load from third-party origins that
+ * a 'self' script-src blocks outright — and blocks silently, with no failed
+ * request and no server-side error, just an empty analytics report weeks later.
+ * TrackingScripts::cspSources() therefore contributes the origins the currently
+ * enabled tags need (and only those: with every toggle off, the policy is
+ * byte-for-byte what it was before). A tag that fetches from an origin its own
+ * pasted markup never mentions still needs adding there by hand.
+ *
  * Local dev with `npm run dev` (or `composer run dev`) is a second, genuinely
  * different origin: Vite's dev server serves JS/CSS with live HMR from its own
  * host:port (public/hot holds that URL — e.g. http://127.0.0.1:5173), which is
@@ -85,11 +96,13 @@ class SecurityHeaders
     private static function csp(): string
     {
         $viteOrigins = self::viteDevServerOrigins();
+        $tracking = TrackingScripts::cspSources();
 
-        $scriptSrc = trim("'self' 'unsafe-eval' 'unsafe-inline' {$viteOrigins['http']}");
-        $styleSrc = trim("'self' 'unsafe-inline' {$viteOrigins['http']}");
-        $imgSrc = trim("'self' data: blob: https: {$viteOrigins['http']}");
-        $connectSrc = trim("'self' blob: {$viteOrigins['http']} {$viteOrigins['ws']}");
+        $scriptSrc = self::sourceList(["'self'", "'unsafe-eval'", "'unsafe-inline'", $viteOrigins['http'], ...$tracking['script']]);
+        $styleSrc = self::sourceList(["'self'", "'unsafe-inline'", $viteOrigins['http']]);
+        $imgSrc = self::sourceList(["'self'", 'data:', 'blob:', 'https:', $viteOrigins['http'], ...$tracking['img']]);
+        $connectSrc = self::sourceList(["'self'", 'blob:', $viteOrigins['http'], $viteOrigins['ws'], ...$tracking['connect']]);
+        $frameSrc = self::sourceList(["'self'", 'https://www.google.com', 'https://maps.google.com', ...$tracking['frame']]);
 
         return "default-src 'self'; "
             ."script-src {$scriptSrc}; "
@@ -97,12 +110,20 @@ class SecurityHeaders
             ."img-src {$imgSrc}; "
             ."font-src 'self'; "
             ."connect-src {$connectSrc}; "
-            ."frame-src 'self' https://www.google.com https://maps.google.com; "
+            ."frame-src {$frameSrc}; "
             ."worker-src 'self' blob:; "
             ."object-src 'none'; "
             ."base-uri 'self'; "
             ."form-action 'self'; "
             ."frame-ancestors 'none'";
+    }
+
+    /**
+     * @param  array<int, string>  $sources
+     */
+    private static function sourceList(array $sources): string
+    {
+        return implode(' ', array_unique(array_filter($sources, fn (string $source) => $source !== '')));
     }
 
     /**

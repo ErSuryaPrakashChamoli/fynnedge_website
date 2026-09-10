@@ -6,19 +6,24 @@ Before planning or editing, find the row whose globs match the file's path and r
 | --- | --- |
 | app/Models/Achievement.php,app/Filament/Resources/Achievements/**,resources/views/components/site/hero-stats.blade.php | .ai/rules/achievements-views-components-site.md |
 | app/Models/Achievement.php,app/Filament/Resources/Achievements/**,resources/views/home.blade.php | .ai/rules/achievements-views.md |
+| app/Support/Privacy/**,app/Support/Analytics/**,resources/views/components/site/cookie-consent.blade.php | .ai/rules/analytics-views-components-site.md |
 | app/Filament/**/FileUpload*,config/filesystems.php | .ai/rules/app-filament.md |
 | app/Providers/Filament/AdminPanelProvider.php | .ai/rules/app-providers-filament.md |
 | app/** | .ai/rules/app.md |
 | app/Support/Loans/LoanMegaMenu.php,app/Support/Calculators/CalculatorCatalog.php,app/Models/NavigationLink.php | .ai/rules/calculators-models.md |
+| app/Support/Seo/SeoDefaults.php,app/Support/Seo/Sitemap.php,app/Support/Seo/CrawlerPolicy.php,resources/views/components/layouts/app.blade.php | .ai/rules/components-layouts.md |
 | app/Models/MarketingSection.php,app/Models/NavigationLink.php,resources/views/home.blade.php,resources/views/components/site/footer.blade.php | .ai/rules/components-site.md |
 | app/Support/Calculators/**,resources/views/components/⚡*.blade.php, app/Support/Calculators/**,resources/views/components/⚡emi-calculator.blade.php | .ai/rules/components.md |
 | app/Filament/RelationManagers/**,app/Filament/Concerns/** | .ai/rules/concerns.md |
 | config/database.php,.env*, config/cache.php,config/queue.php,config/session.php,.env*, config/{cache,queue,session}.php | .ai/rules/config.md |
 | app/Filament/RelationManagers/FaqsRelationManager.php,app/Models/Page.php,app/Http/Controllers/PageController.php | .ai/rules/controllers.md |
+| resources/views/emails/**,resources/views/components/emails/** | .ai/rules/emails.md |
 | app/Support/Media/**,app/Filament/Pages/MediaGovernance.php | .ai/rules/filament-pages.md |
 | app/Models/Concerns/Publishable.php,app/Filament/Resources/** | .ai/rules/filament-resources.md |
 | app/Models/User.php,app/Filament/**,config/filament-shield.php,config/permission.php,database/seeders/RoleSeeder.php | .ai/rules/filament-seeders.md |
 | app/Enums/**,app/Filament/** | .ai/rules/filament.md |
+| app/Modules/Newsletter/**,app/Mail/Newsletter/**,app/Http/Controllers/NewsletterController.php | .ai/rules/http-controllers.md |
+| app/Support/Analytics/**,app/Filament/Pages/SeoAnalytics.php,app/Http/Middleware/SecurityHeaders.php | .ai/rules/http-middleware.md |
 | app/Http/Controllers/JourneyController.php,app/Modules/Journey/** | .ai/rules/journey.md |
 | app/Support/Seo/**,resources/views/components/layouts/app.blade.php,public/robots.txt,resources/views/sitemap.blade.php | .ai/rules/layouts-views.md |
 | app/Filament/Schemas/SeoFormSection.php,app/Models/SeoMeta.php,app/Models/Concerns/Seoable.php,resources/views/components/layouts/app.blade.php | .ai/rules/layouts.md |
@@ -29,9 +34,11 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Models/**,app/Filament/** | .ai/rules/models-filament.md |
 | app/Modules/**/Models/*.php | .ai/rules/models.md |
 | app/Models/**,app/Modules/**/Models/*.php | .ai/rules/modules-models.md |
+| app/Http/Controllers/RobotsController.php,app/Http/Controllers/SitemapController.php,app/Support/Seo/SearchEngineIndexing.php,docker/nginx/nginx.conf | .ai/rules/nginx.md |
 | app/Enums/FaqPlacement.php,app/Support/Faqs/**,app/Filament/Resources/PageFaqs/**,resources/views/components/site/page-faqs.blade.php | .ai/rules/page-faqs-views-components-site.md |
 | app/Filament/Pages/** | .ai/rules/pages.md |
 | app/Http/Middleware/SecurityHeaders.php,app/Providers/Filament/AdminPanelProvider.php | .ai/rules/providers-filament.md |
+| app/Models/Redirect.php,app/Http/Middleware/HandleRedirects.php,app/Filament/Resources/Redirects/** | .ai/rules/redirects.md |
 | app/Filament/Resources/** | .ai/rules/resources.md |
 | app/Support/Seo/**,app/Filament/Pages/StructuredData.php,app/Filament/Resources/SchemaTemplates/**,app/Filament/Schemas/SeoFormSection.php | .ai/rules/schemas.md |
 | app/Support/Seo/OrganizationSchema.php,database/seeders/BusinessProfileSeeder.php,app/Filament/Pages/Settings.php | .ai/rules/seeders-filament-pages.md |

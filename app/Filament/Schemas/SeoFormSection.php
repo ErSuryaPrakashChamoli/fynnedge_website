@@ -62,6 +62,31 @@ class SeoFormSection
                     ->maxSize(2048)
                     ->helperText('Recommended 1200×630px, up to 2MB. Falls back to the site default SEO image if left blank.')
                     ->columnSpanFull(),
+                TextInput::make('og_title')
+                    ->label('Social share title')
+                    ->maxLength(70)
+                    ->placeholder('Falls back to the SEO title above')
+                    ->helperText('Used for Facebook, LinkedIn, WhatsApp and X previews.'),
+                TextInput::make('twitter_title')
+                    ->label('X (Twitter) title')
+                    ->maxLength(70)
+                    ->placeholder('Falls back to the social share title'),
+                TextInput::make('og_description')
+                    ->label('Social share description')
+                    ->maxLength(200)
+                    ->placeholder('Falls back to the meta description above'),
+                TextInput::make('twitter_description')
+                    ->label('X (Twitter) description')
+                    ->maxLength(200)
+                    ->placeholder('Falls back to the social share description'),
+                FileUpload::make('twitter_image_path')
+                    ->label('X (Twitter) image')
+                    ->image()
+                    ->disk('public')
+                    ->directory('seo')
+                    ->maxSize(2048)
+                    ->helperText('Optional. Only needed when X should show a different image from the social share image above.')
+                    ->columnSpanFull(),
                 Select::make('page_type')
                     ->label('Page type (schema.org)')
                     ->options(SchemaPageType::options())

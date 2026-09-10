@@ -6,9 +6,26 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @php
         $resolvedTitle = $title ?? $siteBranding['name'];
-        $resolvedDescription = $description ?? 'FynnEdge helps you find the right lender for your personal loan, home loan, business loan or loan against property — with clear, upfront eligibility.';
-        $resolvedCanonical = $canonical ?? url()->current();
+        $resolvedDescription = ($description ?? null) ?: \App\Support\Seo\SeoDefaults::metaDescription();
+        $resolvedCanonical = \App\Support\Seo\SeoDefaults::canonical($canonical ?? null, url()->current());
         $resolvedOgImage = $ogImage ?? $siteBranding['defaultOgImageUrl'];
+
+        /*
+         * Open Graph and Twitter/X resolve through the same chain for every
+         * page: this record's override (the :social prop) → the sitewide
+         * default Setting → the page's own title/description. SeoDefaults owns
+         * that order so it is applied identically everywhere, and so a blank
+         * admin field means "follow the page" rather than an empty tag.
+         */
+        $resolvedSocial = $social ?? [];
+        $resolvedOgTitle = ($resolvedSocial['ogTitle'] ?? null)
+            ?: \App\Support\Seo\SeoDefaults::ogTitle($title ?? null, $resolvedTitle);
+        $resolvedOgDescription = ($resolvedSocial['ogDescription'] ?? null)
+            ?: \App\Support\Seo\SeoDefaults::ogDescription($description ?? null, $resolvedDescription);
+        $resolvedTwitterTitle = ($resolvedSocial['twitterTitle'] ?? null) ?: $resolvedOgTitle;
+        $resolvedTwitterDescription = ($resolvedSocial['twitterDescription'] ?? null) ?: $resolvedOgDescription;
+        $resolvedTwitterImage = \App\Support\Seo\SeoDefaults::twitterImageUrl($resolvedSocial['twitterImageUrl'] ?? null, $resolvedOgImage);
+        $resolvedTwitterCard = \App\Support\Seo\SeoDefaults::twitterCard($resolvedTwitterImage);
 
         /*
          * A record's admin-chosen @type wins over the type the view hardcodes,
@@ -42,22 +59,30 @@
 
     <title>{{ $resolvedTitle }}{{ isset($title) ? ' — '.$siteBranding['name'] : ' — '.$siteBranding['tagline'] }}</title>
     <meta name="description" content="{{ $resolvedDescription }}">
-    <meta name="robots" content="{{ $robots ?? 'index, follow' }}">
+    {{-- A page can only ever be LESS indexable than the sitewide setting: --}}
+    {{-- SearchEngineIndexing forces noindex when the switch is off, whatever this page asked for. --}}
+    <meta name="robots" content="{{ \App\Support\Seo\SearchEngineIndexing::metaRobots($robots ?? null) }}">
     <link rel="canonical" href="{{ $resolvedCanonical }}">
 
     <meta property="og:type" content="{{ $ogType ?? 'website' }}">
     <meta property="og:site_name" content="{{ $siteBranding['name'] }}">
-    <meta property="og:title" content="{{ $resolvedTitle }}">
-    <meta property="og:description" content="{{ $resolvedDescription }}">
+    <meta property="og:title" content="{{ $resolvedOgTitle }}">
+    @if ($resolvedOgDescription)
+        <meta property="og:description" content="{{ $resolvedOgDescription }}">
+    @endif
     <meta property="og:url" content="{{ $resolvedCanonical }}">
     <meta property="og:locale" content="en_IN">
-
-    <meta name="twitter:card" content="{{ $resolvedOgImage ? 'summary_large_image' : 'summary' }}">
-    <meta name="twitter:title" content="{{ $resolvedTitle }}">
-    <meta name="twitter:description" content="{{ $resolvedDescription }}">
     @if ($resolvedOgImage)
         <meta property="og:image" content="{{ $resolvedOgImage }}">
-        <meta name="twitter:image" content="{{ $resolvedOgImage }}">
+    @endif
+
+    <meta name="twitter:card" content="{{ $resolvedTwitterCard }}">
+    <meta name="twitter:title" content="{{ $resolvedTwitterTitle }}">
+    @if ($resolvedTwitterDescription)
+        <meta name="twitter:description" content="{{ $resolvedTwitterDescription }}">
+    @endif
+    @if ($resolvedTwitterImage)
+        <meta name="twitter:image" content="{{ $resolvedTwitterImage }}">
     @endif
 
     <link rel="icon" href="{{ $siteBranding['faviconUrl'] }}" sizes="any">
@@ -105,11 +130,24 @@
         </script>
     @endif
 
+    {{--
+        Verification, analytics and admin-authored head scripts, from
+        Admin → Website Settings → SEO & Analytics. Rendered unescaped because
+        they are script markup; assembled (and their IDs validated) in
+        App\Support\Analytics\TrackingScripts, which is the ONLY place these
+        may be rendered — one render site is what keeps a tag from appearing
+        twice on a page.
+    --}}
+    {!! $trackingHead !!}
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     {!! $siteThemeStyles !!}
     @livewireStyles
 </head>
 <body class="flex min-h-screen flex-col bg-bg font-sans text-ink antialiased">
+    {{-- Google Tag Manager's <noscript> has to be the first thing inside <body>. --}}
+    {!! $trackingBodyStart !!}
+
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-surface focus:px-4 focus:py-2 focus:shadow-lg">
         Skip to content
     </a>
@@ -128,6 +166,11 @@
 
     <x-site.footer />
 
+    {{-- Only rendered while the banner is switched on and this visitor has not answered it. --}}
+    <x-site.cookie-consent />
+
     @livewireScripts
+
+    {!! $trackingBodyEnd !!}
 </body>
 </html>

@@ -6,7 +6,9 @@ use App\Models\Article;
 use App\Models\LoanLandingPage;
 use App\Models\LoanProduct;
 use App\Models\Page;
+use App\Models\SeoMeta;
 use App\Support\Calculators\CalculatorCatalog;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -20,6 +22,15 @@ use Illuminate\Support\Collection;
  * per-visitor journey/application/credit-score funnel (already
  * `noindex, nofollow` in the page head), signed draft previews and the
  * health probe.
+ *
+ * Two rules apply to every record-backed entry, applied centrally in
+ * fromRecords() rather than per source:
+ *   - a record whose SEO section sets a `noindex` robots value is EXCLUDED.
+ *     Listing a URL that then tells the crawler not to index it is a
+ *     self-contradiction, and it is the single most common way a sitemap and a
+ *     page's meta drift apart.
+ *   - a record with its own canonical URL is listed AT that canonical, since
+ *     that is the URL it is asking to have indexed.
  *
  * @phpstan-type SitemapEntry array{loc: string, lastmod: string|null}
  */
@@ -45,6 +56,43 @@ class Sitemap
             ->concat(self::articles())
             ->concat(self::legalPages())
             ->unique('loc')
+            ->values();
+    }
+
+    /**
+     * Turns published Seoable records into entries, dropping the ones marked
+     * noindex and preferring each record's canonical URL over its route URL.
+     *
+     * The seo_metas rows are fetched in ONE query keyed by (type, id) rather
+     * than lazily per record: eager-loading the morphOne would work too, but
+     * every caller here already has its own `with()` needs, and the sitemap is
+     * built from six sources — this keeps it at one extra query total.
+     *
+     * @param  Collection<int, Model>  $records
+     * @param  callable(Model): string  $url
+     * @return Collection<int, SitemapEntry>
+     */
+    private static function fromRecords(Collection $records, callable $url): Collection
+    {
+        if ($records->isEmpty()) {
+            return collect();
+        }
+
+        $meta = SeoMeta::query()
+            ->where('seoable_type', $records->first()->getMorphClass())
+            ->whereIn('seoable_id', $records->modelKeys())
+            ->get()
+            ->keyBy('seoable_id');
+
+        return $records
+            ->reject(fn ($record): bool => str_contains(
+                strtolower((string) $meta->get($record->getKey())?->robots),
+                'noindex',
+            ))
+            ->map(fn ($record): array => [
+                'loc' => $meta->get($record->getKey())?->canonical_url ?: $url($record),
+                'lastmod' => self::lastmod($record->updated_at),
+            ])
             ->values();
     }
 
@@ -88,13 +136,10 @@ class Sitemap
      */
     private static function loanProducts(): Collection
     {
-        return LoanProduct::query()
-            ->published()
-            ->get()
-            ->map(fn (LoanProduct $product): array => [
-                'loc' => route('loans.show', $product),
-                'lastmod' => self::lastmod($product->updated_at),
-            ]);
+        return self::fromRecords(
+            LoanProduct::query()->published()->get(),
+            fn (LoanProduct $product): string => route('loans.show', $product),
+        );
     }
 
     /**
@@ -106,18 +151,17 @@ class Sitemap
      */
     private static function loanLandingPages(): Collection
     {
-        return LoanLandingPage::query()
-            ->published()
-            ->whereHas('loanProduct', fn ($query) => $query->published())
-            ->with('loanProduct')
-            ->get()
-            ->map(fn (LoanLandingPage $page): array => [
-                'loc' => route('loans.landing-pages.show', [
-                    'loanProduct' => $page->loanProduct,
-                    'landingPage' => $page,
-                ]),
-                'lastmod' => self::lastmod($page->updated_at),
-            ]);
+        return self::fromRecords(
+            LoanLandingPage::query()
+                ->published()
+                ->whereHas('loanProduct', fn ($query) => $query->published())
+                ->with('loanProduct')
+                ->get(),
+            fn (LoanLandingPage $page): string => route('loans.landing-pages.show', [
+                'loanProduct' => $page->loanProduct,
+                'landingPage' => $page,
+            ]),
+        );
     }
 
     /**
@@ -125,13 +169,10 @@ class Sitemap
      */
     private static function articles(): Collection
     {
-        return Article::query()
-            ->published()
-            ->get()
-            ->map(fn (Article $article): array => [
-                'loc' => route('resources.show', $article),
-                'lastmod' => self::lastmod($article->updated_at),
-            ]);
+        return self::fromRecords(
+            Article::query()->published()->get(),
+            fn (Article $article): string => route('resources.show', $article),
+        );
     }
 
     /**
@@ -139,14 +180,10 @@ class Sitemap
      */
     private static function legalPages(): Collection
     {
-        return Page::query()
-            ->published()
-            ->whereIn('slug', self::ROUTED_PAGE_SLUGS)
-            ->get()
-            ->map(fn (Page $page): array => [
-                'loc' => route($page->slug),
-                'lastmod' => self::lastmod($page->updated_at),
-            ]);
+        return self::fromRecords(
+            Page::query()->published()->whereIn('slug', self::ROUTED_PAGE_SLUGS)->get(),
+            fn (Page $page): string => route($page->slug),
+        );
     }
 
     /**

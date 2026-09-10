@@ -40,7 +40,7 @@ class StructuredData extends Page
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCodeBracket;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
+    protected static string|\UnitEnum|null $navigationGroup = 'Website Settings';
 
     protected static ?string $navigationLabel = 'Structured Data';
 

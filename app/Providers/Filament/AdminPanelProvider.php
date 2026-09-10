@@ -57,6 +57,8 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make('Catalog'),
                 NavigationGroup::make('Content'),
                 NavigationGroup::make('Access Control'),
+                NavigationGroup::make('Marketing'),
+                NavigationGroup::make('Website Settings'),
             ])
             ->resourceCreatePageRedirect('index')
             ->resourceEditPageRedirect('index')

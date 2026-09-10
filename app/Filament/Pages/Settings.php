@@ -23,6 +23,8 @@ class Settings extends Page
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Website Settings';
+
     /**
      * @var array<string, mixed>
      */

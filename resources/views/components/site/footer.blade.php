@@ -119,6 +119,16 @@
             @endif
         </div>
 
+        <div class="mt-8 border-t border-line pt-6">
+            <x-site.newsletter-form
+                variant="inline"
+                source="footer"
+                heading="FynnEdge Insights"
+                description="Practical financial insights and loan tips, straight to your inbox."
+                class="max-w-2xl"
+            />
+        </div>
+
         <div class="mt-8 flex flex-col gap-3 border-t border-line pt-5 text-xs text-ink-faint sm:flex-row sm:items-center sm:justify-between">
             <p>&copy; {{ now()->year }} {{ $footerLegal['name'] }}. All rights reserved.</p>
             <p class="max-w-2xl">{{ $footerLegal['disclaimer'] }}</p>

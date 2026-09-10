@@ -12,6 +12,6 @@ Controllers append page-specific nodes via a `schemaNodes` view variable → `:s
 
 FynnEdge is a DSA/advisory, NOT a lender. A loan page is `@type: Service` with `provider → #organization` and `serviceType` — never `FinancialProduct`, and never `interestRate`/`annualPercentageRate`/fees/amount/tenure/offers, which belong to the individual lender and vary per applicant. The page microdata (`itemtype="https://schema.org/Service"`) must stay consistent with this. EntityGraphTest pins both rules.
 
-`Sitemap::entries()` builds /sitemap.xml from the same `published()` scopes the public controllers use, plus `CalculatorCatalog` for calculator URLs; `Sitemap::ROUTED_PAGE_SLUGS` is the single source shared with routes/web.php's legal-page loop. public/robots.txt is a static file (Apache serves it before Laravel), so its `Sitemap:` line is the hardcoded production URL — update it if the domain changes.
+`Sitemap::entries()` builds /sitemap.xml from the same `published()` scopes the public controllers use, plus `CalculatorCatalog` for calculator URLs; `Sitemap::ROUTED_PAGE_SLUGS` is the single source shared with routes/web.php's legal-page loop. robots.txt is NO LONGER a static public/ file — it is a route (RobotsController) that follows the sitewide indexing setting and advertises route('sitemap'); see .ai/rules/nginx.md.
 
 Page-level knobs on the layout: `page-type` (AboutPage/ContactPage/CollectionPage, default WebPage) and `og-type` (default website, `article` on articles).

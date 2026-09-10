@@ -34,5 +34,13 @@
                 @endforeach
             </div>
         @endif
+
+        <x-site.newsletter-form
+            class="mt-14"
+            variant="compact"
+            source="blog_index"
+            heading="Never miss an article"
+            description="New guides on credit, loans and everyday money, sent as they are published."
+        />
     </section>
 </x-layouts.app>
