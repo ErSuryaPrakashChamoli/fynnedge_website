@@ -17,7 +17,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Filament/RelationManagers/**,app/Filament/Concerns/** | .ai/rules/concerns.md |
 | config/filesystems.php,app/Filament/**/*Form.php,docker/entrypoint.sh | .ai/rules/config-filament.md |
 | config/database.php,.env*, config/cache.php,config/queue.php,config/session.php,.env*, config/{cache,queue,session}.php | .ai/rules/config.md |
-| app/Models/ContactEnquiry.php,app/Modules/Enquiries/**,app/Http/Controllers/QuickEnquiryController.php,app/Filament/Resources/ContactEnquiries/** | .ai/rules/contact-enquiries.md |
+| app/Models/ContactEnquiry.php,app/Modules/Enquiries/**,app/Http/Controllers/QuickEnquiryController.php,app/Http/Controllers/LoanEnquiryController.php,app/Support/Enquiries/**,app/Filament/Resources/ContactEnquiries/**,resources/views/components/site/loan-enquiry*.blade.php | .ai/rules/contact-enquiries.md |
 | app/Filament/RelationManagers/FaqsRelationManager.php,app/Models/Page.php,app/Http/Controllers/PageController.php | .ai/rules/controllers.md |
 | resources/views/emails/**,resources/views/components/emails/** | .ai/rules/emails.md |
 | app/Support/Media/**,app/Filament/Pages/MediaGovernance.php | .ai/rules/filament-pages.md |

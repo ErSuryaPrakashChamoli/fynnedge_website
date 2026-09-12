@@ -8,46 +8,47 @@
         JSON-LD already declares those Question/Answer entities, and marking
         them up twice would declare them twice.
     --}}
-    <article class="mx-auto max-w-5xl px-6 py-14 lg:px-8" itemscope itemtype="https://schema.org/Service">
-        <x-ui.breadcrumbs :trail="['Loans' => route('loans.index'), $loanProduct->name => null]" />
+    {{--
+        The hero IS the enquiry section. The product's own heading, summary and
+        CTAs sit in its left column and the form in its right, so the form is on
+        screen when the page loads rather than a scroll away — which is the whole
+        point of putting it on a loan page. The page title (h1) lives inside the
+        component; nothing here renders a second one.
 
+        Full-bleed section, then the article below it: both inner containers are
+        max-w-7xl px-6 lg:px-8, matching the site header and footer exactly, so
+        every left edge on the page lines up.
+    --}}
+    <div itemscope itemtype="https://schema.org/Service">
         <link itemprop="url" href="{{ route('loans.show', $loanProduct) }}">
         <meta itemprop="serviceType" content="{{ $loanProduct->category->getLabel() }}">
 
-        <div data-reveal="left">
-            <x-ui.badge tone="accent" class="mt-5" itemprop="category">{{ $loanProduct->category->getLabel() }}</x-ui.badge>
-            @if ($loanProduct->marketing_headline)
-                <p class="mt-4 font-display text-sm font-semibold uppercase tracking-wide text-accent">{{ $loanProduct->marketing_headline }}</p>
-            @endif
-            <h1 itemprop="name" class="mt-2 max-w-2xl text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-                {{ $loanProduct->name }}
-            </h1>
-            @if ($loanProduct->summary)
-                <p itemprop="description" class="mt-3 max-w-2xl text-lg text-ink-muted">{{ $loanProduct->summary }}</p>
-            @endif
-        </div>
+        <x-site.loan-enquiry :loan-product="$loanProduct" :eyebrow="$loanProduct->marketing_headline">
+            <x-slot:breadcrumbs>
+                <x-ui.breadcrumbs :trail="['Loans' => route('loans.index'), $loanProduct->name => null]" />
+            </x-slot:breadcrumbs>
 
+            <x-ui.button tag="a" :href="route('loans.apply', $loanProduct)">
+                {{ $loanProduct->cta_label ?: 'Check Your Eligibility' }}
+            </x-ui.button>
+            <x-ui.button tag="a" :href="$calculatorSupported ? route('calculators.emi', $loanProduct->category->value) : route('calculators.index')" variant="secondary">
+                Calculate EMI
+            </x-ui.button>
+        </x-site.loan-enquiry>
+
+    <article class="mx-auto max-w-7xl px-6 pb-14 lg:px-8">
         @if ($loanProduct->imageUrl())
             <img
                 src="{{ $loanProduct->imageUrl() }}"
                 alt="{{ $loanProduct->image_alt ?? '' }}"
-                class="mt-8 max-h-80 w-full rounded-2xl object-cover"
+                class="mt-12 max-h-80 w-full rounded-2xl object-cover"
             >
         @endif
-
-        <div class="mt-8 flex flex-wrap gap-3">
-            <x-ui.button tag="a" :href="route('loans.apply', $loanProduct)" size="lg">
-                {{ $loanProduct->cta_label ?: 'Check Your Eligibility' }}
-            </x-ui.button>
-            <x-ui.button tag="a" :href="$calculatorSupported ? route('calculators.emi', $loanProduct->category->value) : route('calculators.index')" variant="secondary" size="lg">
-                Calculate EMI
-            </x-ui.button>
-        </div>
 
         @if (! empty($loanProduct->benefits))
             <div class="mt-12" data-ai-context="Product Benefits">
                 <h2 data-reveal="zoom" class="font-display text-xl font-semibold text-ink">Benefits</h2>
-                <ul class="mt-4 grid gap-3 sm:grid-cols-2">
+                <ul class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($loanProduct->benefits as $benefit)
                         <li data-reveal="up stagger" class="flex items-start gap-2.5 text-sm text-ink-muted">
                             <svg viewBox="0 0 20 20" fill="currentColor" class="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4L8 11.6l6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd" /></svg>
@@ -59,7 +60,7 @@
         @endif
 
         @if ($loanProduct->body)
-            <div data-reveal="fade" class="prose prose-neutral mt-12 max-w-2xl text-ink-muted [&_h2]:font-display [&_h2]:text-ink [&_p]:leading-relaxed">
+            <div data-reveal="fade" class="prose prose-neutral mt-12 max-w-3xl text-ink-muted [&_h2]:font-display [&_h2]:text-ink [&_p]:leading-relaxed">
                 {!! $loanProduct->body !!}
             </div>
         @endif
@@ -67,7 +68,7 @@
         @if (! empty($loanProduct->features))
             <div class="mt-12" data-ai-context="Product Features">
                 <h2 data-reveal="right" class="font-display text-xl font-semibold text-ink">Key features</h2>
-                <ul class="mt-4 grid gap-3 sm:grid-cols-2">
+                <ul class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($loanProduct->features as $feature)
                         <li data-reveal="right stagger" class="flex items-start gap-2.5 text-sm text-ink-muted">
                             <svg viewBox="0 0 20 20" fill="currentColor" class="mt-0.5 h-4 w-4 shrink-0 text-pass" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4L8 11.6l6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd" /></svg>
@@ -82,7 +83,7 @@
             <div class="mt-12" data-ai-context="Product Eligibility">
                 <h2 data-reveal="up" class="font-display text-xl font-semibold text-ink">Eligibility at a glance</h2>
                 <p class="mt-2 text-sm text-ink-faint">A general guide — the exact criteria vary by lender and are checked precisely when you apply.</p>
-                <ul class="mt-4 flex flex-col gap-2">
+                <ul class="mt-4 flex max-w-3xl flex-col gap-2">
                     @foreach ($loanProduct->eligibility_points as $point)
                         <li data-reveal="left stagger" class="text-sm text-ink-muted">— {{ $point }}</li>
                     @endforeach
@@ -128,7 +129,7 @@
         @if ($loanProduct->lenderProducts->isNotEmpty())
             <div class="mt-12" data-ai-context="Lender Offers">
                 <h2 data-reveal="right" class="font-display text-xl font-semibold text-ink">Lenders offering this product</h2>
-                <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                <div class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     @foreach ($loanProduct->lenderProducts as $offer)
                         <x-site.lender-offer-card :offer="$offer" :loan-product="$loanProduct" />
                     @endforeach
@@ -168,4 +169,5 @@
         <x-site.faq-accordion :faqs="$faqs" data-ai-context="Frequently Asked Questions" />
         <x-site.faq-json-ld :faqs="$faqs" />
     </article>
+    </div>
 </x-layouts.app>

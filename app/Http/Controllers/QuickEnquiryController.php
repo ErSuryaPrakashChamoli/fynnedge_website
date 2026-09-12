@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\EnquiryType;
 use App\Models\ContactEnquiry;
-use App\Modules\Enquiries\Actions\SubmitQuickEnquiry;
-use App\Modules\Enquiries\Enums\QuickEnquiryOutcome;
+use App\Modules\Enquiries\Actions\RecordEnquiry;
+use App\Modules\Enquiries\Concerns\AnswersEnquirySubmissions;
+use App\Modules\Enquiries\DataTransferObjects\EnquiryDraft;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,7 +24,19 @@ use Illuminate\Http\Request;
  */
 class QuickEnquiryController extends Controller
 {
-    public function store(Request $request, SubmitQuickEnquiry $submit): JsonResponse|RedirectResponse
+    use AnswersEnquirySubmissions;
+
+    /**
+     * Where on the site the box was rendered, resolved from a fixed list rather
+     * than stored as submitted — `enquiry_source` feeds marketing reporting, and
+     * a free-text field posted by the browser would let anyone write into it.
+     */
+    private const PLACEMENTS = [
+        'homepage' => 'Homepage Quick Enquiry',
+        'website' => 'Website Quick Enquiry',
+    ];
+
+    public function store(Request $request, RecordEnquiry $record): JsonResponse|RedirectResponse
     {
         /*
          * Normalise before validating, not after: the visitor may paste
@@ -42,53 +56,13 @@ class QuickEnquiryController extends Controller
             'phone.regex' => 'Please enter a valid 10-digit mobile number.',
         ]);
 
-        $outcome = $submit->handle(
+        $outcome = $record->handle(new EnquiryDraft(
             phone: $validated['phone'],
-            source: $validated['source'] ?? 'website',
-            sourceUrl: $this->resolveSourceUrl($request),
-        );
+            type: EnquiryType::QuickEnquiry,
+            enquirySource: self::PLACEMENTS[$validated['source'] ?? 'website'] ?? self::PLACEMENTS['website'],
+            landingPage: $this->resolveLandingPage($request),
+        ));
 
-        $confirmation = $this->confirmation($outcome);
-
-        if (! $request->expectsJson()) {
-            return back()->with([
-                'quickEnquiryTitle' => $confirmation['title'],
-                'quickEnquiryStatus' => $confirmation['message'],
-            ]);
-        }
-
-        return response()->json([
-            // Reopened is reported as created: whether this number was in the
-            // table before is not the visitor's business.
-            'outcome' => $outcome->isNewRequest()
-                ? QuickEnquiryOutcome::Created->value
-                : QuickEnquiryOutcome::Duplicate->value,
-            ...$confirmation,
-        ], $outcome === QuickEnquiryOutcome::Duplicate ? 200 : 201);
-    }
-
-    /**
-     * @return array{title: string, message: string}
-     */
-    private function confirmation(QuickEnquiryOutcome $outcome): array
-    {
-        return $outcome->isNewRequest()
-            ? [
-                'title' => 'Thank You!',
-                'message' => 'Your enquiry has been submitted successfully. Our team will contact you shortly.',
-            ]
-            : [
-                'title' => "You're Already Connected",
-                'message' => 'We already have your enquiry. Our team will contact you shortly.',
-            ];
-    }
-
-    /**
-     * Stored as a path only — the value comes from a visitor and is displayed in
-     * the admin panel, so a full URL from the referer could point anywhere.
-     */
-    private function resolveSourceUrl(Request $request): string
-    {
-        return '/'.ltrim((string) parse_url((string) $request->headers->get('referer', ''), PHP_URL_PATH), '/');
+        return $this->respondTo($request, $outcome);
     }
 }

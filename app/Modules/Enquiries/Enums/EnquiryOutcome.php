@@ -3,10 +3,10 @@
 namespace App\Modules\Enquiries\Enums;
 
 /**
- * What SubmitQuickEnquiry did with a number. The public endpoint maps this to a
+ * What RecordEnquiry did with a submission. The public endpoints map this to a
  * message and nothing else — the visitor never learns which record was touched.
  */
-enum QuickEnquiryOutcome: string
+enum EnquiryOutcome: string
 {
     case Created = 'created';
     case Reopened = 'reopened';

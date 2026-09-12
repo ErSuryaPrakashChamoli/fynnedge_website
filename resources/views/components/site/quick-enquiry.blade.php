@@ -1,8 +1,8 @@
 @props([
     'source' => 'website',
-    'heading' => 'Get Started with a Quick Enquiry',
-    'subheading' => 'Enter your mobile number and our team will get in touch with you.',
-    'ctaLabel' => 'Submit Enquiry',
+    'heading' => null,
+    'subheading' => null,
+    'ctaLabel' => null,
 ])
 
 @php
@@ -22,6 +22,18 @@
         other section. Behaviour lives in the `quickEnquiryForm` Alpine
         component in resources/js/app.js.
     */
+    use App\Support\Enquiries\EnquiryFormContent;
+
+    /*
+        Copy is admin-editable through Marketing Sections → "Homepage — Quick
+        Enquiry box"; an explicit prop still wins, and with neither the built-in
+        wording renders exactly as before.
+    */
+    $content = EnquiryFormContent::forQuickEnquiry();
+    $heading = $heading ?: $content['heading'];
+    $subheading = $subheading ?: $content['description'];
+    $ctaLabel = $ctaLabel ?: $content['ctaLabel'];
+
     $fieldId = 'quick-enquiry-phone-'.$source;
     $serverError = $errors->first('phone');
     $serverStatus = session('quickEnquiryStatus');

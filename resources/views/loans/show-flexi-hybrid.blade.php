@@ -14,11 +14,13 @@
         see the comment there for why the FAQ accordion is deliberately left
         out of the microdata.
     --}}
-    <article id="flexi-hybrid-details" class="mx-auto max-w-5xl px-6 py-14 lg:px-8" itemscope itemtype="https://schema.org/Service">
+    <article id="flexi-hybrid-details" class="mx-auto max-w-7xl px-6 py-14 lg:px-8" itemscope itemtype="https://schema.org/Service">
         <meta itemprop="name" content="{{ $loanProduct->name }}">
         <link itemprop="url" href="{{ route('loans.show', $loanProduct) }}">
         <meta itemprop="serviceType" content="{{ $loanProduct->category->getLabel() }}">
 
+        {{-- This page keeps its own bespoke hero, which now carries the enquiry
+             form in its right column — so there is no separate enquiry band here. --}}
         <x-ui.breadcrumbs :trail="['Loans' => route('loans.index'), $loanProduct->name => null]" />
 
         @if ($loanProduct->summary || $loanProduct->body)

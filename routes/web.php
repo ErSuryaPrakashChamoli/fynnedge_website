@@ -10,6 +10,7 @@ use App\Http\Controllers\CreditScoreController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JourneyController;
+use App\Http\Controllers\LoanEnquiryController;
 use App\Http\Controllers\LoanLandingPageController;
 use App\Http\Controllers\LoanProductController;
 use App\Http\Controllers\NewsletterController;
@@ -56,8 +57,19 @@ Route::get('/newsletter/track/click/{recipient}/{token}', [NewsletterTrackingCon
  * script against, since a submission needs one field and no session.
  */
 Route::post('/quick-enquiry', [QuickEnquiryController::class, 'store'])
-    ->middleware('throttle:quick-enquiry')
+    ->middleware('throttle:enquiry-forms')
     ->name('quick-enquiry.store');
+
+/*
+ * The loan-page enquiry form. The product is a route segment, not a form field:
+ * it is resolved server-side against loan_products, so the stored lead carries a
+ * real foreign key and a visitor cannot dictate which product they are counted
+ * against. Registered before the /loans/{loanProduct}/{landingPage} wildcard
+ * below so that literal "enquiry" segment can never be swallowed by it.
+ */
+Route::post('/loans/{loanProduct:slug}/enquiry', [LoanEnquiryController::class, 'store'])
+    ->middleware('throttle:enquiry-forms')
+    ->name('loans.enquiry.store');
 
 Route::get('/loans', [LoanProductController::class, 'index'])->name('loans.index');
 Route::get('/loans/{loanProduct:slug}', [LoanProductController::class, 'show'])->name('loans.show');

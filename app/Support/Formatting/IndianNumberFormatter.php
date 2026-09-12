@@ -25,4 +25,29 @@ class IndianNumberFormatter
 
         return ($isNegative ? '-' : '').$remaining.','.$lastThree;
     }
+
+    /**
+     * A headline-length amount in the Indian scale — "₹50 Lakh", "₹1.5 Crore",
+     * "₹75,000" — for places where the exact rupee is noise and the magnitude is
+     * the point. Trailing ".0" is dropped so 50 Lakh never reads "50.0 Lakh".
+     */
+    public static function compact(int|float $amount): string
+    {
+        $amount = (int) round($amount);
+
+        if ($amount >= 10000000) {
+            return self::trimZero($amount / 10000000).' Crore';
+        }
+
+        if ($amount >= 100000) {
+            return self::trimZero($amount / 100000).' Lakh';
+        }
+
+        return self::format($amount);
+    }
+
+    private static function trimZero(float $value): string
+    {
+        return rtrim(rtrim(number_format($value, 1, '.', ''), '0'), '.');
+    }
 }

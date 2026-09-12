@@ -76,6 +76,16 @@ class LoanProduct extends Model
         return $this->hasMany(LenderProduct::class);
     }
 
+    /**
+     * Enquiries made about this product from its own page. The relation exists
+     * so reporting can count and filter per product with a join rather than by
+     * matching on a product name string that a rename would break.
+     */
+    public function enquiries(): HasMany
+    {
+        return $this->hasMany(ContactEnquiry::class);
+    }
+
     public function faqs(): MorphMany
     {
         return $this->morphMany(Faq::class, 'faqable')->orderBy('sort_order');

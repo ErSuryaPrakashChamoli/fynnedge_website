@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Every enquiry the public website produces, whichever form it came from —
@@ -19,7 +20,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 #[Fillable([
     'name', 'email', 'phone', 'message', 'source_url', 'handled_at',
-    'enquiry_type', 'source', 'status', 'enquiry_count', 'phone_verified_at',
+    'enquiry_type', 'source', 'enquiry_source', 'status', 'enquiry_count',
+    'phone_verified_at', 'loan_product_id', 'loan_amount',
 ])]
 class ContactEnquiry extends Model
 {
@@ -34,6 +36,7 @@ class ContactEnquiry extends Model
             'enquiry_type' => EnquiryType::class,
             'status' => EnquiryStatus::class,
             'enquiry_count' => 'integer',
+            'loan_amount' => 'decimal:2',
         ];
     }
 
@@ -41,15 +44,26 @@ class ContactEnquiry extends Model
     {
         /*
          * `handled_at` predates the status column and still drives the admin
-         * table's "Handled" icon and filter, so closing an enquiry stamps it
-         * rather than leaving the two representations to drift apart. One
-         * direction only: an already-recorded follow-up time is never erased.
+         * table's "Handled" icon and filter, so settling an enquiry (closed,
+         * converted or rejected) stamps it rather than leaving the two
+         * representations to drift apart. One direction only: an
+         * already-recorded follow-up time is never erased.
          */
         static::saving(function (self $enquiry): void {
-            if ($enquiry->status === EnquiryStatus::Closed && $enquiry->handled_at === null) {
+            if ($enquiry->status?->isSettled() && $enquiry->handled_at === null) {
                 $enquiry->handled_at = now();
             }
         });
+    }
+
+    /**
+     * The product the enquiry was made about, when it was made from a loan page.
+     * Null for the general forms (contact page, homepage Quick Enquiry), which
+     * name no product — so reporting groups on this, it never guesses.
+     */
+    public function loanProduct(): BelongsTo
+    {
+        return $this->belongsTo(LoanProduct::class);
     }
 
     /**

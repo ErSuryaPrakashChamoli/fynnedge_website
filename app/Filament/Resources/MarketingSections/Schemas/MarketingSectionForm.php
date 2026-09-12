@@ -24,15 +24,27 @@ class MarketingSectionForm
                         'home_emi_cta' => 'Homepage — "Plan your EMI" CTA',
                         'home_final_cta' => 'Homepage — closing "Ready to see what you\'re eligible for?" CTA',
                         'home_flexi_hybrid_ticker' => 'Homepage — Flexi Hybrid marquee strip (below header)',
+                        'home_quick_enquiry' => 'Homepage — Quick Enquiry box',
+                        'loan_enquiry_form' => 'Loan pages — enquiry form (all loan and landing pages)',
                     ])
                     ->helperText('Where this section appears. Each placement shows its own hardcoded default copy on the website until a section is published here.')
                     ->columnSpanFull(),
                 TextInput::make('heading')
                     ->required()
                     ->columnSpanFull()
-                    ->helperText(fn (callable $get) => $get('placement') === 'home_flexi_hybrid_ticker' ? 'Used as the small badge label, e.g. "Our Specialty".' : null),
+                    ->helperText(fn (callable $get) => match ($get('placement')) {
+                        'home_flexi_hybrid_ticker' => 'Used as the small badge label, e.g. "Our Specialty".',
+                        // One row words every loan page, so the placeholder is what
+                        // keeps the product's own name in the heading.
+                        'loan_enquiry_form' => 'The heading beside the form. Write :product where the loan name should appear, e.g. "Apply for a :product".',
+                        'home_quick_enquiry' => 'The heading above the Quick Enquiry box, e.g. "Get Started with a Quick Enquiry".',
+                        default => null,
+                    }),
                 TextInput::make('subheading')
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->helperText(fn (callable $get) => $get('placement') === 'loan_enquiry_form'
+                        ? 'The small label above the form itself, e.g. "Instant :product". The rate and loan ceiling below it come from the loan product\'s own fields.'
+                        : null),
                 Textarea::make('description')
                     ->rows(3)
                     ->columnSpanFull()
@@ -49,7 +61,10 @@ class MarketingSectionForm
                     ->label('Image alt text')
                     ->helperText('Describes the image for screen readers and search engines.'),
                 TextInput::make('cta_label')
-                    ->label('Button label'),
+                    ->label('Button label')
+                    ->helperText(fn (callable $get) => in_array($get('placement'), ['loan_enquiry_form', 'home_quick_enquiry'], true)
+                        ? 'The submit button on the enquiry form, e.g. "Submit Enquiry".'
+                        : null),
                 TextInput::make('cta_url')
                     ->label('Button link')
                     ->rule(fn () => function (string $attribute, mixed $value, \Closure $fail): void {

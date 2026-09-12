@@ -1,6 +1,9 @@
 @props(['loanProduct'])
 
 @php
+    use App\Support\Enquiries\EnquiryFormContent;
+
+    $enquiryContent = EnquiryFormContent::forLoanPage($loanProduct->name);
     $lenderOffers = $loanProduct->lenderProducts;
     $initialTenureMonths = $loanProduct->default_initial_tenure_months;
     $totalTenureMonths = $loanProduct->default_tenure_months;
@@ -33,7 +36,7 @@
         <div class="absolute inset-0 [background-image:radial-gradient(var(--color-line)_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,black,transparent)] opacity-50"></div>
     </div>
 
-    <div class="mx-auto grid max-w-7xl gap-x-12 gap-y-8 px-6 py-20 lg:grid-cols-[1.5fr_1fr] lg:items-center lg:py-28 lg:px-8">
+    <div class="mx-auto grid max-w-7xl gap-x-12 gap-y-8 px-6 py-12 lg:grid-cols-[1.4fr_26rem] lg:items-center lg:px-8 lg:py-14">
         <p data-reveal="up" class="order-1 col-start-1 inline-flex w-fit items-center gap-2 rounded-full border border-line-strong bg-surface-2 px-4 py-1.5 font-mono text-xs font-semibold uppercase tracking-[0.16em] text-accent shadow-sm">
             Flexi Hybrid Term Loan
         </p>
@@ -88,29 +91,16 @@
             </x-ui.button>
         </div>
 
-        <div data-reveal="right" class="order-6 col-start-1 flex flex-col gap-4 rounded-3xl border border-line-strong bg-surface-2 p-7 shadow-xl shadow-black/20 lg:order-none lg:col-start-2 lg:row-span-7 lg:row-start-1 lg:self-center">
-            <div class="rounded-2xl border border-line bg-surface p-5">
-                <p class="font-mono text-[0.7rem] font-semibold uppercase tracking-wider text-accent">Initial tenure</p>
-                <p class="mt-1.5 font-display text-xl font-semibold text-ink">
-                    {{ $initialTenureMonths ? "Months 1–{$initialTenureMonths}" : 'Varies by lender' }}
-                </p>
-                <p class="mt-1 text-sm text-ink-muted">Interest-only repayment</p>
-            </div>
-            <div class="flex justify-center text-accent" aria-hidden="true">
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" class="h-6 w-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10 4v12m0 0-4-4m4 4 4-4" /></svg>
-            </div>
-            <div class="rounded-2xl border border-line bg-surface p-5">
-                <p class="font-mono text-[0.7rem] font-semibold uppercase tracking-wider text-accent">Subsequent tenure</p>
-                <p class="mt-1.5 font-display text-xl font-semibold text-ink">
-                    @if ($initialTenureMonths && $subsequentTenureMonths)
-                        Months {{ $initialTenureMonths + 1 }}–{{ $initialTenureMonths + $subsequentTenureMonths }}
-                    @else
-                        Varies by lender
-                    @endif
-                </p>
-                <p class="mt-1 text-sm text-ink-muted">Principal + interest</p>
-            </div>
-            <p class="text-xs text-ink-faint">See the full breakdown and per-lender terms below.</p>
+        {{--
+            The enquiry form holds this column, so this page opens with a form on
+            screen like every other loan page. What used to sit here — the
+            two-stage "initial tenure / subsequent tenure" card — is not lost:
+            <x-site.repayment-stages> renders that same breakdown in full further
+            down the page, and the four stat tiles on the left still quote both
+            tenures above the fold.
+        --}}
+        <div data-reveal="right" class="order-6 col-start-1 lg:order-none lg:col-start-2 lg:row-span-7 lg:row-start-1 lg:self-center">
+            <x-site.loan-enquiry-form :loan-product="$loanProduct" :eyebrow="$enquiryContent['eyebrow']" :cta-label="$enquiryContent['ctaLabel']" />
         </div>
     </div>
 

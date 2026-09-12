@@ -4,37 +4,41 @@
         see the comment there for why the FAQ accordion is deliberately left
         out of the microdata.
     --}}
-    <article class="mx-auto max-w-5xl px-6 py-14 lg:px-8" itemscope itemtype="https://schema.org/Service">
-        <x-ui.breadcrumbs :trail="[
-            'Loans' => route('loans.index'),
-            $loanProduct->name => route('loans.show', $loanProduct),
-            $landingPage->title => null,
-        ]" />
-
+    {{--
+        Same hero-with-form treatment as loans/show.blade.php. The landing page's
+        own title is what :product resolves to in the admin-editable heading, so
+        "Apply for a :product" reads as this page's subject rather than the
+        parent product's. The lead still points at the parent loan product;
+        source_url is what preserves which of the two pages it came from.
+    --}}
+    <div itemscope itemtype="https://schema.org/Service">
         <link itemprop="url" href="{{ route('loans.landing-pages.show', ['loanProduct' => $loanProduct, 'landingPage' => $landingPage]) }}">
         <meta itemprop="serviceType" content="{{ $loanProduct->category->getLabel() }}">
 
-        <div data-reveal="left">
-            <x-ui.badge tone="accent" class="mt-5" itemprop="category">{{ $loanProduct->category->getLabel() }}</x-ui.badge>
-            <h1 itemprop="name" class="mt-4 max-w-2xl text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-                {{ $landingPage->title }}
-            </h1>
-            @if ($landingPage->excerpt)
-                <p itemprop="description" class="mt-3 max-w-2xl text-lg text-ink-muted">{{ $landingPage->excerpt }}</p>
-            @endif
-        </div>
+        <x-site.loan-enquiry
+            :loan-product="$loanProduct"
+            :label="$landingPage->title"
+            :description="$landingPage->excerpt ?: $loanProduct->summary"
+        >
+            <x-slot:breadcrumbs>
+                <x-ui.breadcrumbs :trail="[
+                    'Loans' => route('loans.index'),
+                    $loanProduct->name => route('loans.show', $loanProduct),
+                    $landingPage->title => null,
+                ]" />
+            </x-slot:breadcrumbs>
 
-        <div class="mt-8 flex flex-wrap gap-3">
-            <x-ui.button tag="a" :href="route('loans.apply', $loanProduct)" size="lg">
+            <x-ui.button tag="a" :href="route('loans.apply', $loanProduct)">
                 {{ $landingPage->cta_label ?: 'Check Your Eligibility' }}
             </x-ui.button>
-            <x-ui.button tag="a" :href="route('loans.show', $loanProduct)" variant="secondary" size="lg">
+            <x-ui.button tag="a" :href="route('loans.show', $loanProduct)" variant="secondary">
                 {{ $loanProduct->name }} overview
             </x-ui.button>
-        </div>
+        </x-site.loan-enquiry>
 
+    <article class="mx-auto max-w-7xl px-6 pb-14 lg:px-8">
         @if ($landingPage->body)
-            <div data-reveal="fade" class="prose prose-neutral mt-12 max-w-2xl text-ink-muted [&_h2]:font-display [&_h2]:text-ink [&_p]:leading-relaxed">
+            <div data-reveal="fade" class="prose prose-neutral mt-12 max-w-3xl text-ink-muted [&_h2]:font-display [&_h2]:text-ink [&_p]:leading-relaxed">
                 {!! $landingPage->body !!}
             </div>
         @endif
@@ -61,7 +65,7 @@
         @if ($loanProduct->lenderProducts->isNotEmpty())
             <div class="mt-12">
                 <h2 data-reveal="right" class="font-display text-xl font-semibold text-ink">Lenders offering this product</h2>
-                <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                <div class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     @foreach ($loanProduct->lenderProducts as $offer)
                         <x-site.lender-offer-card :offer="$offer" :loan-product="$loanProduct" />
                     @endforeach
@@ -79,4 +83,5 @@
         <x-site.faq-accordion :faqs="$faqs" data-ai-context="Frequently Asked Questions" />
         <x-site.faq-json-ld :faqs="$faqs" />
     </article>
+    </div>
 </x-layouts.app>

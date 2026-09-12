@@ -37,6 +37,10 @@ class ContactController extends Controller
         ContactEnquiry::query()->create([
             ...$data,
             'source_url' => url()->previous(),
+            // Set explicitly so this form shows up alongside the Quick Enquiry and
+            // loan-page leads in the admin list with a placement of its own, rather
+            // than as the one row type with an empty Enquiry Source column.
+            'enquiry_source' => 'Contact Page',
         ]);
 
         return back()->with([

@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Livewire;
 
 beforeEach(function () {
-    // The per-number limiter inside SubmitQuickEnquiry is a real cache-backed
-    // limiter, not one of the test-exempt route limiters — clear it between tests
-    // so a number reused across examples starts from zero attempts.
-    RateLimiter::clear('quick-enquiry:9876543210');
+    // The per-number limiter inside RecordEnquiry is a real cache-backed limiter,
+    // not one of the test-exempt route limiters — clear it between tests so a
+    // number reused across examples starts from zero attempts.
+    RateLimiter::clear('enquiry:9876543210:general');
 });
 
 it('creates a quick enquiry lead from a valid new number', function () {
@@ -119,7 +119,7 @@ it('requires a csrf token for a plain browser post', function () {
 });
 
 it('stops a number being submitted repeatedly once the per-number limit is reached', function () {
-    // Three submissions per hour per number, enforced inside SubmitQuickEnquiry
+    // Three submissions per hour per number, enforced inside RecordEnquiry
     // (the per-IP route throttle is uncapped under the test runner).
     foreach (range(1, 3) as $attempt) {
         $this->postJson('/quick-enquiry', ['phone' => '9876543210'])->assertSuccessful();
@@ -171,4 +171,20 @@ it('lists a quick enquiry in the admin enquiries table with its type, source and
         ->filterTable('enquiry_type', EnquiryType::QuickEnquiry->value)
         ->assertCanSeeTableRecords([$quickEnquiry])
         ->assertCanNotSeeTableRecords([$contactEnquiry]);
+});
+
+it('resolves the enquiry source from a fixed list rather than storing what was posted', function () {
+    $this->postJson('/quick-enquiry', ['phone' => '9876543210', 'source' => 'homepage'])->assertCreated();
+
+    expect(ContactEnquiry::query()->sole())
+        ->enquiry_source->toBe('Homepage Quick Enquiry')
+        ->source->toBe('website');
+});
+
+it('falls back to the default placement when an unknown source is posted', function () {
+    $this->postJson('/quick-enquiry', ['phone' => '9876543210', 'source' => 'Paid Campaign XYZ'])->assertCreated();
+
+    expect(ContactEnquiry::query()->sole())
+        ->enquiry_source->toBe('Website Quick Enquiry')
+        ->source->toBe('website');
 });

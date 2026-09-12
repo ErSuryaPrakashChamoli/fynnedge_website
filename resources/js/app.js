@@ -435,6 +435,10 @@ document.addEventListener('alpine:init', () => {
  * creating a dataLayer of its own and re-implementing a consent decision that
  * was already made server-side.
  */
+function trackEnquiry(event, config, params = {}) {
+    trackQuickEnquiry(event, { loan_product: config.product, loan_product_name: config.productName, ...params });
+}
+
 function trackQuickEnquiry(event, params = {}) {
     if (Array.isArray(window.dataLayer)) {
         window.dataLayer.push({ event, ...params });
@@ -543,6 +547,181 @@ document.addEventListener('alpine:init', () => {
                 );
             } catch {
                 this.error = 'Something went wrong. Please try again.';
+            } finally {
+                this.loading = false;
+            }
+        },
+    }));
+});
+
+document.addEventListener('alpine:init', () => {
+    /**
+     * The loan-page enquiry form: name, mobile, optional email, amount.
+     *
+     * Every rule enforced here is enforced again in LoanEnquiryController —
+     * this exists to make the form quick and clear, not to be the gate. The
+     * loan product is not held in state at all: the form posts to that
+     * product's own endpoint, so there is nothing here for a visitor to edit
+     * that would change which product the lead is counted against.
+     */
+    window.Alpine.data('loanEnquiryForm', (config) => ({
+        values: { name: '', phone: '', email: '', loan_amount: '' },
+        errors: {},
+        loading: false,
+        done: false,
+        resultTitle: '',
+        resultMessage: '',
+        startTracked: false,
+
+        init() {
+            trackEnquiry('loan_enquiry_form_view', config);
+
+            // Pick up anything the browser restored or a no-JavaScript bounce
+            // left in the fields, so state and DOM agree before the first edit.
+            this.$nextTick(() => {
+                Object.keys(this.values).forEach((key) => {
+                    const field = this.$el.querySelector(`[name="${key}"]`);
+
+                    if (field?.value) {
+                        this.values[key] = field.value;
+                    }
+                });
+            });
+        },
+
+        onInput(event) {
+            this.errors[event.target.name] = null;
+            this.trackStart();
+        },
+
+        /**
+         * Digits only, capped at ten, written straight back — a pasted
+         * "+91 98765 43210" becomes "9876543210" in front of the visitor rather
+         * than being silently rejected on submit.
+         */
+        onPhoneInput(event) {
+            this.values.phone = event.target.value.replace(/\D+/g, '').slice(0, 10);
+            event.target.value = this.values.phone;
+            this.errors.phone = null;
+            this.trackStart();
+        },
+
+        /**
+         * Indian digit grouping as they type (5,00,000 rather than 500,000),
+         * matching the journey's currency inputs. The commas are display only —
+         * the request sends bare digits, and the server strips them again.
+         */
+        onAmountInput(event) {
+            const digits = event.target.value.replace(/\D+/g, '').slice(0, 10);
+            this.values.loan_amount = formatIndianNumber(digits);
+            event.target.value = this.values.loan_amount;
+            this.errors.loan_amount = null;
+            this.trackStart();
+        },
+
+        trackStart() {
+            if (!this.startTracked) {
+                this.startTracked = true;
+                trackEnquiry('loan_enquiry_form_started', config);
+            }
+        },
+
+        get amountDigits() {
+            return this.values.loan_amount.replace(/\D+/g, '');
+        },
+
+        validate() {
+            const errors = {};
+
+            if (!this.values.name.trim()) {
+                errors.name = 'Please enter your name.';
+            }
+
+            // Indian mobile numbers are ten digits starting 6-9. Mirrors the
+            // `regex:/^[6-9]\d{9}$/` rule the controller uses.
+            if (!/^[6-9]\d{9}$/.test(this.values.phone)) {
+                errors.phone = 'Please enter a valid 10-digit mobile number.';
+            }
+
+            if (this.values.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(this.values.email.trim())) {
+                errors.email = 'Please enter a valid email address.';
+            }
+
+            if (!this.amountDigits || Number(this.amountDigits) <= 0) {
+                errors.loan_amount = 'Please enter the loan amount you need.';
+            }
+
+            this.errors = errors;
+
+            return Object.keys(errors).length === 0;
+        },
+
+        async submit() {
+            // The button is disabled while a request is in flight; this guards the
+            // Enter key, which submits the form regardless of the button's state.
+            if (this.loading) {
+                return;
+            }
+
+            if (!this.validate()) {
+                trackEnquiry('loan_enquiry_failed', config, { reason: 'validation' });
+
+                return;
+            }
+
+            this.loading = true;
+            trackEnquiry('loan_enquiry_submitted', config);
+
+            try {
+                const response = await fetch(config.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                    },
+                    body: JSON.stringify({
+                        name: this.values.name,
+                        phone: this.values.phone,
+                        email: this.values.email,
+                        loan_amount: this.amountDigits,
+                        // The honeypot travels with the request so a bot that fills
+                        // the rendered form and replays it is rejected server-side.
+                        website: this.$refs.honeypot?.value ?? '',
+                    }),
+                });
+
+                const data = await response.json().catch(() => ({}));
+
+                if (response.status === 429) {
+                    this.errors = { phone: 'Too many attempts. Please try again in a few minutes.' };
+                    trackEnquiry('loan_enquiry_failed', config, { reason: 'rate_limited' });
+
+                    return;
+                }
+
+                if (!response.ok) {
+                    // Laravel returns { errors: { field: [message] } } on a 422.
+                    this.errors = Object.fromEntries(
+                        Object.entries(data.errors ?? {}).map(([field, messages]) => [field, messages[0]]),
+                    );
+
+                    if (Object.keys(this.errors).length === 0) {
+                        this.errors = { phone: data.message ?? 'Something went wrong. Please try again.' };
+                    }
+
+                    trackEnquiry('loan_enquiry_failed', config, { reason: 'validation' });
+
+                    return;
+                }
+
+                this.done = true;
+                this.resultTitle = data.title;
+                this.resultMessage = data.message;
+                trackEnquiry('loan_enquiry_success', config, { outcome: data.outcome });
+            } catch {
+                this.errors = { phone: 'Something went wrong. Please try again.' };
+                trackEnquiry('loan_enquiry_failed', config, { reason: 'network' });
             } finally {
                 this.loading = false;
             }
