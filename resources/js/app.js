@@ -426,3 +426,126 @@ document.addEventListener('alpine:init', () => {
         },
     }));
 });
+
+/**
+ * Analytics for the Quick Enquiry form. Pushed to GTM's dataLayer and sent as a
+ * GA4 event, but only to whichever of the two is actually on the page —
+ * TrackingScripts renders neither until an admin enables it AND the visitor's
+ * cookie consent allows analytics, so this must stay a no-op rather than
+ * creating a dataLayer of its own and re-implementing a consent decision that
+ * was already made server-side.
+ */
+function trackQuickEnquiry(event, params = {}) {
+    if (Array.isArray(window.dataLayer)) {
+        window.dataLayer.push({ event, ...params });
+    }
+
+    if (typeof window.gtag === 'function') {
+        window.gtag('event', event, params);
+    }
+}
+
+document.addEventListener('alpine:init', () => {
+    /**
+     * The whole Quick Enquiry interaction: sanitise, validate, submit, confirm.
+     *
+     * Every rule enforced here is enforced again in QuickEnquiryController —
+     * this exists to make the form quick and clear, not to be the gate.
+     */
+    window.Alpine.data('quickEnquiryForm', (config) => ({
+        phone: config.phone ?? '',
+        error: null,
+        loading: false,
+        done: false,
+        resultTitle: '',
+        resultMessage: '',
+        entryTracked: false,
+
+        init() {
+            trackQuickEnquiry('quick_enquiry_view', { source: config.source });
+        },
+
+        // Indian mobile numbers are ten digits starting 6-9. Mirrors the
+        // `regex:/^[6-9]\d{9}$/` rule the controller and the journey OTP step use.
+        get isValid() {
+            return /^[6-9]\d{9}$/.test(this.phone);
+        },
+
+        /**
+         * Strips anything that is not a digit and caps the field at ten of them,
+         * writing the cleaned value straight back — so a pasted "+91 98765 43210"
+         * becomes "9876543210" in front of the visitor rather than being silently
+         * rejected on submit.
+         */
+        onInput(event) {
+            this.phone = event.target.value.replace(/\D+/g, '').slice(0, 10);
+            event.target.value = this.phone;
+            this.error = null;
+
+            if (this.phone.length > 0 && !this.entryTracked) {
+                this.entryTracked = true;
+                trackQuickEnquiry('quick_enquiry_phone_entered', { source: config.source });
+            }
+        },
+
+        async submit() {
+            // The button is disabled while a request is in flight; this guards the
+            // Enter key, which submits the form regardless of the button's state.
+            if (this.loading) {
+                return;
+            }
+
+            if (!this.isValid) {
+                this.error = 'Please enter a valid 10-digit mobile number.';
+                trackQuickEnquiry('quick_enquiry_validation_failed', { source: config.source });
+
+                return;
+            }
+
+            this.loading = true;
+            this.error = null;
+            trackQuickEnquiry('quick_enquiry_submitted', { source: config.source });
+
+            try {
+                const response = await fetch(config.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                    },
+                    // The honeypot travels with the request so a bot that fills the
+                    // rendered form and replays it is rejected server-side.
+                    body: JSON.stringify({ phone: this.phone, source: config.source, website: this.$refs.honeypot?.value ?? '' }),
+                });
+
+                const data = await response.json().catch(() => ({}));
+
+                if (response.status === 429) {
+                    this.error = 'Too many attempts. Please try again in a few minutes.';
+
+                    return;
+                }
+
+                if (!response.ok) {
+                    this.error = data.errors?.phone?.[0] ?? data.message ?? 'Please enter a valid 10-digit mobile number.';
+                    trackQuickEnquiry('quick_enquiry_validation_failed', { source: config.source });
+
+                    return;
+                }
+
+                this.done = true;
+                this.resultTitle = data.title;
+                this.resultMessage = data.message;
+                trackQuickEnquiry(
+                    data.outcome === 'duplicate' ? 'quick_enquiry_duplicate' : 'quick_enquiry_success',
+                    { source: config.source },
+                );
+            } catch {
+                this.error = 'Something went wrong. Please try again.';
+            } finally {
+                this.loading = false;
+            }
+        },
+    }));
+});

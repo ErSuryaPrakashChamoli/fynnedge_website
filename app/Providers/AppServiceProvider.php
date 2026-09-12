@@ -151,6 +151,14 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('contact-form', fn (Request $request) => app()->runningUnitTests()
             ? Limit::none()
             : Limit::perMinute(5)->by($request->ip()));
+
+        // One field, no session, JSON in and JSON out: the quick enquiry form is the
+        // cheapest endpoint on the site to script against, so it gets a per-IP cap on
+        // top of the per-number cap inside SubmitQuickEnquiry. Both are needed — one
+        // IP can walk through many numbers, and many IPs can hammer one number.
+        RateLimiter::for('quick-enquiry', fn (Request $request) => app()->runningUnitTests()
+            ? Limit::none()
+            : [Limit::perMinute(5)->by($request->ip()), Limit::perDay(30)->by($request->ip())]);
     }
 
     private static function settingFileUrl(string $key): ?string

@@ -15,6 +15,7 @@ use App\Http\Controllers\LoanProductController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\NewsletterTrackingController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\QuickEnquiryController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SitemapController;
 use App\Support\Seo\Sitemap;
@@ -48,6 +49,15 @@ Route::get('/newsletter/preferences/{token}', [NewsletterController::class, 'pre
 Route::post('/newsletter/preferences/{token}', [NewsletterController::class, 'updatePreferences'])->name('newsletter.preferences.update');
 Route::get('/newsletter/track/open/{recipient}/{token}', [NewsletterTrackingController::class, 'open'])->name('newsletter.track.open');
 Route::get('/newsletter/track/click/{recipient}/{token}', [NewsletterTrackingController::class, 'click'])->name('newsletter.track.click');
+
+/*
+ * Quick Enquiry: a phone number and nothing else, answered as JSON. Throttled
+ * harder than the journey forms — it is the cheapest thing on the site to
+ * script against, since a submission needs one field and no session.
+ */
+Route::post('/quick-enquiry', [QuickEnquiryController::class, 'store'])
+    ->middleware('throttle:quick-enquiry')
+    ->name('quick-enquiry.store');
 
 Route::get('/loans', [LoanProductController::class, 'index'])->name('loans.index');
 Route::get('/loans/{loanProduct:slug}', [LoanProductController::class, 'show'])->name('loans.show');

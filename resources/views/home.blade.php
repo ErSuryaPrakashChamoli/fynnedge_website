@@ -96,6 +96,15 @@
 
     <x-site.hero-stats :achievements="$achievements" :derived="$heroStats" />
 
+    {{-- Straight under the hero stats, above the product grid: the fastest exit
+         from "I'm interested" to "someone will call me", for the visitor who
+         does not want to read a product page first. --}}
+    <section class="border-t border-line bg-surface-2">
+        <div data-reveal="up" class="mx-auto max-w-3xl px-6 py-12 lg:px-8">
+            <x-site.quick-enquiry source="homepage" />
+        </div>
+    </section>
+
     @if ($loanProducts->isNotEmpty())
         <section class="border-t border-line bg-surface">
             <div class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
