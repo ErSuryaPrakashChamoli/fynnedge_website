@@ -15,6 +15,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Models/MarketingSection.php,app/Models/NavigationLink.php,resources/views/home.blade.php,resources/views/components/site/footer.blade.php | .ai/rules/components-site.md |
 | app/Support/Calculators/**,resources/views/components/⚡*.blade.php, app/Support/Calculators/**,resources/views/components/⚡emi-calculator.blade.php | .ai/rules/components.md |
 | app/Filament/RelationManagers/**,app/Filament/Concerns/** | .ai/rules/concerns.md |
+| config/filesystems.php,app/Filament/**/*Form.php,docker/entrypoint.sh | .ai/rules/config-filament.md |
 | config/database.php,.env*, config/cache.php,config/queue.php,config/session.php,.env*, config/{cache,queue,session}.php | .ai/rules/config.md |
 | app/Filament/RelationManagers/FaqsRelationManager.php,app/Models/Page.php,app/Http/Controllers/PageController.php | .ai/rules/controllers.md |
 | resources/views/emails/**,resources/views/components/emails/** | .ai/rules/emails.md |

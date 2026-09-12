@@ -38,12 +38,23 @@ return [
             'report' => false,
         ],
 
+        /*
+         * Every admin image upload (banners, lender logos, testimonials, company
+         * photos) lands here and is read back with Storage::disk('public').
+         *
+         * `throw` is deliberately true: with it false, a write that fails on the
+         * server — a storage/app/public that php-fpm cannot write to, or a path
+         * masked by a container volume mount — returned false instead of raising.
+         * Filament treats that blank return as "no file", so the record saved with
+         * an empty *_path and the admin saw a successful save with no image and no
+         * error. A failed upload must be loud.
+         */
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
             'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
             'visibility' => 'public',
-            'throw' => false,
+            'throw' => true,
             'report' => false,
         ],
 
