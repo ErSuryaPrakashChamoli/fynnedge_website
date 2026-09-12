@@ -112,6 +112,24 @@ class SeoDefaults
         return rtrim($base, '/').($path ?: '/').($query ? '?'.$query : '');
     }
 
+    /**
+     * Absolutises a URL for the tags that are read off-site.
+     *
+     * Uploaded images resolve to a root-relative path (/storage/...) so the
+     * same database serves correct markup on localhost, staging and
+     * production — see the `public` disk in config/filesystems.php. That is
+     * right for every <img src> on the page and wrong for og:image,
+     * twitter:image and JSON-LD, which are fetched by crawlers that have no
+     * page to resolve a relative path against. This adds the scheme and host
+     * the request actually arrived on, rather than a configured APP_URL that
+     * can be stale; an already-absolute URL (an external CDN, say) is
+     * returned untouched.
+     */
+    public static function absolute(?string $url): ?string
+    {
+        return $url ? url($url) : null;
+    }
+
     private static function string(string $key): ?string
     {
         $value = Setting::get($key);

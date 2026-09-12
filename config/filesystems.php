@@ -42,6 +42,18 @@ return [
          * Every admin image upload (banners, lender logos, testimonials, company
          * photos) lands here and is read back with Storage::disk('public').
          *
+         * `url` is deliberately a root-relative path, NOT APP_URL.'/storage'.
+         * Building it from APP_URL bakes whatever that env value happens to be
+         * into every <img src> in the page: a server whose .env still carried
+         * the local value served every uploaded image as
+         * http://localhost:8000/storage/... — broken for every visitor, and
+         * cached into config:cache so it survived the .env being corrected.
+         * A relative URL follows whatever host, port and scheme the request
+         * arrived on, so the same database works on localhost, staging and
+         * production. The few tags that must carry an absolute URL (og:image,
+         * twitter:image, JSON-LD) are made absolute at the point of use — see
+         * App\Support\Seo\SeoDefaults::absolute().
+         *
          * `throw` is deliberately true: with it false, a write that fails on the
          * server — a storage/app/public that php-fpm cannot write to, or a path
          * masked by a container volume mount — returned false instead of raising.
@@ -52,7 +64,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            'url' => '/storage',
             'visibility' => 'public',
             'throw' => true,
             'report' => false,

@@ -220,3 +220,33 @@ it('adds no clone for a single banner, which never moves', function () {
 
     expect(substr_count($html, 'relative h-full w-full shrink-0 basis-full'))->toBe(1);
 });
+
+/*
+ * The banner image was served to visitors as
+ * http://localhost:8000/storage/banners/... because the public disk built its
+ * URL from APP_URL, so whatever value that env var happened to hold on the
+ * server was baked into every <img src> — and into the cached config, so it
+ * survived .env being corrected. The URL must follow the request instead.
+ *
+ * Deliberately NOT Storage::fake() here: a faked disk is built with only a
+ * `root`, dropping the `url` config entirely, so Laravel falls back to a
+ * relative /storage path. That is why every existing test that touched an
+ * uploaded image passed while production served an absolute localhost URL —
+ * faking the disk hides precisely the setting under test.
+ */
+it('serves the banner image from a host-relative url so it works on any domain', function () {
+    Banner::factory()->create([
+        'status' => PublishStatus::Published,
+        'published_at' => now()->subMinute(),
+        'image_path' => 'banners/promo.png',
+        'heading' => 'Marketing',
+    ]);
+
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect($html)->toContain('src="/storage/banners/promo.png"');
+
+    // No scheme and no host: the src starts at the root, so the same row
+    // renders correctly on localhost, staging and the live domain alike.
+    expect(Banner::query()->sole()->imageUrl())->toBe('/storage/banners/promo.png');
+});

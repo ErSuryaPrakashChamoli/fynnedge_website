@@ -50,5 +50,6 @@ Before planning or editing, find the row whose globs match the file's path and r
 | tests/** | .ai/rules/tests.md |
 | resources/css/**,resources/views/**,app/Support/Theme/**,app/Filament/Pages/Settings.php | .ai/rules/theme-filament-pages.md |
 | app/Support/Options/**,resources/views/components/ui/searchable-select.blade.php | .ai/rules/ui.md |
+| config/filesystems.php,resources/views/components/layouts/app.blade.php,tests/** | .ai/rules/views-components-layouts.md |
 | app/Support/Calculators/**,app/Http/Controllers/LoanProductController.php,resources/views/loans/**,resources/views/components/site/flexi-hybrid-hero.blade.php | .ai/rules/views-components-site.md |
 | resources/css/**,resources/views/** | .ai/rules/views.md |

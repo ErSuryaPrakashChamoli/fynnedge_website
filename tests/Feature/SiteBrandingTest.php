@@ -79,5 +79,5 @@ it('falls back to the default sitewide social share image when a page has none o
 
     $response = $this->get('/')->assertOk();
 
-    $response->assertSee('<meta property="og:image" content="'.Storage::disk('public')->url('seo/default-og.jpg').'">', false);
+    $response->assertSee('<meta property="og:image" content="'.url(Storage::disk('public')->url('seo/default-og.jpg')).'">', false);
 });

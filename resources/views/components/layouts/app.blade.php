@@ -8,7 +8,14 @@
         $resolvedTitle = $title ?? $siteBranding['name'];
         $resolvedDescription = ($description ?? null) ?: \App\Support\Seo\SeoDefaults::metaDescription();
         $resolvedCanonical = \App\Support\Seo\SeoDefaults::canonical($canonical ?? null, url()->current());
-        $resolvedOgImage = $ogImage ?? $siteBranding['defaultOgImageUrl'];
+        /*
+         * Absolute, unlike every other image URL on the page: uploaded images
+         * resolve relative to the current host (config/filesystems.php), which
+         * is what keeps them working across localhost, staging and production,
+         * but a crawler reading og:image/twitter:image/JSON-LD out of context
+         * has nothing to resolve a relative path against.
+         */
+        $resolvedOgImage = \App\Support\Seo\SeoDefaults::absolute($ogImage ?? $siteBranding['defaultOgImageUrl']);
 
         /*
          * Open Graph and Twitter/X resolve through the same chain for every
@@ -24,7 +31,7 @@
             ?: \App\Support\Seo\SeoDefaults::ogDescription($description ?? null, $resolvedDescription);
         $resolvedTwitterTitle = ($resolvedSocial['twitterTitle'] ?? null) ?: $resolvedOgTitle;
         $resolvedTwitterDescription = ($resolvedSocial['twitterDescription'] ?? null) ?: $resolvedOgDescription;
-        $resolvedTwitterImage = \App\Support\Seo\SeoDefaults::twitterImageUrl($resolvedSocial['twitterImageUrl'] ?? null, $resolvedOgImage);
+        $resolvedTwitterImage = \App\Support\Seo\SeoDefaults::absolute(\App\Support\Seo\SeoDefaults::twitterImageUrl($resolvedSocial['twitterImageUrl'] ?? null, $resolvedOgImage));
         $resolvedTwitterCard = \App\Support\Seo\SeoDefaults::twitterCard($resolvedTwitterImage);
 
         /*
@@ -105,7 +112,7 @@
         {!! json_encode(
             \App\Support\Seo\SchemaGraph::build(
                 siteName: $siteBranding['name'],
-                logoUrl: $siteBranding['logoUrl'],
+                logoUrl: \App\Support\Seo\SeoDefaults::absolute($siteBranding['logoUrl']),
                 pageTitle: $resolvedTitle,
                 pageDescription: $resolvedDescription,
                 canonicalUrl: $resolvedCanonical,

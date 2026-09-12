@@ -20,7 +20,9 @@ it('renders the admin-set canonical url, og:image and robots meta tags on a publ
         'robots' => 'noindex, follow',
     ]));
 
-    $ogImageUrl = Storage::disk('public')->url('seo/custom.jpg');
+    // Absolute: crawlers read og:image with no page to resolve a relative
+    // path against. The on-page <img src> values stay host-relative.
+    $ogImageUrl = url(Storage::disk('public')->url('seo/custom.jpg'));
 
     $this->get('/disclaimer')
         ->assertOk()
