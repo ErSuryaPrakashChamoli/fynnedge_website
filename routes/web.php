@@ -17,6 +17,7 @@ use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\NewsletterTrackingController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\QuickEnquiryController;
+use App\Http\Controllers\QuickEnquiryPageController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SitemapController;
 use App\Support\Seo\Sitemap;
@@ -67,7 +68,16 @@ Route::middleware('throttle:enquiry-forms')->group(function (): void {
     Route::post('/quick-enquiry/otp', [QuickEnquiryController::class, 'requestOtp'])->name('quick-enquiry.otp');
 
     Route::post('/quick-enquiry', [QuickEnquiryController::class, 'store'])->name('quick-enquiry.store');
+
+    /*
+     * The standalone Quick Enquiry page's form. It carries the full loan-page
+     * field set plus a loan-type dropdown, so it has its own endpoint rather
+     * than sharing the phone-only one above.
+     */
+    Route::post('/quick-enquiry/apply', [QuickEnquiryPageController::class, 'store'])->name('quick-enquiry.apply');
 });
+
+Route::get('/quick-enquiry', [QuickEnquiryPageController::class, 'show'])->name('quick-enquiry.show');
 
 /*
  * The loan-page enquiry form. The product is a route segment, not a form field:

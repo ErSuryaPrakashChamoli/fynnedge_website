@@ -662,7 +662,9 @@ document.addEventListener('alpine:init', () => {
      * that would change which product the lead is counted against.
      */
     window.Alpine.data('loanEnquiryForm', (config) => ({
-        values: { name: '', phone: '', email: '', loan_amount: '' },
+        // loan_product is seeded from config rather than read back from the DOM:
+        // x-model writes the initial value into the <select> before init() runs.
+        values: { name: '', phone: '', email: '', loan_amount: '', loan_product: config.selected ?? '' },
         errors: {},
         loading: false,
         done: false,
@@ -670,8 +672,23 @@ document.addEventListener('alpine:init', () => {
         resultMessage: '',
         startTracked: false,
 
+        /**
+         * The product the form is currently about: the page's own product on a
+         * loan page, or whatever the dropdown says on the Quick Enquiry page.
+         * Headline, amount hint and range check all read from here.
+         */
+        get selected() {
+            return config.products?.[this.values.loan_product] ?? null;
+        },
+
+        get tracking() {
+            return this.selected
+                ? { product: this.values.loan_product.replace(/-/g, '_'), productName: this.selected.name }
+                : { product: 'quick_enquiry', productName: 'Quick Enquiry' };
+        },
+
         init() {
-            trackEnquiry('loan_enquiry_form_view', config);
+            trackEnquiry('loan_enquiry_form_view', this.tracking);
 
             // Pick up anything the browser restored or a no-JavaScript bounce
             // left in the fields, so state and DOM agree before the first edit.
@@ -716,10 +733,21 @@ document.addEventListener('alpine:init', () => {
             this.trackStart();
         },
 
+        /**
+         * A new loan type brings a new amount range, so an amount already typed
+         * is re-judged the moment the dropdown changes — ₹1,00,000 is flagged
+         * on switching to a Home Loan, not only when the visitor hits submit.
+         */
+        onProductChange() {
+            this.errors.loan_product = null;
+            this.errors.loan_amount = this.amountDigits ? this.amountRangeError() : null;
+            this.trackStart();
+        },
+
         trackStart() {
             if (!this.startTracked) {
                 this.startTracked = true;
-                trackEnquiry('loan_enquiry_form_started', config);
+                trackEnquiry('loan_enquiry_form_started', this.tracking);
             }
         },
 
@@ -727,8 +755,26 @@ document.addEventListener('alpine:init', () => {
             return this.values.loan_amount.replace(/\D+/g, '');
         },
 
+        /**
+         * The selected product's own min/max and the exact message the server
+         * would answer with, both rendered from LoanEnquiryAmount.
+         */
+        amountRangeError() {
+            const amount = Number(this.amountDigits);
+
+            if (!this.selected || !amount) {
+                return null;
+            }
+
+            return amount < this.selected.min || amount > this.selected.max ? this.selected.rangeMessage : null;
+        },
+
         validate() {
             const errors = {};
+
+            if (config.selectable && !this.selected) {
+                errors.loan_product = 'Please select a loan type.';
+            }
 
             if (!this.values.name.trim()) {
                 errors.name = 'Please enter your name.';
@@ -746,6 +792,8 @@ document.addEventListener('alpine:init', () => {
 
             if (!this.amountDigits || Number(this.amountDigits) <= 0) {
                 errors.loan_amount = 'Please enter the loan amount you need.';
+            } else if (this.amountRangeError()) {
+                errors.loan_amount = this.amountRangeError();
             }
 
             this.errors = errors;
@@ -761,13 +809,13 @@ document.addEventListener('alpine:init', () => {
             }
 
             if (!this.validate()) {
-                trackEnquiry('loan_enquiry_failed', config, { reason: 'validation' });
+                trackEnquiry('loan_enquiry_failed', this.tracking, { reason: 'validation' });
 
                 return;
             }
 
             this.loading = true;
-            trackEnquiry('loan_enquiry_submitted', config);
+            trackEnquiry('loan_enquiry_submitted', this.tracking);
 
             try {
                 const response = await fetch(config.endpoint, {
@@ -778,6 +826,9 @@ document.addEventListener('alpine:init', () => {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
                     },
                     body: JSON.stringify({
+                        // Only the dropdown form names its product; a loan page's
+                        // product is its URL, and it never sends one.
+                        ...(config.selectable ? { loan_product: this.values.loan_product } : {}),
                         name: this.values.name,
                         phone: this.values.phone,
                         email: this.values.email,
@@ -792,7 +843,7 @@ document.addEventListener('alpine:init', () => {
 
                 if (response.status === 429) {
                     this.errors = { phone: 'Too many attempts. Please try again in a few minutes.' };
-                    trackEnquiry('loan_enquiry_failed', config, { reason: 'rate_limited' });
+                    trackEnquiry('loan_enquiry_failed', this.tracking, { reason: 'rate_limited' });
 
                     return;
                 }
@@ -807,7 +858,7 @@ document.addEventListener('alpine:init', () => {
                         this.errors = { phone: data.message ?? 'Something went wrong. Please try again.' };
                     }
 
-                    trackEnquiry('loan_enquiry_failed', config, { reason: 'validation' });
+                    trackEnquiry('loan_enquiry_failed', this.tracking, { reason: 'validation' });
 
                     return;
                 }
@@ -815,10 +866,10 @@ document.addEventListener('alpine:init', () => {
                 this.done = true;
                 this.resultTitle = data.title;
                 this.resultMessage = data.message;
-                trackEnquiry('loan_enquiry_success', config, { outcome: data.outcome });
+                trackEnquiry('loan_enquiry_success', this.tracking, { outcome: data.outcome });
             } catch {
                 this.errors = { phone: 'Something went wrong. Please try again.' };
-                trackEnquiry('loan_enquiry_failed', config, { reason: 'network' });
+                trackEnquiry('loan_enquiry_failed', this.tracking, { reason: 'network' });
             } finally {
                 this.loading = false;
             }

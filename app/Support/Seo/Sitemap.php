@@ -105,6 +105,7 @@ class Sitemap
             'home',
             'loans.index',
             'eligibility.index',
+            'quick-enquiry.show',
             'calculators.index',
             'resources.index',
             'faqs.index',

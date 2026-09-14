@@ -15,6 +15,7 @@ use App\Models\MarketingSection;
 use App\Models\Setting;
 use App\Models\Testimonial;
 use App\Support\Calculators\CalculatorCatalog;
+use App\Support\Enquiries\QuickEnquiryPageContent;
 use App\Support\Faqs\PageFaqs;
 use Illuminate\Contracts\View\View;
 
@@ -41,6 +42,7 @@ class HomeController extends Controller
             'emiCta' => MarketingSection::forPlacement('home_emi_cta'),
             'finalCta' => MarketingSection::forPlacement('home_final_cta'),
             'flexiHybridTicker' => MarketingSection::forPlacement('home_flexi_hybrid_ticker'),
+            'quickEnquiryButtonLabel' => QuickEnquiryPageContent::resolve()['home_button_label'],
             'hero' => [
                 'eyebrow' => Setting::get('hero_eyebrow', 'FynnEdge Advisory (OPC) Pvt Ltd'),
                 'heading' => Setting::get('hero_heading', 'Simplifying loans.'),

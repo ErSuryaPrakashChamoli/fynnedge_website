@@ -46,13 +46,26 @@
                         {{ $hero['subheading'] }}
                     </p>
 
-                    <div data-reveal="up delay-2" class="mt-6 flex flex-wrap gap-3">
-                        <x-ui.button :tag="Route::has('eligibility.index') ? 'a' : 'button'" :href="Route::has('eligibility.index') ? route('eligibility.index') : null" size="lg">
-                            Check Your Eligibility
-                        </x-ui.button>
-                        <x-ui.button tag="a" :href="route('loans.index')" variant="secondary" size="lg">
-                            Explore Loan Products
-                        </x-ui.button>
+                    {{-- One row, never wrapped: the buttons are sized by this
+                         column's own width (size="fit" reads the @container),
+                         because the 40% hero column is too narrow for three
+                         large buttons side by side. --}}
+                    <div data-reveal="up delay-2" class="@container mt-6">
+                        {{-- Quick Enquiry leads and is the one filled button. On a
+                             phone-width column it takes the whole first row and
+                             the other two share the second; from @md up all three
+                             sit on one line. --}}
+                        <div class="grid grid-cols-2 gap-2 @md:flex @min-[38rem]:gap-3">
+                            <x-ui.button tag="a" :href="route('quick-enquiry.show')" size="fit" class="col-span-2 shadow-lg shadow-accent/25 ring-4 ring-accent/10 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0">
+                                {{ $quickEnquiryButtonLabel }}
+                            </x-ui.button>
+                            <x-ui.button :tag="Route::has('eligibility.index') ? 'a' : 'button'" :href="Route::has('eligibility.index') ? route('eligibility.index') : null" variant="outline" size="fit">
+                                Check Your Eligibility
+                            </x-ui.button>
+                            <x-ui.button tag="a" :href="route('loans.index')" variant="outline" size="fit">
+                                Explore Loan Products
+                            </x-ui.button>
+                        </div>
                     </div>
                 </div>
 

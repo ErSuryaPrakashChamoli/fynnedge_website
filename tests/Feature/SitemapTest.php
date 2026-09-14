@@ -49,6 +49,7 @@ it('lists the core public pages', function () {
         route('loans.index'),
         route('about'),
         route('contact'),
+        route('quick-enquiry.show'),
         route('faqs.index'),
         route('resources.index'),
         route('calculators.index'),

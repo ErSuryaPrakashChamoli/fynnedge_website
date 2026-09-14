@@ -40,6 +40,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Models/**,app/Modules/**/Models/*.php | .ai/rules/modules-models.md |
 | app/Http/Controllers/RobotsController.php,app/Http/Controllers/SitemapController.php,app/Support/Seo/SearchEngineIndexing.php,docker/nginx/nginx.conf | .ai/rules/nginx.md |
 | app/Enums/FaqPlacement.php,app/Support/Faqs/**,app/Filament/Resources/PageFaqs/**,resources/views/components/site/page-faqs.blade.php | .ai/rules/page-faqs-views-components-site.md |
+| app/Support/Enquiries/QuickEnquiryPageContent.php,app/Filament/Pages/QuickEnquiryPageSettings.php,resources/views/quick-enquiry.blade.php | .ai/rules/pages-views.md |
 | app/Filament/Pages/** | .ai/rules/pages.md |
 | app/Http/Middleware/SecurityHeaders.php,app/Providers/Filament/AdminPanelProvider.php | .ai/rules/providers-filament.md |
 | app/Models/Redirect.php,app/Http/Middleware/HandleRedirects.php,app/Filament/Resources/Redirects/** | .ai/rules/redirects.md |
@@ -49,6 +50,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | database/seeders/FlexiHybridTermLoanSeeder.php,database/seeders/JourneySeeder.php | .ai/rules/seeders-seeders.md |
 | database/seeders/**, database/seeders/LegalPageSeeder.php | .ai/rules/seeders.md |
 | app/Models/MarketingSection.php,app/Models/NavigationLink.php,resources/views/home.blade.php,resources/views/components/site/footer.blade.php,resources/views/components/site/flexi-hybrid-ticker.blade.php | .ai/rules/site-views-components-site.md |
+| app/Http/Controllers/QuickEnquiryPageController.php,app/Modules/Enquiries/Concerns/ValidatesLoanEnquiries.php,resources/views/components/site/loan-enquiry-form.blade.php,resources/views/quick-enquiry.blade.php | .ai/rules/site-views.md |
 | resources/views/components/site/nav-link.blade.php | .ai/rules/site.md |
 | tests/** | .ai/rules/tests.md |
 | resources/css/**,resources/views/**,app/Support/Theme/**,app/Filament/Pages/Settings.php | .ai/rules/theme-filament-pages.md |
