@@ -13,7 +13,8 @@ use App\Models\Setting;
  * reads exactly as built, and a blank text field falls back to its default
  * rather than rendering empty. Lists differ on purpose — a list that was never
  * saved shows the defaults, but a saved empty list means the admin removed
- * every item, so that block is hidden.
+ * every item, so that block is hidden. The one exception is
+ * `featured_lender_ids`: empty means "pick automatically", not "show none".
  *
  * Deliberately NOT editable here: the form's "Get up to ₹X starting at Y%"
  * headline and the amount range, which come from each loan product's own fields.
@@ -27,6 +28,12 @@ class QuickEnquiryPageContent
      * MarketingSection.cta_url uses — it blocks javascript: and friends.
      */
     public const SAFE_URL_PATTERN = '#^(https?://|/)#i';
+
+    /**
+     * The most logos the partner strip may show; the rest are counted in its
+     * "+N more" link to the full list on /partners.
+     */
+    public const MAX_VISIBLE_LENDERS = 24;
 
     /**
      * A list item missing any of these is dropped rather than rendered half-empty.
@@ -50,6 +57,9 @@ class QuickEnquiryPageContent
      *     steps: array<int, array{title: string, body: string}>,
      *     show_lenders: bool,
      *     lenders_label: string,
+     *     lenders_limit: int,
+     *     featured_lender_ids: array<int, int>,
+     *     partners_description: string,
      *     form_eyebrow: string,
      *     form_headline: string,
      *     form_cta_label: string,
@@ -80,6 +90,9 @@ class QuickEnquiryPageContent
             ],
             'show_lenders' => true,
             'lenders_label' => 'Our partner banks & NBFCs',
+            'lenders_limit' => 8,
+            'featured_lender_ids' => [],
+            'partners_description' => 'The banks and NBFCs FynnEdge works with. Tell us what you need and an advisor will shortlist the ones that suit your profile.',
             'form_eyebrow' => 'Quick Loan Enquiry',
             'form_headline' => 'Get the funds you need',
             'form_cta_label' => 'Submit Enquiry',
@@ -108,6 +121,9 @@ class QuickEnquiryPageContent
      *     steps: array<int, array{title: string, body: string}>,
      *     show_lenders: bool,
      *     lenders_label: string,
+     *     lenders_limit: int,
+     *     featured_lender_ids: array<int, int>,
+     *     partners_description: string,
      *     form_eyebrow: string,
      *     form_headline: string,
      *     form_cta_label: string,
@@ -126,13 +142,30 @@ class QuickEnquiryPageContent
             $value = $saved[$key] ?? null;
 
             $content[$key] = match (true) {
+                $key === 'featured_lender_ids' => self::cleanIds($value),
                 is_array($default) => is_array($value) ? self::cleanItems($value, self::REQUIRED_ITEM_KEYS[$key] ?? []) : $default,
                 is_bool($default) => is_bool($value) ? $value : $default,
+                is_int($default) => is_numeric($value) ? max(1, min(self::MAX_VISIBLE_LENDERS, (int) $value)) : $default,
                 default => filled($value) ? trim((string) $value) : $default,
             };
         }
 
         return $content;
+    }
+
+    /**
+     * Distinct positive ids in the order the admin arranged them.
+     *
+     * @return array<int, int>
+     */
+    private static function cleanIds(mixed $ids): array
+    {
+        return collect(is_array($ids) ? $ids : [])
+            ->filter(fn (mixed $id): bool => is_numeric($id) && (int) $id > 0)
+            ->map(fn (mixed $id): int => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
     }
 
     /**

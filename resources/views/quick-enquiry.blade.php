@@ -4,8 +4,9 @@
             Every string and list below comes from QuickEnquiryPageContent
             (Admin → Website Settings → Quick Enquiry Page), which falls back to
             the built-in wording. Any list an admin empties hides its block.
+            Which lenders the strip shows, and how many, is chosen by the
+            controller (PartnerLenders::featured).
         */
-        $visibleLenders = $lenders->take(8);
 
         /*
             Written out in full rather than interpolated: Tailwind builds classes
@@ -16,10 +17,11 @@
     @endphp
 
     {{--
-        Same shape as the loan page hero (x-site.loan-enquiry): the reason to
-        enquire on the left, the form on the right so it is on screen without
-        scrolling. Content comes first in the DOM, so on a phone the copy stacks
-        above the form.
+        The form is the point of this page, so it comes FIRST in the DOM: on a
+        phone the visitor lands on it (and a keyboard or screen reader reaches
+        it first), with the reasons to enquire underneath. From lg up
+        `lg:order-last` moves it back to the right-hand column beside the copy —
+        grid auto-placement follows the order-modified sequence.
     --}}
     <section class="relative overflow-hidden border-b border-line bg-surface-2" data-ai-context="Quick Loan Enquiry">
         <div class="pointer-events-none absolute inset-0" aria-hidden="true">
@@ -28,11 +30,31 @@
             <div class="absolute inset-0 [background-image:radial-gradient(var(--color-line-strong)_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_70%_60%_at_20%_0%,black,transparent)] opacity-40"></div>
         </div>
 
-        <div class="relative mx-auto grid max-w-7xl gap-10 px-6 py-8 lg:grid-cols-[minmax(0,1fr)_28rem] lg:items-start lg:gap-14 lg:px-8 lg:py-12">
-            <div>
-                <x-ui.breadcrumbs :trail="[$content['badge'] => null]" />
+        <div class="relative mx-auto max-w-7xl px-6 pt-5 lg:px-8 lg:pt-8">
+            <x-ui.breadcrumbs :trail="[$content['badge'] => null]" />
+        </div>
 
-                <x-ui.badge tone="accent" class="mt-5">{{ $content['badge'] }}</x-ui.badge>
+        <div class="relative mx-auto grid max-w-7xl gap-10 px-6 pb-8 pt-4 lg:grid-cols-[minmax(0,1fr)_28rem] lg:items-start lg:gap-14 lg:px-8 lg:pb-12 lg:pt-6">
+            <div id="enquiry-form" data-reveal="zoom" class="scroll-mt-24 lg:sticky lg:top-6 lg:order-last">
+                @if ($loanProducts->isEmpty())
+                    <x-ui.alert tone="accent" title="Online enquiries are paused">
+                        We aren't taking online enquiries right now.
+                        <a href="{{ route('contact') }}" class="font-medium underline">Contact us</a> and we'll help you directly.
+                    </x-ui.alert>
+                @else
+                    <x-site.loan-enquiry-form
+                        :loan-products="$loanProducts"
+                        :selected="$selectedProduct"
+                        :eyebrow="$content['form_eyebrow']"
+                        :headline="$content['form_headline']"
+                        :cta-label="$content['form_cta_label']"
+                        class="ring-4 ring-accent/15"
+                    />
+                @endif
+            </div>
+
+            <div>
+                <x-ui.badge tone="accent">{{ $content['badge'] }}</x-ui.badge>
 
                 <h1 data-reveal="up" class="mt-3 text-balance font-display text-3xl font-semibold leading-[1.1] tracking-tight text-ink sm:text-4xl lg:text-[2.75rem]">
                     {{ $content['heading'] }}
@@ -84,29 +106,17 @@
                                 <x-ui.lender-logo :lender="$lender" :title="$lender->name" />
                             @endforeach
                             @if ($lenders->count() > $visibleLenders->count())
-                                <span class="flex h-11 items-center rounded-full border border-line bg-surface px-3 text-xs font-medium text-ink-muted">
+                                <a
+                                    href="{{ route('partners.index') }}"
+                                    class="flex h-11 items-center gap-1 rounded-full border border-line bg-surface px-3 text-xs font-medium text-ink-muted transition-colors hover:border-accent hover:bg-accent-soft hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                                    aria-label="See all {{ $lenders->count() }} partner banks and NBFCs"
+                                >
                                     +{{ $lenders->count() - $visibleLenders->count() }} more
-                                </span>
+                                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3 w-3" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8h10m0 0-4-4m4 4-4 4" /></svg>
+                                </a>
                             @endif
                         </div>
                     </div>
-                @endif
-            </div>
-
-            <div data-reveal="zoom delay-1" class="lg:sticky lg:top-6">
-                @if ($loanProducts->isEmpty())
-                    <x-ui.alert tone="accent" title="Online enquiries are paused">
-                        We aren't taking online enquiries right now.
-                        <a href="{{ route('contact') }}" class="font-medium underline">Contact us</a> and we'll help you directly.
-                    </x-ui.alert>
-                @else
-                    <x-site.loan-enquiry-form
-                        :loan-products="$loanProducts"
-                        :selected="$selectedProduct"
-                        :eyebrow="$content['form_eyebrow']"
-                        :headline="$content['form_headline']"
-                        :cta-label="$content['form_cta_label']"
-                    />
                 @endif
             </div>
         </div>

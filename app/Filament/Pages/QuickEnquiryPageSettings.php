@@ -2,12 +2,15 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\LenderStatus;
+use App\Models\Lender;
 use App\Models\Setting;
 use App\Support\Enquiries\QuickEnquiryPageContent;
 use BackedEnum;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -131,7 +134,7 @@ class QuickEnquiryPageSettings extends Page
                     ]),
 
                 Section::make('Partner lenders')
-                    ->description('Logos of active lenders (Catalog → Lenders). Lenders with an uploaded logo are shown first.')
+                    ->description('Logos of active lenders (Catalog → Lenders — upload each logo there). The "+N more" link opens the full partner list at /partners.')
                     ->columns(2)
                     ->components([
                         Toggle::make('show_lenders')
@@ -140,7 +143,32 @@ class QuickEnquiryPageSettings extends Page
                         TextInput::make('lenders_label')
                             ->label('Label above the logos')
                             ->maxLength(60)
-                            ->placeholder($defaults['lenders_label']),
+                            ->placeholder($defaults['lenders_label'])
+                            ->helperText('Also the heading of the full partner list.'),
+                        Select::make('featured_lender_ids')
+                            ->label('Lenders to show')
+                            ->multiple()
+                            ->searchable()
+                            ->reorderable()
+                            ->options(fn (): array => Lender::query()
+                                ->where('status', LenderStatus::Active)
+                                ->orderBy('name')
+                                ->pluck('name', 'id')
+                                ->all())
+                            ->helperText('Shown in this order. Leave empty to show lenders with an uploaded logo first, then A–Z.'),
+                        TextInput::make('lenders_limit')
+                            ->label('How many logos to show')
+                            ->integer()
+                            ->minValue(1)
+                            ->maxValue(QuickEnquiryPageContent::MAX_VISIBLE_LENDERS)
+                            ->placeholder((string) $defaults['lenders_limit'])
+                            ->helperText('The rest are counted in the "+N more" link.'),
+                        Textarea::make('partners_description')
+                            ->label('Introduction on the full partner list')
+                            ->rows(2)
+                            ->maxLength(300)
+                            ->placeholder($defaults['partners_description'])
+                            ->columnSpanFull(),
                     ]),
 
                 Section::make('Enquiry form')

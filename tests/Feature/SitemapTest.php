@@ -50,6 +50,7 @@ it('lists the core public pages', function () {
         route('about'),
         route('contact'),
         route('quick-enquiry.show'),
+        route('partners.index'),
         route('faqs.index'),
         route('resources.index'),
         route('calculators.index'),

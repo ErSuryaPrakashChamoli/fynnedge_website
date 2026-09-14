@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Enums\EnquiryType;
-use App\Enums\LenderStatus;
-use App\Models\Lender;
 use App\Models\LoanProduct;
 use App\Modules\Enquiries\Actions\RecordEnquiry;
 use App\Modules\Enquiries\Concerns\AnswersEnquirySubmissions;
 use App\Modules\Enquiries\Concerns\ValidatesLoanEnquiries;
 use App\Modules\Enquiries\DataTransferObjects\EnquiryDraft;
+use App\Support\Enquiries\PartnerLenders;
 use App\Support\Enquiries\QuickEnquiryPageContent;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -40,18 +39,15 @@ class QuickEnquiryPageController extends Controller
     {
         $content = QuickEnquiryPageContent::resolve();
         $loanProducts = LoanProduct::query()->published()->orderedForDisplay()->get();
+        $lenders = $content['show_lenders'] ? PartnerLenders::all() : collect();
 
         return view('quick-enquiry', [
             'content' => $content,
             'loanProducts' => $loanProducts,
             // ?loan=home-loan preselects the dropdown, so any page can link here with its own product chosen.
             'selectedProduct' => $loanProducts->firstWhere('slug', $request->query('loan'))?->slug,
-            // Lenders with an uploaded logo lead, so the strip opens on real logos rather than initials.
-            'lenders' => $content['show_lenders']
-                ? Lender::query()->where('status', LenderStatus::Active)->orderBy('name')->get()
-                    ->sortByDesc(fn (Lender $lender): bool => filled($lender->logoUrl()))
-                    ->values()
-                : collect(),
+            'lenders' => $lenders,
+            'visibleLenders' => PartnerLenders::featured($lenders, $content['featured_lender_ids'], $content['lenders_limit']),
         ]);
     }
 

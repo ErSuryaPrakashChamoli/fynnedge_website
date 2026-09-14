@@ -16,6 +16,7 @@ use App\Http\Controllers\LoanProductController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\NewsletterTrackingController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PartnerLenderController;
 use App\Http\Controllers\QuickEnquiryController;
 use App\Http\Controllers\QuickEnquiryPageController;
 use App\Http\Controllers\RobotsController;
@@ -28,6 +29,7 @@ Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/robots.txt', RobotsController::class)->name('robots');
 Route::get('/about', AboutController::class)->name('about');
 Route::get('/careers', CareerController::class)->name('careers');
+Route::get('/partners', PartnerLenderController::class)->name('partners.index');
 
 foreach (Sitemap::ROUTED_PAGE_SLUGS as $slug) {
     Route::get("/{$slug}", [PageController::class, 'show'])->name($slug)->defaults('slug', $slug);

@@ -90,13 +90,16 @@
                     Trusted by leading banks &amp; NBFCs
                 </p>
                 <div class="relative mt-3 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-                    <div class="flex w-max animate-marquee items-center gap-12 hover:[animation-play-state:paused] motion-reduce:animate-none">
+                    <div class="flex w-max animate-marquee items-center gap-6 hover:[animation-play-state:paused] motion-reduce:animate-none">
                         @for ($copy = 0; $copy < 2; $copy++)
-                            <div class="flex shrink-0 items-center gap-12" @if ($copy === 1) aria-hidden="true" @endif>
+                            <div class="flex shrink-0 items-center gap-6" @if ($copy === 1) aria-hidden="true" @endif>
                                 @foreach ($lenders as $lender)
-                                    <div class="flex shrink-0 items-center gap-2.5">
-                                        <x-ui.lender-logo :lender="$lender" size="sm" />
-                                        <span class="font-display text-sm font-semibold text-ink-muted">{{ $lender->name }}</span>
+                                    <div class="flex h-14 w-36 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-line bg-white px-3 py-2 sm:h-16 sm:w-44" title="{{ $lender->name }}">
+                                        @if ($lender->logoUrl())
+                                            <img src="{{ $lender->logoUrl() }}" alt="{{ $lender->name }}" loading="lazy" class="h-full w-full object-contain">
+                                        @else
+                                            <span class="line-clamp-2 text-center font-display text-sm font-semibold leading-tight text-ink-muted">{{ $lender->name }}</span>
+                                        @endif
                                     </div>
                                 @endforeach
                             </div>

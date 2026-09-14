@@ -74,6 +74,15 @@ it('preselects the loan type named in the query string and ignores an unknown on
         ->assertSee('Select a loan type to see the amount range');
 });
 
+it('puts the enquiry form ahead of the page copy so a phone visitor lands on it', function () {
+    quickPageProduct(LoanCategory::PersonalLoan);
+
+    $html = $this->get('/quick-enquiry')->assertOk()->getContent();
+
+    // DOM order is what a phone shows (lg:order-last only moves it on desktop).
+    expect(strpos($html, 'loanEnquiryForm('))->toBeLessThan(strpos($html, 'Tell us what you need.'));
+});
+
 it('records the lead against the chosen product and reports it as the quick enquiry page', function () {
     $personalLoan = quickPageProduct(LoanCategory::PersonalLoan);
     $homeLoan = quickPageProduct(LoanCategory::HomeLoan);

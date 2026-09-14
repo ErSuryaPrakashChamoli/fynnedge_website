@@ -99,6 +99,42 @@ it('hides the partner lenders when switched off', function () {
     $this->get('/quick-enquiry')->assertDontSee('Our partner banks & NBFCs');
 });
 
+it('shows only the lenders an admin picks, in their order and up to the chosen count', function () {
+    $lenders = collect(['Axis Bank', 'Bajaj Finserv', 'Canara Bank', 'DCB Bank'])
+        ->mapWithKeys(fn (string $name): array => [$name => Lender::factory()->create(['name' => $name])]);
+
+    Livewire::test(QuickEnquiryPageSettings::class)
+        ->fillForm([
+            'featured_lender_ids' => collect(['DCB Bank', 'Canara Bank', 'Axis Bank', 'Bajaj Finserv'])->map(fn (string $name): int => $lenders[$name]->id)->all(),
+            'lenders_limit' => 2,
+            'partners_description' => 'Every lender we work with.',
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    // A picked lender deactivated later drops out rather than leaving a gap.
+    $lenders['DCB Bank']->update(['status' => LenderStatus::Inactive]);
+
+    $this->get('/quick-enquiry')
+        ->assertOk()
+        ->assertSeeInOrder(['Canara Bank', 'Axis Bank', '+1 more'])
+        ->assertSee(route('partners.index'), false)
+        ->assertDontSee(['DCB Bank', 'Bajaj Finserv']);
+
+    $this->get('/partners')->assertOk()->assertSee('Every lender we work with.');
+});
+
+it('keeps a stored lender count and selection within bounds', function () {
+    Setting::set(QuickEnquiryPageContent::SETTING_KEY, [
+        'lenders_limit' => 500,
+        'featured_lender_ids' => ['7', 'not-an-id', -3, 7, 2],
+    ]);
+
+    expect(QuickEnquiryPageContent::resolve())
+        ->lenders_limit->toBe(QuickEnquiryPageContent::MAX_VISIBLE_LENDERS)
+        ->featured_lender_ids->toBe([7, 2]);
+});
+
 it('resets every field to the built-in wording', function () {
     Setting::set(QuickEnquiryPageContent::SETTING_KEY, ['heading' => 'An old custom heading']);
 

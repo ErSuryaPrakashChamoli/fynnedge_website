@@ -29,6 +29,16 @@ it('shows active lenders in the homepage trust marquee, but not inactive ones', 
         ->assertDontSee('Dormant Capital');
 });
 
+it('shows only the uploaded logo, not the written name, for a lender in the homepage trust marquee', function () {
+    Lender::factory()->create(['name' => 'Alpha Finance', 'logo_path' => 'lenders/alpha.png', 'status' => LenderStatus::Active]);
+
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('src="/storage/lenders/alpha.png"', false)
+        ->assertSee('alt="Alpha Finance"', false)
+        ->assertDontSee('>Alpha Finance</span>', false);
+});
+
 it('omits the trust marquee when there are no active lenders', function () {
     $this->get('/')->assertOk()->assertDontSee('Trusted by leading banks');
 });
