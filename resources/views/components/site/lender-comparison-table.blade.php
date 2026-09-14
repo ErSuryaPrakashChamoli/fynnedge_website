@@ -19,7 +19,12 @@
 @if ($offers->isNotEmpty())
     <div {{ $attributes->class('mt-12') }}>
         <h2 class="font-display text-xl font-semibold text-ink">Compare lenders side by side</h2>
-        <div class="mt-4 overflow-x-auto rounded-2xl border border-line">
+        {{-- `relative` is load-bearing: the "Apply" <th> holds a .sr-only span,
+             which is position:absolute. Without a positioned ancestor here its
+             containing block is the page itself, so it escaped this scroll
+             container and stretched the document to the table's full width
+             (measured: +396px at 375px wide). --}}
+        <div class="relative mt-4 overflow-x-auto rounded-2xl border border-line">
             <table class="w-full min-w-[720px] text-left text-sm">
                 <thead>
                     <tr class="border-b border-line bg-surface-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">

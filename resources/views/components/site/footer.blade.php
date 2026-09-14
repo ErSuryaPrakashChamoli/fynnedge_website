@@ -119,13 +119,13 @@
             @endif
         </div>
 
-        <div class="mt-8 border-t border-line pt-6">
+        <div class="mt-10">
             <x-site.newsletter-form
-                variant="inline"
+                variant="banner"
                 source="footer"
                 heading="FynnEdge Insights"
                 description="Practical financial insights and loan tips, straight to your inbox."
-                class="max-w-2xl"
+                note="One email, no noise."
             />
         </div>
 

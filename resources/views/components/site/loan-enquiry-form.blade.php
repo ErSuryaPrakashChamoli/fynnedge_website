@@ -29,7 +29,8 @@
     $fieldId = 'loan-enquiry-'.$loanProduct->slug;
     $status = session('quickEnquiryStatus');
     $privacyUrl = \Illuminate\Support\Facades\Route::has('privacy-policy') ? route('privacy-policy') : null;
-    $inputClasses = 'w-full rounded-lg border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint transition-colors focus:outline-none focus:ring-2';
+    $inputClasses = 'w-full bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none';
+    $groupClasses = 'flex items-stretch overflow-hidden rounded-lg border bg-surface transition-colors focus-within:ring-2';
     $inputTone = 'border-line-strong focus:border-accent focus:ring-accent/30';
     $inputToneError = 'border-warn focus:border-warn focus:ring-warn/30';
 @endphp
@@ -83,32 +84,41 @@
 
             <div>
                 <label for="{{ $fieldId }}-name" class="sr-only">Full name</label>
-                <input
-                    type="text"
-                    id="{{ $fieldId }}-name"
-                    name="name"
-                    autocomplete="name"
-                    maxlength="120"
-                    placeholder="Full Name"
-                    required
-                    value="{{ old('name') }}"
-                    aria-describedby="{{ $fieldId }}-name-error"
-                    class="{{ $inputClasses }} {{ $errors->has('name') ? $inputToneError : $inputTone }}"
-                    x-model="values.name"
-                    @input="onInput"
+                <div
+                    class="{{ $groupClasses }} {{ $errors->has('name') ? $inputToneError : $inputTone }}"
                     :class="errors.name ? @js($inputToneError) : @js($inputTone)"
-                    :aria-invalid="errors.name ? 'true' : 'false'"
                 >
+                    <x-ui.input-affix>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="h-5 w-5" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.25a7.5 7.5 0 0 1 15 0" />
+                        </svg>
+                    </x-ui.input-affix>
+                    <input
+                        type="text"
+                        id="{{ $fieldId }}-name"
+                        name="name"
+                        autocomplete="name"
+                        maxlength="120"
+                        placeholder="Full Name"
+                        required
+                        value="{{ old('name') }}"
+                        aria-describedby="{{ $fieldId }}-name-error"
+                        class="{{ $inputClasses }}"
+                        x-model="values.name"
+                        @input="onInput"
+                        :aria-invalid="errors.name ? 'true' : 'false'"
+                    >
+                </div>
                 <x-site.field-error :id="$fieldId.'-name'" field="name" :server="$errors->first('name')" />
             </div>
 
             <div>
                 <label for="{{ $fieldId }}-phone" class="sr-only">Mobile number</label>
                 <div
-                    class="flex items-stretch overflow-hidden rounded-lg border bg-surface transition-colors focus-within:ring-2 {{ $errors->has('phone') ? $inputToneError : $inputTone }}"
+                    class="{{ $groupClasses }} {{ $errors->has('phone') ? $inputToneError : $inputTone }}"
                     :class="errors.phone ? @js($inputToneError) : @js($inputTone)"
                 >
-                    <span class="flex select-none items-center border-r border-line px-3 text-sm text-ink-muted">+91</span>
+                    <x-ui.input-affix>+91</x-ui.input-affix>
                     <input
                         type="tel"
                         id="{{ $fieldId }}-phone"
@@ -120,7 +130,7 @@
                         required
                         value="{{ old('phone') }}"
                         aria-describedby="{{ $fieldId }}-phone-error"
-                        class="w-full bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none"
+                        class="{{ $inputClasses }}"
                         x-model="values.phone"
                         @input="onPhoneInput"
                         :aria-invalid="errors.phone ? 'true' : 'false'"
@@ -131,31 +141,36 @@
 
             <div>
                 <label for="{{ $fieldId }}-email" class="sr-only">Email address</label>
-                <input
-                    type="email"
-                    id="{{ $fieldId }}-email"
-                    name="email"
-                    autocomplete="email"
-                    maxlength="190"
-                    placeholder="Email Address (optional)"
-                    value="{{ old('email') }}"
-                    aria-describedby="{{ $fieldId }}-email-error"
-                    class="{{ $inputClasses }} {{ $errors->has('email') ? $inputToneError : $inputTone }}"
-                    x-model="values.email"
-                    @input="onInput"
+                <div
+                    class="{{ $groupClasses }} {{ $errors->has('email') ? $inputToneError : $inputTone }}"
                     :class="errors.email ? @js($inputToneError) : @js($inputTone)"
-                    :aria-invalid="errors.email ? 'true' : 'false'"
                 >
+                    <x-ui.input-affix><span class="text-base" aria-hidden="true">&#64;</span></x-ui.input-affix>
+                    <input
+                        type="email"
+                        id="{{ $fieldId }}-email"
+                        name="email"
+                        autocomplete="email"
+                        maxlength="190"
+                        placeholder="Email Address (optional)"
+                        value="{{ old('email') }}"
+                        aria-describedby="{{ $fieldId }}-email-error"
+                        class="{{ $inputClasses }}"
+                        x-model="values.email"
+                        @input="onInput"
+                        :aria-invalid="errors.email ? 'true' : 'false'"
+                    >
+                </div>
                 <x-site.field-error :id="$fieldId.'-email'" field="email" :server="$errors->first('email')" />
             </div>
 
             <div>
                 <label for="{{ $fieldId }}-amount" class="sr-only">Loan amount required</label>
                 <div
-                    class="flex items-stretch overflow-hidden rounded-lg border bg-surface transition-colors focus-within:ring-2 {{ $errors->has('loan_amount') ? $inputToneError : $inputTone }}"
+                    class="{{ $groupClasses }} {{ $errors->has('loan_amount') ? $inputToneError : $inputTone }}"
                     :class="errors.loan_amount ? @js($inputToneError) : @js($inputTone)"
                 >
-                    <span class="flex select-none items-center border-r border-line px-3 text-sm text-ink-muted">₹</span>
+                    <x-ui.input-affix>₹</x-ui.input-affix>
                     <input
                         type="text"
                         id="{{ $fieldId }}-amount"
@@ -165,7 +180,7 @@
                         required
                         value="{{ old('loan_amount') }}"
                         aria-describedby="{{ $fieldId }}-amount-error {{ $fieldId }}-amount-hint"
-                        class="w-full bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none"
+                        class="{{ $inputClasses }}"
                         x-model="values.loan_amount"
                         @input="onAmountInput"
                         :aria-invalid="errors.loan_amount ? 'true' : 'false'"

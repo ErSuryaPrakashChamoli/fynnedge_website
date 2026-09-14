@@ -304,7 +304,11 @@
                             x-model="values['{{ $field->key }}']"
                             x-bind:readonly="phoneVerified"
                             placeholder="10-digit mobile number"
-                            class="flex-1 rounded-lg border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 {{ $errorBag ? 'border-warn' : 'border-line-strong' }}"
+                            {{-- min-w-0: a flex item defaults to min-width:auto, so this input
+                                 refused to shrink below an <input>'s intrinsic ~20-character
+                                 width and pushed the Send OTP button off-screen on narrow
+                                 phones (measured: +31px at 320px). --}}
+                            class="min-w-0 flex-1 rounded-lg border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 {{ $errorBag ? 'border-warn' : 'border-line-strong' }}"
                         >
                         <button
                             type="button"

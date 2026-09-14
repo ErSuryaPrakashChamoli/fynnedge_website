@@ -17,7 +17,7 @@ class MobileOtpChallengeFactory extends Factory
     public function definition(): array
     {
         return [
-            'public_id' => Str::uuid(),
+            'public_id' => (string) Str::uuid(),
             'mobile_number' => '9'.$this->faker->numerify('#########'),
             'otp_hash' => Hash::make('123456'),
             'expires_at' => now()->addMinutes(10),

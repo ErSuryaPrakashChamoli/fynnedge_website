@@ -16,12 +16,16 @@
         @endif
 
         @if (($grievanceLevels ?? collect())->isNotEmpty())
+            {{-- min-w matches the lender comparison table's approach: without it the
+                 four columns squeezed into a phone and wrapped "Turn-around Time"
+                 onto three lines. It now takes a readable width and scrolls inside
+                 this container, leaving the page itself unscrollable. --}}
             <div data-reveal="zoom" class="mt-10 overflow-x-auto rounded-2xl border border-line">
-                <table class="w-full text-left text-sm">
+                <table class="w-full min-w-[42rem] text-left text-sm">
                     <thead class="bg-surface-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
                         <tr>
-                            <th class="px-5 py-3">Level</th>
-                            <th class="px-5 py-3">Turn-around Time</th>
+                            <th class="whitespace-nowrap px-5 py-3">Level</th>
+                            <th class="whitespace-nowrap px-5 py-3">Turn-around Time</th>
                             <th class="px-5 py-3">Name &amp; Designation</th>
                             <th class="px-5 py-3">Contact</th>
                         </tr>
@@ -29,8 +33,8 @@
                     <tbody class="divide-y divide-line">
                         @foreach ($grievanceLevels as $level)
                             <tr>
-                                <td class="px-5 py-4 align-top font-medium text-ink">{{ $level->level }}</td>
-                                <td class="px-5 py-4 align-top text-ink-muted">{{ $level->turnaround_time }}</td>
+                                <td class="whitespace-nowrap px-5 py-4 align-top font-medium text-ink">{{ $level->level }}</td>
+                                <td class="whitespace-nowrap px-5 py-4 align-top text-ink-muted">{{ $level->turnaround_time }}</td>
                                 <td class="px-5 py-4 align-top">
                                     <p class="text-ink">Name: <span class="font-semibold">{{ $level->contact_name }}</span></p>
                                     <p class="mt-1 text-ink-muted">Designation: {{ $level->designation }}</p>

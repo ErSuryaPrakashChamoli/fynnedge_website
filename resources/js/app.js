@@ -451,14 +451,25 @@ function trackQuickEnquiry(event, params = {}) {
 
 document.addEventListener('alpine:init', () => {
     /**
-     * The whole Quick Enquiry interaction: sanitise, validate, submit, confirm.
+     * The whole Quick Enquiry interaction: sanitise, send the code, verify,
+     * confirm. Two steps — `phone` then `otp` — because the number is verified
+     * before a lead is written, so the team never calls a number nobody owns.
      *
      * Every rule enforced here is enforced again in QuickEnquiryController —
-     * this exists to make the form quick and clear, not to be the gate.
+     * this exists to make the form quick and clear, not to be the gate. In
+     * particular the code itself is only ever judged server-side; nothing here
+     * knows what it is.
      */
     window.Alpine.data('quickEnquiryForm', (config) => ({
         phone: config.phone ?? '',
+        otpCode: '',
+        // Seeded from the server so a no-JavaScript round trip that already sent
+        // a code is picked up mid-flow rather than restarted from the number.
+        step: config.step ?? 'phone',
+        challengeId: config.challengeId ?? null,
+        demoCode: config.demoCode ?? null,
         error: null,
+        otpError: null,
         loading: false,
         done: false,
         resultTitle: '',
@@ -492,7 +503,15 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        async submit() {
+        /** Same digits-only treatment for the six-digit code. */
+        onOtpInput(event) {
+            this.otpCode = event.target.value.replace(/\D+/g, '').slice(0, 6);
+            event.target.value = this.otpCode;
+            this.otpError = null;
+        },
+
+        /** Step one: ask the server to text (for now, hand back) a code. */
+        async sendOtp() {
             // The button is disabled while a request is in flight; this guards the
             // Enter key, which submits the form regardless of the button's state.
             if (this.loading) {
@@ -508,22 +527,14 @@ document.addEventListener('alpine:init', () => {
 
             this.loading = true;
             this.error = null;
-            trackQuickEnquiry('quick_enquiry_submitted', { source: config.source });
 
             try {
-                const response = await fetch(config.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Accept: 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
-                    },
+                const { response, data } = await this.post(config.otpEndpoint, {
+                    phone: this.phone,
                     // The honeypot travels with the request so a bot that fills the
                     // rendered form and replays it is rejected server-side.
-                    body: JSON.stringify({ phone: this.phone, source: config.source, website: this.$refs.honeypot?.value ?? '' }),
+                    website: this.$refs.honeypot?.value ?? '',
                 });
-
-                const data = await response.json().catch(() => ({}));
 
                 if (response.status === 429) {
                     this.error = 'Too many attempts. Please try again in a few minutes.';
@@ -538,6 +549,75 @@ document.addEventListener('alpine:init', () => {
                     return;
                 }
 
+                this.challengeId = data.otp_challenge_id;
+                // Null once an SMS gateway is connected; the panel only shows the
+                // demo-mode notice while the server is still handing the code back.
+                this.demoCode = data.demo_otp_code ?? null;
+                this.otpCode = '';
+                this.otpError = null;
+                this.step = 'otp';
+                trackQuickEnquiry('quick_enquiry_otp_sent', { source: config.source });
+                this.$nextTick(() => this.$el.querySelector('input[name="otp_code"]')?.focus());
+            } catch {
+                this.error = 'Something went wrong. Please try again.';
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async resendOtp() {
+            this.otpError = null;
+            await this.sendOtp();
+        },
+
+        /** Back to step one with the number still in the field, ready to be corrected. */
+        editPhone() {
+            this.step = 'phone';
+            this.challengeId = null;
+            this.demoCode = null;
+            this.otpCode = '';
+            this.otpError = null;
+            this.error = null;
+        },
+
+        /** Step two: the code goes up with the number and the lead is recorded. */
+        async submit() {
+            if (this.loading) {
+                return;
+            }
+
+            if (!/^\d{6}$/.test(this.otpCode)) {
+                this.otpError = 'Please enter the 6-digit code we sent you.';
+
+                return;
+            }
+
+            this.loading = true;
+            this.otpError = null;
+            trackQuickEnquiry('quick_enquiry_submitted', { source: config.source });
+
+            try {
+                const { response, data } = await this.post(config.endpoint, {
+                    phone: this.phone,
+                    source: config.source,
+                    otp_challenge_id: this.challengeId,
+                    otp_code: this.otpCode,
+                    website: this.$refs.honeypot?.value ?? '',
+                });
+
+                if (response.status === 429) {
+                    this.otpError = 'Too many attempts. Please try again in a few minutes.';
+
+                    return;
+                }
+
+                if (!response.ok) {
+                    this.otpError = data.errors?.otp_code?.[0] ?? data.errors?.phone?.[0] ?? data.message ?? 'That code is incorrect or has expired. You can request a new one.';
+                    trackQuickEnquiry('quick_enquiry_otp_failed', { source: config.source });
+
+                    return;
+                }
+
                 this.done = true;
                 this.resultTitle = data.title;
                 this.resultMessage = data.message;
@@ -546,10 +626,27 @@ document.addEventListener('alpine:init', () => {
                     { source: config.source },
                 );
             } catch {
-                this.error = 'Something went wrong. Please try again.';
+                this.otpError = 'Something went wrong. Please try again.';
             } finally {
                 this.loading = false;
             }
+        },
+
+        /**
+         * @returns {Promise<{response: Response, data: object}>}
+         */
+        async post(endpoint, body) {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                },
+                body: JSON.stringify(body),
+            });
+
+            return { response, data: await response.json().catch(() => ({})) };
         },
     }));
 });

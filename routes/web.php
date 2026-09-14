@@ -54,11 +54,20 @@ Route::get('/newsletter/track/click/{recipient}/{token}', [NewsletterTrackingCon
 /*
  * Quick Enquiry: a phone number and nothing else, answered as JSON. Throttled
  * harder than the journey forms — it is the cheapest thing on the site to
- * script against, since a submission needs one field and no session.
+ * script against, since a submission needs one field and no session. The
+ * number is OTP-verified first, so the two endpoints are one flow: /otp issues
+ * the challenge, / records the lead once the code checks out.
  */
-Route::post('/quick-enquiry', [QuickEnquiryController::class, 'store'])
-    ->middleware('throttle:enquiry-forms')
-    ->name('quick-enquiry.store');
+Route::middleware('throttle:enquiry-forms')->group(function (): void {
+    /*
+     * Step one, and deliberately separate: this issues an OTP challenge and
+     * writes nothing to contact_enquiries, so a number that is never verified
+     * never becomes a lead.
+     */
+    Route::post('/quick-enquiry/otp', [QuickEnquiryController::class, 'requestOtp'])->name('quick-enquiry.otp');
+
+    Route::post('/quick-enquiry', [QuickEnquiryController::class, 'store'])->name('quick-enquiry.store');
+});
 
 /*
  * The loan-page enquiry form. The product is a route segment, not a form field:

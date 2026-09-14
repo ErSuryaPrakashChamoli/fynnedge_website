@@ -615,16 +615,30 @@ new class extends Component
                 </div>
                 @foreach ($this->schedule as $row)
                     <details class="group border-b border-line last:border-0 odd:bg-surface even:bg-surface-2/50">
-                        <summary class="grid cursor-pointer list-none grid-cols-2 items-center gap-1 px-4 py-3 text-sm hover:bg-surface-2 sm:grid-cols-[2rem_1fr_1fr_1fr_1fr]">
+                        {{-- The header row above is hidden below sm, so on a phone each
+                             figure carries its own label and takes its own line — three
+                             bare rupee amounts side by side were unreadable. From sm up
+                             these collapse back into plain right-aligned grid cells. --}}
+                        <summary class="grid cursor-pointer list-none grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-x-2 gap-y-1.5 px-4 py-3 text-sm hover:bg-surface-2 sm:grid-cols-[2rem_1fr_1fr_1fr_1fr] sm:gap-1">
                             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5 text-ink-faint transition-transform group-open:rotate-90"><path stroke-linecap="round" stroke-linejoin="round" d="M7 4l6 6-6 6" /></svg>
                             <span class="font-medium text-ink">{{ $this->yearLabel($this->monthsByYear[$row['year']]) }}</span>
-                            <span class="text-right font-mono text-ink sm:text-right">₹{{ $this->formatAmount($row['principal_paid']) }}</span>
-                            <span class="text-right font-mono text-ink sm:text-right">₹{{ $this->formatAmount($row['interest_paid']) }}</span>
-                            <span class="col-span-2 text-right font-mono text-ink-muted sm:col-span-1">₹{{ $this->formatAmount($row['total_paid']) }}</span>
+                            <span class="col-start-2 flex items-baseline justify-between gap-3 font-mono text-ink sm:col-start-auto sm:block sm:text-right">
+                                <span class="font-sans text-xs font-normal text-ink-faint sm:hidden">Principal paid</span>₹{{ $this->formatAmount($row['principal_paid']) }}
+                            </span>
+                            <span class="col-start-2 flex items-baseline justify-between gap-3 font-mono text-ink sm:col-start-auto sm:block sm:text-right">
+                                <span class="font-sans text-xs font-normal text-ink-faint sm:hidden">Interest paid</span>₹{{ $this->formatAmount($row['interest_paid']) }}
+                            </span>
+                            <span class="col-start-2 flex items-baseline justify-between gap-3 font-mono text-ink-muted sm:col-start-auto sm:block sm:text-right">
+                                <span class="font-sans text-xs font-normal text-ink-faint sm:hidden">Total paid</span>₹{{ $this->formatAmount($row['total_paid']) }}
+                            </span>
                         </summary>
 
                         <div class="overflow-x-auto border-t border-line bg-surface px-4 py-3">
-                            <table class="w-full text-xs">
+                            {{-- whitespace-nowrap rather than a fixed min-width: five money
+                                 columns squeezed into a phone wrapped every single cell.
+                                 Keeping cells on one line lets the table take its natural
+                                 width and scroll inside this container instead. --}}
+                            <table class="w-full whitespace-nowrap text-xs">
                                 <thead>
                                     <tr class="text-left text-ink-faint">
                                         <th class="py-1.5 pr-3 font-medium">Month</th>

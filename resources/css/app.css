@@ -117,6 +117,20 @@ body {
 }
 
 /*
+ * Tailwind v4's preflight sets `cursor: default` on buttons (v3 left them as
+ * the browser's pointer), so every button on the site — Subscribe, form
+ * submits, dropdown toggles — showed a plain arrow and read as non-clickable.
+ * This restores the pointer once, globally, instead of sprinkling
+ * `cursor-pointer` on individual components. Disabled controls keep the
+ * default arrow, which is the correct affordance for them.
+ */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+summary {
+    cursor: pointer;
+}
+
+/*
  * The footer is a fixed brand element — always a deep slate-navy panel,
  * regardless of light/dark mode — achieved by redeclaring the same --color-*
  * tokens scoped to <footer>. Every Tailwind utility already resolves through
@@ -200,6 +214,28 @@ footer {
  * state at all (JS never adds `reveal-visible` for them, so the element must
  * not depend on JS to become visible).
  */
+/*
+ * The `right` reveal variant below translates by +96px, and a positive
+ * translate grows the document's scrollable area even though it changes no
+ * layout box. Every section still waiting to be revealed below the fold
+ * therefore made the whole page 96px wider than the viewport — at EVERY
+ * screen size, not just mobile — which is what produced the horizontal
+ * page scroll. Measured: home/about were +96px on load and +1px once the
+ * reveals had run.
+ *
+ * The page's main column clips that offset away. `clip` rather than
+ * `hidden` deliberately: `clip` does not create a scroll container, so the
+ * `lg:sticky` panels inside main (credit-score, loan-enquiry) keep working.
+ * A browser too old to know `clip` ignores the declaration and simply keeps
+ * today's behaviour rather than gaining a new bug.
+ *
+ * This is scoped to main on purpose — the header owns the sticky nav and its
+ * dropdowns, and must not be clipped.
+ */
+#main-content {
+    overflow-x: clip;
+}
+
 @media (prefers-reduced-motion: no-preference) {
     [data-reveal] {
         opacity: 0;

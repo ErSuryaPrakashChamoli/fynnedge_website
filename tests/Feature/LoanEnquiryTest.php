@@ -245,6 +245,17 @@ it('renders the enquiry form on every loan product page', function () {
         ->assertSee('Submit Enquiry');
 });
 
+it('gives every enquiry field the same leading affix so the placeholders line up', function () {
+    $product = enquiryProduct(LoanCategory::HomeLoan);
+
+    $html = $this->get("/loans/{$product->slug}")->assertOk()->getContent();
+
+    // Name (person icon), phone (+91), email (@) and amount (₹) each get one
+    // fixed-width affix box; the shared width is what aligns the four inputs.
+    expect(substr_count($html, 'w-11 shrink-0 select-none'))->toBe(4)
+        ->and($html)->toContain('+91', '&#64;', '₹');
+});
+
 it('shows the loan product and lets an admin filter enquiries by it', function () {
     $admin = User::factory()->create(['is_admin' => true]);
     $personalLoan = enquiryProduct(LoanCategory::PersonalLoan);

@@ -24,14 +24,22 @@ function publishedArticle(): Article
     ]);
 }
 
-it('shows a newsletter signup on the homepage, blog article, blog listing and footer', function () {
+it('shows a newsletter signup on the blog article, blog listing and footer', function () {
     $article = publishedArticle();
 
-    $this->get('/')->assertOk()->assertSee('Stay ahead of your finances');
     $this->get(route('resources.show', $article))->assertOk()->assertSee('Enjoyed this article?');
     $this->get(route('resources.index'))->assertOk()->assertSee('Never miss an article');
-    // The footer form is on every page.
-    $this->get('/')->assertSee('FynnEdge Insights');
+    // The footer form is on every page, so the homepage needs no signup of its own.
+    $this->get('/')->assertOk()->assertSee('FynnEdge Insights');
+});
+
+it('gives the footer signup a usable email field posting to the subscribe route', function () {
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('id="newsletter-email-footer"', false)
+        ->assertSee('type="email"', false)
+        ->assertSee('action="'.route('newsletter.subscribe').'"', false)
+        ->assertSee('Subscribe');
 });
 
 it('carries the article URL as the signup source on a blog page', function () {
@@ -69,7 +77,7 @@ it('never asks a newsletter subscriber for loan application data', function () {
 it('removes every signup form when the newsletter is switched off', function () {
     Setting::set('newsletter_enabled', false);
 
-    $this->get('/')->assertOk()->assertDontSee('Stay ahead of your finances');
+    $this->get('/')->assertOk()->assertDontSee('FynnEdge Insights');
     $this->get(route('resources.show', publishedArticle()))->assertOk()->assertDontSee('Enjoyed this article?');
 });
 
