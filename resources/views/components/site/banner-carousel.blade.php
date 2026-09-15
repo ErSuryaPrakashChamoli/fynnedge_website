@@ -39,6 +39,19 @@
         $cloneIndex = $banners->count();
     @endphp
 
+    {{--
+        Per-banner button colours. Banner::contentStyle() sets the --slide-cta-*
+        properties on each slide's content block; anything a banner leaves
+        unset falls back to the site-wide banner Settings, then to the site
+        accent. The extra .banner-content in the selector outranks the
+        site-wide rule SiteThemeStyles emits into <head>. Nothing here is admin
+        input — only the property values are, and those are hex-validated.
+    --}}
+    <style>
+        #hero-banner .banner-content .banner-cta{background-color:var(--slide-cta-bg,var(--banner-button-bg,var(--color-accent)));color:var(--slide-cta-text,var(--banner-button-text,#ffffff));}
+        #hero-banner .banner-content .banner-cta:hover{background-color:var(--slide-cta-hover,var(--slide-cta-bg,var(--banner-button-bg-hover,var(--color-accent-strong))));}
+    </style>
+
     <div
         x-data="{
             current: 0,
@@ -157,7 +170,20 @@
             @transitionend="settle($event)"
         >
             @foreach ($slides as $index => $banner)
-                @php $isClone = $index === $cloneIndex; @endphp
+                @php
+                    $isClone = $index === $cloneIndex;
+                    $verticalClasses = match ($banner->content_vertical_align) {
+                        \App\Enums\BannerVerticalAlignment::Top => 'justify-start',
+                        \App\Enums\BannerVerticalAlignment::Center => 'justify-center',
+                        default => 'justify-end',
+                    };
+                    $horizontalClasses = match ($banner->content_horizontal_align) {
+                        \App\Enums\BannerHorizontalAlignment::Center => 'items-center text-center',
+                        \App\Enums\BannerHorizontalAlignment::Right => 'items-end text-right',
+                        default => 'items-start text-left',
+                    };
+                    $contentStyle = $banner->contentStyle();
+                @endphp
                 <div class="relative h-full w-full shrink-0 basis-full" @if ($isClone) aria-hidden="true" @endif>
                     <img
                         src="{{ $banner->imageUrl() }}"
@@ -165,10 +191,15 @@
                         class="h-full w-full object-cover"
                     >
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                    <div class="absolute inset-x-0 bottom-0 p-6 sm:p-10">
-                        <h3 class="banner-heading max-w-2xl font-display text-2xl font-semibold text-white sm:text-3xl">
-                            {{ $banner->heading }}
-                        </h3>
+                    <div
+                        class="banner-content absolute inset-0 flex flex-col p-6 sm:p-10 {{ $verticalClasses }} {{ $horizontalClasses }}"
+                        @if ($contentStyle !== '') style="{{ $contentStyle }}" @endif
+                    >
+                        @if ($banner->heading)
+                            <h3 class="banner-heading max-w-2xl font-display text-2xl font-semibold text-white sm:text-3xl">
+                                {{ $banner->heading }}
+                            </h3>
+                        @endif
                         @if ($banner->subtitle)
                             <p class="banner-subtitle mt-2 max-w-xl text-sm text-white/85 sm:text-base">
                                 {{ $banner->subtitle }}

@@ -35,6 +35,9 @@ use Symfony\Component\HttpFoundation\Response;
  * default-src has no frame-src fallback exception, so without this the browser
  * blocks the iframe outright with a console-only CSP violation — no failed
  * network request, just a blank box where the map should render.
+ * frame-src also allows https://www.youtube-nocookie.com, the only host video
+ * testimonials embed YouTube through (VideoTestimonial::embedUrl()). Uploaded
+ * testimonial videos are same-origin, so they need no media-src entry.
  * img-src allows https: in addition to self/data: so admin-authored rich-text
  * body content (Page/LoanProduct) can still reference an external image. It
  * also allows blob: — Filament's FileUpload field (FilePond under the hood)
@@ -102,7 +105,7 @@ class SecurityHeaders
         $styleSrc = self::sourceList(["'self'", "'unsafe-inline'", $viteOrigins['http']]);
         $imgSrc = self::sourceList(["'self'", 'data:', 'blob:', 'https:', $viteOrigins['http'], ...$tracking['img']]);
         $connectSrc = self::sourceList(["'self'", 'blob:', $viteOrigins['http'], $viteOrigins['ws'], ...$tracking['connect']]);
-        $frameSrc = self::sourceList(["'self'", 'https://www.google.com', 'https://maps.google.com', ...$tracking['frame']]);
+        $frameSrc = self::sourceList(["'self'", 'https://www.google.com', 'https://maps.google.com', 'https://www.youtube-nocookie.com', ...$tracking['frame']]);
 
         return "default-src 'self'; "
             ."script-src {$scriptSrc}; "

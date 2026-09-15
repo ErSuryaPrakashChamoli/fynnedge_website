@@ -18,7 +18,7 @@ use Illuminate\Database\QueryException;
  *
  * Deliberately opted into only for pure-content models with no
  * business-relevant numeric/eligibility fields (Article, Faq, Testimonial,
- * Banner, CompanyPhoto, MarketingSection) — never for LoanProduct, LenderProduct,
+ * VideoTestimonial, Banner, CompanyPhoto, MarketingSection) — never for LoanProduct, LenderProduct,
  * Lender, Application, or EligibilityRuleSet/Rule/Condition, where a value
  * restored outside normal form validation could produce an inconsistent
  * calculator/eligibility configuration. See .ai/rules.

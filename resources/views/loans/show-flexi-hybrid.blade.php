@@ -6,7 +6,7 @@
         : null;
     $lenderNames = $loanProduct->lenderProducts->pluck('lender.name');
 @endphp
-<x-layouts.app handles-faqs :title="$loanProduct->seoTitle()" :description="$loanProduct->seoDescription()" :canonical="$loanProduct->seoCanonicalUrl()" :og-image="$loanProduct->seoOgImageUrl()" :social="$loanProduct->seoSocial()" :robots="$loanProduct->seoRobots()" :structured-data="$loanProduct->seoStructuredData()" :page-type="$loanProduct->seoPageType()" :schema-template="$loanProduct->seoSchemaTemplate()" :schema-nodes="$schemaNodes">
+<x-layouts.app handles-faqs handles-video-testimonials :title="$loanProduct->seoTitle()" :description="$loanProduct->seoDescription()" :canonical="$loanProduct->seoCanonicalUrl()" :og-image="$loanProduct->seoOgImageUrl()" :social="$loanProduct->seoSocial()" :robots="$loanProduct->seoRobots()" :structured-data="$loanProduct->seoStructuredData()" :page-type="$loanProduct->seoPageType()" :schema-template="$loanProduct->seoSchemaTemplate()" :schema-nodes="$schemaNodes">
     <x-site.flexi-hybrid-hero :loan-product="$loanProduct" />
 
     {{--
@@ -164,6 +164,8 @@
         <x-site.why-fynnedge class="mt-12" :heading="'You could go directly to a bank. But why apply for a '.$loanProduct->name.' through us?'" />
 
         <x-site.testimonials :testimonials="$testimonials" />
+
+        <x-site.video-testimonials embedded class="mt-12" />
 
         <x-site.faq-accordion :faqs="$faqs" data-ai-context="Frequently Asked Questions" />
         <x-site.faq-json-ld :faqs="$faqs" />

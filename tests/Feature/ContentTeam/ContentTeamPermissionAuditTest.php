@@ -22,6 +22,7 @@ it('lets Marketing manage every content area the content team owns', function ()
         '/admin/articles', '/admin/banners', '/admin/testimonials', '/admin/company-photos',
         '/admin/loan-landing-page-content', '/admin/faqs', '/admin/marketing-sections',
         '/admin/navigation-links', '/admin/how-it-works-steps', '/admin/calculator-pages',
+        '/admin/video-testimonials',
     ] as $path) {
         $this->get($path)->assertOk();
     }

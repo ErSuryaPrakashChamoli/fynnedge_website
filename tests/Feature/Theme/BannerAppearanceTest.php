@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\BannerHorizontalAlignment;
+use App\Enums\BannerVerticalAlignment;
 use App\Enums\PublishStatus;
 use App\Models\Banner;
 use App\Models\Setting;
@@ -94,6 +96,46 @@ it('applies the button hover colour on its own when only the base colour is set'
     Setting::set('theme_banner_button_color', '#c62828');
 
     expect(SiteThemeStyles::render())->toContain('--banner-button-bg-hover:#c62828;');
+});
+
+it('renders a banner\'s own button colours, position and side spacing', function () {
+    publishedBanner()->update([
+        'cta_bg_color' => '#c62828',
+        'cta_hover_color' => '#8e0000',
+        'cta_text_color' => '#111111',
+        'content_vertical_align' => BannerVerticalAlignment::Top,
+        'content_horizontal_align' => BannerHorizontalAlignment::Right,
+        'content_padding_left' => 0,
+        'content_padding_right' => 15,
+    ]);
+
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('--slide-cta-bg:#c62828;--slide-cta-hover:#8e0000;--slide-cta-text:#111111;padding-left:0%;padding-right:15%;', false)
+        ->assertSee('justify-start items-end text-right', false);
+});
+
+it('keeps the bottom-left layout and adds no inline style for a banner with nothing set', function () {
+    publishedBanner();
+
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('justify-end items-start text-left', false)
+        ->assertDontSee('--slide-cta-bg:', false);
+});
+
+/**
+ * A record restored from history or written outside the form skips the
+ * form's validation, so the model re-checks before anything reaches CSS.
+ */
+it('drops invalid stored banner colours and clamps out-of-range spacing', function () {
+    $banner = publishedBanner();
+    $banner->forceFill([
+        'cta_bg_color' => 'red;} body{display:none}',
+        'content_padding_left' => 90,
+    ])->saveQuietly();
+
+    expect($banner->fresh()->contentStyle())->toBe('padding-left:'.Banner::MAX_CONTENT_PADDING.'%;');
 });
 
 /**

@@ -38,6 +38,17 @@
     --animate-marquee: marquee 80s linear infinite;
     --animate-marquee-reverse: marquee-reverse 40s linear infinite;
     --animate-card-swing: card-swing 0.4s ease-in-out;
+    --animate-soft-pulse: soft-pulse 2.4s ease-out infinite;
+
+    /* The floating video testimonial's attention ring (x-site.video-testimonial-bubble). */
+    @keyframes soft-pulse {
+        0% {
+            box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 55%, transparent);
+        }
+        70%, 100% {
+            box-shadow: 0 0 0 16px color-mix(in srgb, var(--color-accent) 0%, transparent);
+        }
+    }
 
     @keyframes marquee {
         to {

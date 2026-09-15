@@ -164,6 +164,12 @@
     <main id="main-content" class="flex-1">
         {{ $slot }}
 
+        {{-- Views that place the video testimonials themselves pass --}}
+        {{-- handles-video-testimonials; see x-site.video-testimonials. --}}
+        @unless ($handlesVideoTestimonials ?? false)
+            <x-site.video-testimonials />
+        @endunless
+
         {{-- Views that render their own FAQ section pass handles-faqs and merge --}}
         {{-- the pinned FAQs into it themselves; see x-site.page-faqs. --}}
         @unless ($handlesFaqs ?? false)
@@ -172,6 +178,10 @@
     </main>
 
     <x-site.footer />
+
+    {{-- Both render nothing unless a published video testimonial is pinned to this page. --}}
+    <x-site.video-testimonial-bubble />
+    <x-site.video-testimonial-player />
 
     {{-- Only rendered while the banner is switched on and this visitor has not answered it. --}}
     <x-site.cookie-consent />

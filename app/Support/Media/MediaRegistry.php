@@ -10,6 +10,7 @@ use App\Models\LoanProduct;
 use App\Models\MarketingSection;
 use App\Models\SeoMeta;
 use App\Models\Testimonial;
+use App\Models\VideoTestimonial;
 
 /**
  * The curated list of genuine media-path fields the Media Governance catalog
@@ -47,6 +48,23 @@ final class MediaRegistry
                 pathField: 'avatar_path',
                 directory: 'testimonials',
                 altField: 'avatar_alt',
+                recordLabelField: 'customer_name',
+                withTrashed: true,
+            ),
+            MediaFieldDefinition::forModel(
+                modelClass: VideoTestimonial::class,
+                label: 'Video Testimonial',
+                pathField: 'video_path',
+                directory: 'video-testimonials',
+                recordLabelField: 'customer_name',
+                withTrashed: true,
+            ),
+            MediaFieldDefinition::forModel(
+                modelClass: VideoTestimonial::class,
+                label: 'Video Testimonial Cover',
+                pathField: 'poster_path',
+                directory: 'video-testimonial-covers',
+                altField: 'poster_alt',
                 recordLabelField: 'customer_name',
                 withTrashed: true,
             ),

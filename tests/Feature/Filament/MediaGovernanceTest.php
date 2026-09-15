@@ -9,6 +9,7 @@ use App\Models\Lender;
 use App\Models\LoanProduct;
 use App\Models\Setting;
 use App\Models\User;
+use App\Models\VideoTestimonial;
 use App\Support\Media\MediaCatalog;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Http\UploadedFile;
@@ -50,6 +51,16 @@ it('discovers a media reference from an existing content model', function () {
     expect($entry->status())->toBe('used');
     expect($entry->usageCount())->toBe(1);
     expect($entry->references->first()->modelLabel)->toBe('Banner');
+});
+
+it('counts an uploaded video testimonial as used, so it is never offered for deletion', function () {
+    Storage::disk('public')->put('video-testimonials/story.mp4', 'fake-video-bytes');
+    VideoTestimonial::factory()->create(['video_path' => 'video-testimonials/story.mp4']);
+
+    $entry = app(MediaCatalog::class)->all()->firstWhere('path', 'video-testimonials/story.mp4');
+
+    expect($entry->status())->toBe('used');
+    expect($entry->references->first()->modelLabel)->toBe('Video Testimonial');
 });
 
 it('counts multiple records referencing the same physical file', function () {

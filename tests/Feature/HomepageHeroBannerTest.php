@@ -37,6 +37,19 @@ it('splits the banner 40/60 once a banner is published', function () {
         ->assertSee('Instant Personal Loan');
 });
 
+it('omits the banner heading element when the banner has no heading', function () {
+    Banner::factory()->create([
+        'status' => PublishStatus::Published,
+        'published_at' => now()->subMinute(),
+        'heading' => null,
+    ]);
+
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('lg:grid-cols-[2fr_3fr]', false)
+        ->assertDontSee('banner-heading', false);
+});
+
 it('lets the static column span full width when no banner is published, rather than leaving an empty box', function () {
     $this->get('/')
         ->assertOk()

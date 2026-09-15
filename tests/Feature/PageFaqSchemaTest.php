@@ -24,7 +24,7 @@ function jsonLdOfType(string $html, string $type): ?array
         ->first(fn (?array $data) => ($data['@type'] ?? null) === $type);
 }
 
-function publishedPage(string $slug): Page
+function publishedFaqPage(string $slug): Page
 {
     return Page::factory()->create([
         'slug' => $slug,
@@ -34,7 +34,7 @@ function publishedPage(string $slug): Page
 }
 
 it('emits FAQPage JSON-LD, with a valid @context, from FAQs attached to a page', function () {
-    $page = publishedPage('disclaimer');
+    $page = publishedFaqPage('disclaimer');
     $page->faqs()->create([
         'question' => 'What is the minimum salary required for a personal loan?',
         'answer' => 'Most private banks and NBFCs require a minimum net monthly salary of ₹25,000.',
@@ -57,7 +57,7 @@ it('emits FAQPage JSON-LD, with a valid @context, from FAQs attached to a page',
 });
 
 it('also renders the page FAQs visibly, so the schema is not markup-only', function () {
-    $page = publishedPage('disclaimer');
+    $page = publishedFaqPage('disclaimer');
     $page->faqs()->create([
         'question' => 'How does a flexi loan differ from a personal loan?',
         'answer' => 'A flexi loan acts as an active line of credit or overdraft.',
@@ -73,7 +73,7 @@ it('also renders the page FAQs visibly, so the schema is not markup-only', funct
 });
 
 it('excludes draft and expired FAQs from both the visible list and the schema', function () {
-    $page = publishedPage('disclaimer');
+    $page = publishedFaqPage('disclaimer');
     $page->faqs()->createMany([
         ['question' => 'Live question?', 'answer' => 'Live answer.', 'sort_order' => 0, 'status' => PublishStatus::Published],
         ['question' => 'Draft question?', 'answer' => 'Draft answer.', 'sort_order' => 1, 'status' => PublishStatus::Draft],
@@ -92,7 +92,7 @@ it('excludes draft and expired FAQs from both the visible list and the schema', 
 });
 
 it('emits no FAQPage JSON-LD on a page with no FAQs', function () {
-    publishedPage('disclaimer');
+    publishedFaqPage('disclaimer');
 
     $response = $this->get('/disclaimer');
 
@@ -101,7 +101,7 @@ it('emits no FAQPage JSON-LD on a page with no FAQs', function () {
 });
 
 it('keeps page FAQs out of the general FAQs page, which is scoped to unattached ones', function () {
-    $page = publishedPage('disclaimer');
+    $page = publishedFaqPage('disclaimer');
     $page->faqs()->create(['question' => 'Page-scoped question?', 'answer' => 'Answer.', 'sort_order' => 0, 'status' => PublishStatus::Published]);
     Faq::factory()->create(['question' => 'General question?']);
 
@@ -112,7 +112,7 @@ it('keeps page FAQs out of the general FAQs page, which is scoped to unattached 
 });
 
 it('renders admin-authored custom JSON-LD from the page SEO section', function () {
-    $page = publishedPage('disclaimer');
+    $page = publishedFaqPage('disclaimer');
     $page->seoMeta()->save(new SeoMeta([
         'structured_data' => [
             '@context' => 'https://schema.org',
@@ -133,7 +133,7 @@ it('renders admin-authored custom JSON-LD from the page SEO section', function (
 });
 
 it('escapes a closing script tag inside custom JSON-LD so it cannot break out of the tag', function () {
-    $page = publishedPage('disclaimer');
+    $page = publishedFaqPage('disclaimer');
     $page->seoMeta()->save(new SeoMeta([
         'structured_data' => [
             '@context' => 'https://schema.org',
@@ -150,7 +150,7 @@ it('escapes a closing script tag inside custom JSON-LD so it cannot break out of
 });
 
 it('emits no custom JSON-LD block when the SEO section leaves it blank', function () {
-    $page = publishedPage('disclaimer');
+    $page = publishedFaqPage('disclaimer');
     $page->seoMeta()->save(new SeoMeta(['title' => 'Just an SEO title']));
 
     $this->get('/disclaimer')->assertOk()->assertDontSee('"@type":"Service"', false);
@@ -158,7 +158,7 @@ it('emits no custom JSON-LD block when the SEO section leaves it blank', functio
 
 it('lets an admin manage a page\'s FAQs through the relation manager', function () {
     $admin = User::factory()->create(['is_admin' => true]);
-    $page = publishedPage('disclaimer');
+    $page = publishedFaqPage('disclaimer');
     $faq = $page->faqs()->create(['question' => 'Existing question?', 'answer' => 'Existing answer.', 'sort_order' => 0, 'status' => PublishStatus::Published]);
 
     Livewire::actingAs($admin)
@@ -178,7 +178,7 @@ it('lets an admin manage a page\'s FAQs through the relation manager', function 
 
 it('rejects invalid custom JSON-LD when saving a page', function () {
     $admin = User::factory()->create(['is_admin' => true]);
-    $page = publishedPage('disclaimer');
+    $page = publishedFaqPage('disclaimer');
 
     Livewire::actingAs($admin)
         ->test(EditPage::class, ['record' => $page->public_id])
@@ -191,7 +191,7 @@ it('rejects invalid custom JSON-LD when saving a page', function () {
 
 it('stores valid custom JSON-LD as decoded data when saving a page', function () {
     $admin = User::factory()->create(['is_admin' => true]);
-    $page = publishedPage('disclaimer');
+    $page = publishedFaqPage('disclaimer');
 
     Livewire::actingAs($admin)
         ->test(EditPage::class, ['record' => $page->public_id])

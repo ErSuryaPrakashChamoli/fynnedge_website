@@ -2,11 +2,16 @@
 
 namespace App\Filament\Resources\Banners\Schemas;
 
+use App\Enums\BannerHorizontalAlignment;
+use App\Enums\BannerVerticalAlignment;
 use App\Enums\PublishStatus;
+use App\Models\Banner;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class BannerForm
@@ -29,7 +34,6 @@ class BannerForm
                     ->label('Image alt text')
                     ->columnSpanFull(),
                 TextInput::make('heading')
-                    ->required()
                     ->columnSpanFull(),
                 TextInput::make('subtitle')
                     ->columnSpanFull(),
@@ -43,6 +47,55 @@ class BannerForm
                         }
                     })
                     ->helperText('A full URL, e.g. https://fynnedge.com/loans, or a site-relative path like /loans.'),
+                Section::make('Button colours')
+                    ->description('Applies to this banner only. Leave a field blank to use the homepage banner colours from Settings.')
+                    ->columns(3)
+                    ->columnSpanFull()
+                    ->components([
+                        ColorPicker::make('cta_bg_color')
+                            ->label('Button colour')
+                            ->hex()
+                            ->rule('regex:/^#[0-9a-fA-F]{6}$/'),
+                        ColorPicker::make('cta_hover_color')
+                            ->label('Button hover colour')
+                            ->hex()
+                            ->rule('regex:/^#[0-9a-fA-F]{6}$/')
+                            ->helperText('Blank uses the button colour.'),
+                        ColorPicker::make('cta_text_color')
+                            ->label('Button label colour')
+                            ->hex()
+                            ->rule('regex:/^#[0-9a-fA-F]{6}$/'),
+                    ]),
+                Section::make('Text & button position')
+                    ->description('Moves the heading, subtitle and button together over the image.')
+                    ->columns(2)
+                    ->columnSpanFull()
+                    ->components([
+                        Select::make('content_vertical_align')
+                            ->label('Vertical alignment')
+                            ->options(BannerVerticalAlignment::class)
+                            ->default(BannerVerticalAlignment::Bottom)
+                            ->required(),
+                        Select::make('content_horizontal_align')
+                            ->label('Horizontal alignment')
+                            ->options(BannerHorizontalAlignment::class)
+                            ->default(BannerHorizontalAlignment::Left)
+                            ->required(),
+                        TextInput::make('content_padding_left')
+                            ->label('Space from left edge')
+                            ->integer()
+                            ->minValue(0)
+                            ->maxValue(Banner::MAX_CONTENT_PADDING)
+                            ->suffix('%')
+                            ->helperText('Percentage of the banner width, 0–'.Banner::MAX_CONTENT_PADDING.'. 0 puts it right against the left edge. Blank keeps the default spacing.'),
+                        TextInput::make('content_padding_right')
+                            ->label('Space from right edge')
+                            ->integer()
+                            ->minValue(0)
+                            ->maxValue(Banner::MAX_CONTENT_PADDING)
+                            ->suffix('%')
+                            ->helperText('Percentage of the banner width, 0–'.Banner::MAX_CONTENT_PADDING.'. 0 puts it right against the right edge. Blank keeps the default spacing.'),
+                    ]),
                 TextInput::make('sort_order')
                     ->numeric()
                     ->default(0),

@@ -1,4 +1,4 @@
-<x-layouts.app handles-faqs>
+<x-layouts.app handles-faqs handles-video-testimonials>
     <x-site.flexi-hybrid-ticker :loan-product="$flexiHybridProduct" :marketing="$flexiHybridTicker" />
 
     {{--
@@ -330,6 +330,9 @@
             <p class="mt-3 max-w-xl text-ink-muted">{{ $emiCta->description ?? 'Estimate your monthly instalment before you apply, for any loan type.' }}</p>
         </div>
     </section>
+
+    {{-- Real customer videos directly before the final call to action. --}}
+    <x-site.video-testimonials />
 
     <section class="border-t border-line bg-accent">
         <div data-reveal="zoom" class="mx-auto max-w-7xl px-6 py-16 text-center lg:px-8">

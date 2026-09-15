@@ -1,4 +1,4 @@
-<x-layouts.app handles-faqs :title="$landingPage->seoTitle()" :description="$landingPage->seoDescription()" :canonical="$landingPage->seoCanonicalUrl()" :og-image="$landingPage->seoOgImageUrl()" :social="$landingPage->seoSocial()" :robots="$landingPage->seoRobots()" :structured-data="$landingPage->seoStructuredData()" :page-type="$landingPage->seoPageType()" :schema-template="$landingPage->seoSchemaTemplate()" :schema-nodes="$schemaNodes">
+<x-layouts.app handles-faqs handles-video-testimonials :title="$landingPage->seoTitle()" :description="$landingPage->seoDescription()" :canonical="$landingPage->seoCanonicalUrl()" :og-image="$landingPage->seoOgImageUrl()" :social="$landingPage->seoSocial()" :robots="$landingPage->seoRobots()" :structured-data="$landingPage->seoStructuredData()" :page-type="$landingPage->seoPageType()" :schema-template="$landingPage->seoSchemaTemplate()" :schema-nodes="$schemaNodes">
     {{--
         Same microdata + data-ai-context treatment as loans/show.blade.php —
         see the comment there for why the FAQ accordion is deliberately left
@@ -79,6 +79,8 @@
         <x-site.why-fynnedge class="mt-12" :heading="'You could go directly to a bank. But why apply for a '.$landingPage->title.' through us?'" />
 
         <x-site.testimonials :testimonials="$testimonials" />
+
+        <x-site.video-testimonials embedded class="mt-12" />
 
         <x-site.faq-accordion :faqs="$faqs" data-ai-context="Frequently Asked Questions" />
         <x-site.faq-json-ld :faqs="$faqs" />

@@ -43,6 +43,19 @@ it('stores the uploaded image on the public disk, where the model and table read
     expect($banner->imageUrl())->toContain('/storage/'.$banner->image_path);
 });
 
+it('saves a banner without a heading, since the image can carry its own text', function () {
+    Livewire::test(CreateBanner::class)
+        ->fillForm([
+            'image_path' => UploadedFile::fake()->image('promo.jpg'),
+            'heading' => null,
+            'status' => PublishStatus::Draft->value,
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(Banner::query()->sole()->heading)->toBeNull();
+});
+
 it('fails loudly instead of saving an imageless banner when the public disk cannot be written', function () {
     /*
      * The server failure this guards: storage/app/public exists but php-fpm

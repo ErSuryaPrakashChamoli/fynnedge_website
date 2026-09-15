@@ -220,7 +220,11 @@ class SiteThemeStyles
         return $declarations;
     }
 
-    private static function hexColor(mixed $value): ?string
+    /**
+     * The one strict colour check shared by every admin colour that reaches
+     * CSS, including Banner::contentStyle().
+     */
+    public static function hexColor(mixed $value): ?string
     {
         if (! is_string($value)) {
             return null;
