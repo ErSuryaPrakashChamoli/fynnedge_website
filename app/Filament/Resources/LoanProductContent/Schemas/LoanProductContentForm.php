@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\LoanProductContent\Schemas;
 
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HtmlBodyEditor;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
@@ -81,8 +81,7 @@ class LoanProductContentForm
 
                 Section::make('Content')
                     ->components([
-                        RichEditor::make('body')
-                            ->columnSpanFull(),
+                        ...HtmlBodyEditor::make(),
                         TagsInput::make('features')
                             ->helperText('Short benefit bullets, e.g. "No collateral required".'),
                         TagsInput::make('eligibility_points')

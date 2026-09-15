@@ -48,6 +48,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | resources/views/components/site/promo-bar.blade.php,resources/js/app.js,app/Models/PromoBar.php,app/Filament/Resources/PromoBars/** | .ai/rules/promo-bars.md |
 | app/Http/Middleware/SecurityHeaders.php,app/Providers/Filament/AdminPanelProvider.php | .ai/rules/providers-filament.md |
 | app/Models/Redirect.php,app/Http/Middleware/HandleRedirects.php,app/Filament/Resources/Redirects/** | .ai/rules/redirects.md |
+| app/Filament/Schemas/HtmlBodyEditor.php,app/Filament/Resources/**/Schemas/*Form.php | .ai/rules/resources-schemas.md |
 | resources/views/quick-enquiry.blade.php, resources/views/** | .ai/rules/resources-views.md |
 | app/Filament/Resources/** | .ai/rules/resources.md |
 | app/Support/Seo/**,app/Filament/Pages/StructuredData.php,app/Filament/Resources/SchemaTemplates/**,app/Filament/Schemas/SeoFormSection.php | .ai/rules/schemas.md |

@@ -76,6 +76,24 @@ it('lets Marketing update the loan product image and alt text', function () {
     expect($loanProduct->image_alt)->toBe('TEST — DO NOT PUBLISH image alt');
 });
 
+it('lets Marketing save the loan product body as HTML', function () {
+    $marketing = User::factory()->create(['is_admin' => true]);
+    $marketing->syncRoles(['Marketing']);
+    $this->actingAs($marketing);
+
+    $loanProduct = LoanProduct::factory()->create();
+
+    Livewire::test(EditLoanProductContent::class, ['record' => $loanProduct->getRouteKey()])
+        ->fillForm([
+            'body_html_mode' => true,
+            'body_html' => '<section class="highlight"><p>TEST — DO NOT PUBLISH body</p></section>',
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($loanProduct->refresh()->body)->toBe('<section class="highlight"><p>TEST — DO NOT PUBLISH body</p></section>');
+});
+
 it('lets Marketing use the existing publishing workflow (draft, schedule, publish, expire)', function () {
     $marketing = User::factory()->create(['is_admin' => true]);
     $marketing->syncRoles(['Marketing']);

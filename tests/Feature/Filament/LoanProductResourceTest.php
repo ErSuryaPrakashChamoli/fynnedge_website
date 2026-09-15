@@ -70,6 +70,42 @@ it('lets an admin set marketing content on a loan product without touching its c
     expect((float) $loanProduct->max_amount)->toBe(500000.0);
 });
 
+it('saves the loan product body as raw HTML in HTML mode, removing scripts', function () {
+    $loanProduct = LoanProduct::factory()->create(['body' => '<p>Old body</p>']);
+
+    Livewire::test(EditLoanProduct::class, ['record' => $loanProduct->getRouteKey()])
+        ->fillForm([
+            'body_html_mode' => true,
+            'body_html' => '<div class="rate-card"><p>From 10.49%</p><script>alert(1)</script></div>',
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($loanProduct->refresh()->body)
+        ->toContain('<div class="rate-card"><p>From 10.49%</p>')
+        ->not->toContain('script');
+});
+
+it('opens a body the visual editor cannot represent in HTML mode so saving keeps its markup', function () {
+    $body = '<div class="rate-card"><p>From 10.49%</p></div>';
+    $loanProduct = LoanProduct::factory()->create(['body' => $body]);
+
+    Livewire::test(EditLoanProduct::class, ['record' => $loanProduct->getRouteKey()])
+        ->assertSchemaStateSet(['body_html_mode' => true, 'body_html' => $body])
+        ->fillForm(['summary' => 'Updated summary'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($loanProduct->refresh()->body)->toBe($body);
+});
+
+it('opens a body the visual editor can save unchanged in visual mode', function () {
+    $loanProduct = LoanProduct::factory()->create(['body' => '<p>Hello <strong>world</strong></p>']);
+
+    Livewire::test(EditLoanProduct::class, ['record' => $loanProduct->getRouteKey()])
+        ->assertSchemaStateSet(['body_html_mode' => false]);
+});
+
 it('records and shows an audit trail when a loan product changes its limits', function () {
     $loanProduct = LoanProduct::factory()->create(['max_amount' => 2000000, 'max_tenure_months' => 60]);
 

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\LoanProducts\Schemas;
 
 use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HtmlBodyEditor;
 use App\Filament\Schemas\SeoFormSection;
 use App\Models\LoanProduct;
 use Filament\Forms\Components\DateTimePicker;
@@ -87,8 +88,7 @@ class LoanProductForm
 
                 Section::make('Content')
                     ->components([
-                        RichEditor::make('body')
-                            ->columnSpanFull(),
+                        ...HtmlBodyEditor::make(),
                         TagsInput::make('features')
                             ->helperText('Short benefit bullets, e.g. "No collateral required".'),
                         TagsInput::make('eligibility_points')
