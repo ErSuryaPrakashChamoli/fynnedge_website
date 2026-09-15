@@ -15,7 +15,9 @@
     `embedded` and pass `handles-video-testimonials` to the layout, so it never
     appears twice on one page.
 
-    A rounded panel across the full content width, with one row of cards —
+    A grey band from screen edge to screen edge, flush against the sections
+    around it (inside a loan page's article, a rounded panel instead), with
+    content at the normal site width and one row of cards —
     five across on extra-large screens, four on large, three on tablets —
     that swipes once it overflows. Each card stacks, kept short: the video
     across the top, "Watch X's story", the customer's photo and name, then
@@ -23,7 +25,9 @@
 
     Cards only dispatch `open-video-testimonial`; the single player modal
     (x-site.video-testimonial-player, rendered by the layout) plays it. With a
-    mouse, an uploaded video previews silently while hovered.
+    mouse, an uploaded video previews while hovered — with sound once the
+    visitor has clicked or tapped anywhere on the page. Before that, browsers
+    refuse unmuted playback, so the preview falls back to playing muted.
 --}}
 {{-- Block form, not @php(...): Blade mis-pairs an inline @php with a later @endphp in the same view. --}}
 @php
@@ -32,11 +36,12 @@
 
 @if ($videoTestimonials->isNotEmpty())
     @unless ($embedded)
-        <section class="mx-auto max-w-7xl px-6 py-10 lg:px-8">
+        <section class="border-t border-line bg-surface-2">
+            <div class="mx-auto max-w-7xl px-6 py-6 lg:px-8 lg:py-8">
     @endunless
 
     <div
-        {{ $attributes->class(['relative w-full overflow-hidden rounded-[2rem] border border-line bg-surface-2 p-5 shadow-sm sm:p-6']) }}
+        {{ $attributes->class(['relative w-full', 'overflow-hidden rounded-[2rem] border border-line bg-surface-2 p-5 shadow-sm sm:p-6' => $embedded]) }}
         x-data="{
             atStart: true,
             atEnd: true,
@@ -55,20 +60,11 @@
         }"
         data-ai-context="Customer video testimonials"
     >
-        <div class="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-accent/10 blur-3xl" aria-hidden="true"></div>
-        <div class="pointer-events-none absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-warn/10 blur-3xl" aria-hidden="true"></div>
-
         <div data-reveal="up" class="relative flex flex-wrap items-end justify-between gap-4">
             <div>
-                <p class="inline-flex items-center gap-2 rounded-full bg-accent-soft px-3 py-1 font-mono text-xs font-semibold uppercase tracking-wider text-accent">
-                    <span class="relative flex h-2 w-2" aria-hidden="true">
-                        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60 motion-reduce:animate-none"></span>
-                        <span class="relative inline-flex h-2 w-2 rounded-full bg-accent"></span>
-                    </span>
-                    {{ $eyebrow }}
-                </p>
-                <h2 class="mt-3 text-balance font-display text-2xl font-semibold text-ink sm:text-3xl">{{ $heading }}</h2>
-                <p class="mt-2 max-w-xl text-sm text-ink-muted">{{ $intro }}</p>
+                <x-ui.badge tone="accent">{{ $eyebrow }}</x-ui.badge>
+                <h2 class="mt-4 max-w-lg text-balance font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">{{ $heading }}</h2>
+                <p class="mt-2 max-w-2xl text-ink-muted">{{ $intro }}</p>
             </div>
 
             <div x-show="! (atStart && atEnd)" x-cloak class="flex gap-2">
@@ -85,7 +81,7 @@
             x-ref="track"
             @scroll.debounce.60ms="measure()"
             role="list"
-            class="relative -mx-2 mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-2 pb-2 pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            class="relative -mx-2 mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-2 pb-2 pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
             @foreach ($videoTestimonials as $testimonial)
                 @php
@@ -102,11 +98,34 @@
                         {{-- The video, across the top of the card. --}}
                         <button
                             type="button"
-                            x-data="{ previewing: false }"
-                            @click="$dispatch('open-video-testimonial', @js($testimonial->playerData()))"
+                            x-data="{
+                                previewing: false,
+                                startPreview() {
+                                    const video = this.$refs.preview;
+                                    if (! video) {
+                                        return;
+                                    }
+                                    this.previewing = true;
+                                    video.muted = false;
+                                    video.play().catch(() => {
+                                        video.muted = true;
+                                        video.play().catch(() => {});
+                                    });
+                                },
+                                stopPreview() {
+                                    const video = this.$refs.preview;
+                                    if (! video) {
+                                        return;
+                                    }
+                                    this.previewing = false;
+                                    video.pause();
+                                    video.muted = true;
+                                },
+                            }"
+                            @click="stopPreview(); $dispatch('open-video-testimonial', @js($testimonial->playerData()))"
                             @if ($videoUrl)
-                                @pointerenter="if ($event.pointerType === 'mouse') { previewing = true; $refs.preview.play().catch(() => {}); }"
-                                @pointerleave="previewing = false; $refs.preview.pause();"
+                                @pointerenter="if ($event.pointerType === 'mouse') { startPreview(); }"
+                                @pointerleave="stopPreview()"
                             @endif
                             aria-label="Play {{ $testimonial->customer_name }}'s video testimonial"
                             class="group relative block aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-accent to-accent-strong focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white"
@@ -219,6 +238,7 @@
     </div>
 
     @unless ($embedded)
+            </div>
         </section>
     @endunless
 @endif

@@ -49,6 +49,22 @@ it('shows an honest fallback instead of a fabricated result when the selected le
         ->assertSee("hasn't published its initial-tenure terms", false);
 });
 
+it('resets an emptied field to the product minimum instead of crashing', function (string $property, string $presetKey, int $multiplier) {
+    seedCalculatorProduct(LoanCategory::FlexiHybridTermLoan);
+
+    $component = Livewire::test('flexi-hybrid-calculator');
+    $minimum = $component->instance()->preset()[$presetKey] * $multiplier;
+
+    $component->set($property, '')
+        ->assertOk()
+        ->assertSet($property, $minimum)
+        ->assertHasErrors([$property]);
+})->with([
+    'loan amount' => ['principal', 'min_amount', 1],
+    'interest rate' => ['annualRate', 'min_rate', 1],
+    'total tenure' => ['totalTenureMonths', 'min_years', 12],
+]);
+
 it('clamps the total tenure to the product\'s configured range and flags the adjustment', function () {
     seedCalculatorProduct(LoanCategory::FlexiHybridTermLoan);
 

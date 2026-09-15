@@ -385,6 +385,10 @@ new class extends Component
      * slider, by typing, or by a direct request to this Livewire component
      * (there's no separate "frontend-only" path to bypass; every property
      * update round-trips through this same server-side method).
+     *
+     * An emptied field arrives as "", which a typed float/int can't hold, so
+     * Livewire unsets the property instead — reading it back then throws.
+     * That case is treated as below the minimum rather than left unset.
      */
     public function updated(string $property): void
     {
@@ -399,10 +403,10 @@ new class extends Component
             'tenureYears' => [$preset['min_years'], $preset['max_years'], 'tenure'],
         };
 
-        $value = $this->{$property};
+        $value = $this->{$property} ?? null;
 
-        if ($value < $min || $value > $max) {
-            $clamped = max($min, min($max, $value));
+        if ($value === null || $value < $min || $value > $max) {
+            $clamped = max($min, min($max, $value ?? $min));
             $this->{$property} = $property === 'tenureYears' ? (int) $clamped : (float) $clamped;
             $this->addError($property, "Adjusted the {$label} to stay within {$this->preset['label']}'s allowed range.");
 
@@ -445,11 +449,13 @@ new class extends Component
                             type="text"
                             inputmode="numeric"
                             autocomplete="off"
-                            wire:model.live.debounce.400ms="principal"
-                            wire:ignore.self
-                            x-effect="const v = $wire.principal; if (document.activeElement !== $el) $el.value = formatIndianNumber(String(v ?? ''))"
-                            x-on:focus="$el.value = $el.value.replace(/[^0-9]/g, '')"
-                            x-on:blur="$el.value = formatIndianNumber($el.value.replace(/[^0-9]/g, ''))"
+                            data-min="{{ $this->preset['min_amount'] }}"
+                            data-max="{{ $this->preset['max_amount'] }}"
+                            x-data="calculatorInput('principal', { currency: true })"
+                            x-on:focus="onFocus()"
+                            x-on:input="onInput()"
+                            x-on:blur="commit()"
+                            x-on:keydown.enter.prevent="$el.blur()"
                             class="w-28 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                         >
                     </div>
@@ -479,7 +485,12 @@ new class extends Component
                             min="{{ $this->preset['min_rate'] }}"
                             max="{{ $this->preset['max_rate'] }}"
                             step="0.01"
-                            wire:model.live.debounce.400ms="annualRate"
+                            data-min="{{ $this->preset['min_rate'] }}"
+                            data-max="{{ $this->preset['max_rate'] }}"
+                            x-data="calculatorInput('annualRate')"
+                            x-on:input="onInput()"
+                            x-on:blur="commit()"
+                            x-on:keydown.enter.prevent="$el.blur()"
                             class="w-20 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                         >
                         %
@@ -511,7 +522,12 @@ new class extends Component
                             min="{{ $this->preset['min_years'] }}"
                             max="{{ $this->preset['max_years'] }}"
                             step="1"
-                            wire:model.live.debounce.400ms="tenureYears"
+                            data-min="{{ $this->preset['min_years'] }}"
+                            data-max="{{ $this->preset['max_years'] }}"
+                            x-data="calculatorInput('tenureYears')"
+                            x-on:input="onInput()"
+                            x-on:blur="commit()"
+                            x-on:keydown.enter.prevent="$el.blur()"
                             class="w-16 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                         >
                         {{ Str::plural('year', $tenureYears) }}

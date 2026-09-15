@@ -1,7 +1,25 @@
 <?php
 
 use App\Enums\FaqPlacement;
+use App\Enums\PromoBarTrigger;
 use App\Models\PromoBar;
+
+it('renders the promo bar with no way to close it', function () {
+    PromoBar::factory()->onEveryPage()->create(['headline' => 'Always-on offer']);
+
+    $this->get('/resources')
+        ->assertSee('Always-on offer')
+        ->assertDontSee('Close offer')
+        ->assertDontSee('dismiss()', false);
+});
+
+it('rises on the first scroll with no percentage or close-and-reshow setting sent to the page', function () {
+    $config = PromoBar::factory()->make(['trigger' => PromoBarTrigger::Scroll, 'trigger_value' => 20])->clientConfig();
+
+    expect($config['trigger'])->toBe('scroll')
+        ->and($config['triggerValue'])->toBe(0)
+        ->and($config)->not->toHaveKey('reshowAfterHours');
+});
 
 it('shows a promo bar only on the pages it is pinned to', function () {
     PromoBar::factory()->onPages([FaqPlacement::Contact->value])->create(['headline' => 'Contact page offer']);

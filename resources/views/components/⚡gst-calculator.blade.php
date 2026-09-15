@@ -42,15 +42,36 @@ new class extends Component
         return IndianNumberFormatter::format($amount);
     }
 
+    /**
+     * An emptied field leaves the typed property unset (Livewire can't put ""
+     * into a float), so that case resets to zero here rather than crashing.
+     */
     public function updated(string $property): void
     {
+        if ($property === 'rate') {
+            $rate = $this->rate ?? null;
+
+            if ($rate === null || $rate < 0 || $rate > 100) {
+                $this->rate = max(0.0, min(100.0, (float) $rate));
+                $this->addError('rate', 'Adjusted the GST rate to stay between 0% and 100%.');
+
+                return;
+            }
+
+            $this->resetErrorBag('rate');
+
+            return;
+        }
+
         if ($property !== 'amount') {
             return;
         }
 
-        if ($this->amount < 0) {
+        $amount = $this->amount ?? null;
+
+        if ($amount === null || $amount < 0) {
             $this->amount = 0.0;
-            $this->addError('amount', 'The amount can\'t be negative.');
+            $this->addError('amount', $amount === null ? 'Please enter an amount.' : 'The amount can\'t be negative.');
 
             return;
         }
@@ -103,11 +124,12 @@ new class extends Component
                         type="text"
                         inputmode="numeric"
                         autocomplete="off"
-                        wire:model.live.debounce.400ms="amount"
-                        wire:ignore.self
-                        x-effect="const v = $wire.amount; if (document.activeElement !== $el) $el.value = formatIndianNumber(String(v ?? ''))"
-                        x-on:focus="$el.value = $el.value.replace(/[^0-9]/g, '')"
-                        x-on:blur="$el.value = formatIndianNumber($el.value.replace(/[^0-9]/g, ''))"
+                        data-min="0"
+                        x-data="calculatorInput('amount', { currency: true })"
+                        x-on:focus="onFocus()"
+                        x-on:input="onInput()"
+                        x-on:blur="commit()"
+                        x-on:keydown.enter.prevent="$el.blur()"
                         class="w-full rounded-md border border-line-strong bg-surface px-2 py-1.5 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                     >
                 </div>
@@ -140,7 +162,12 @@ new class extends Component
                         min="0"
                         max="100"
                         step="0.01"
-                        wire:model.live.debounce.400ms="rate"
+                        data-min="0"
+                        data-max="100"
+                        x-data="calculatorInput('rate')"
+                        x-on:input="onInput()"
+                        x-on:blur="commit()"
+                        x-on:keydown.enter.prevent="$el.blur()"
                         aria-label="Custom GST rate"
                         class="w-20 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                     >

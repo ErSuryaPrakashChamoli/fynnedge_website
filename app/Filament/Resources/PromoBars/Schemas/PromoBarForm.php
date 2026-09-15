@@ -143,31 +143,20 @@ class PromoBarForm
                             ->live()
                             ->helperText('Exit intent needs a mouse, so phones fall back to half-way down the page.'),
                         TextInput::make('trigger_value')
-                            ->label(fn (callable $get): string => self::trigger($get('trigger')) === PromoBarTrigger::Delay
-                                ? 'Seconds to wait'
-                                : 'How far down the page (%)')
+                            ->label('Seconds to wait')
                             ->numeric()
                             ->integer()
                             ->minValue(0)
-                            ->maxValue(fn (callable $get): int => self::trigger($get('trigger'))->maxValue())
-                            ->default(25)
-                            ->visible(fn (callable $get): bool => self::trigger($get('trigger')) !== PromoBarTrigger::ExitIntent)
-                            ->required(fn (callable $get): bool => self::trigger($get('trigger')) !== PromoBarTrigger::ExitIntent),
+                            ->maxValue(PromoBarTrigger::Delay->maxValue())
+                            ->default(5)
+                            ->visible(fn (callable $get): bool => self::trigger($get('trigger')) === PromoBarTrigger::Delay)
+                            ->required(fn (callable $get): bool => self::trigger($get('trigger')) === PromoBarTrigger::Delay),
                         Select::make('device')
                             ->label('Show on')
                             ->options(PromoBarDevice::class)
                             ->default(PromoBarDevice::All)
                             ->native(false)
                             ->required(),
-                        TextInput::make('reshow_after_hours')
-                            ->label('Once closed, show it again after (hours)')
-                            ->numeric()
-                            ->integer()
-                            ->minValue(0)
-                            ->maxValue(PromoBar::MAX_RESHOW_AFTER_HOURS)
-                            ->default(24)
-                            ->required()
-                            ->helperText('0 brings it back on the visitor\'s next page view. Remembered in their browser only.'),
                     ]),
                 Section::make('Publishing')
                     ->columns(2)

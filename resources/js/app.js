@@ -879,35 +879,132 @@ document.addEventListener('alpine:init', () => {
 
 document.addEventListener('alpine:init', () => {
     /**
+     * The typed box paired with each calculator slider. It is deliberately NOT
+     * wire:model-bound: a live binding sent every half-typed value ("7" on the
+     * way to 700000), the server clamped it up to the minimum and wrote that
+     * back into the box mid-keystroke, so a visitor could never type past the
+     * first digit. An emptied box also reached the server as "", which a typed
+     * float/int property can't hold.
+     *
+     * While focused, only a value already inside data-min/data-max is pushed
+     * (debounced), so the result still updates live but nothing is rewritten
+     * under the cursor. On blur or Enter the value is committed as typed and
+     * the component's updated() clamp has the final word; an empty box just
+     * reverts. The limits are read from the data attributes on every use
+     * because they change with component state (loan category, outstanding
+     * principal) and Livewire's morph keeps those attributes current.
+     */
+    window.Alpine.data('calculatorInput', (property, options = {}) => ({
+        timer: null,
+
+        init() {
+            this.show(this.$wire[property]);
+            this.$wire.$watch(property, (value) => {
+                if (document.activeElement !== this.$el) {
+                    this.show(value);
+                }
+            });
+        },
+
+        show(value) {
+            if (value === null || value === undefined || value === '') {
+                this.$el.value = '';
+
+                return;
+            }
+
+            this.$el.value = options.currency ? formatIndianNumber(String(Math.round(Number(value)))) : String(value);
+        },
+
+        raw() {
+            return this.$el.value.replace(options.currency ? /[^0-9]/g : /[^0-9.]/g, '');
+        },
+
+        parsed() {
+            const raw = this.raw();
+            const value = Number(raw);
+
+            return raw === '' || raw === '.' || !Number.isFinite(value) ? null : value;
+        },
+
+        inRange(value) {
+            const { min, max } = this.$el.dataset;
+
+            return (min === undefined || min === '' || value >= Number(min))
+                && (max === undefined || max === '' || value <= Number(max));
+        },
+
+        onFocus() {
+            if (options.currency) {
+                this.$el.value = this.raw();
+            }
+        },
+
+        onInput() {
+            if (options.currency && this.raw() !== this.$el.value) {
+                this.$el.value = this.raw();
+            }
+
+            clearTimeout(this.timer);
+
+            const value = this.parsed();
+
+            if (value !== null && this.inRange(value)) {
+                this.timer = setTimeout(() => this.$wire.$set(property, value), 400);
+            }
+        },
+
+        async commit() {
+            clearTimeout(this.timer);
+
+            const value = this.parsed();
+
+            if (value !== null && value !== Number(this.$wire[property])) {
+                await this.$wire.$set(property, value);
+            }
+
+            this.show(this.$wire[property]);
+        },
+    }));
+});
+
+document.addEventListener('alpine:init', () => {
+    /**
      * The sticky promo bar (x-site.promo-bar). `config` comes from
      * App\Models\PromoBar::clientConfig(); every message is already in the HTML.
      *
-     * Shown = triggered, not dismissed, and the footer not on screen — so it
-     * gets out of the way of the legal copy and comes back on scrolling up.
-     * Closing it is remembered in localStorage for `reshowAfterHours`.
+     * The scroll trigger is two-way: the bar rises once the visitor is at least
+     * `triggerValue`% of the way down the page and sets again when they scroll
+     * back above that limit (0% means "anywhere but the very top"). Delay and
+     * exit intent keep it up once triggered. There is no close button; it only
+     * leaves for good when its countdown runs out.
      *
-     * While it is up, --promo-bar-offset on <html> holds its height, so other
-     * bottom-corner widgets (the video testimonial bubble) can sit above it.
+     * While it is up, --promo-bar-offset on <html> holds its height: app.css
+     * pads <body> by it so the footer's legal copy can scroll clear of the
+     * bar, and other bottom-corner widgets (the video testimonial bubble) sit
+     * above it.
      */
     window.Alpine.data('promoBar', (config) => ({
         triggered: false,
-        dismissed: false,
-        nearFooter: false,
+        expired: false,
+        viewed: false,
+        offset: 0,
         paused: false,
         messageIndex: 0,
         countdown: '',
+        countdownUnits: [],
 
         get shown() {
-            return this.triggered && !this.dismissed && !this.nearFooter;
+            return this.triggered && !this.expired;
         },
 
         init() {
-            if (!this.matchesDevice() || this.recentlyDismissed()) {
+            if (!this.matchesDevice()) {
                 return;
             }
 
             this.$watch('shown', (shown) => this.$nextTick(() => this.reportHeight(shown)));
-            this.observeFooter();
+            window.addEventListener('resize', () => this.shown && this.reportHeight(true), { passive: true });
             this.armTrigger();
 
             if (config.countdownEndsAt) {
@@ -919,18 +1016,6 @@ document.addEventListener('alpine:init', () => {
             const wide = window.matchMedia('(min-width: 640px)').matches;
 
             return config.device === 'all' || (config.device === 'desktop' ? wide : !wide);
-        },
-
-        storageKey() {
-            return `fynnedge.promo-bar-dismissed.${config.id}`;
-        },
-
-        recentlyDismissed() {
-            try {
-                return Number(localStorage.getItem(this.storageKey())) > Date.now();
-            } catch {
-                return false;
-            }
         },
 
         armTrigger() {
@@ -955,28 +1040,41 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
 
-            // Scroll, and exit intent on touch screens, which have no tab bar to head for.
+            // Exit intent on touch screens, which have no tab bar to head for,
+            // uses half-way down the page instead.
             const threshold = config.trigger === 'exit_intent' ? 50 : config.triggerValue;
             const onScroll = () => {
-                const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+                // The body padding the bar adds while it is up (see reportHeight)
+                // is left out. Counting it would push the visitor back under the
+                // limit the moment the bar rose, and it would flicker at the line.
+                const scrollable = document.documentElement.scrollHeight - window.innerHeight - this.offset;
                 const percent = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 100;
+                const reached = scrollable <= 0 || (threshold > 0 ? percent >= threshold : window.scrollY > 0);
 
-                if (percent >= threshold) {
-                    window.removeEventListener('scroll', onScroll);
+                if (reached) {
                     this.show();
+                } else {
+                    this.triggered = false;
                 }
             };
 
             window.addEventListener('scroll', onScroll, { passive: true });
+            window.addEventListener('resize', onScroll, { passive: true });
             onScroll();
         },
 
         show() {
-            if (this.triggered || this.dismissed) {
+            if (this.expired) {
                 return;
             }
 
             this.triggered = true;
+
+            if (this.viewed) {
+                return;
+            }
+
+            this.viewed = true;
             this.track('promo_bar_view');
 
             if (config.messageCount > 1) {
@@ -988,18 +1086,6 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        observeFooter() {
-            const footer = document.querySelector('body > footer');
-
-            if (!footer || !('IntersectionObserver' in window)) {
-                return;
-            }
-
-            new IntersectionObserver(([entry]) => {
-                this.nearFooter = entry.isIntersecting;
-            }).observe(footer);
-        },
-
         startCountdown(endsAt) {
             const pad = (value) => String(value).padStart(2, '0');
             const tick = () => {
@@ -1008,34 +1094,34 @@ document.addEventListener('alpine:init', () => {
                 if (seconds <= 0) {
                     clearInterval(timer);
                     this.countdown = '';
-                    this.dismissed = true;
+                    this.expired = true;
 
                     return;
                 }
 
                 const days = Math.floor(seconds / 86400);
-                const clock = `${pad(Math.floor((seconds % 86400) / 3600))}h ${pad(Math.floor((seconds % 3600) / 60))}m ${pad(seconds % 60)}s`;
+                const units = [
+                    { label: 'h', value: pad(Math.floor((seconds % 86400) / 3600)) },
+                    { label: 'm', value: pad(Math.floor((seconds % 3600) / 60)) },
+                    { label: 's', value: pad(seconds % 60) },
+                ];
 
-                this.countdown = days > 0 ? `${days}d ${clock}` : clock;
+                if (days > 0) {
+                    units.unshift({ label: 'd', value: pad(days) });
+                }
+
+                // Tiles for the eye; the plain string is read out to screen readers.
+                this.countdownUnits = units;
+                this.countdown = units.map((unit) => unit.value + unit.label).join(' ');
             };
 
             const timer = setInterval(tick, 1000);
             tick();
         },
 
-        dismiss() {
-            this.dismissed = true;
-            this.track('promo_bar_dismiss');
-
-            if (config.reshowAfterHours > 0) {
-                try {
-                    localStorage.setItem(this.storageKey(), String(Date.now() + config.reshowAfterHours * 3600000));
-                } catch {}
-            }
-        },
-
         reportHeight(shown) {
-            document.documentElement.style.setProperty('--promo-bar-offset', `${shown ? this.$el.offsetHeight : 0}px`);
+            this.offset = shown ? this.$el.offsetHeight : 0;
+            document.documentElement.style.setProperty('--promo-bar-offset', `${this.offset}px`);
         },
 
         track(event) {

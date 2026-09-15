@@ -36,6 +36,18 @@ it('clamps an interest rate typed below the allowed minimum', function () {
         ->assertHasErrors(['annualRate']);
 });
 
+it('resets an emptied field to its minimum instead of crashing', function (string $property, int|float $minimum) {
+    Livewire::test('fixed-deposit-calculator')
+        ->set($property, '')
+        ->assertOk()
+        ->assertSet($property, $minimum)
+        ->assertHasErrors([$property]);
+})->with([
+    'deposit amount' => ['principal', 5000.0],
+    'interest rate' => ['annualRate', 3.00],
+    'tenure' => ['tenureYears', 1],
+]);
+
 it('shows the maturity value using Indian digit grouping', function () {
     $component = Livewire::test('fixed-deposit-calculator')->set('principal', 100000)->set('annualRate', 7)->set('tenureYears', 5);
 

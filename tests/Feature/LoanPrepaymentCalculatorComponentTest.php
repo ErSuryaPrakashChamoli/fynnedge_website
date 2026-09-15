@@ -34,6 +34,19 @@ it('clamps a prepayment amount larger than the outstanding principal', function 
         ->assertHasErrors(['prepaymentAmount']);
 });
 
+it('resets an emptied field to its minimum instead of crashing', function (string $property, int|float $minimum) {
+    Livewire::test('loan-prepayment-calculator', ['category' => LoanCategory::PersonalLoan->value])
+        ->set($property, '')
+        ->assertOk()
+        ->assertSet($property, $minimum)
+        ->assertHasErrors([$property]);
+})->with([
+    'outstanding principal' => ['outstandingPrincipal', 25_000.0],
+    'interest rate' => ['annualRate', 10.49],
+    'remaining tenure' => ['remainingTenureYears', 1],
+    'prepayment' => ['prepaymentAmount', 0.0],
+]);
+
 it('shows a shorter new tenure than the original in reduce-tenure mode', function () {
     $component = Livewire::test('loan-prepayment-calculator', ['category' => LoanCategory::PersonalLoan->value])
         ->set('prepaymentAmount', 100000);

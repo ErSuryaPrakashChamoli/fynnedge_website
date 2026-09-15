@@ -37,6 +37,18 @@ it('clamps a daily installment typed above the allowed maximum', function () {
         ->assertHasErrors(['installment']);
 });
 
+it('resets an emptied field to its minimum instead of crashing', function (string $property, int|float $minimum) {
+    Livewire::test('sip-calculator')
+        ->set($property, '')
+        ->assertOk()
+        ->assertSet($property, $minimum)
+        ->assertHasErrors([$property]);
+})->with([
+    'installment' => ['installment', 500.0],
+    'return rate' => ['annualRate', 1.00],
+    'tenure' => ['tenureYears', 1],
+]);
+
 it('produces a maturity value greater than the invested amount at a positive return rate', function () {
     $component = Livewire::test('sip-calculator')->set('annualRate', 12);
 

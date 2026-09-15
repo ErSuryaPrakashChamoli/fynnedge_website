@@ -41,11 +41,6 @@ class PromoBar extends Model
      */
     public const CTA_URL_PATTERN = '~^(https?://\S+|/(?!/)\S*|tel:\+?[0-9\s-]+|mailto:\S+)$~i';
 
-    /**
-     * A month. Longer than that and a closed bar is effectively gone for good.
-     */
-    public const MAX_RESHOW_AFTER_HOURS = 720;
-
     protected function casts(): array
     {
         return [
@@ -180,9 +175,10 @@ class PromoBar extends Model
 
     /**
      * Everything the promoBar Alpine component needs, and nothing it doesn't:
-     * the copy itself is rendered server-side.
+     * the copy itself is rendered server-side. The bar can't be closed, so the
+     * legacy reshow_after_hours column is deliberately not sent.
      *
-     * @return array{id: string, name: string, trigger: string, triggerValue: int, device: string, reshowAfterHours: int, countdownEndsAt: string|null, messageCount: int}
+     * @return array{id: string, name: string, trigger: string, triggerValue: int, device: string, countdownEndsAt: string|null, messageCount: int}
      */
     public function clientConfig(): array
     {
@@ -194,7 +190,6 @@ class PromoBar extends Model
             'trigger' => $trigger->value,
             'triggerValue' => max(0, min($trigger->maxValue(), (int) $this->trigger_value)),
             'device' => ($this->device ?? PromoBarDevice::All)->value,
-            'reshowAfterHours' => max(0, min(self::MAX_RESHOW_AFTER_HOURS, (int) $this->reshow_after_hours)),
             'countdownEndsAt' => $this->countdownEndsAt()?->toIso8601String(),
             'messageCount' => count($this->messages()),
         ];

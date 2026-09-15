@@ -274,10 +274,11 @@ new class extends Component
             'totalTenureMonths' => [$preset['min_years'] * 12, $preset['max_years'] * 12, 'total tenure'],
         };
 
-        $value = $this->{$property};
+        // An emptied field leaves the typed property unset — treat it as below the minimum.
+        $value = $this->{$property} ?? null;
 
-        if ($value < $min || $value > $max) {
-            $clamped = max($min, min($max, $value));
+        if ($value === null || $value < $min || $value > $max) {
+            $clamped = max($min, min($max, $value ?? $min));
             $this->{$property} = $property === 'totalTenureMonths' ? (int) $clamped : (float) $clamped;
             $this->addError($property, "Adjusted the {$label} to stay within {$preset['label']}'s allowed range.");
 
@@ -341,7 +342,12 @@ new class extends Component
                             inputmode="numeric"
                             min="{{ $this->preset['min_amount'] }}"
                             max="{{ $this->preset['max_amount'] }}"
-                            wire:model.live.debounce.400ms="principal"
+                            data-min="{{ $this->preset['min_amount'] }}"
+                            data-max="{{ $this->preset['max_amount'] }}"
+                            x-data="calculatorInput('principal')"
+                            x-on:input="onInput()"
+                            x-on:blur="commit()"
+                            x-on:keydown.enter.prevent="$el.blur()"
                             class="w-28 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                         >
                     </div>
@@ -369,7 +375,12 @@ new class extends Component
                             min="{{ $this->preset['min_rate'] }}"
                             max="{{ $this->preset['max_rate'] }}"
                             step="0.01"
-                            wire:model.live.debounce.400ms="annualRate"
+                            data-min="{{ $this->preset['min_rate'] }}"
+                            data-max="{{ $this->preset['max_rate'] }}"
+                            x-data="calculatorInput('annualRate')"
+                            x-on:input="onInput()"
+                            x-on:blur="commit()"
+                            x-on:keydown.enter.prevent="$el.blur()"
                             class="w-20 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                         >
                         %
@@ -398,7 +409,12 @@ new class extends Component
                             min="{{ $this->preset['min_years'] * 12 }}"
                             max="{{ $this->preset['max_years'] * 12 }}"
                             step="12"
-                            wire:model.live.debounce.400ms="totalTenureMonths"
+                            data-min="{{ $this->preset['min_years'] * 12 }}"
+                            data-max="{{ $this->preset['max_years'] * 12 }}"
+                            x-data="calculatorInput('totalTenureMonths')"
+                            x-on:input="onInput()"
+                            x-on:blur="commit()"
+                            x-on:keydown.enter.prevent="$el.blur()"
                             class="w-16 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                         >
                         months

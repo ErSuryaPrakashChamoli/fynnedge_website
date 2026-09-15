@@ -104,6 +104,35 @@ it('never computes an EMI from an out-of-range value — the result reflects the
     $component->assertDontSeeText('₹'.IndianNumberFormatter::format($bypassedResult['emi']));
 });
 
+it('resets an emptied field to the category minimum instead of crashing', function (string $property, int|float $minimum) {
+    Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
+        ->set($property, '')
+        ->assertOk()
+        ->assertSet($property, $minimum)
+        ->assertHasErrors([$property]);
+})->with([
+    'loan amount' => ['principal', 25_000.0],
+    'interest rate' => ['annualRate', 10.49],
+    'tenure' => ['tenureYears', 1],
+]);
+
+it('accepts a typed loan amount anywhere inside the category range without clamping it', function () {
+    Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
+        ->set('principal', 700_000)
+        ->assertSet('principal', 700_000.0)
+        ->assertHasNoErrors(['principal']);
+});
+
+it('drives each typed box through the calculatorInput helper rather than a live wire:model binding', function () {
+    $html = Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])->html();
+
+    expect($html)
+        ->toContain("calculatorInput('principal'")
+        ->toContain("calculatorInput('annualRate'")
+        ->toContain("calculatorInput('tenureYears'")
+        ->not->toContain('wire:model.live.debounce.400ms');
+});
+
 it('clears the clamp error once the value is back in range', function () {
     Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
         ->set('principal', 50_000_000)

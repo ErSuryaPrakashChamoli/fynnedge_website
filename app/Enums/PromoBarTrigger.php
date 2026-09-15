@@ -17,20 +17,21 @@ enum PromoBarTrigger: string implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::Scroll => 'After scrolling down the page',
+            self::Scroll => 'As soon as the visitor starts scrolling down',
             self::Delay => 'After a few seconds on the page',
             self::ExitIntent => 'When the visitor heads for the tab bar (exit intent)',
         };
     }
 
     /**
-     * The largest trigger value that still makes sense: a percentage of the
-     * page for scroll, seconds for delay. Exit intent takes no value.
+     * The largest trigger value that still makes sense: seconds for delay.
+     * Scroll fires on the first move down the page and exit intent on the
+     * mouse leaving, so neither takes a value.
      */
     public function maxValue(): int
     {
         return match ($this) {
-            self::Scroll => 100,
+            self::Scroll => 0,
             self::Delay => 120,
             self::ExitIntent => 0,
         };

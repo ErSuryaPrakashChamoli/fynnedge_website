@@ -125,6 +125,9 @@
 body {
     background-color: var(--color-bg);
     color: var(--color-ink);
+    /* The promo bar stays fixed at the bottom once it rises; this keeps the
+       footer's last lines scrollable clear of it. 0 while no bar is up. */
+    padding-bottom: var(--promo-bar-offset, 0px);
 }
 
 /*
@@ -299,47 +302,228 @@ footer {
  * a dark strip in both themes, and the dark theme's accent tokens are light
  * blues that white text cannot sit on.
  */
+/* The card: deep gradient with a warm glow low-left and a cool one top-right. */
 .promo-bar-surface {
-    background: linear-gradient(100deg, var(--promo-bg, #0d2340), var(--promo-bg-to, var(--promo-bg, #1f5a96)));
+    background:
+        radial-gradient(90% 160% at 0% 100%, color-mix(in srgb, var(--promo-highlight, #ffc53d) 24%, transparent), transparent 55%),
+        radial-gradient(70% 140% at 100% 0%, rgb(56 189 248 / 0.2), transparent 60%),
+        linear-gradient(115deg, var(--promo-bg, #0a1d38), var(--promo-bg-to, var(--promo-bg, #1b4f8f)));
     color: var(--promo-text, #ffffff);
+    box-shadow:
+        0 28px 56px -18px rgb(6 18 38 / 0.6),
+        0 10px 20px -10px rgb(6 18 38 / 0.4),
+        inset 0 1px 0 rgb(255 255 255 / 0.14);
 }
 
+/* A 1px gradient border, gold into glass into sky blue, cut out of a mask. */
+.promo-bar-surface::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: linear-gradient(120deg, color-mix(in srgb, var(--promo-highlight, #ffc53d) 90%, transparent), rgb(255 255 255 / 0.14) 35%, rgb(255 255 255 / 0.06) 65%, rgb(125 211 252 / 0.6));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    pointer-events: none;
+}
+
+/* A soft light sweep across the card every few seconds. */
+.promo-bar-glow::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 35%;
+    background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.12), transparent);
+    transform: translateX(-150%) skewX(-12deg);
+    animation: promo-bar-sweep 7s ease-in-out 1.2s infinite;
+}
+
+/*
+ * Highlighted words: a gold gradient cut into the text. An admin highlight
+ * colour makes both stops the same colour, i.e. plain coloured text.
+ */
 .promo-bar-highlight {
-    color: var(--promo-highlight, #ffc53d);
+    background: linear-gradient(90deg, var(--promo-highlight, #ffe08a), var(--promo-highlight, #ffb020));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
     font-weight: 700;
 }
 
 .promo-bar-badge {
-    background: color-mix(in srgb, currentColor 16%, transparent);
+    background: var(--promo-highlight, linear-gradient(90deg, #ffe08a, #ffb020));
+    color: var(--promo-bg, #0a1d38);
+    box-shadow: 0 4px 12px -4px rgb(255 176 32 / 0.6);
 }
 
-.promo-bar-cta {
-    background: var(--promo-cta-bg, #ffffff);
-    color: var(--promo-cta-text, #0d2340);
+.promo-bar-tile {
+    background: rgb(255 255 255 / 0.12);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
 }
 
-/* A soft light sweep across the bar every few seconds. */
-.promo-bar-shine::after {
+.promo-bar-medallion {
+    background: radial-gradient(circle at 35% 30%, #fff1b8, #ffc53d 45%, #e8930c);
+    color: #0a1d38;
+    box-shadow: 0 8px 20px -6px rgb(255 176 32 / 0.7), inset 0 -2px 4px rgb(0 0 0 / 0.15);
+}
+
+/* A slow ring breathing out of the medallion. */
+.promo-bar-medallion::after {
     content: '';
     position: absolute;
     inset: 0;
-    width: 40%;
-    background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.18), transparent);
-    transform: translateX(-150%);
-    animation: promo-bar-shine 6s ease-in-out 1s infinite;
+    border-radius: inherit;
+    box-shadow: 0 0 0 0 rgb(255 197 61 / 0.55);
+    animation: promo-bar-ring 2.4s ease-out infinite;
 }
 
-@keyframes promo-bar-shine {
+.promo-bar-cta {
+    background: var(--promo-cta-bg, linear-gradient(135deg, #ffe08a, #ffb020));
+    color: var(--promo-cta-text, #0a1d38);
+    box-shadow: 0 12px 24px -10px rgb(255 176 32 / 0.75), inset 0 1px 0 rgb(255 255 255 / 0.55);
+}
+
+.promo-bar-cta:hover {
+    box-shadow: 0 16px 30px -10px rgb(255 176 32 / 0.9), inset 0 1px 0 rgb(255 255 255 / 0.55);
+}
+
+/* The button's own shimmer, a little out of step with the card's sweep. */
+.promo-bar-cta::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 45%;
+    background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.65), transparent);
+    transform: translateX(-160%) skewX(-18deg);
+    animation: promo-bar-sweep 3.5s ease-in-out 2s infinite;
+}
+
+.promo-bar-cta-arrow {
+    background: var(--promo-cta-text, #0a1d38);
+    color: var(--promo-cta-bg, #ffc53d);
+}
+
+/*
+ * Sunrise, without a sun: each time the pop-up rises, warm light swells up
+ * from below the card's centre, a gold horizon line spreads along its top
+ * edge and a soft dawn glow breaks over it, then all three settle to a faint
+ * warmth. x-show toggles display, which restarts the animations every time.
+ */
+.promo-bar-sunrise::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 80%;
+    height: 220%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--promo-highlight, #ffc53d) 55%, transparent), transparent);
+    transform: translate(-50%, 70%) scale(0.5);
+    opacity: 0;
+    animation: promo-bar-sunrise-light 2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+}
+
+.promo-bar-sunrise::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent, var(--promo-highlight, #ffd66b), transparent);
+    transform: scaleX(0);
+    animation: promo-bar-horizon 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards;
+}
+
+.promo-bar-dawn {
+    background: radial-gradient(50% 100% at 50% 100%, color-mix(in srgb, var(--promo-highlight, #ffc53d) 45%, transparent), transparent 70%);
+    transform-origin: bottom;
+    transform: scaleY(0);
+    opacity: 0;
+    animation: promo-bar-dawn 2.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+}
+
+@keyframes promo-bar-sunrise-light {
     0% {
-        transform: translateX(-150%);
+        transform: translate(-50%, 70%) scale(0.5);
+        opacity: 0;
     }
-    35%, 100% {
-        transform: translateX(350%);
+    50% {
+        transform: translate(-50%, 45%) scale(1);
+        opacity: 0.9;
+    }
+    100% {
+        transform: translate(-50%, 50%) scale(1.1);
+        opacity: 0.35;
+    }
+}
+
+@keyframes promo-bar-horizon {
+    to {
+        transform: scaleX(1);
+    }
+}
+
+@keyframes promo-bar-dawn {
+    0% {
+        transform: scaleY(0);
+        opacity: 0;
+    }
+    45% {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scaleY(0.7);
+        opacity: 0.35;
+    }
+}
+
+@keyframes promo-bar-sweep {
+    0% {
+        transform: translateX(-160%) skewX(-15deg);
+    }
+    40%, 100% {
+        transform: translateX(360%) skewX(-15deg);
+    }
+}
+
+@keyframes promo-bar-ring {
+    0% {
+        box-shadow: 0 0 0 0 rgb(255 197 61 / 0.55);
+    }
+    70%, 100% {
+        box-shadow: 0 0 0 14px rgb(255 197 61 / 0);
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .promo-bar-shine::after {
+    .promo-bar-glow::after,
+    .promo-bar-cta::after {
         display: none;
+    }
+
+    /* Skip straight to the settled glow. */
+    .promo-bar-sunrise::before {
+        animation: none;
+        transform: translate(-50%, 50%) scale(1.1);
+        opacity: 0.35;
+    }
+
+    .promo-bar-sunrise::after {
+        animation: none;
+        transform: scaleX(1);
+    }
+
+    .promo-bar-dawn {
+        animation: none;
+        transform: scaleY(0.7);
+        opacity: 0.35;
+    }
+
+    .promo-bar-medallion::after {
+        animation: none;
     }
 }

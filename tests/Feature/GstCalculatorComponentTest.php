@@ -35,6 +35,21 @@ it('shows the base amount excluding GST in remove mode', function () {
     $component->assertSee('₹'.IndianNumberFormatter::format($result['base_amount']));
 });
 
+it('resets an emptied field to zero instead of crashing', function (string $property) {
+    Livewire::test('gst-calculator')
+        ->set($property, '')
+        ->assertOk()
+        ->assertSet($property, 0.0)
+        ->assertHasErrors([$property]);
+})->with(['amount', 'rate']);
+
+it('clamps a GST rate typed above 100%', function () {
+    Livewire::test('gst-calculator')
+        ->set('rate', 150)
+        ->assertSet('rate', 100.0)
+        ->assertHasErrors(['rate']);
+});
+
 it('rejects a negative amount', function () {
     Livewire::test('gst-calculator')
         ->set('amount', -500)

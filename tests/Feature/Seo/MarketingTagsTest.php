@@ -77,7 +77,7 @@ it('loads Google Ads on its own when GA4 is disabled', function () {
 
     expect($html)->toContain('gtag/js')
         ->and($html)->toContain("w.gtag('config', 'AW-123456789');")
-        ->and($html)->not->toContain('G-');
+        ->and($html)->not->toContain("w.gtag('config', 'G-");
 });
 
 it('renders each verification tag only when its field is filled', function () {

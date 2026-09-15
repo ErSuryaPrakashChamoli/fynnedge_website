@@ -90,12 +90,13 @@ new class extends Component
 
         $preset = $this->preset;
 
+        // An emptied field leaves the typed property unset — treat it as below the minimum.
         if ($property === 'prepaymentAmount') {
-            $value = $this->prepaymentAmount;
+            $value = $this->prepaymentAmount ?? null;
             $max = $this->outstandingPrincipal;
 
-            if ($value < 0 || $value > $max) {
-                $this->prepaymentAmount = max(0.0, min($max, $value));
+            if ($value === null || $value < 0 || $value > $max) {
+                $this->prepaymentAmount = max(0.0, min($max, $value ?? 0.0));
                 $this->addError('prepaymentAmount', 'Adjusted the prepayment amount to stay within the outstanding principal.');
 
                 return;
@@ -112,10 +113,10 @@ new class extends Component
             'remainingTenureYears' => [$preset['min_years'], $preset['max_years'], 'remaining tenure'],
         };
 
-        $value = $this->{$property};
+        $value = $this->{$property} ?? null;
 
-        if ($value < $min || $value > $max) {
-            $clamped = max($min, min($max, $value));
+        if ($value === null || $value < $min || $value > $max) {
+            $clamped = max($min, min($max, $value ?? $min));
             $this->{$property} = $property === 'remainingTenureYears' ? (int) $clamped : (float) $clamped;
             $this->addError($property, "Adjusted the {$label} to stay within {$preset['label']}'s allowed range.");
 
@@ -169,11 +170,13 @@ new class extends Component
                             type="text"
                             inputmode="numeric"
                             autocomplete="off"
-                            wire:model.live.debounce.400ms="outstandingPrincipal"
-                            wire:ignore.self
-                            x-effect="const v = $wire.outstandingPrincipal; if (document.activeElement !== $el) $el.value = formatIndianNumber(String(v ?? ''))"
-                            x-on:focus="$el.value = $el.value.replace(/[^0-9]/g, '')"
-                            x-on:blur="$el.value = formatIndianNumber($el.value.replace(/[^0-9]/g, ''))"
+                            data-min="{{ $this->preset['min_amount'] }}"
+                            data-max="{{ $this->preset['max_amount'] }}"
+                            x-data="calculatorInput('outstandingPrincipal', { currency: true })"
+                            x-on:focus="onFocus()"
+                            x-on:input="onInput()"
+                            x-on:blur="commit()"
+                            x-on:keydown.enter.prevent="$el.blur()"
                             class="w-28 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                         >
                     </div>
@@ -202,7 +205,12 @@ new class extends Component
                             min="{{ $this->preset['min_rate'] }}"
                             max="{{ $this->preset['max_rate'] }}"
                             step="0.01"
-                            wire:model.live.debounce.400ms="annualRate"
+                            data-min="{{ $this->preset['min_rate'] }}"
+                            data-max="{{ $this->preset['max_rate'] }}"
+                            x-data="calculatorInput('annualRate')"
+                            x-on:input="onInput()"
+                            x-on:blur="commit()"
+                            x-on:keydown.enter.prevent="$el.blur()"
                             class="w-20 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                         >
                         %
@@ -231,7 +239,12 @@ new class extends Component
                             min="{{ $this->preset['min_years'] }}"
                             max="{{ $this->preset['max_years'] }}"
                             step="1"
-                            wire:model.live.debounce.400ms="remainingTenureYears"
+                            data-min="{{ $this->preset['min_years'] }}"
+                            data-max="{{ $this->preset['max_years'] }}"
+                            x-data="calculatorInput('remainingTenureYears')"
+                            x-on:input="onInput()"
+                            x-on:blur="commit()"
+                            x-on:keydown.enter.prevent="$el.blur()"
                             class="w-16 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                         >
                         {{ Str::plural('year', $remainingTenureYears) }}
@@ -259,11 +272,13 @@ new class extends Component
                             type="text"
                             inputmode="numeric"
                             autocomplete="off"
-                            wire:model.live.debounce.400ms="prepaymentAmount"
-                            wire:ignore.self
-                            x-effect="const v = $wire.prepaymentAmount; if (document.activeElement !== $el) $el.value = formatIndianNumber(String(v ?? ''))"
-                            x-on:focus="$el.value = $el.value.replace(/[^0-9]/g, '')"
-                            x-on:blur="$el.value = formatIndianNumber($el.value.replace(/[^0-9]/g, ''))"
+                            data-min="0"
+                            data-max="{{ $outstandingPrincipal }}"
+                            x-data="calculatorInput('prepaymentAmount', { currency: true })"
+                            x-on:focus="onFocus()"
+                            x-on:input="onInput()"
+                            x-on:blur="commit()"
+                            x-on:keydown.enter.prevent="$el.blur()"
                             class="w-28 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                         >
                     </div>
