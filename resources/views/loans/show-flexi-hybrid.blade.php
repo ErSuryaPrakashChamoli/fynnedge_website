@@ -30,7 +30,7 @@
                     <p itemprop="description" class="mt-3 text-lg text-ink-muted text-justify hyphens-auto">{{ $loanProduct->summary }}</p>
                 @endif
                 @if ($loanProduct->body)
-                    <div class="prose prose-neutral mt-4 max-w-none text-ink-muted text-justify hyphens-auto [&_h2]:font-display [&_h2]:text-ink [&_p]:leading-relaxed">
+                    <div class="rich-text mt-4 max-w-none text-ink-muted text-justify hyphens-auto">
                         {!! $loanProduct->body !!}
                     </div>
                 @endif

@@ -279,6 +279,138 @@ footer {
 }
 
 /*
+ * Admin rich-text bodies (Filament RichEditor output) rendered on the public
+ * site. The typography plugin is not installed, so `prose` did nothing and
+ * Tailwind's preflight flattened every h2/h3 to body-size text with no gaps
+ * between paragraphs, headings or lists — content looked nothing like what
+ * the content team typed. These rules mirror the editor's own `fi-prose`
+ * spacing (a uniform 1rem between blocks) using the site's tokens, so the
+ * page reads as it did in the admin panel without anyone touching HTML.
+ *
+ * In @layer components so Tailwind utilities on markup pasted in "Edit as
+ * HTML" mode still win. Editor alignment buttons emit inline text-align
+ * styles, which override the wrapper's `text-justify` on their own.
+ */
+@layer components {
+    .rich-text {
+        line-height: 1.75;
+    }
+
+    .rich-text > * + *,
+    .rich-text li > * + * {
+        margin-top: 1rem;
+    }
+
+    .rich-text :where(h1, h2, h3, h4, h5, h6) {
+        font-family: var(--font-display);
+        font-weight: 600;
+        color: var(--color-ink);
+        text-align: start;
+    }
+
+    .rich-text h1 {
+        font-size: var(--text-3xl);
+        line-height: 1.2;
+    }
+
+    .rich-text h2 {
+        font-size: var(--text-2xl);
+        line-height: 1.33;
+    }
+
+    .rich-text h3 {
+        font-size: var(--text-xl);
+        line-height: 1.4;
+    }
+
+    .rich-text h4 {
+        font-size: var(--text-lg);
+        line-height: 1.55;
+    }
+
+    /* An empty paragraph is a deliberate blank line in the editor; keep its height. */
+    .rich-text p:empty::before {
+        content: '\00a0';
+    }
+
+    .rich-text ul,
+    .rich-text ol {
+        padding-inline-start: 1.5rem;
+    }
+
+    .rich-text ul {
+        list-style-type: disc;
+    }
+
+    .rich-text ol {
+        list-style-type: decimal;
+    }
+
+    .rich-text li {
+        padding-inline-start: 0.5rem;
+    }
+
+    .rich-text li + li {
+        margin-top: 0.5rem;
+    }
+
+    .rich-text li::marker {
+        color: var(--color-ink-faint);
+    }
+
+    .rich-text strong {
+        font-weight: 600;
+        color: var(--color-ink);
+    }
+
+    .rich-text a {
+        color: var(--color-accent);
+        font-weight: 500;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    .rich-text blockquote {
+        border-inline-start: 3px solid var(--color-line-strong);
+        padding-inline-start: 1rem;
+        font-style: italic;
+    }
+
+    .rich-text hr {
+        border-top: 1px solid var(--color-line);
+    }
+
+    .rich-text img {
+        border-radius: 0.75rem;
+    }
+
+    /* Wide tables scroll inside themselves instead of widening the page. */
+    .rich-text table {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+        border-collapse: collapse;
+        text-align: start;
+    }
+
+    .rich-text :where(th, td) {
+        border: 1px solid var(--color-line);
+        padding: 0.5rem 0.75rem;
+        vertical-align: top;
+    }
+
+    .rich-text th {
+        background-color: var(--color-surface-2);
+        font-weight: 600;
+        color: var(--color-ink);
+    }
+
+    .rich-text :where(th, td) > p {
+        margin: 0;
+    }
+}
+
+/*
  * Shared hover-lift for card grids across the marketing pages — a subtle
  * rise plus a stronger shadow reads as "premium" without needing per-card
  * bespoke animation. `.card-lift` only (no motion) for prefers-reduced-motion.

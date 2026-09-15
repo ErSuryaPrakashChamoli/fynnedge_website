@@ -693,7 +693,7 @@ new class extends Component
             <h2 class="font-display text-2xl font-semibold text-ink">About the {{ $this->preset['label'] }}</h2>
 
             @if ($product->calculator_explanation || $product->summary)
-                <div class="prose prose-neutral mt-4 max-w-none text-ink-muted text-justify hyphens-auto [&_h3]:font-display [&_h3]:text-ink [&_p]:leading-relaxed">
+                <div class="rich-text mt-4 max-w-none text-ink-muted text-justify hyphens-auto">
                     {!! $product->calculator_explanation ?: '<p>'.e($product->summary).'</p>' !!}
                 </div>
             @endif

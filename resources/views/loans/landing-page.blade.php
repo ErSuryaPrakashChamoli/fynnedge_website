@@ -38,7 +38,7 @@
 
     <article class="mx-auto max-w-7xl px-6 pb-14 lg:px-8">
         @if ($landingPage->body)
-            <div data-reveal="fade" class="prose prose-neutral mt-12 max-w-none text-ink-muted text-justify hyphens-auto [&_h2]:font-display [&_h2]:text-ink [&_p]:leading-relaxed">
+            <div data-reveal="fade" class="rich-text mt-12 max-w-none text-ink-muted text-justify hyphens-auto">
                 {!! $landingPage->body !!}
             </div>
         @endif
