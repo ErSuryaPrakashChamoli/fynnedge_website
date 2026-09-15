@@ -72,6 +72,17 @@ it('reflects a custom footer legal name and disclaimer', function () {
         ->assertSee('&copy; '.now()->year.' Acme Loans Advisory Pvt Ltd. All rights reserved.', false);
 });
 
+it('shows the YouTube icon in the footer only once an admin has set the link', function () {
+    $this->get('/')->assertOk()->assertDontSee('aria-label="FynnEdge on YouTube"', false);
+
+    Setting::set('social_youtube', 'https://youtube.com/@fynnedge');
+
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('href="https://youtube.com/@fynnedge"', false)
+        ->assertSee('aria-label="FynnEdge on YouTube"', false);
+});
+
 it('falls back to the default sitewide social share image when a page has none of its own', function () {
     Storage::fake('public');
     Storage::disk('public')->put('seo/default-og.jpg', 'fake-image-content');

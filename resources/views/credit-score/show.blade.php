@@ -2,7 +2,7 @@
     :title="'Free '.$bureau->getLabel().' Score'"
     :description="'Check your free '.$bureau->getLabel().' credit score — verify your mobile number, add a few details, and see where you stand.'"
 >
-    <section class="mx-auto max-w-6xl px-6 py-14 lg:px-8">
+    <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Credit Score' => null, $bureau->getLabel() => null]" />
 
         <div class="mt-6 grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:items-start">

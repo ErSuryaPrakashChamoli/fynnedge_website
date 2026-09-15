@@ -1,5 +1,5 @@
 <x-layouts.app title="Your Application" robots="noindex, nofollow">
-    <section class="mx-auto max-w-3xl px-6 py-14 lg:px-8">
+    <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Application' => null]" />
 
         <div class="mt-5 flex items-center gap-4">

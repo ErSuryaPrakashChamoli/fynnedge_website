@@ -64,6 +64,7 @@ class Settings extends Page
             'social_whatsapp' => Setting::get('social_whatsapp'),
             'social_linkedin' => Setting::get('social_linkedin'),
             'social_x' => Setting::get('social_x'),
+            'social_youtube' => Setting::get('social_youtube'),
             ...self::themeSectionDefaults(),
         ]);
     }
@@ -258,6 +259,7 @@ class Settings extends Page
                         TextInput::make('social_whatsapp')->label('WhatsApp')->url()->placeholder('https://wa.me/91XXXXXXXXXX'),
                         TextInput::make('social_linkedin')->label('LinkedIn')->url()->placeholder('https://linkedin.com/company/fynnedge'),
                         TextInput::make('social_x')->label('X (Twitter)')->url()->placeholder('https://x.com/fynnedge'),
+                        TextInput::make('social_youtube')->label('YouTube')->url()->placeholder('https://youtube.com/@fynnedge'),
                     ]),
 
                 Section::make('Appearance — Header')

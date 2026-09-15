@@ -266,7 +266,10 @@ footer {
     [data-reveal^='down'] { transform: translateY(-64px); }
     [data-reveal^='left'] { transform: translateX(-96px); }
     [data-reveal^='right'] { transform: translateX(96px); }
-    [data-reveal^='zoom'] { transform: scale(0.75); }
+    /* Grows from its top edge, not its centre: shrinking a tall block (e.g. a
+       calculator) about its centre pushed its top below the fold, so it stayed
+       blank on load until the visitor scrolled. */
+    [data-reveal^='zoom'] { transform: scale(0.75); transform-origin: top center; }
     [data-reveal^='fade'] { transform: none; }
 
     [data-reveal].reveal-visible {

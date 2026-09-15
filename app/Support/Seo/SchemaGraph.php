@@ -157,7 +157,7 @@ class SchemaGraph
      */
     public static function sameAs(): ?array
     {
-        $profiles = collect(['social_instagram', 'social_facebook', 'social_linkedin', 'social_x'])
+        $profiles = collect(['social_instagram', 'social_facebook', 'social_linkedin', 'social_x', 'social_youtube'])
             ->map(fn (string $key): mixed => Setting::get($key))
             ->filter(fn (mixed $url): bool => filled($url))
             ->values()

@@ -3,7 +3,7 @@
 @endphp
 
 <x-layouts.app title="Your Eligibility Results" robots="noindex, nofollow">
-    <section class="mx-auto max-w-3xl px-6 py-16 lg:px-8">
+    <section class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
         <div class="text-center">
             <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-pass-soft">
                 <svg viewBox="0 0 20 20" fill="currentColor" class="h-7 w-7 text-pass" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4L8 11.6l6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd" /></svg>

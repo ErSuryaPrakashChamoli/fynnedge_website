@@ -35,6 +35,22 @@ it('lets an admin save contact channel settings', function () {
     expect(Setting::get('contact_map_url'))->toBe('https://www.google.com/maps/embed?pb=abc123');
 });
 
+it('lets an admin save a YouTube channel link', function () {
+    Livewire::test(Settings::class)
+        ->fillForm(['social_youtube' => 'https://youtube.com/@fynnedge'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(Setting::get('social_youtube'))->toBe('https://youtube.com/@fynnedge');
+});
+
+it('rejects a YouTube link that is not a URL', function () {
+    Livewire::test(Settings::class)
+        ->fillForm(['social_youtube' => 'not a url'])
+        ->call('save')
+        ->assertHasFormErrors(['social_youtube' => 'url']);
+});
+
 it('normalizes a plain Google Maps share link into an embeddable one on save', function () {
     Livewire::test(Settings::class)
         ->fillForm(['contact_map_url' => 'https://maps.google.com/maps?q=28.5854,77.3130&z=17'])

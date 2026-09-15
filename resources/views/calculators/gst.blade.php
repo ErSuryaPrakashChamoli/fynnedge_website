@@ -1,5 +1,5 @@
 <x-layouts.app title="GST Calculator" description="Add or remove GST from an amount and see the CGST/SGST split.">
-    <section class="mx-auto max-w-4xl px-6 py-14 lg:px-8">
+    <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Calculators' => route('calculators.index'), 'GST Calculator' => null]" />
 
         <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">

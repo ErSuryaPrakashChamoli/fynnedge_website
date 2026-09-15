@@ -12,7 +12,7 @@
 
 @if ($placementFaqs->isNotEmpty())
     <section class="border-t border-line bg-surface">
-        <div class="mx-auto max-w-3xl px-6 py-14 lg:px-8">
+        <div class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
             <x-site.faq-accordion :faqs="$placementFaqs" class="!mt-0" data-ai-context="Frequently Asked Questions" />
             <x-site.faq-json-ld :faqs="$placementFaqs" />
         </div>

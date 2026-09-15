@@ -1,5 +1,5 @@
 <x-layouts.app title="SIP Calculator" description="Estimate the maturity value of a monthly SIP investment.">
-    <section class="mx-auto max-w-4xl px-6 py-14 lg:px-8">
+    <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Calculators' => route('calculators.index'), 'SIP Calculator' => null]" />
 
         <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">

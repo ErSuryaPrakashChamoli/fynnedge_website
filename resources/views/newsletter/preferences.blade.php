@@ -1,7 +1,7 @@
 @php $status = session('newsletterStatus'); @endphp
 
 <x-layouts.app title="Email preferences" robots="noindex, nofollow">
-    <section class="mx-auto max-w-3xl px-6 py-16 lg:px-8">
+    <section class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
         <x-ui.breadcrumbs :trail="['Email preferences' => null]" />
 
         <h1 class="mt-6 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Email preferences</h1>

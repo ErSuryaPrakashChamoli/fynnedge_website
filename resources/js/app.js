@@ -278,14 +278,21 @@ function initScrollReveal() {
 
     const delays = { 'delay-1': '100ms', 'delay-2': '200ms', 'delay-3': '300ms' };
 
+    // "Seen" is 10% of the element in view — or, for an element taller than
+    // the window (a calculator, a long table), a fifth of the viewport filled
+    // by it, since 10% of it may never fit on screen at once. The fine
+    // threshold steps make the observer re-check as a tall element scrolls in.
     const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
-            if (entry.isIntersecting) {
+            const viewportHeight = entry.rootBounds?.height ?? window.innerHeight;
+            const seen = entry.intersectionRatio >= 0.1 || entry.intersectionRect.height >= viewportHeight * 0.2;
+
+            if (entry.isIntersecting && seen) {
                 entry.target.classList.add('reveal-visible');
                 observer.unobserve(entry.target);
             }
         });
-    }, { threshold: 0.1, rootMargin: '0px 0px -10% 0px' });
+    }, { threshold: Array.from({ length: 11 }, (_, step) => step / 100), rootMargin: '0px 0px -10% 0px' });
 
     document.querySelectorAll('[data-reveal]').forEach((el) => {
         const tokens = el.dataset.reveal.split(/\s+/).filter(Boolean);

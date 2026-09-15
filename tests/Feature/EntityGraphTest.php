@@ -93,9 +93,10 @@ it('adds sameAs only for social profiles an admin has actually configured', func
     expect(nodeOfType(graphNodes('/'), 'Organization'))->not->toHaveKey('sameAs');
 
     Setting::set('social_linkedin', 'https://linkedin.com/company/fynnedge');
+    Setting::set('social_youtube', 'https://youtube.com/@fynnedge');
 
     expect(nodeOfType(graphNodes('/'), 'Organization')['sameAs'])
-        ->toBe(['https://linkedin.com/company/fynnedge']);
+        ->toBe(['https://linkedin.com/company/fynnedge', 'https://youtube.com/@fynnedge']);
 });
 
 it('emits the full social meta set with a per-page og:type', function () {

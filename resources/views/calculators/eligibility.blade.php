@@ -1,5 +1,5 @@
 <x-layouts.app :title="$category->getLabel().' Eligibility Calculator'" :description="'Get a quick, indicative '.$category->getLabel().' eligibility estimate based on your income and existing obligations.'">
-    <section class="mx-auto max-w-3xl px-6 py-14 lg:px-8">
+    <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Calculators' => route('calculators.index'), $category->getLabel().' Eligibility Calculator' => null]" />
 
         <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">

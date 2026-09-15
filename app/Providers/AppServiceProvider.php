@@ -81,6 +81,7 @@ class AppServiceProvider extends ServiceProvider
                 'WhatsApp' => Setting::get('social_whatsapp'),
                 'LinkedIn' => Setting::get('social_linkedin'),
                 'X' => Setting::get('social_x'),
+                'YouTube' => Setting::get('social_youtube'),
             ]),
         );
 

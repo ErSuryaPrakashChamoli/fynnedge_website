@@ -1,5 +1,5 @@
 <x-layouts.app :title="'FAQs'" description="Answers to common questions about how FynnEdge works, eligibility checks, and applying for a loan." handles-faqs>
-    <section class="mx-auto max-w-3xl px-6 py-14 lg:px-8">
+    <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['FAQs' => null]" />
 
         <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">

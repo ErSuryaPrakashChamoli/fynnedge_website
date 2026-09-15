@@ -1,5 +1,5 @@
 <x-layouts.app title="Unsubscribe" robots="noindex, nofollow">
-    <section class="mx-auto max-w-3xl px-6 py-16 lg:px-8">
+    <section class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
         <x-ui.breadcrumbs :trail="['Newsletter' => null]" />
 
         @if ($subscriber)

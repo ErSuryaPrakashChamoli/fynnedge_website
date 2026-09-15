@@ -1,5 +1,5 @@
 <x-layouts.app :title="$step->title" robots="noindex, nofollow">
-    <section class="mx-auto max-w-5xl px-6 py-14 lg:px-8">
+    <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <div class="grid gap-10 lg:grid-cols-[220px_1fr]">
             <aside class="hidden lg:block">
                 <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">
