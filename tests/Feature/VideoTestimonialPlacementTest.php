@@ -70,6 +70,25 @@ it('does not pop up a video that is not marked to float', function () {
         ->assertDontSee('data-video-testimonial-bubble', false);
 });
 
+it('shows each customer in their own card with their photo, or their initial when there is none', function () {
+    VideoTestimonial::factory()->onEveryPage()->create([
+        'customer_name' => 'Anjali Kapoor',
+        'customer_photo_path' => 'video-testimonial-photos/anjali.jpg',
+        'customer_photo_alt' => 'Anjali smiling',
+        'quote' => 'The whole process took less than a week.',
+    ]);
+    VideoTestimonial::factory()->onEveryPage()->create(['customer_name' => 'Zubin Shah', 'customer_photo_path' => null]);
+
+    $response = $this->get('/contact');
+
+    $response
+        ->assertSee('src="/storage/video-testimonial-photos/anjali.jpg"', false)
+        ->assertSee('alt="Anjali smiling"', false)
+        ->assertSee('The whole process took less than a week.')
+        ->assertSee('Watch Anjali&rsquo;s story', false);
+    expect(preg_match_all('/\sdata-video-card\s/', $response->getContent()))->toBe(2);
+});
+
 it('escapes admin-entered text on the video testimonial card and pop-up', function () {
     VideoTestimonial::factory()->onEveryPage()->floating()->create([
         'customer_name' => '<script>alert(1)</script> Asha',

@@ -5,7 +5,7 @@
         <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             GST Calculator
         </h1>
-        <p data-reveal="up" class="mt-3 max-w-xl text-ink-muted">
+        <p data-reveal="up" class="mt-3 text-ink-muted text-justify hyphens-auto">
             Add GST to a base amount, or work out the base amount and GST already included in a total.
         </p>
 

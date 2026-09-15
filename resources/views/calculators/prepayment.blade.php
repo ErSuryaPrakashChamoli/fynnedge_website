@@ -5,7 +5,7 @@
         <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             {{ $category->getLabel() }} Prepayment Calculator
         </h1>
-        <p data-reveal="up" class="mt-3 max-w-xl text-ink-muted">
+        <p data-reveal="up" class="mt-3 text-ink-muted text-justify hyphens-auto">
             See how a lumpsum prepayment reduces your tenure or EMI, and how much interest you save.
         </p>
 

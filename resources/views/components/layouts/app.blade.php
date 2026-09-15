@@ -183,6 +183,9 @@
     <x-site.video-testimonial-bubble />
     <x-site.video-testimonial-player />
 
+    {{-- Renders nothing unless a published promo bar is pinned to this page; see App\Support\PromoBars\PromoBars. --}}
+    <x-site.promo-bar />
+
     {{-- Only rendered while the banner is switched on and this visitor has not answered it. --}}
     <x-site.cookie-consent />
 

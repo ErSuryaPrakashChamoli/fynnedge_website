@@ -31,7 +31,7 @@ class RoleSeeder extends Seeder
         $marketingPermissions = $this->permissionsFor([
             'Article', 'Banner', 'Testimonial', 'CompanyPhoto', 'JobOpening', 'Faq',
             'MarketingSection', 'NavigationLink', 'HowItWorksStep', 'CalculatorPage',
-            'Achievement', 'VideoTestimonial',
+            'Achievement', 'VideoTestimonial', 'PromoBar',
         ], ['ViewAny', 'View', 'Create', 'Update', 'Delete'])
             ->merge($this->permissionsFor(['LoanProductContent', 'LoanLandingPageContent'], ['ViewAny', 'View', 'Update']))
             // The Quick Enquiry page's wording is marketing copy, like a MarketingSection.

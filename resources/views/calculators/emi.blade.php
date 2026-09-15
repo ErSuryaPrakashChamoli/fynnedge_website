@@ -5,7 +5,7 @@
         <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             {{ $category->getLabel() }} EMI Calculator
         </h1>
-        <p data-reveal="up" class="mt-3 max-w-xl text-ink-muted">
+        <p data-reveal="up" class="mt-3 text-ink-muted text-justify hyphens-auto">
             Adjust the amount, interest rate and tenure to see your monthly EMI —
             plus the full year-by-year principal and interest breakdown. You can switch loan types below.
         </p>

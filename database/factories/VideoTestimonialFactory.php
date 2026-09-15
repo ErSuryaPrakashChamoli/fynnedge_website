@@ -25,6 +25,7 @@ class VideoTestimonialFactory extends Factory
         return [
             'customer_name' => $this->faker->name(),
             'role_location' => $this->faker->city(),
+            'customer_photo_path' => null,
             'loan_category' => null,
             'rating' => $this->faker->numberBetween(4, 5),
             'headline' => $this->faker->sentence(5),

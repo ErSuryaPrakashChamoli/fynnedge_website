@@ -57,7 +57,9 @@
         x-transition:leave-end="translate-y-4 opacity-0"
         role="complementary"
         aria-label="Customer video testimonial"
-        class="fixed bottom-4 left-4 z-40 sm:bottom-6 sm:left-6"
+        {{-- Lifted clear of the promo bar while it is showing; x-site.promo-bar sets the offset. --}}
+        style="margin-bottom: var(--promo-bar-offset, 0px)"
+        class="fixed bottom-4 left-4 z-40 transition-[margin-bottom] duration-300 sm:bottom-6 sm:left-6"
         data-video-testimonial-bubble
     >
         <div class="relative">

@@ -8,6 +8,7 @@ use App\Models\HowItWorksStep;
 use App\Models\Lender;
 use App\Models\LoanProduct;
 use App\Models\MarketingSection;
+use App\Models\PromoBar;
 use App\Models\SeoMeta;
 use App\Models\Testimonial;
 use App\Models\VideoTestimonial;
@@ -69,6 +70,15 @@ final class MediaRegistry
                 withTrashed: true,
             ),
             MediaFieldDefinition::forModel(
+                modelClass: VideoTestimonial::class,
+                label: 'Video Testimonial Customer Photo',
+                pathField: 'customer_photo_path',
+                directory: 'video-testimonial-photos',
+                altField: 'customer_photo_alt',
+                recordLabelField: 'customer_name',
+                withTrashed: true,
+            ),
+            MediaFieldDefinition::forModel(
                 modelClass: LoanProduct::class,
                 label: 'Loan Product',
                 pathField: 'image_path',
@@ -84,6 +94,15 @@ final class MediaRegistry
                 directory: 'marketing-sections',
                 altField: 'image_alt',
                 recordLabelField: 'heading',
+                withTrashed: true,
+            ),
+            MediaFieldDefinition::forModel(
+                modelClass: PromoBar::class,
+                label: 'Promo Bar Image',
+                pathField: 'image_path',
+                directory: 'promo-bars',
+                altField: 'image_alt',
+                recordLabelField: 'name',
                 withTrashed: true,
             ),
             MediaFieldDefinition::forModel(

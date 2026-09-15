@@ -191,17 +191,34 @@
                         class="h-full w-full object-cover"
                     >
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+                    {{--
+                        With more than one banner the arrows (vertically centred
+                        at each side), the dots and the pause button sit over the
+                        slide, so the text is inset to clear them: 48px sides and
+                        40px bottom on a phone, 64px sides from sm up. On a phone
+                        that inset is !important, overriding an admin's side
+                        spacing — a percentage of a 342px-wide box cannot clear a
+                        44px arrow, and the heading or button ended up under it.
+                        Headings and subtitles are clamped to two lines there so
+                        they cannot push the button out of the 200px box.
+                    --}}
                     <div
-                        class="banner-content absolute inset-0 flex flex-col p-6 sm:p-10 {{ $verticalClasses }} {{ $horizontalClasses }}"
+                        @class([
+                            'banner-content absolute inset-0 flex flex-col',
+                            $verticalClasses,
+                            $horizontalClasses,
+                            'max-sm:px-12! pb-10 pt-5 sm:px-16 sm:py-10' => $banners->count() > 1,
+                            'p-6 sm:p-10' => $banners->count() === 1,
+                        ])
                         @if ($contentStyle !== '') style="{{ $contentStyle }}" @endif
                     >
                         @if ($banner->heading)
-                            <h3 class="banner-heading max-w-2xl font-display text-2xl font-semibold text-white sm:text-3xl">
+                            <h3 class="banner-heading line-clamp-2 max-w-2xl font-display text-xl font-semibold text-white sm:line-clamp-none sm:text-3xl">
                                 {{ $banner->heading }}
                             </h3>
                         @endif
                         @if ($banner->subtitle)
-                            <p class="banner-subtitle mt-2 max-w-xl text-sm text-white/85 sm:text-base">
+                            <p class="banner-subtitle mt-1.5 line-clamp-2 max-w-xl text-sm text-white/85 sm:mt-2 sm:line-clamp-none sm:text-base">
                                 {{ $banner->subtitle }}
                             </p>
                         @endif
@@ -212,7 +229,7 @@
                                 :href="$banner->cta_url"
                                 variant="primary"
                                 size="md"
-                                class="banner-cta mt-4"
+                                class="banner-cta mt-3 sm:mt-4"
                                 :tabindex="$isClone ? '-1' : null"
                             >
                                 {{ $banner->cta_label }}
@@ -228,12 +245,15 @@
                 Controls are always visible, never revealed on hover: a
                 hover-gated control simply does not exist on a touch screen,
                 which left the carousel auto-only on phones and tablets.
+                Their footprint (arrows 44px from each side on a phone, 52px
+                from sm up) is what the slide text's inset above clears —
+                resize one and re-check the other.
             --}}
             <button
                 type="button"
                 @click="step(-1)"
                 aria-label="Previous banner"
-                class="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-ink shadow-md transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                class="absolute left-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-ink shadow-md transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:left-3 sm:h-10 sm:w-10"
             >
                 <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m12.5 15-5-5 5-5" /></svg>
             </button>
@@ -241,7 +261,7 @@
                 type="button"
                 @click="step(1)"
                 aria-label="Next banner"
-                class="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-ink shadow-md transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                class="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-ink shadow-md transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-3 sm:h-10 sm:w-10"
             >
                 <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m7.5 15 5-5-5-5" /></svg>
             </button>

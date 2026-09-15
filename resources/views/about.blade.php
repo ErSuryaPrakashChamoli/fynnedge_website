@@ -6,7 +6,7 @@
             {{ $page->title }}
         </h1>
         @if ($page->excerpt)
-            <p data-reveal="up" class="mt-3 max-w-xl text-lg text-ink-muted">{{ $page->excerpt }}</p>
+            <p data-reveal="up" class="mt-3 text-lg text-ink-muted text-justify hyphens-auto">{{ $page->excerpt }}</p>
         @endif
     </section>
 
@@ -95,7 +95,7 @@
             <h2 class="mt-3 max-w-xl text-balance font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
                 A small team, building with real ownership.
             </h2>
-            <p class="mt-3 max-w-2xl text-ink-muted">
+            <p class="mt-3 text-ink-muted text-justify hyphens-auto">
                 We're early-stage and small by design — everyone who joins shapes the product, not just their
                 corner of it.
             </p>

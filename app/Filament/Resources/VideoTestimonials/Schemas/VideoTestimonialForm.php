@@ -87,6 +87,18 @@ class VideoTestimonialForm
                             ->label('Role / location')
                             ->maxLength(255)
                             ->helperText('E.g. "Home Loan customer, Pune". Shown under the name.'),
+                        FileUpload::make('customer_photo_path')
+                            ->label('Customer photo')
+                            ->image()
+                            ->avatar()
+                            ->disk('public')
+                            ->directory('video-testimonial-photos')
+                            ->acceptedFileTypes(['image/png', 'image/jpeg', 'image/webp'])
+                            ->maxSize(2048)
+                            ->helperText('Optional. A square head-and-shoulders photo, shown beside the videos. Without one, the customer\'s initial is shown.'),
+                        TextInput::make('customer_photo_alt')
+                            ->label('Customer photo alt text')
+                            ->maxLength(255),
                         TextInput::make('headline')
                             ->maxLength(80)
                             ->helperText('A short hook shown on the video card, e.g. "Home loan approved in 5 days". Leave blank to show "Name\'s story".')

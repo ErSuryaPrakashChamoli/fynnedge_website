@@ -180,6 +180,33 @@ it('offers a pause control and does not latch auto-play off after a touch tap', 
     expect($html)->toContain("pointerType !== 'touch'");
 });
 
+/**
+ * On a 200px-tall phone banner the centred arrows sat over the heading and the
+ * pause button over a right-aligned button. With controls present, the slide
+ * text is inset past them — forcefully on phones, where an admin's percentage
+ * side spacing is too small to clear a 44px arrow.
+ */
+it('insets banner text past the carousel controls, overriding admin side spacing only on phones', function () {
+    Banner::factory()->count(2)->create([
+        'status' => PublishStatus::Published,
+        'published_at' => now()->subMinute(),
+        'content_padding_left' => 0,
+    ]);
+
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect($html)->toContain('max-sm:px-12! pb-10 pt-5 sm:px-16 sm:py-10');
+});
+
+it('keeps the default inset for a single banner, which has no controls to clear', function () {
+    Banner::factory()->create(['status' => PublishStatus::Published, 'published_at' => now()->subMinute()]);
+
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect($html)->toContain('p-6 sm:p-10')
+        ->not->toContain('max-sm:px-12!');
+});
+
 it('shows no carousel controls for a single banner, which has nothing to navigate', function () {
     Banner::factory()->create(['status' => PublishStatus::Published, 'published_at' => now()->subMinute()]);
 

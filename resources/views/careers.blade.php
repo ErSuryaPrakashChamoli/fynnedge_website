@@ -6,11 +6,11 @@
             {{ $page->title }}
         </h1>
         @if ($page->excerpt)
-            <p data-reveal="up" class="mt-3 text-lg text-ink-muted">{{ $page->excerpt }}</p>
+            <p data-reveal="up" class="mt-3 text-lg text-ink-muted text-justify hyphens-auto">{{ $page->excerpt }}</p>
         @endif
 
         @if ($page->body)
-            <div data-reveal="fade" class="prose prose-neutral mt-10 max-w-none text-ink-muted [&_h2]:font-display [&_h2]:text-ink [&_h2]:mt-8 [&_p]:leading-relaxed">
+            <div data-reveal="fade" class="prose prose-neutral mt-10 max-w-none text-ink-muted text-justify hyphens-auto [&_h2]:font-display [&_h2]:text-ink [&_h2]:mt-8 [&_p]:leading-relaxed">
                 {!! $page->body !!}
             </div>
         @endif

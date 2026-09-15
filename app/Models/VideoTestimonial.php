@@ -6,25 +6,25 @@ use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
 use App\Enums\VideoTestimonialSource;
 use App\Models\Concerns\Auditable;
+use App\Models\Concerns\HasPagePlacements;
 use App\Models\Concerns\HasPublicId;
 use App\Models\Concerns\Publishable;
 use Database\Factories\VideoTestimonialFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 
 #[Fillable([
-    'customer_name', 'role_location', 'loan_category', 'rating', 'headline', 'quote',
+    'customer_name', 'role_location', 'customer_photo_path', 'customer_photo_alt', 'loan_category', 'rating', 'headline', 'quote',
     'video_source', 'video_path', 'youtube_url', 'poster_path', 'poster_alt',
     'placements', 'show_as_floating', 'sort_order', 'status', 'published_at', 'expires_at',
 ])]
 class VideoTestimonial extends Model
 {
     /** @use HasFactory<VideoTestimonialFactory> */
-    use Auditable, HasFactory, HasPublicId, Publishable, SoftDeletes;
+    use Auditable, HasFactory, HasPagePlacements, HasPublicId, Publishable, SoftDeletes;
 
     protected function casts(): array
     {
@@ -38,28 +38,6 @@ class VideoTestimonial extends Model
             'published_at' => 'datetime',
             'expires_at' => 'datetime',
         ];
-    }
-
-    /**
-     * Matches a video pinned to ANY of the given placement tokens — the same
-     * vocabulary FAQs use (see App\Support\Faqs\FaqPlacements), plus
-     * App\Support\Testimonials\VideoTestimonials::EVERY_PAGE.
-     *
-     * @param  array<int, string>  $tokens
-     */
-    public function scopeForPlacements(Builder $query, array $tokens): void
-    {
-        if ($tokens === []) {
-            $query->whereRaw('1 = 0');
-
-            return;
-        }
-
-        $query->where(function (Builder $query) use ($tokens): void {
-            foreach ($tokens as $token) {
-                $query->orWhereJsonContains('placements', $token);
-            }
-        });
     }
 
     /**
@@ -111,6 +89,15 @@ class VideoTestimonial extends Model
         $id = $this->youtubeId();
 
         return $id ? "https://i.ytimg.com/vi/{$id}/hqdefault.jpg" : null;
+    }
+
+    /**
+     * The customer's own portrait, shown on their video card. Null means the
+     * card falls back to the customer's initial.
+     */
+    public function customerPhotoUrl(): ?string
+    {
+        return $this->customer_photo_path ? Storage::disk('public')->url($this->customer_photo_path) : null;
     }
 
     public function isPlayable(): bool

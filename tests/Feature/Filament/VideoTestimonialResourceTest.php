@@ -53,6 +53,25 @@ it('stores an uploaded video on the public disk and pins it to the chosen pages'
     expect($testimonial->show_as_floating)->toBeTrue();
 });
 
+it('stores the customer photo in its own directory on the public disk', function () {
+    Livewire::test(CreateVideoTestimonial::class)
+        ->fillForm([
+            'video_source' => VideoTestimonialSource::YouTube->value,
+            'youtube_url' => 'https://youtu.be/dQw4w9WgXcQ',
+            'customer_name' => 'Asha Verma',
+            'customer_photo_path' => UploadedFile::fake()->image('asha.jpg', 400, 400),
+            'placements' => [VideoTestimonials::EVERY_PAGE],
+            'status' => PublishStatus::Published->value,
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $testimonial = VideoTestimonial::query()->sole();
+
+    expect($testimonial->customer_photo_path)->toStartWith('video-testimonial-photos/');
+    Storage::disk('public')->assertExists($testimonial->customer_photo_path);
+});
+
 it('rejects an upload that is not an MP4 or WebM video', function () {
     Livewire::test(CreateVideoTestimonial::class)
         ->fillForm([

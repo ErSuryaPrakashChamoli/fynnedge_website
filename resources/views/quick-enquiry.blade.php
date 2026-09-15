@@ -126,7 +126,7 @@
         <section class="bg-surface">
             <div class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
                 <h2 data-reveal="up" class="font-display text-2xl font-semibold text-ink">{{ $content['explore_heading'] }}</h2>
-                <p data-reveal="up" class="mt-2 max-w-xl text-ink-muted">{{ $content['explore_description'] }}</p>
+                <p data-reveal="up" class="mt-2 text-ink-muted text-justify hyphens-auto">{{ $content['explore_description'] }}</p>
 
                 <div class="mt-8 grid gap-5 {{ $exploreColumns[count($content['explore_links'])] ?? 'sm:grid-cols-2 lg:grid-cols-3' }}">
                     @foreach ($content['explore_links'] as $link)

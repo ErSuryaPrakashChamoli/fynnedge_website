@@ -127,7 +127,7 @@
                 <h2 data-reveal="up" class="max-w-xl text-balance font-display text-2xl font-semibold text-ink">
                     What are you looking to finance?
                 </h2>
-                <p data-reveal="up" class="mt-2 max-w-xl text-ink-muted">
+                <p data-reveal="up" class="mt-2 text-ink-muted text-justify hyphens-auto">
                     Pick a product to see what's involved — or browse the full list.
                 </p>
 
@@ -192,7 +192,7 @@
             <h2 class="max-w-xl text-balance font-display text-2xl font-semibold text-ink">
                 {{ $financeCta->heading ?? 'Not sure which loan or lender fits your profile?' }}
             </h2>
-            <p class="mt-3 max-w-xl text-ink-muted">
+            <p class="mt-3 text-ink-muted text-justify hyphens-auto">
                 {{ $financeCta->description ?? "Tell us about yourself and we'll identify suitable lenders — before you commit to an application." }}
             </p>
             @if ($financeCta?->cta_url)
@@ -327,7 +327,7 @@
                     {{ $emiCta->cta_label ?? 'Open calculator' }}
                 </x-ui.button>
             </div>
-            <p class="mt-3 max-w-xl text-ink-muted">{{ $emiCta->description ?? 'Estimate your monthly instalment before you apply, for any loan type.' }}</p>
+            <p class="mt-3 text-ink-muted text-justify hyphens-auto">{{ $emiCta->description ?? 'Estimate your monthly instalment before you apply, for any loan type.' }}</p>
         </div>
     </section>
 

@@ -876,3 +876,172 @@ document.addEventListener('alpine:init', () => {
         },
     }));
 });
+
+document.addEventListener('alpine:init', () => {
+    /**
+     * The sticky promo bar (x-site.promo-bar). `config` comes from
+     * App\Models\PromoBar::clientConfig(); every message is already in the HTML.
+     *
+     * Shown = triggered, not dismissed, and the footer not on screen — so it
+     * gets out of the way of the legal copy and comes back on scrolling up.
+     * Closing it is remembered in localStorage for `reshowAfterHours`.
+     *
+     * While it is up, --promo-bar-offset on <html> holds its height, so other
+     * bottom-corner widgets (the video testimonial bubble) can sit above it.
+     */
+    window.Alpine.data('promoBar', (config) => ({
+        triggered: false,
+        dismissed: false,
+        nearFooter: false,
+        paused: false,
+        messageIndex: 0,
+        countdown: '',
+
+        get shown() {
+            return this.triggered && !this.dismissed && !this.nearFooter;
+        },
+
+        init() {
+            if (!this.matchesDevice() || this.recentlyDismissed()) {
+                return;
+            }
+
+            this.$watch('shown', (shown) => this.$nextTick(() => this.reportHeight(shown)));
+            this.observeFooter();
+            this.armTrigger();
+
+            if (config.countdownEndsAt) {
+                this.startCountdown(new Date(config.countdownEndsAt).getTime());
+            }
+        },
+
+        matchesDevice() {
+            const wide = window.matchMedia('(min-width: 640px)').matches;
+
+            return config.device === 'all' || (config.device === 'desktop' ? wide : !wide);
+        },
+
+        storageKey() {
+            return `fynnedge.promo-bar-dismissed.${config.id}`;
+        },
+
+        recentlyDismissed() {
+            try {
+                return Number(localStorage.getItem(this.storageKey())) > Date.now();
+            } catch {
+                return false;
+            }
+        },
+
+        armTrigger() {
+            const hasMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+            if (config.trigger === 'delay') {
+                setTimeout(() => this.show(), config.triggerValue * 1000);
+
+                return;
+            }
+
+            if (config.trigger === 'exit_intent' && hasMouse) {
+                const onLeave = (event) => {
+                    if (event.relatedTarget === null && event.clientY <= 0) {
+                        document.removeEventListener('mouseout', onLeave);
+                        this.show();
+                    }
+                };
+
+                document.addEventListener('mouseout', onLeave);
+
+                return;
+            }
+
+            // Scroll, and exit intent on touch screens, which have no tab bar to head for.
+            const threshold = config.trigger === 'exit_intent' ? 50 : config.triggerValue;
+            const onScroll = () => {
+                const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+                const percent = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 100;
+
+                if (percent >= threshold) {
+                    window.removeEventListener('scroll', onScroll);
+                    this.show();
+                }
+            };
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+        },
+
+        show() {
+            if (this.triggered || this.dismissed) {
+                return;
+            }
+
+            this.triggered = true;
+            this.track('promo_bar_view');
+
+            if (config.messageCount > 1) {
+                setInterval(() => {
+                    if (!this.paused && this.shown) {
+                        this.messageIndex = (this.messageIndex + 1) % config.messageCount;
+                    }
+                }, 4000);
+            }
+        },
+
+        observeFooter() {
+            const footer = document.querySelector('body > footer');
+
+            if (!footer || !('IntersectionObserver' in window)) {
+                return;
+            }
+
+            new IntersectionObserver(([entry]) => {
+                this.nearFooter = entry.isIntersecting;
+            }).observe(footer);
+        },
+
+        startCountdown(endsAt) {
+            const pad = (value) => String(value).padStart(2, '0');
+            const tick = () => {
+                const seconds = Math.floor((endsAt - Date.now()) / 1000);
+
+                if (seconds <= 0) {
+                    clearInterval(timer);
+                    this.countdown = '';
+                    this.dismissed = true;
+
+                    return;
+                }
+
+                const days = Math.floor(seconds / 86400);
+                const clock = `${pad(Math.floor((seconds % 86400) / 3600))}h ${pad(Math.floor((seconds % 3600) / 60))}m ${pad(seconds % 60)}s`;
+
+                this.countdown = days > 0 ? `${days}d ${clock}` : clock;
+            };
+
+            const timer = setInterval(tick, 1000);
+            tick();
+        },
+
+        dismiss() {
+            this.dismissed = true;
+            this.track('promo_bar_dismiss');
+
+            if (config.reshowAfterHours > 0) {
+                try {
+                    localStorage.setItem(this.storageKey(), String(Date.now() + config.reshowAfterHours * 3600000));
+                } catch {}
+            }
+        },
+
+        reportHeight(shown) {
+            document.documentElement.style.setProperty('--promo-bar-offset', `${shown ? this.$el.offsetHeight : 0}px`);
+        },
+
+        track(event) {
+            if (Array.isArray(window.dataLayer)) {
+                window.dataLayer.push({ event, promo_bar_id: config.id, promo_bar_name: config.name });
+            }
+        },
+    }));
+});

@@ -5,7 +5,7 @@
         <h1 data-reveal="up" class="mt-5 max-w-2xl text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             Guides &amp; resources
         </h1>
-        <p data-reveal="up" class="mt-3 max-w-xl text-ink-muted">
+        <p data-reveal="up" class="mt-3 text-ink-muted text-justify hyphens-auto">
             Plain-language guides on loans, eligibility and the application process.
         </p>
 

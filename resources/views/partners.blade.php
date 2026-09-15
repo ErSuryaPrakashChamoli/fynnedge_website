@@ -25,7 +25,7 @@
             <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
                 {{ $content['lenders_label'] }}
             </h1>
-            <p data-reveal="up" class="mt-3 max-w-2xl text-lg text-ink-muted">
+            <p data-reveal="up" class="mt-3 text-lg text-ink-muted text-justify hyphens-auto">
                 {{ $content['partners_description'] }}
             </p>
 

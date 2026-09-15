@@ -1,5 +1,32 @@
 <header class="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur">
-    <div x-data="{ open: false }" class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 lg:px-8">
+    {{--
+        The mobile menu is taller than a phone screen once a section is
+        expanded, and it hangs off a sticky header — so without a height of its
+        own, its lower links sat below the screen and every scroll moved the
+        page behind it instead. While open, the panel is capped at the height
+        left under the header (re-measured on resize/rotation), scrolls by
+        itself with overscroll contained, and the page underneath is locked.
+    --}}
+    <div
+        x-data="{
+            open: false,
+            menuHeight: null,
+            toggle() {
+                this.open = ! this.open;
+                if (this.open) {
+                    this.fit();
+                }
+            },
+            fit() {
+                this.menuHeight = Math.max(0, Math.floor(window.innerHeight - this.$root.closest('header').getBoundingClientRect().bottom));
+            },
+        }"
+        x-effect="document.documentElement.classList.toggle('overflow-hidden', open)"
+        @resize.window="if (window.innerWidth >= 1024) { open = false } else if (open) { fit() }"
+        @keydown.escape.window="open = false"
+        @click.outside="open = false"
+        class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 lg:px-8"
+    >
         <a href="{{ route('home') }}" class="flex flex-col text-ink">
             <span class="flex items-center gap-2 font-display text-xl font-semibold tracking-tight">
                 <img src="{{ $siteBranding['logoUrl'] }}" alt="" class="h-9 w-9" width="36" height="36">
@@ -159,7 +186,7 @@
         <button
             type="button"
             class="-mr-2 flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-ink lg:hidden"
-            @click="open = !open"
+            @click="toggle()"
             :aria-expanded="open"
             aria-controls="mobile-nav"
             aria-label="Toggle navigation menu"
@@ -172,7 +199,8 @@
             x-show="open"
             x-cloak
             id="mobile-nav"
-            class="absolute inset-x-0 top-full border-b border-line bg-bg px-6 py-5 lg:hidden"
+            :style="menuHeight !== null ? `max-height: ${menuHeight}px` : ''"
+            class="absolute inset-x-0 top-full max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain border-b border-line bg-bg px-6 py-5 shadow-lg lg:hidden"
         >
             <nav class="flex flex-col gap-4" aria-label="Primary">
                 @if (count($loanCategories))

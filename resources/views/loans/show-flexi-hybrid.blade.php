@@ -27,10 +27,10 @@
             <div class="mt-8" data-reveal="fade">
                 <h2 class="font-display text-xl font-semibold text-ink">What is a Flexi Hybrid Term Loan?</h2>
                 @if ($loanProduct->summary)
-                    <p itemprop="description" class="mt-3 max-w-2xl text-lg text-ink-muted">{{ $loanProduct->summary }}</p>
+                    <p itemprop="description" class="mt-3 text-lg text-ink-muted text-justify hyphens-auto">{{ $loanProduct->summary }}</p>
                 @endif
                 @if ($loanProduct->body)
-                    <div class="prose prose-neutral mt-4 max-w-2xl text-ink-muted [&_h2]:font-display [&_h2]:text-ink [&_p]:leading-relaxed">
+                    <div class="prose prose-neutral mt-4 max-w-none text-ink-muted text-justify hyphens-auto [&_h2]:font-display [&_h2]:text-ink [&_p]:leading-relaxed">
                         {!! $loanProduct->body !!}
                     </div>
                 @endif
@@ -62,7 +62,7 @@
 
         <div class="mt-12" data-reveal="fade">
             <h2 class="font-display text-xl font-semibold text-ink">Flexi Hybrid Term Loan vs a Personal Loan — what's different?</h2>
-            <p class="mt-2 max-w-2xl text-sm text-ink-muted">Both can fund the same needs, but they repay very differently. See your exact numbers for the amount you enter in the "Flexi Hybrid vs a conventional loan" chart inside the calculator below.</p>
+            <p class="mt-2 text-sm text-ink-muted text-justify hyphens-auto">Both can fund the same needs, but they repay very differently. See your exact numbers for the amount you enter in the "Flexi Hybrid vs a conventional loan" chart inside the calculator below.</p>
             <div class="mt-4 overflow-x-auto rounded-2xl border border-line">
                 <table class="w-full min-w-[640px] text-left text-sm">
                     <thead>

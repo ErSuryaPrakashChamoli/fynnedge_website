@@ -75,6 +75,23 @@ it('gives the grievance matrix room to breathe without scrolling on desktop', fu
         ->toContain('min-w-[42rem]');
 });
 
+it('keeps the open mobile menu scrollable within the screen and locks the page behind it', function () {
+    /*
+     * With Calculators expanded the menu was 1,100px tall on a 672px screen,
+     * hanging off the sticky header with no height of its own: its last links
+     * were unreachable and every scroll moved the page behind it instead
+     * (measured: page scrolled 1,500px, menu 0px). The panel must be its own
+     * contained scroll area, and the page must be locked while it is open.
+     */
+    $html = $this->get('/')->assertOk()->getContent();
+    $panel = substr($html, strpos($html, 'id="mobile-nav"'), 400);
+
+    expect($panel)
+        ->toContain('overflow-y-auto overscroll-contain')
+        ->toContain('max-height: ${menuHeight}px');
+    expect($html)->toContain("classList.toggle('overflow-hidden', open)");
+});
+
 it('registers a custom Filament theme so Tailwind classes in admin views compile', function () {
     /*
      * Filament's default stylesheet contains only its own component CSS. Without
