@@ -67,3 +67,30 @@ it('lets a role with only the page SEO permission reach it', function () {
 
     $this->get('/admin/page-seos')->assertOk();
 });
+
+it('accepts a title and description past the old 60/160 character caps', function () {
+    $title = str_repeat('a', 200);
+    $description = str_repeat('b', 255);
+
+    Livewire::test(CreatePageSeo::class)
+        ->fillForm([
+            'url_path' => '/faqs',
+            'is_active' => true,
+            'seoMeta' => ['title' => $title, 'description' => $description],
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(PageSeo::sole()->seoMeta->title)->toBe($title)
+        ->and(PageSeo::sole()->seoMeta->description)->toBe($description);
+});
+
+it('still stops at the width of the column that stores it', function () {
+    Livewire::test(CreatePageSeo::class)
+        ->fillForm([
+            'url_path' => '/faqs',
+            'seoMeta' => ['title' => str_repeat('a', 256)],
+        ])
+        ->call('create')
+        ->assertHasFormErrors(['seoMeta.title']);
+});

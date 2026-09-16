@@ -145,9 +145,9 @@ class SeoAnalytics extends Page
                 ->components([
                     TextInput::make('seo_meta_title')
                         ->label('Default page title')
-                        ->maxLength(60)
+                        ->maxLength(255)
                         ->placeholder('Falls back to the website name')
-                        ->helperText('Only used for pages that render no title of their own.'),
+                        ->helperText('Only used for pages that render no title of their own. Google usually shows about the first 60 characters.'),
                     TextInput::make('seo_canonical_base_url')
                         ->label('Canonical base URL')
                         ->url()
@@ -156,7 +156,8 @@ class SeoAnalytics extends Page
                     Textarea::make('seo_meta_description')
                         ->label('Default meta description')
                         ->rows(2)
-                        ->maxLength(160)
+                        ->maxLength(255)
+                        ->helperText('Google usually shows about the first 160 characters.')
                         ->placeholder(SeoDefaults::DEFAULT_DESCRIPTION)
                         ->columnSpanFull(),
                 ]),
@@ -167,7 +168,7 @@ class SeoAnalytics extends Page
                 ->components([
                     TextInput::make('seo_default_og_title')
                         ->label('Default share title')
-                        ->maxLength(70)
+                        ->maxLength(255)
                         ->placeholder('Falls back to each page\'s own title'),
                     Select::make('seo_twitter_card')
                         ->label('X (Twitter) card type')
@@ -177,7 +178,7 @@ class SeoAnalytics extends Page
                     Textarea::make('seo_default_og_description')
                         ->label('Default share description')
                         ->rows(2)
-                        ->maxLength(200)
+                        ->maxLength(255)
                         ->placeholder('Falls back to each page\'s meta description')
                         ->columnSpanFull(),
                     FileUpload::make('seo_default_twitter_image')
