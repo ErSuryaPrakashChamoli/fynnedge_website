@@ -46,7 +46,14 @@ class RoleSeeder extends Seeder
         $seoPermissions = $this->permissionsFor([
             'Article', 'Page',
         ], ['ViewAny', 'View', 'Update'])
-            ->merge($this->permissionsFor(['LoanProductSeo', 'LoanLandingPageSeo'], ['ViewAny', 'View', 'Update']));
+            ->merge($this->permissionsFor(['LoanProductSeo', 'LoanLandingPageSeo'], ['ViewAny', 'View', 'Update']))
+            /*
+             * Redirects and Page SEO are the two URL-keyed settings the SEO role
+             * owns outright, including Create/Delete: adding an entry for a page
+             * that has none is the entire point of both, and neither can change
+             * anything about a record beyond the tags and status codes it serves.
+             */
+            ->merge($this->permissionsFor(['PageSeo'], ['ViewAny', 'View', 'Create', 'Update', 'Delete']));
 
         Role::findOrCreate('SEO')->syncPermissions($seoPermissions);
 

@@ -42,6 +42,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Models/**,app/Modules/**/Models/*.php | .ai/rules/modules-models.md |
 | app/Http/Controllers/RobotsController.php,app/Http/Controllers/SitemapController.php,app/Support/Seo/SearchEngineIndexing.php,docker/nginx/nginx.conf | .ai/rules/nginx.md |
 | app/Enums/FaqPlacement.php,app/Support/Faqs/**,app/Filament/Resources/PageFaqs/**,resources/views/components/site/page-faqs.blade.php | .ai/rules/page-faqs-views-components-site.md |
+| app/Models/PageSeo.php,app/Support/Seo/PageSeoOverrides.php,app/Filament/Resources/PageSeos/**,resources/views/components/layouts/app.blade.php | .ai/rules/page-seos-views-components-layouts.md |
 | app/Support/Enquiries/QuickEnquiryPageContent.php,app/Filament/Pages/QuickEnquiryPageSettings.php,resources/views/quick-enquiry.blade.php | .ai/rules/pages-views.md |
 | app/Filament/Pages/** | .ai/rules/pages.md |
 | app/Models/PromoBar.php,app/Support/PromoBars/**,app/Filament/Resources/PromoBars/**,resources/views/components/site/promo-bar.blade.php | .ai/rules/promo-bars-views-components-site.md |

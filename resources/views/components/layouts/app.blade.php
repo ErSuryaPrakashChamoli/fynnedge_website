@@ -5,6 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @php
+        /*
+         * An admin-managed row for THIS exact URL (Website Settings → Page SEO)
+         * is folded into the props the view passed before anything below runs,
+         * so it behaves as "the value this page set for itself" and the whole
+         * SeoDefaults chain underneath is untouched. A blank field overrides
+         * nothing — the page keeps what it already had.
+         */
+        $pageSeoOverride = \App\Support\Seo\PageSeoOverrides::forCurrentRequest();
+
+        if ($pageSeoOverride) {
+            $title = $pageSeoOverride->seoTitle() ?: ($title ?? null);
+            $description = $pageSeoOverride->seoDescription() ?: ($description ?? null);
+            $canonical = $pageSeoOverride->seoCanonicalUrl() ?: ($canonical ?? null);
+            $robots = $pageSeoOverride->seoRobots() ?: ($robots ?? null);
+            $ogImage = $pageSeoOverride->seoOgImageUrl() ?: ($ogImage ?? null);
+            $pageType = $pageSeoOverride->seoPageType() ?: ($pageType ?? null);
+            $structuredData = $pageSeoOverride->seoStructuredData() ?: ($structuredData ?? null);
+            $schemaTemplate = $pageSeoOverride->seoSchemaTemplate() ?: ($schemaTemplate ?? null);
+            // Per-field, so overriding only og:title leaves a record's own og:description alone.
+            $social = array_filter($pageSeoOverride->seoSocial()) + ($social ?? []);
+        }
+
         $resolvedTitle = $title ?? $siteBranding['name'];
         $resolvedDescription = ($description ?? null) ?: \App\Support\Seo\SeoDefaults::metaDescription();
         $resolvedCanonical = \App\Support\Seo\SeoDefaults::canonical($canonical ?? null, url()->current());

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\UrlPath;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -78,18 +79,12 @@ class Redirect extends Model
      * A leading slash, no query string, no trailing slash, lowercased host-less
      * path. "/" itself is preserved — a site can legitimately redirect its own
      * homepage, and trimming it to "" would make every request match.
+     *
+     * Shared with the per-page SEO overrides through App\Support\UrlPath, so both
+     * features treat an admin-typed URL identically.
      */
     public static function normalizePath(string $path): string
     {
-        $path = trim($path);
-
-        if (str_contains($path, '://')) {
-            $path = (string) parse_url($path, PHP_URL_PATH);
-        }
-
-        $path = strtok($path, '?') ?: '/';
-        $path = '/'.trim($path, '/');
-
-        return strtolower($path);
+        return UrlPath::normalize($path);
     }
 }
