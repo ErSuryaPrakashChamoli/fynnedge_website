@@ -15,6 +15,19 @@ use Filament\Schemas\Components\Section;
 class SeoFormSection
 {
     /**
+     * The only ceiling on any SEO text field is the width of the seo_metas
+     * columns that store it.
+     *
+     * The old 60/160/70/200 caps were search-engine DISPLAY guidance enforced
+     * as validation, which is the wrong layer for it: a title Google truncates
+     * in its results page is still a perfectly valid title, still read in full
+     * by other crawlers, share previews and AI assistants, and an admin who
+     * genuinely needs a longer one had no way to save it. The guidance now
+     * lives in the helper text, where it informs without blocking.
+     */
+    private const MAX_LENGTH = 255;
+
+    /**
      * The structured-data controls are gated on the same permission as the
      * Structured Data settings page, so an admin decides in one place who may
      * shape schema output. The pre-existing title/description/canonical/robots/
@@ -38,11 +51,13 @@ class SeoFormSection
             ->components([
                 TextInput::make('title')
                     ->label('SEO title')
-                    ->maxLength(60)
+                    ->maxLength(self::MAX_LENGTH)
+                    ->helperText('Google usually shows about the first 60 characters — longer is allowed, it just gets truncated in results.')
                     ->columnSpanFull(),
                 TextInput::make('description')
                     ->label('Meta description')
-                    ->maxLength(160)
+                    ->maxLength(self::MAX_LENGTH)
+                    ->helperText('Google usually shows about the first 160 characters. Write the full sentence if you want to — nothing is cut off before it reaches the page.')
                     ->columnSpanFull(),
                 TextInput::make('canonical_url')
                     ->label('Canonical URL')
@@ -64,20 +79,20 @@ class SeoFormSection
                     ->columnSpanFull(),
                 TextInput::make('og_title')
                     ->label('Social share title')
-                    ->maxLength(70)
+                    ->maxLength(self::MAX_LENGTH)
                     ->placeholder('Falls back to the SEO title above')
                     ->helperText('Used for Facebook, LinkedIn, WhatsApp and X previews.'),
                 TextInput::make('twitter_title')
                     ->label('X (Twitter) title')
-                    ->maxLength(70)
+                    ->maxLength(self::MAX_LENGTH)
                     ->placeholder('Falls back to the social share title'),
                 TextInput::make('og_description')
                     ->label('Social share description')
-                    ->maxLength(200)
+                    ->maxLength(self::MAX_LENGTH)
                     ->placeholder('Falls back to the meta description above'),
                 TextInput::make('twitter_description')
                     ->label('X (Twitter) description')
-                    ->maxLength(200)
+                    ->maxLength(self::MAX_LENGTH)
                     ->placeholder('Falls back to the social share description'),
                 FileUpload::make('twitter_image_path')
                     ->label('X (Twitter) image')
