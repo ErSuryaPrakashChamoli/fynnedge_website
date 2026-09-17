@@ -58,7 +58,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | database/seeders/**, database/seeders/LegalPageSeeder.php | .ai/rules/seeders.md |
 | app/Models/MarketingSection.php,app/Models/NavigationLink.php,resources/views/home.blade.php,resources/views/components/site/footer.blade.php,resources/views/components/site/flexi-hybrid-ticker.blade.php | .ai/rules/site-views-components-site.md |
 | app/Http/Controllers/QuickEnquiryPageController.php,app/Modules/Enquiries/Concerns/ValidatesLoanEnquiries.php,resources/views/components/site/loan-enquiry-form.blade.php,resources/views/quick-enquiry.blade.php | .ai/rules/site-views.md |
-| resources/views/components/site/nav-link.blade.php, resources/views/components/site/banner-carousel.blade.php, resources/views/components/site/header.blade.php | .ai/rules/site.md |
+| resources/views/components/site/nav-link.blade.php, resources/views/components/site/banner-carousel.blade.php, resources/views/components/site/header.blade.php, resources/views/components/site/testimonials.blade.php | .ai/rules/site.md |
 | tests/** | .ai/rules/tests.md |
 | resources/css/**,resources/views/**,app/Support/Theme/**,app/Filament/Pages/Settings.php | .ai/rules/theme-filament-pages.md |
 | app/Models/Banner.php,resources/views/components/site/banner-carousel.blade.php,app/Support/Theme/SiteThemeStyles.php | .ai/rules/theme.md |
