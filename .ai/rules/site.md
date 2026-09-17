@@ -3,6 +3,7 @@ paths:
   - resources/views/components/site/nav-link.blade.php
   - resources/views/components/site/banner-carousel.blade.php
   - resources/views/components/site/header.blade.php
+  - resources/views/components/site/testimonials.blade.php
 ---
 
 # Site
@@ -22,3 +23,6 @@ Resize a control, and you must re-check this inset. A single banner has no contr
 - the page locked while open: `x-effect` toggles `overflow-hidden` on `<html>`
 Remove any of them and the lower links become unreachable while scrolling moves the page behind the menu. That was measured on a 382×672 screen: page scrolled 1,500px, menu 0px.
 The menu also closes on Escape, on a click outside, and on resize to lg or wider, so the page lock can never stick on desktop. Verify changes by wheel-scrolling over the open menu in an emulated phone, not only with markup tests.
+
+## Written testimonials are a scroll-snap row with arrows, not a grid
+x-site.testimonials renders ALL published testimonials as one horizontal snap-scroll row (`data-testimonial-card`, 1 card at ~85% on phones, 2 at sm, 3 at lg) with previous/next arrow buttons that Alpine hides when the row already fits (same atStart/atEnd pattern as x-site.video-testimonials). Never cap the query at 3 or switch back to a wrapping grid: the user asked (2026-09-17) for more than three testimonials with left/right arrows. Pinned by tests/Feature/TestimonialCarouselTest.php.
