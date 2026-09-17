@@ -53,6 +53,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Filament/Schemas/HtmlBodyEditor.php,app/Filament/Resources/**/Schemas/*Form.php | .ai/rules/resources-schemas.md |
 | resources/views/quick-enquiry.blade.php, resources/views/** | .ai/rules/resources-views.md |
 | app/Filament/Resources/** | .ai/rules/resources.md |
+| app/Support/Enquiries/EnquiryFormContent.php,app/Filament/Resources/MarketingSections/Schemas/MarketingSectionForm.php,resources/views/components/site/quick-enquiry.blade.php | .ai/rules/schemas-views-components-site.md |
 | app/Support/Seo/**,app/Filament/Pages/StructuredData.php,app/Filament/Resources/SchemaTemplates/**,app/Filament/Schemas/SeoFormSection.php | .ai/rules/schemas.md |
 | app/Support/Seo/OrganizationSchema.php,database/seeders/BusinessProfileSeeder.php,app/Filament/Pages/Settings.php | .ai/rules/seeders-filament-pages.md |
 | database/seeders/FlexiHybridTermLoanSeeder.php,database/seeders/JourneySeeder.php | .ai/rules/seeders-seeders.md |

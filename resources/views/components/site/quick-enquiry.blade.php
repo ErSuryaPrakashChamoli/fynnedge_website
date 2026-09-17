@@ -36,6 +36,7 @@
     $heading = $heading ?: $content['heading'];
     $subheading = $subheading ?: $content['description'];
     $ctaLabel = $ctaLabel ?: $content['ctaLabel'];
+    $note = $content['note'];
 
     $fieldId = 'quick-enquiry-phone-'.$source;
     $otpFieldId = 'quick-enquiry-otp-'.$source;
@@ -242,7 +243,7 @@
         </form>
 
         <p class="mt-3 text-xs text-ink-faint" style="{{ $onOtpStep ? 'display:none' : '' }}" x-show="step !== 'otp'">
-            We only need your number to call you back. No forms and no documents at this stage.
+            {{ $note }}
         </p>
     </div>
 
