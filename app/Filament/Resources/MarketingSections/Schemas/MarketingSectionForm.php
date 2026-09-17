@@ -42,9 +42,11 @@ class MarketingSectionForm
                     }),
                 TextInput::make('subheading')
                     ->columnSpanFull()
-                    ->helperText(fn (callable $get) => $get('placement') === 'loan_enquiry_form'
-                        ? 'The small label above the form itself, e.g. "Instant :product". The rate and loan ceiling below it come from the loan product\'s own fields.'
-                        : null),
+                    ->helperText(fn (callable $get) => match ($get('placement')) {
+                        'loan_enquiry_form' => 'The small label above the form itself, e.g. "Instant :product". The rate and loan ceiling below it come from the loan product\'s own fields.',
+                        'home_quick_enquiry' => 'The small note under the mobile number field, e.g. "We only need your number to call you back. No forms and no documents at this stage."',
+                        default => null,
+                    }),
                 Textarea::make('description')
                     ->rows(3)
                     ->columnSpanFull()

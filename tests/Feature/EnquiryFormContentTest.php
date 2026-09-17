@@ -98,6 +98,7 @@ it('lets an admin rewrite the homepage quick enquiry copy', function () {
         'placement' => EnquiryFormContent::QUICK_PLACEMENT,
         'heading' => 'Talk to a loan expert today',
         'description' => 'Drop your number, we will call within the hour.',
+        'subheading' => 'No paperwork now. An advisor calls you first.',
         'cta_label' => 'Call me back',
     ]);
 
@@ -105,8 +106,22 @@ it('lets an admin rewrite the homepage quick enquiry copy', function () {
         ->assertOk()
         ->assertSee('Talk to a loan expert today')
         ->assertSee('Drop your number, we will call within the hour.')
+        ->assertSee('No paperwork now. An advisor calls you first.')
         ->assertSee('Call me back')
-        ->assertDontSee('Get Started with a Quick Enquiry');
+        ->assertDontSee('Get Started with a Quick Enquiry')
+        ->assertDontSee('We only need your number to call you back.');
+});
+
+it('keeps the built-in note under the quick enquiry field when the section leaves it blank', function () {
+    MarketingSection::factory()->published()->create([
+        'placement' => EnquiryFormContent::QUICK_PLACEMENT,
+        'heading' => 'Talk to a loan expert today',
+        'subheading' => null,
+    ]);
+
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('We only need your number to call you back. No forms and no documents at this stage.');
 });
 
 it('places the enquiry form above the page content, not below it', function () {
