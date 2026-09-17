@@ -48,9 +48,11 @@ class EnquiryFormContent
     }
 
     /**
-     * Copy for the homepage Quick Enquiry box.
+     * Copy for the homepage Quick Enquiry box. `note` is the small line under
+     * the phone field; the row's `subheading` column carries it, since the box
+     * has no separate subheading of its own.
      *
-     * @return array{heading: string, description: string, ctaLabel: string}
+     * @return array{heading: string, description: string, ctaLabel: string, note: string}
      */
     public static function forQuickEnquiry(): array
     {
@@ -64,6 +66,11 @@ class EnquiryFormContent
                 '',
             ),
             'ctaLabel' => self::resolve($section?->cta_label, 'Submit Enquiry', ''),
+            'note' => self::resolve(
+                $section?->subheading,
+                'We only need your number to call you back. No forms and no documents at this stage.',
+                '',
+            ),
         ];
     }
 
