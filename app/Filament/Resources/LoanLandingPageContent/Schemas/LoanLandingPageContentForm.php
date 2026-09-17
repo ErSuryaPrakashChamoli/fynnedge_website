@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\LoanLandingPageContent\Schemas;
 
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HtmlBodyEditor;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -77,8 +77,7 @@ class LoanLandingPageContentForm
 
                 Section::make('Content')
                     ->components([
-                        RichEditor::make('body')
-                            ->columnSpanFull(),
+                        ...HtmlBodyEditor::make(),
                     ]),
             ]);
     }

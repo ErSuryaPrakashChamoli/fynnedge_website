@@ -24,6 +24,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | resources/views/components/site/promo-bar.blade.php,resources/js/app.js,resources/css/app.css | .ai/rules/css.md |
 | resources/views/emails/**,resources/views/components/emails/** | .ai/rules/emails.md |
 | app/Support/Media/**,app/Filament/Pages/MediaGovernance.php | .ai/rules/filament-pages.md |
+| app/Filament/Resources/**/Schemas/*Form.php | .ai/rules/filament-resources-schemas.md |
 | app/Models/Concerns/Publishable.php,app/Filament/Resources/** | .ai/rules/filament-resources.md |
 | app/Models/User.php,app/Filament/**,config/filament-shield.php,config/permission.php,database/seeders/RoleSeeder.php | .ai/rules/filament-seeders.md |
 | app/Enums/**,app/Filament/** | .ai/rules/filament.md |

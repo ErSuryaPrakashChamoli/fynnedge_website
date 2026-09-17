@@ -4,11 +4,11 @@ namespace App\Filament\Resources\LoanLandingPages\Schemas;
 
 use App\Enums\LandingPageGroup;
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HtmlBodyEditor;
 use App\Filament\Schemas\SeoFormSection;
 use App\Models\LoanLandingPage;
 use App\Models\LoanProduct;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -62,7 +62,10 @@ class LoanLandingPageForm
                             ->helperText('Optional. The page stops appearing publicly after this time.'),
                     ]),
 
-                RichEditor::make('body'),
+                Section::make('Content')
+                    ->components([
+                        ...HtmlBodyEditor::make(),
+                    ]),
 
                 SeoFormSection::make(),
             ]);
