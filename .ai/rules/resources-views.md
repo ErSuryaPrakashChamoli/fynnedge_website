@@ -2,6 +2,7 @@
 paths:
   - resources/views/quick-enquiry.blade.php
   - 'resources/views/**'
+  - resources/views/home.blade.php
 ---
 
 # Resources Views
@@ -17,3 +18,6 @@ Rich-text bodies (loan/landing/flexi bodies, calculator explainers) and section 
 
 ## Page containers match the header width; zoom reveals grow from the top
 Every public page's outer section uses `mx-auto max-w-7xl px-6 lg:px-8`, the same as x-site.header and x-site.footer, so content lines up with the logo and the header buttons on both sides. Narrower max-w-3xl/4xl/5xl/6xl outer containers were removed site-wide on 2026-09-15 because they left extra side space compared with other pages. Constrain width only on inner elements, never on the page container. Separately, `[data-reveal^='zoom']` uses transform-origin: top center, and initScrollReveal (app.js) counts a tall element as seen once it fills 20% of the viewport. Without both, a tall block such as a calculator stays blank on load until the visitor scrolls.
+
+## Admin-editable pills/eyebrows must never use w-max
+`w-max` (width: max-content) on an element whose text comes from a Setting or MarketingSection lets a long admin string widen its whole grid/flex column past the phone viewport — the hero heading, copy and CTAs then clip at the right edge on production while the shorter local seed text looks fine. Use `max-w-full self-start` (or `w-fit max-w-full`) plus `min-w-0` on the column so the pill wraps instead. Pinned by SiteBrandingTest "wraps a long hero eyebrow". Only nav dropdowns (absolute-positioned, hardcoded content) may keep `w-max`.

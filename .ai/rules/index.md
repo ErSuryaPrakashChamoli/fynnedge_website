@@ -50,7 +50,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Http/Middleware/SecurityHeaders.php,app/Providers/Filament/AdminPanelProvider.php | .ai/rules/providers-filament.md |
 | app/Models/Redirect.php,app/Http/Middleware/HandleRedirects.php,app/Filament/Resources/Redirects/** | .ai/rules/redirects.md |
 | app/Filament/Schemas/HtmlBodyEditor.php,app/Filament/Resources/**/Schemas/*Form.php | .ai/rules/resources-schemas.md |
-| resources/views/quick-enquiry.blade.php, resources/views/** | .ai/rules/resources-views.md |
+| resources/views/quick-enquiry.blade.php, resources/views/**, resources/views/home.blade.php | .ai/rules/resources-views.md |
 | app/Filament/Resources/** | .ai/rules/resources.md |
 | app/Support/Seo/**,app/Filament/Pages/StructuredData.php,app/Filament/Resources/SchemaTemplates/**,app/Filament/Schemas/SeoFormSection.php | .ai/rules/schemas.md |
 | app/Support/Seo/OrganizationSchema.php,database/seeders/BusinessProfileSeeder.php,app/Filament/Pages/Settings.php | .ai/rules/seeders-filament-pages.md |
