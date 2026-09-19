@@ -23,6 +23,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Filament/RelationManagers/FaqsRelationManager.php,app/Models/Page.php,app/Http/Controllers/PageController.php | .ai/rules/controllers.md |
 | resources/views/components/site/promo-bar.blade.php,resources/js/app.js,resources/css/app.css | .ai/rules/css.md |
 | resources/views/emails/**,resources/views/components/emails/** | .ai/rules/emails.md |
+| app/Support/Pages/AboutPageContent.php,app/Filament/Pages/AboutPageSettings.php,resources/views/about.blade.php | .ai/rules/filament-pages-views.md |
 | app/Support/Media/**,app/Filament/Pages/MediaGovernance.php | .ai/rules/filament-pages.md |
 | app/Models/Concerns/Publishable.php,app/Filament/Resources/** | .ai/rules/filament-resources.md |
 | app/Models/User.php,app/Filament/**,config/filament-shield.php,config/permission.php,database/seeders/RoleSeeder.php | .ai/rules/filament-seeders.md |
@@ -68,5 +69,6 @@ Before planning or editing, find the row whose globs match the file's path and r
 | config/filesystems.php,resources/views/components/layouts/app.blade.php,tests/** | .ai/rules/views-components-layouts.md |
 | app/Support/Calculators/**,app/Http/Controllers/LoanProductController.php,resources/views/loans/**,resources/views/components/site/flexi-hybrid-hero.blade.php | .ai/rules/views-components-site.md |
 | resources/views/**,resources/css/app.css | .ai/rules/views-css.md |
+| resources/views/about.blade.php,app/Http/Controllers/AboutController.php | .ai/rules/views-http-controllers.md |
 | app/Support/Enquiries/PartnerLenders.php,app/Support/Enquiries/QuickEnquiryPageContent.php,app/Http/Controllers/PartnerLenderController.php,app/Http/Controllers/QuickEnquiryPageController.php,resources/views/partners.blade.php,resources/views/quick-enquiry.blade.php | .ai/rules/views-views.md |
 | resources/css/**,resources/views/** | .ai/rules/views.md |

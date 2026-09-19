@@ -48,6 +48,7 @@ it('styles admin rich-text bodies with the rich-text class instead of the uninst
     'loans/show-flexi-hybrid.blade.php',
     'loans/landing-page.blade.php',
     'pages/show.blade.php',
+    'about.blade.php',
     'careers.blade.php',
     'resources/show.blade.php',
     'components/site/calculator-explainer.blade.php',
