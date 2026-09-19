@@ -34,8 +34,11 @@ class RoleSeeder extends Seeder
             'Achievement', 'VideoTestimonial', 'PromoBar',
         ], ['ViewAny', 'View', 'Create', 'Update', 'Delete'])
             ->merge($this->permissionsFor(['LoanProductContent', 'LoanLandingPageContent'], ['ViewAny', 'View', 'Update']))
-            // The Quick Enquiry page's wording is marketing copy, like a MarketingSection.
-            ->merge([Permission::findOrCreate('View:QuickEnquiryPageSettings')]);
+            // The Quick Enquiry and About pages' wording is marketing copy, like a MarketingSection.
+            ->merge([
+                Permission::findOrCreate('View:QuickEnquiryPageSettings'),
+                Permission::findOrCreate('View:AboutPageSettings'),
+            ]);
 
         Role::findOrCreate('Marketing')->syncPermissions($marketingPermissions);
 

@@ -180,6 +180,18 @@ it('renders the about page from a published CMS page', function () {
     $this->get('/about')->assertOk()->assertSee('About FynnEdge');
 });
 
+it('renders the about page body edited in admin', function () {
+    Page::factory()->published()->create([
+        'slug' => 'about',
+        'body' => '<h2>Who we are</h2><p>FynnEdge Advisory connects borrowers with suitable lenders.</p>',
+    ]);
+
+    $this->get('/about')
+        ->assertOk()
+        ->assertSee('<h2>Who we are</h2>', false)
+        ->assertSee('FynnEdge Advisory connects borrowers with suitable lenders.');
+});
+
 it('404s the about page when no about content is published', function () {
     Page::query()->delete();
 
