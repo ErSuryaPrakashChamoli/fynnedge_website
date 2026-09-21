@@ -12,7 +12,9 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Carbon;
@@ -41,6 +43,9 @@ class ArticlesTable
                         PublishStatus::Published => 'success',
                         PublishStatus::Draft => 'warning',
                     }),
+                // Not toggleable, so it always renders (see the date columns' note below).
+                ToggleColumn::make('show_on_home')
+                    ->label('Home page'),
                 /*
                  * The three date columns are deliberately NOT toggleable.
                  * Filament persists each admin's column layout in the session
@@ -83,6 +88,7 @@ class ArticlesTable
             ->filters([
                 SelectFilter::make('status')->options(PublishStatus::class),
                 SelectFilter::make('category')->options(LoanCategory::class),
+                TernaryFilter::make('show_on_home')->label('Shown on home page'),
                 TrashedFilter::make(),
             ])
             ->recordActions([

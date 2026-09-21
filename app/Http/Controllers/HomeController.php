@@ -37,6 +37,7 @@ class HomeController extends Controller
             'faqs' => PageFaqs::merge(
                 Faq::query()->published()->whereNull('faqable_id')->whereNull('placements')->orderBy('sort_order')->limit(6)->get(),
             ),
+            'latestArticles' => Article::query()->published()->shownOnHome()->newestFirst()->limit(3)->get(),
             'howItWorksSteps' => HowItWorksStep::query()->published()->orderBy('sort_order')->get(),
             'financeCta' => MarketingSection::forPlacement('home_finance_cta'),
             'emiCta' => MarketingSection::forPlacement('home_emi_cta'),

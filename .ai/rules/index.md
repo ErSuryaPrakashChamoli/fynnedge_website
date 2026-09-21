@@ -44,6 +44,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Http/Middleware/SecurityHeaders.php | .ai/rules/middleware.md |
 | database/migrations/** | .ai/rules/migrations.md |
 | app/Models/**,app/Filament/** | .ai/rules/models-filament.md |
+| app/Filament/Resources/Articles/**,app/Models/Article.php,resources/views/home.blade.php | .ai/rules/models-views.md |
 | app/Modules/**/Models/*.php | .ai/rules/models.md |
 | app/Models/**,app/Modules/**/Models/*.php | .ai/rules/modules-models.md |
 | app/Http/Controllers/RobotsController.php,app/Http/Controllers/SitemapController.php,app/Support/Seo/SearchEngineIndexing.php,docker/nginx/nginx.conf | .ai/rules/nginx.md |

@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['title', 'slug', 'excerpt', 'image_path', 'image_alt', 'body', 'category', 'status', 'published_at', 'expires_at'])]
+#[Fillable(['title', 'slug', 'excerpt', 'image_path', 'image_alt', 'body', 'category', 'status', 'show_on_home', 'published_at', 'expires_at'])]
 class Article extends Model
 {
     /** @use HasFactory<ArticleFactory> */
@@ -28,6 +28,7 @@ class Article extends Model
         return [
             'status' => PublishStatus::class,
             'category' => LoanCategory::class,
+            'show_on_home' => 'boolean',
             'published_at' => 'datetime',
             'expires_at' => 'datetime',
         ];
@@ -62,6 +63,15 @@ class Article extends Model
     public function publishedOn(): Carbon
     {
         return $this->published_at ?? $this->created_at ?? Carbon::now();
+    }
+
+    /**
+     * Articles an admin has left switched on for the home page's "Latest
+     * articles" section. Combine with published() and newestFirst().
+     */
+    public function scopeShownOnHome(Builder $query): void
+    {
+        $query->where('show_on_home', true);
     }
 
     /**
