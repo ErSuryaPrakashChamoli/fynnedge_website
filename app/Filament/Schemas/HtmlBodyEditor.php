@@ -23,14 +23,23 @@ class HtmlBodyEditor
      * A body the visual editor could not save back unchanged opens in HTML mode,
      * so saving an unrelated field never strips it.
      *
+     * Images inserted with the toolbar's attach button are stored on the public
+     * disk under $attachmentsDirectory: the editor writes each image's URL into
+     * the saved HTML, so the public page renders it without any lookup. Left to
+     * Filament's default the upload would follow FILESYSTEM_DISK, which is the
+     * private disk here, and every inline image would 404 on the site.
+     *
      * @return array<int, Toggle|CodeEditor|RichEditor>
      */
-    public static function make(string $field = 'body'): array
+    public static function make(string $field = 'body', string $attachmentsDirectory = 'rich-content'): array
     {
         $modeField = "{$field}_html_mode";
         $sourceField = "{$field}_html";
 
         $richEditor = RichEditor::make($field)
+            ->fileAttachmentsDisk('public')
+            ->fileAttachmentsDirectory($attachmentsDirectory)
+            ->fileAttachmentsVisibility('public')
             ->hidden(fn (Get $get): bool => (bool) $get($modeField))
             ->dehydratedWhenHidden()
             ->dehydrateStateUsing(fn (?string $state, Get $get): ?string => $get($modeField) ? self::sanitize($get($sourceField)) : $state)

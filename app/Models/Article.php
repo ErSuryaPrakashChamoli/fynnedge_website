@@ -14,8 +14,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['title', 'slug', 'excerpt', 'body', 'category', 'status', 'published_at', 'expires_at'])]
+#[Fillable(['title', 'slug', 'excerpt', 'image_path', 'image_alt', 'body', 'category', 'status', 'published_at', 'expires_at'])]
 class Article extends Model
 {
     /** @use HasFactory<ArticleFactory> */
@@ -29,6 +31,37 @@ class Article extends Model
             'published_at' => 'datetime',
             'expires_at' => 'datetime',
         ];
+    }
+
+    /**
+     * The optional cover image, shown on the resources card and at the top of
+     * the article. Inline images inside the body are separate: the editor
+     * uploads those itself and writes their URLs straight into the HTML.
+     */
+    public function imageUrl(): ?string
+    {
+        return $this->image_path ? Storage::disk('public')->url($this->image_path) : null;
+    }
+
+    /**
+     * Newest first for any public listing. published_at is optional in the
+     * admin form, and MySQL sorts NULLs last on a DESC order, so an article
+     * published without a date would otherwise sink to the bottom of the
+     * list — fall back to created_at, with id breaking same-second ties.
+     */
+    public function scopeNewestFirst(Builder $query): void
+    {
+        $query->orderByRaw('coalesce(published_at, created_at) desc')->orderByDesc('id');
+    }
+
+    /**
+     * The date to show publicly. Mirrors scopeNewestFirst()'s fallback, so
+     * a card always displays the date it was actually sorted by instead of
+     * rendering with no date at all.
+     */
+    public function publishedOn(): Carbon
+    {
+        return $this->published_at ?? $this->created_at ?? Carbon::now();
     }
 
     /**

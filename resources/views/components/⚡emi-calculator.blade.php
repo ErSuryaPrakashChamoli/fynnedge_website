@@ -302,7 +302,7 @@ new class extends Component
         return Article::query()
             ->published()
             ->forCategoryOrGeneral(LoanCategory::from($this->category))
-            ->latest('published_at')
+            ->newestFirst()
             ->limit(3)
             ->get();
     }

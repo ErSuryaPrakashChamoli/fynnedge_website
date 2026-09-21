@@ -44,7 +44,7 @@ class NewsletterCampaignForm
                     ->components([
                         Select::make('article_id')
                             ->label('Featured blog article')
-                            ->relationship('article', 'title', fn ($query) => $query->published()->latest('published_at'))
+                            ->relationship('article', 'title', fn ($query) => $query->published()->newestFirst())
                             ->searchable()
                             ->preload()
                             ->live()

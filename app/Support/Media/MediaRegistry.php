@@ -2,6 +2,7 @@
 
 namespace App\Support\Media;
 
+use App\Models\Article;
 use App\Models\Banner;
 use App\Models\CompanyPhoto;
 use App\Models\HowItWorksStep;
@@ -27,6 +28,15 @@ final class MediaRegistry
     public static function all(): array
     {
         return [
+            MediaFieldDefinition::forModel(
+                modelClass: Article::class,
+                label: 'Article Cover',
+                pathField: 'image_path',
+                directory: 'articles',
+                altField: 'image_alt',
+                recordLabelField: 'title',
+                withTrashed: true,
+            ),
             MediaFieldDefinition::forModel(
                 modelClass: Banner::class,
                 label: 'Banner',

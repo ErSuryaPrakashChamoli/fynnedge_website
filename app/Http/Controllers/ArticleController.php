@@ -11,7 +11,7 @@ class ArticleController extends Controller
     public function index(): View
     {
         return view('resources.index', [
-            'articles' => Article::query()->published()->latest('published_at')->orderByDesc('id')->get(),
+            'articles' => Article::query()->published()->newestFirst()->get(),
         ]);
     }
 
