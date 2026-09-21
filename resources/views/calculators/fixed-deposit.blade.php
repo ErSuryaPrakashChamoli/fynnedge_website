@@ -1,12 +1,12 @@
-<x-layouts.app title="Fixed Deposit Calculator" description="Estimate the maturity value and interest earned on a fixed deposit.">
+<x-layouts.app :title="$content['meta_title']" :description="$content['meta_description']">
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Calculators' => route('calculators.index'), 'Fixed Deposit Calculator' => null]" />
 
         <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            Fixed Deposit Calculator
+            {{ $content['heading'] }}
         </h1>
         <p data-reveal="up" class="mt-3 text-ink-muted text-justify hyphens-auto">
-            Adjust the deposit amount, interest rate and tenure to see the maturity value of your fixed deposit.
+            {{ $content['description'] }}
         </p>
 
         <div data-reveal="zoom" class="mt-10">

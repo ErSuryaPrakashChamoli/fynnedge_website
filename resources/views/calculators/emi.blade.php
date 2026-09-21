@@ -1,13 +1,12 @@
-<x-layouts.app handles-faqs :title="$category->getLabel().' EMI Calculator'" :description="'Estimate your monthly EMI for a '.$category->getLabel().' and see the full year-by-year principal and interest breakdown.'">
+<x-layouts.app handles-faqs :title="$content['meta_title']" :description="$content['meta_description']">
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Calculators' => route('calculators.index'), $category->getLabel().' EMI Calculator' => null]" />
 
         <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            {{ $category->getLabel() }} EMI Calculator
+            {{ $content['heading'] }}
         </h1>
         <p data-reveal="up" class="mt-3 text-ink-muted text-justify hyphens-auto">
-            Adjust the amount, interest rate and tenure to see your monthly EMI —
-            plus the full year-by-year principal and interest breakdown. You can switch loan types below.
+            {{ $content['description'] }}
         </p>
 
         <div data-reveal="zoom" class="mt-10">

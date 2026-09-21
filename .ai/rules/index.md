@@ -13,6 +13,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Providers/Filament/AdminPanelProvider.php | .ai/rules/app-providers-filament.md |
 | app/** | .ai/rules/app.md |
 | app/Support/Loans/LoanMegaMenu.php,app/Support/Calculators/CalculatorCatalog.php,app/Models/NavigationLink.php | .ai/rules/calculators-models.md |
+| app/Support/Calculators/CalculatorPagesContent.php,app/Filament/Pages/CalculatorPagesSettings.php,resources/views/calculators/** | .ai/rules/calculators.md |
 | app/Support/Seo/SeoDefaults.php,app/Support/Seo/Sitemap.php,app/Support/Seo/CrawlerPolicy.php,resources/views/components/layouts/app.blade.php | .ai/rules/components-layouts.md |
 | resources/views/components/ui/input-affix.blade.php,resources/views/components/site/loan-enquiry-form.blade.php,resources/views/components/site/quick-enquiry.blade.php | .ai/rules/components-site-views-components-site.md |
 | app/Models/MarketingSection.php,app/Models/NavigationLink.php,resources/views/home.blade.php,resources/views/components/site/footer.blade.php | .ai/rules/components-site.md |
