@@ -331,6 +331,28 @@
         </div>
     </section>
 
+    {{-- Latest articles, limited to those an admin left switched on for the home page. --}}
+    @if ($latestArticles->isNotEmpty())
+        <section class="border-t border-line bg-surface-2">
+            <div class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+                <div data-reveal="down" class="flex flex-wrap items-end justify-between gap-4">
+                    <div>
+                        <p class="font-mono text-xs font-semibold uppercase tracking-wider text-ink-faint">Guides &amp; resources</p>
+                        <h2 class="mt-2 max-w-xl text-balance font-display text-2xl font-semibold text-ink">Latest articles</h2>
+                    </div>
+                    <x-ui.button tag="a" :href="route('resources.index')" variant="secondary" size="sm">
+                        View all articles
+                    </x-ui.button>
+                </div>
+                <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($latestArticles as $article)
+                        <x-site.article-card :article="$article" />
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
     {{-- Real customer videos directly before the final call to action. --}}
     <x-site.video-testimonials />
 

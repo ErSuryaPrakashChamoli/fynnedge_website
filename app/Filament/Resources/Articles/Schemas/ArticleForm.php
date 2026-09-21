@@ -11,6 +11,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
@@ -54,6 +55,10 @@ class ArticleForm
                             ->default(PublishStatus::Draft)
                             ->required()
                             ->live(),
+                        Toggle::make('show_on_home')
+                            ->label('Show on home page')
+                            ->default(true)
+                            ->helperText('When on, this article can appear in the home page\'s "Latest articles" section (the 3 newest published ones are shown).'),
                         DateTimePicker::make('published_at')
                             ->visible(fn (callable $get) => $get('status') === PublishStatus::Published->value),
                         DateTimePicker::make('expires_at')
