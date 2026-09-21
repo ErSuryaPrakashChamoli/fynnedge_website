@@ -43,8 +43,9 @@ class FlexiHybridTermLoanSeeder extends Seeder
         ]);
 
         // Interest-rate ranges deliberately overlap (a realistic market spread).
-        // Tenure is 8–9 years for every lender; the initial tenure is set by the
-        // total (2 yrs on 8, 3 yrs on 9) — see FlexiHybridTenure.
+        // Repayment structure (initial + subsequent years) per lender:
+        // Bajaj 2 + 6 or 3 + 6, Tata Capital 2 + 5, Piramal 2 + 5, Kotak 1 + 5.
+        // See FlexiHybridTenure for how min/max/initial tenure encode these.
         $illustrativeTerms = [
             'Bajaj Finance' => [
                 'min_amount' => 200_000, 'max_amount' => 15_000_000,
@@ -54,19 +55,19 @@ class FlexiHybridTermLoanSeeder extends Seeder
             ],
             'Tata Capital' => [
                 'min_amount' => 150_000, 'max_amount' => 12_000_000,
-                'min_tenure_months' => 96, 'max_tenure_months' => 108, 'initial_tenure_months' => 24,
+                'min_tenure_months' => 84, 'max_tenure_months' => 84, 'initial_tenure_months' => 24,
                 'interest_rate_from' => 10.75, 'interest_rate_to' => 14.50,
                 'processing_fee_percent_min' => 1.25, 'processing_fee_percent_max' => 2.25, 'processing_fee_gst_extra' => true,
             ],
             'Piramal Finance' => [
                 'min_amount' => 200_000, 'max_amount' => 10_000_000,
-                'min_tenure_months' => 96, 'max_tenure_months' => 108, 'initial_tenure_months' => 24,
+                'min_tenure_months' => 84, 'max_tenure_months' => 84, 'initial_tenure_months' => 24,
                 'interest_rate_from' => 11.25, 'interest_rate_to' => 15.00,
                 'processing_fee_percent_min' => 1.50, 'processing_fee_percent_max' => 2.50, 'processing_fee_gst_extra' => true,
             ],
             'Kotak Mahindra Bank' => [
                 'min_amount' => 300_000, 'max_amount' => 20_000_000,
-                'min_tenure_months' => 96, 'max_tenure_months' => 108, 'initial_tenure_months' => 24,
+                'min_tenure_months' => 72, 'max_tenure_months' => 72, 'initial_tenure_months' => 12,
                 'interest_rate_from' => 10.00, 'interest_rate_to' => 13.50,
                 'processing_fee_percent_min' => 0.75, 'processing_fee_percent_max' => 1.75, 'processing_fee_gst_extra' => true,
             ],
@@ -98,7 +99,7 @@ class FlexiHybridTermLoanSeeder extends Seeder
             ['faqable_type' => LoanProduct::class, 'faqable_id' => $product->id, 'sort_order' => 2],
             [
                 'question' => 'Is the initial tenure the same for every lender?',
-                'answer' => 'Yes. Flexi Hybrid Term Loans are offered for an 8- or 9-year total tenure. On an 8-year loan the interest-only initial tenure is 2 years (followed by 6 years of principal + interest EMIs); on a 9-year loan it is 3 years (followed by 6 years). Interest rates still differ by lender — compare them in the lender comparison table and calculator above.',
+                'answer' => 'No. Each lender has its own structure of interest-only initial tenure + principal-and-interest subsequent tenure: Bajaj Finance offers 2 + 6 or 3 + 6 years, Tata Capital, Piramal Finance and Aditya Birla Finance offer 2 + 5 years, and Kotak Mahindra Bank offers 1 + 5 years. Compare them in the lender comparison table and calculator above before choosing.',
                 'status' => PublishStatus::Published,
             ],
         );

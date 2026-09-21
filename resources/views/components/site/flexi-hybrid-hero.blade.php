@@ -5,11 +5,11 @@
 
     $enquiryContent = EnquiryFormContent::forLoanPage($loanProduct->name);
     $lenderOffers = $loanProduct->lenderProducts;
-    $initialTenureMonths = $loanProduct->default_initial_tenure_months;
-    $totalTenureMonths = $loanProduct->default_tenure_months;
-    $subsequentTenureMonths = ($initialTenureMonths && $totalTenureMonths && $totalTenureMonths > $initialTenureMonths)
-        ? $totalTenureMonths - $initialTenureMonths
-        : null;
+    // Each lender has its own structure (e.g. 1 + 5, 2 + 5, 2 + 6 / 3 + 6), so show the range across them.
+    $structures = $lenderOffers->flatMap(fn ($offer) => $offer->hybridTenureOptions());
+    $monthRange = fn ($months) => $months->isEmpty() ? null : ($months->min() === $months->max() ? $months->min() : $months->min().'–'.$months->max());
+    $initialTenureMonths = $monthRange($structures->pluck('initial'));
+    $subsequentTenureMonths = $monthRange($structures->pluck('subsequent'));
 @endphp
 
 {{--

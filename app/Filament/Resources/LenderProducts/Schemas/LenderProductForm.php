@@ -68,7 +68,7 @@ class LenderProductForm
                 ->label('Initial tenure (hybrid products only)')
                 ->numeric()
                 ->suffix('months')
-                ->helperText('Only applies to a hybrid/flexi-structured loan product: length of this lender\'s interest-only initial stage. Leave blank to use the product\'s default.'),
+                ->helperText('Only applies to a hybrid/flexi-structured loan product: this lender\'s interest-only initial tenure at its minimum tenure. The subsequent tenure is min tenure − initial; each extra year up to max tenure adds to the initial tenure (e.g. 2 + 6 or 3 + 6 = min 96, max 108, initial 24). Leave blank to use the product\'s default.'),
             TextInput::make('interest_rate_from')->numeric()->suffix('%'),
             TextInput::make('interest_rate_to')->numeric()->suffix('%'),
             Fieldset::make('Processing fee')

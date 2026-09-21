@@ -9,6 +9,7 @@ use App\Models\Concerns\HasPublicId;
 use App\Modules\Applications\Models\LenderProductDocumentRequirement;
 use App\Modules\Eligibility\Enums\EligibilityRuleSetStatus;
 use App\Modules\Eligibility\Models\EligibilityRuleSet;
+use App\Support\Calculators\FlexiHybridTenure;
 use Database\Factories\LenderProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -129,20 +130,16 @@ class LenderProduct extends Model
     }
 
     /**
-     * The remaining principal+interest stage of a hybrid loan's tenure, given
-     * a chosen total tenure. Null if there isn't a configured initial tenure
-     * to subtract, or if it would leave nothing (or a negative amount) for
-     * the subsequent stage — never silently clamped to a made-up value.
+     * This offer's Flexi Hybrid repayment structure(s), e.g. Kotak's
+     * "1 + 5" or Bajaj's "2 + 6 or 3 + 6" — see FlexiHybridTenure for how
+     * they're derived from min/max tenure and initial tenure. Empty when
+     * this offer isn't configured well enough to run the hybrid calculator.
+     *
+     * @return list<array{total: int, initial: int, subsequent: int}>
      */
-    public function subsequentTenureMonths(int $totalTenureMonths): ?int
+    public function hybridTenureOptions(): array
     {
-        $initial = $this->effectiveInitialTenureMonths();
-
-        if ($initial === null || $totalTenureMonths <= $initial) {
-            return null;
-        }
-
-        return $totalTenureMonths - $initial;
+        return FlexiHybridTenure::options($this->min_tenure_months, $this->max_tenure_months, $this->effectiveInitialTenureMonths());
     }
 
     public function lender(): BelongsTo

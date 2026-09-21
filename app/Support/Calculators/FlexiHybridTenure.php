@@ -3,56 +3,54 @@
 namespace App\Support\Calculators;
 
 /**
- * The Flexi Hybrid Term Loan's fixed tenure structure. It is offered only
- * for an 8- or 9-year total tenure, and the interest-only initial tenure is
- * set by that total: 2 years on an 8-year loan ("2 + 6") and 3 years on a
- * 9-year loan ("3 + 6"). The rest of the tenure is the principal + interest
- * subsequent tenure.
+ * A Flexi Hybrid Term Loan's repayment structure(s) — "initial + subsequent"
+ * — derived from a lender offer's own tenure fields rather than hardcoded
+ * per lender:
+ *
+ * - min_tenure_months: the shortest total tenure offered
+ * - initial_tenure_months: the interest-only initial tenure at that minimum
+ * - max_tenure_months: the longest total tenure offered
+ *
+ * The subsequent (principal + interest) tenure stays fixed at
+ * min − initial; every extra year above the minimum lengthens the initial
+ * tenure. So Kotak's "1 + 5" is 72/72/12, Piramal's and Tata Capital's
+ * "2 + 5" is 84/84/24, and Bajaj's "2 + 6 or 3 + 6" is 96/108/24.
  */
 class FlexiHybridTenure
 {
     /**
-     * Total tenure (months) => interest-only initial tenure (months).
+     * @return list<array{total: int, initial: int, subsequent: int}>
+     */
+    public static function options(?int $minTotalMonths, ?int $maxTotalMonths, ?int $initialMonths): array
+    {
+        if ($minTotalMonths === null || $initialMonths === null || $initialMonths <= 0 || $minTotalMonths <= $initialMonths) {
+            return [];
+        }
+
+        $subsequentMonths = $minTotalMonths - $initialMonths;
+        $maxTotalMonths = max($minTotalMonths, $maxTotalMonths ?? $minTotalMonths);
+        $options = [];
+
+        for ($total = $minTotalMonths; $total <= $maxTotalMonths; $total += 12) {
+            $options[] = ['total' => $total, 'initial' => $total - $subsequentMonths, 'subsequent' => $subsequentMonths];
+        }
+
+        return $options;
+    }
+
+    /**
+     * The option with this exact total tenure, or the closest one (the
+     * shorter one on a tie). Null only when there are no options.
      *
-     * @var array<int, int>
+     * @param  list<array{total: int, initial: int, subsequent: int}>  $options
+     * @return array{total: int, initial: int, subsequent: int}|null
      */
-    public const INITIAL_MONTHS_BY_TOTAL_MONTHS = [
-        96 => 24,
-        108 => 36,
-    ];
-
-    /**
-     * @return array<int, int>
-     */
-    public static function totalTenureOptions(): array
+    public static function nearest(array $options, int $totalTenureMonths): ?array
     {
-        return array_keys(self::INITIAL_MONTHS_BY_TOTAL_MONTHS);
-    }
+        $closest = null;
 
-    public static function minTotalMonths(): int
-    {
-        return min(self::totalTenureOptions());
-    }
-
-    public static function maxTotalMonths(): int
-    {
-        return max(self::totalTenureOptions());
-    }
-
-    public static function isAllowed(int $totalTenureMonths): bool
-    {
-        return array_key_exists($totalTenureMonths, self::INITIAL_MONTHS_BY_TOTAL_MONTHS);
-    }
-
-    /**
-     * Snaps any tenure to the nearest allowed total tenure (8 or 9 years).
-     */
-    public static function nearestAllowed(int $totalTenureMonths): int
-    {
-        $closest = self::minTotalMonths();
-
-        foreach (self::totalTenureOptions() as $option) {
-            if (abs($option - $totalTenureMonths) < abs($closest - $totalTenureMonths)) {
+        foreach ($options as $option) {
+            if ($closest === null || abs($option['total'] - $totalTenureMonths) < abs($closest['total'] - $totalTenureMonths)) {
                 $closest = $option;
             }
         }
@@ -60,15 +58,16 @@ class FlexiHybridTenure
         return $closest;
     }
 
-    public static function initialMonthsFor(int $totalTenureMonths): int
+    /**
+     * @param  array{total: int, initial: int, subsequent: int}  $option
+     */
+    public static function label(array $option): string
     {
-        return self::INITIAL_MONTHS_BY_TOTAL_MONTHS[self::nearestAllowed($totalTenureMonths)];
+        return self::years($option['initial']).' + '.self::years($option['subsequent']).' yrs';
     }
 
-    public static function subsequentMonthsFor(int $totalTenureMonths): int
+    public static function years(int $months): string
     {
-        $total = self::nearestAllowed($totalTenureMonths);
-
-        return $total - self::INITIAL_MONTHS_BY_TOTAL_MONTHS[$total];
+        return $months % 12 === 0 ? (string) ($months / 12) : rtrim(rtrim(number_format($months / 12, 1), '0'), '.');
     }
 }
