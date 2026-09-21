@@ -4,10 +4,11 @@ namespace App\Filament\Resources\Articles\Schemas;
 
 use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HtmlBodyEditor;
 use App\Filament\Schemas\SeoFormSection;
 use App\Models\Article;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -33,6 +34,18 @@ class ArticleForm
                         TextInput::make('excerpt')
                             ->maxLength(160)
                             ->columnSpanFull(),
+                        FileUpload::make('image_path')
+                            ->label('Cover image')
+                            ->image()
+                            ->disk('public')
+                            ->directory('articles')
+                            ->acceptedFileTypes(['image/png', 'image/jpeg', 'image/webp'])
+                            ->maxSize(5120)
+                            ->helperText('Optional. Shown on the resources card and at the top of the article. Recommended 1600 × 900px (16:9), JPG/PNG/WebP up to 5MB. To place images within the text, use the attach button in the editor toolbar below.'),
+                        TextInput::make('image_alt')
+                            ->label('Cover image alt text')
+                            ->maxLength(255)
+                            ->helperText('Describe the image for screen readers and search engines.'),
                         Select::make('category')
                             ->options(LoanCategory::class)
                             ->helperText('Leave blank to show as a general resource across all loan types.'),
@@ -47,7 +60,8 @@ class ArticleForm
                             ->helperText('Optional. The article stops appearing publicly after this time.'),
                     ]),
 
-                RichEditor::make('body'),
+                Section::make('Content')
+                    ->components(HtmlBodyEditor::make('body', attachmentsDirectory: 'articles/inline')),
 
                 SeoFormSection::make(),
             ]);

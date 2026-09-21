@@ -18,9 +18,15 @@
                 @foreach ($articles as $article)
                     <a href="{{ route('resources.show', $article) }}" data-reveal="up stagger" class="group">
                         <x-ui.card class="card-lift h-full transition-colors transition-shadow group-hover:bg-accent-soft group-hover:shadow-md group-hover:animate-card-swing">
-                            @if ($article->published_at)
-                                <p class="font-mono text-xs text-ink-faint">{{ $article->published_at->format('d M Y') }}</p>
+                            @if ($article->imageUrl())
+                                <img
+                                    src="{{ $article->imageUrl() }}"
+                                    alt="{{ $article->image_alt ?? '' }}"
+                                    loading="lazy"
+                                    class="mb-5 aspect-video w-full rounded-xl object-cover"
+                                >
                             @endif
+                            <p class="font-mono text-xs text-ink-faint">{{ $article->publishedOn()->format('d M Y') }}</p>
                             <p class="mt-3 font-display text-xl font-semibold text-ink group-hover:text-accent">{{ $article->title }}</p>
                             @if ($article->excerpt)
                                 <p class="mt-2 text-sm text-ink-muted">{{ $article->excerpt }}</p>
