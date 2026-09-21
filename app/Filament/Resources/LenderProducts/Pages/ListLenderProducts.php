@@ -17,7 +17,10 @@ class ListLenderProducts extends ListRecords
         return [
             CreateAction::make(),
             ImportAction::make()
-                ->importer(LenderProductImporter::class),
+                ->importer(LenderProductImporter::class)
+                // One chunk for a typical file: the importer's lookup caches
+                // live for a chunk, so fewer chunks means fewer repeat queries.
+                ->chunkSize(500),
         ];
     }
 }

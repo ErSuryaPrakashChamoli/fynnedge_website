@@ -5,20 +5,36 @@ use App\Models\Lender;
 use App\Models\LenderProduct;
 use Livewire\Livewire;
 
-it('mounts with the Flexi Hybrid product-level defaults and a computed result using the product-level default initial tenure', function () {
+it('mounts on an 8-year tenure split into a 2-year initial and 6-year subsequent tenure', function () {
     seedCalculatorProduct(LoanCategory::FlexiHybridTermLoan);
 
     Livewire::test('flexi-hybrid-calculator')
         ->assertSet('principal', 1000000.0)
         ->assertSet('annualRate', 10.00)
-        ->assertSet('totalTenureMonths', 60)
+        ->assertSet('totalTenureMonths', 96)
         ->assertSet('lenderProductId', null)
-        ->assertSee('Initial EMI')
-        ->assertSee('Subsequent EMI')
+        ->assertSee('Initial EMI (24 mo)', false)
+        ->assertSee('Subsequent EMI (72 mo)', false)
         ->assertOk();
 });
 
-it('lets a visitor switch lenders, applying that lender\'s own initial tenure and rate', function () {
+it('uses a 3-year initial tenure on a 9-year loan', function () {
+    seedCalculatorProduct(LoanCategory::FlexiHybridTermLoan);
+
+    $component = Livewire::test('flexi-hybrid-calculator')
+        ->set('totalTenureMonths', 108)
+        ->assertHasNoErrors()
+        ->assertSee('Initial EMI (36 mo)', false)
+        ->assertSee('Subsequent EMI (72 mo)', false);
+
+    expect($component->instance()->result())->toMatchArray([
+        'initial_tenure_months' => 36,
+        'subsequent_tenure_months' => 72,
+        'total_tenure_months' => 108,
+    ]);
+});
+
+it('lets a visitor switch lenders, applying that lender\'s rate with the tenure-based initial tenure', function () {
     $product = seedCalculatorProduct(LoanCategory::FlexiHybridTermLoan);
     $lender = Lender::factory()->create(['name' => 'Bajaj Finance']);
     $offer = LenderProduct::factory()->create([
@@ -32,44 +48,35 @@ it('lets a visitor switch lenders, applying that lender\'s own initial tenure an
         ->assertSet('lenderProductId', $offer->id) // first active lender is auto-selected on mount
         ->call('selectLender', $offer->id)
         ->assertSet('annualRate', 11.25)
-        ->assertSee('Initial EMI (18 mo)', false);
+        ->assertSee('Initial EMI (24 mo)', false);
 });
 
-it('shows an honest fallback instead of a fabricated result when the selected lender has no initial tenure configured', function () {
-    $product = seedCalculatorProduct(LoanCategory::FlexiHybridTermLoan, ['default_initial_tenure_months' => null]);
-    $lender = Lender::factory()->create(['name' => 'Piramal Finance']);
-    $offer = LenderProduct::factory()->create([
-        'lender_id' => $lender->id,
-        'loan_product_id' => $product->id,
-        'initial_tenure_months' => null,
-    ]);
-
-    Livewire::test('flexi-hybrid-calculator')
-        ->call('selectLender', $offer->id)
-        ->assertSee("hasn't published its initial-tenure terms", false);
-});
-
-it('resets an emptied field to the product minimum instead of crashing', function (string $property, string $presetKey, int $multiplier) {
+it('resets an emptied field to the product minimum instead of crashing', function (string $property, string $presetKey) {
     seedCalculatorProduct(LoanCategory::FlexiHybridTermLoan);
 
     $component = Livewire::test('flexi-hybrid-calculator');
-    $minimum = $component->instance()->preset()[$presetKey] * $multiplier;
+    $minimum = $component->instance()->preset()[$presetKey];
 
     $component->set($property, '')
         ->assertOk()
         ->assertSet($property, $minimum)
         ->assertHasErrors([$property]);
 })->with([
-    'loan amount' => ['principal', 'min_amount', 1],
-    'interest rate' => ['annualRate', 'min_rate', 1],
-    'total tenure' => ['totalTenureMonths', 'min_years', 12],
+    'loan amount' => ['principal', 'min_amount'],
+    'interest rate' => ['annualRate', 'min_rate'],
 ]);
 
-it('clamps the total tenure to the product\'s configured range and flags the adjustment', function () {
+it('snaps a total tenure outside 8 or 9 years to the nearest allowed tenure and flags the adjustment', function (mixed $tenure, int $expected) {
     seedCalculatorProduct(LoanCategory::FlexiHybridTermLoan);
 
     Livewire::test('flexi-hybrid-calculator')
-        ->set('totalTenureMonths', 999)
-        ->assertSet('totalTenureMonths', 72)
+        ->set('totalTenureMonths', $tenure)
+        ->assertOk()
+        ->assertSet('totalTenureMonths', $expected)
         ->assertHasErrors('totalTenureMonths');
-});
+})->with([
+    'emptied' => ['', 96],
+    'too short' => [60, 96],
+    'too long' => [999, 108],
+    'between the two' => [100, 96],
+]);
