@@ -7,16 +7,22 @@ use App\Models\CalculatorPage;
 use App\Models\LoanProduct;
 use App\Support\Calculators\CalculatorCatalog;
 use App\Support\Calculators\CalculatorPageKey;
+use App\Support\Calculators\CalculatorPagesContent;
 use App\Support\Calculators\LoanCalculatorPreset;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Route;
 
+/**
+ * Every page's title, headline and introduction is admin-editable (Website
+ * Settings → Calculators Page) through CalculatorPagesContent.
+ */
 class CalculatorController extends Controller
 {
     public function index(): View
     {
         return view('calculators.index', [
             'groups' => CalculatorCatalog::groups(),
+            'content' => CalculatorPagesContent::forPage('index'),
         ]);
     }
 
@@ -28,6 +34,7 @@ class CalculatorController extends Controller
 
         return view('calculators.emi', [
             'category' => $loanCategory,
+            'content' => CalculatorPagesContent::forPage('emi', $loanCategory),
         ]);
     }
 
@@ -35,6 +42,7 @@ class CalculatorController extends Controller
     {
         return view('calculators.fixed-deposit', [
             'calculatorPage' => $this->calculatorPageFor(CalculatorPageKey::FixedDeposit),
+            'content' => CalculatorPagesContent::forPage('fixed_deposit'),
             'eligibilityUrl' => $this->generalEligibilityUrl(),
         ]);
     }
@@ -43,6 +51,7 @@ class CalculatorController extends Controller
     {
         return view('calculators.sip', [
             'calculatorPage' => $this->calculatorPageFor(CalculatorPageKey::Sip),
+            'content' => CalculatorPagesContent::forPage('sip'),
             'eligibilityUrl' => $this->generalEligibilityUrl(),
         ]);
     }
@@ -51,6 +60,7 @@ class CalculatorController extends Controller
     {
         return view('calculators.daily-sip', [
             'calculatorPage' => $this->calculatorPageFor(CalculatorPageKey::DailySip),
+            'content' => CalculatorPagesContent::forPage('daily_sip'),
             'eligibilityUrl' => $this->generalEligibilityUrl(),
         ]);
     }
@@ -59,6 +69,7 @@ class CalculatorController extends Controller
     {
         return view('calculators.gst', [
             'calculatorPage' => $this->calculatorPageFor(CalculatorPageKey::Gst),
+            'content' => CalculatorPagesContent::forPage('gst'),
             'eligibilityUrl' => $this->generalEligibilityUrl(),
         ]);
     }
@@ -73,6 +84,7 @@ class CalculatorController extends Controller
 
         return view('calculators.eligibility', [
             'category' => $loanCategory,
+            'content' => CalculatorPagesContent::forPage('eligibility', $loanCategory),
             'explanation' => $this->explanationFor($product),
             'applyUrl' => ($product && Route::has('loans.apply')) ? route('loans.apply', $product) : null,
         ]);
@@ -88,6 +100,7 @@ class CalculatorController extends Controller
 
         return view('calculators.prepayment', [
             'category' => $loanCategory,
+            'content' => CalculatorPagesContent::forPage('prepayment', $loanCategory),
             'explanation' => $this->explanationFor($product),
             'eligibilityUrl' => $this->eligibilityUrlFor($loanCategory),
             'applyUrl' => ($product && Route::has('loans.apply')) ? route('loans.apply', $product) : null,

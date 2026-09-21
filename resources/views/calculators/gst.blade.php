@@ -1,12 +1,12 @@
-<x-layouts.app title="GST Calculator" description="Add or remove GST from an amount and see the CGST/SGST split.">
+<x-layouts.app :title="$content['meta_title']" :description="$content['meta_description']">
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Calculators' => route('calculators.index'), 'GST Calculator' => null]" />
 
         <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            GST Calculator
+            {{ $content['heading'] }}
         </h1>
         <p data-reveal="up" class="mt-3 text-ink-muted text-justify hyphens-auto">
-            Add GST to a base amount, or work out the base amount and GST already included in a total.
+            {{ $content['description'] }}
         </p>
 
         <div data-reveal="zoom" class="mt-10">
