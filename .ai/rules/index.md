@@ -23,6 +23,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Models/ContactEnquiry.php,app/Modules/Enquiries/**,app/Http/Controllers/QuickEnquiryController.php,app/Http/Controllers/LoanEnquiryController.php,app/Support/Enquiries/**,app/Filament/Resources/ContactEnquiries/**,resources/views/components/site/loan-enquiry*.blade.php | .ai/rules/contact-enquiries.md |
 | app/Http/Controllers/QuickEnquiryController.php,resources/views/components/site/quick-enquiry.blade.php | .ai/rules/controllers-views-components-site.md |
 | app/Filament/RelationManagers/FaqsRelationManager.php,app/Models/Page.php,app/Http/Controllers/PageController.php | .ai/rules/controllers.md |
+| app/Support/Pages/CreditScorePageContent.php,app/Filament/Pages/CreditScorePageSettings.php,resources/views/credit-score/show.blade.php | .ai/rules/credit-score.md |
 | resources/views/components/site/promo-bar.blade.php,resources/js/app.js,resources/css/app.css | .ai/rules/css.md |
 | resources/views/emails/**,resources/views/components/emails/** | .ai/rules/emails.md |
 | app/Support/Pages/AboutPageContent.php,app/Filament/Pages/AboutPageSettings.php,resources/views/about.blade.php | .ai/rules/filament-pages-views.md |
