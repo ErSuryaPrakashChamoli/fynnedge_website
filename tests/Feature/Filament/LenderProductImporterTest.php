@@ -1,12 +1,15 @@
 <?php
 
 use App\Filament\Imports\LenderProductImporter;
+use App\Filament\Resources\LenderProducts\Pages\ListLenderProducts;
 use App\Models\Lender;
 use App\Models\LenderProduct;
 use App\Models\LoanProduct;
 use App\Models\User;
 use Filament\Actions\Imports\Exceptions\RowImportFailedException;
 use Filament\Actions\Imports\Models\Import;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Drives the Importer pipeline directly (as Filament's own import job does)
@@ -114,3 +117,89 @@ it('fails the row when the loan product slug does not exist', function () {
         'loan_product_slug' => 'does-not-exist',
     ]);
 })->throws(RowImportFailedException::class);
+
+/**
+ * The columns the uploaded test file carries. The import form rejects a
+ * column map that points at a header the file does not have.
+ *
+ * @return array<int, string>
+ */
+function lenderProductCsvHeaders(): array
+{
+    return ['lender_name', 'lender_type', 'loan_product_slug', 'status', 'min_amount', 'max_amount'];
+}
+
+function lenderProductCsv(int $rows, string $loanProductSlug): UploadedFile
+{
+    $lines = [implode(',', lenderProductCsvHeaders())];
+
+    for ($i = 1; $i <= $rows; $i++) {
+        $lines[] = implode(',', ["Upload Bank {$i}", 'bank', $loanProductSlug, 'active', '100000', '5000000']);
+    }
+
+    return UploadedFile::fake()->createWithContent('lender-products.csv', implode("\n", $lines)."\n");
+}
+
+it('imports an uploaded file straight away, even with no queue worker running', function () {
+    config()->set('queue.default', 'database');
+    LoanProduct::factory()->create(['slug' => 'upload-now-product']);
+
+    $this->actingAs(User::factory()->create(['is_admin' => true]));
+
+    Livewire\Livewire::test(ListLenderProducts::class)
+        ->callAction('import', data: [
+            'file' => lenderProductCsv(3, 'upload-now-product'),
+            'columnMap' => array_combine(lenderProductCsvHeaders(), lenderProductCsvHeaders()),
+        ])
+        ->assertHasNoActionErrors();
+
+    $import = Import::query()->sole();
+
+    expect($import->processed_rows)->toBe(3);
+    expect($import->successful_rows)->toBe(3);
+    expect($import->completed_at)->not->toBeNull();
+    expect(LenderProduct::query()->count())->toBe(3);
+    expect(DB::table('jobs')->count())->toBe(0);
+});
+
+it('runs files up to the row limit in the request and leaves bigger ones to the queue', function (int $totalRows, ?string $connection) {
+    $import = Import::create([
+        'file_name' => 'lenders.csv',
+        'file_path' => 'imports/lenders.csv',
+        'importer' => LenderProductImporter::class,
+        'total_rows' => $totalRows,
+        'user_id' => User::factory()->create()->id,
+    ]);
+
+    expect((new LenderProductImporter($import, [], []))->getJobConnection())->toBe($connection);
+})->with([
+    'a typical file' => [351, 'sync'],
+    'exactly at the limit' => [LenderProductImporter::SYNCHRONOUS_ROW_LIMIT, 'sync'],
+    'one row over' => [LenderProductImporter::SYNCHRONOUS_ROW_LIMIT + 1, null],
+]);
+
+it('keeps one offer when a file lists the same lender and product twice, with the later row winning', function () {
+    config()->set('queue.default', 'database');
+    LoanProduct::factory()->create(['slug' => 'duplicate-row-product']);
+
+    $csv = implode("\n", [
+        implode(',', lenderProductCsvHeaders()),
+        'Repeat Bank,bank,duplicate-row-product,active,100000,5000000',
+        'Repeat Bank,bank,duplicate-row-product,active,200000,9000000',
+    ])."\n";
+
+    $this->actingAs(User::factory()->create(['is_admin' => true]));
+
+    Livewire\Livewire::test(ListLenderProducts::class)
+        ->callAction('import', data: [
+            'file' => UploadedFile::fake()->createWithContent('lender-products.csv', $csv),
+            'columnMap' => array_combine(lenderProductCsvHeaders(), lenderProductCsvHeaders()),
+        ])
+        ->assertHasNoActionErrors();
+
+    $offer = LenderProduct::query()->sole();
+
+    expect((float) $offer->min_amount)->toBe(200000.0);
+    expect((float) $offer->max_amount)->toBe(9000000.0);
+    expect(Lender::query()->where('slug', 'repeat-bank')->count())->toBe(1);
+});

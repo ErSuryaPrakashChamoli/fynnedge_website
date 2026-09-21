@@ -34,6 +34,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Enums/**,app/Filament/** | .ai/rules/filament.md |
 | app/Modules/Newsletter/**,app/Mail/Newsletter/**,app/Http/Controllers/NewsletterController.php | .ai/rules/http-controllers.md |
 | app/Support/Analytics/**,app/Filament/Pages/SeoAnalytics.php,app/Http/Middleware/SecurityHeaders.php | .ai/rules/http-middleware.md |
+| config/queue.php,app/Filament/Imports/** | .ai/rules/imports.md |
 | app/Http/Controllers/JourneyController.php,app/Modules/Journey/** | .ai/rules/journey.md |
 | resources/views/components/⚡*.blade.php,resources/js/app.js | .ai/rules/js.md |
 | app/Support/Seo/**,resources/views/components/layouts/app.blade.php,public/robots.txt,resources/views/sitemap.blade.php | .ai/rules/layouts-views.md |

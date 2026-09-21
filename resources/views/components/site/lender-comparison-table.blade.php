@@ -78,11 +78,10 @@
                             </td>
                             @if ($isHybrid)
                                 <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">
-                                    {{ $offer->effectiveInitialTenureMonths() ? $offer->effectiveInitialTenureMonths().' mo' : 'Available on request' }}
+                                    {{ collect(\App\Support\Calculators\FlexiHybridTenure::totalTenureOptions())->map(fn (int $total) => \App\Support\Calculators\FlexiHybridTenure::initialMonthsFor($total))->join(' / ') }} mo
                                 </td>
                                 <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">
-                                    @php $subsequent = $offer->max_tenure_months ? $offer->subsequentTenureMonths($offer->max_tenure_months) : null; @endphp
-                                    {{ $subsequent ? $subsequent.' mo' : 'Available on request' }}
+                                    {{ collect(\App\Support\Calculators\FlexiHybridTenure::totalTenureOptions())->map(fn (int $total) => \App\Support\Calculators\FlexiHybridTenure::subsequentMonthsFor($total))->join(' / ') }} mo
                                 </td>
                             @endif
                             <td class="whitespace-nowrap px-4 py-3">
