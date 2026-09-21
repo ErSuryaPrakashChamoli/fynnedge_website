@@ -2,24 +2,34 @@
 
 use App\Support\Calculators\FlexiHybridTenure;
 
-it('offers only an 8- or 9-year total tenure', function () {
-    expect(FlexiHybridTenure::totalTenureOptions())->toBe([96, 108]);
+it('derives each lender\'s initial + subsequent structure from its min/max/initial tenure', function (int $min, int $max, int $initial, array $expected) {
+    expect(FlexiHybridTenure::options($min, $max, $initial))->toBe($expected);
+})->with([
+    'Kotak 1 + 5' => [72, 72, 12, [['total' => 72, 'initial' => 12, 'subsequent' => 60]]],
+    'Piramal / Tata 2 + 5' => [84, 84, 24, [['total' => 84, 'initial' => 24, 'subsequent' => 60]]],
+    'Bajaj 2 + 6 or 3 + 6' => [96, 108, 24, [
+        ['total' => 96, 'initial' => 24, 'subsequent' => 72],
+        ['total' => 108, 'initial' => 36, 'subsequent' => 72],
+    ]],
+]);
+
+it('has no structure when the tenure fields cannot describe one', function (?int $min, ?int $max, ?int $initial) {
+    expect(FlexiHybridTenure::options($min, $max, $initial))->toBe([]);
+})->with([
+    'no initial tenure' => [96, 108, null],
+    'no minimum tenure' => [null, 108, 24],
+    'initial not shorter than the minimum' => [12, 60, 24],
+]);
+
+it('picks the exact or closest structure for a total tenure', function () {
+    $options = FlexiHybridTenure::options(96, 108, 24);
+
+    expect(FlexiHybridTenure::nearest($options, 108)['initial'])->toBe(36)
+        ->and(FlexiHybridTenure::nearest($options, 60)['total'])->toBe(96)
+        ->and(FlexiHybridTenure::nearest([], 96))->toBeNull();
 });
 
-it('splits the total tenure into the initial and subsequent tenure', function (int $total, int $initial, int $subsequent) {
-    expect(FlexiHybridTenure::initialMonthsFor($total))->toBe($initial)
-        ->and(FlexiHybridTenure::subsequentMonthsFor($total))->toBe($subsequent);
-})->with([
-    '8 years = 2 + 6' => [96, 24, 72],
-    '9 years = 3 + 6' => [108, 36, 72],
-]);
-
-it('snaps any other tenure to the nearest allowed total tenure', function (int $total, int $expected) {
-    expect(FlexiHybridTenure::nearestAllowed($total))->toBe($expected)
-        ->and(FlexiHybridTenure::isAllowed($total))->toBeFalse();
-})->with([
-    [60, 96],
-    [101, 96],
-    [103, 108],
-    [240, 108],
-]);
+it('labels a structure in years', function () {
+    expect(FlexiHybridTenure::label(['total' => 72, 'initial' => 12, 'subsequent' => 60]))->toBe('1 + 5 yrs')
+        ->and(FlexiHybridTenure::label(['total' => 66, 'initial' => 6, 'subsequent' => 60]))->toBe('0.5 + 5 yrs');
+});

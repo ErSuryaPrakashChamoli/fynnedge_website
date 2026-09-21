@@ -197,7 +197,7 @@ class JourneySeeder extends Seeder
                 'min_amount' => 100_000,
                 'max_amount' => 20_000_000,
                 'default_amount' => 1_000_000,
-                'min_tenure_months' => 96,
+                'min_tenure_months' => 72,
                 'max_tenure_months' => 108,
                 'default_tenure_months' => 96,
                 'default_initial_tenure_months' => 24,

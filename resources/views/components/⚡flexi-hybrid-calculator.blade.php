@@ -37,10 +37,11 @@ new class extends Component
 
         $this->principal = (float) $preset['default_amount'];
         $this->annualRate = $preset['default_rate'];
-        $this->totalTenureMonths = FlexiHybridTenure::nearestAllowed($preset['default_years'] * 12);
+        $this->totalTenureMonths = $preset['default_years'] * 12;
 
         $firstLender = $this->lenderOptions->first();
         $this->lenderProductId = $firstLender?->id;
+        $this->snapTenureToOptions();
     }
 
     /**
@@ -91,19 +92,34 @@ new class extends Component
     }
 
     /**
-     * Interest-only initial tenure, fixed by the chosen total tenure:
-     * 24 months on an 8-year loan, 36 months on a 9-year loan.
+     * The repayment structures a visitor can pick: the selected lender's own
+     * (e.g. Kotak "1 + 5", Bajaj "2 + 6" / "3 + 6"), or — for the generic
+     * estimate — every active lender's structures, one per total tenure.
+     *
+     * @return list<array{total: int, initial: int, subsequent: int}>
      */
     #[Computed]
-    public function initialTenureMonths(): int
+    public function tenureOptions(): array
     {
-        return FlexiHybridTenure::initialMonthsFor($this->totalTenureMonths);
+        if ($this->lenderProductId !== null) {
+            return $this->selectedLenderProduct?->hybridTenureOptions() ?? [];
+        }
+
+        return $this->lenderOptions
+            ->flatMap(fn (LenderProduct $offer) => $offer->hybridTenureOptions())
+            ->unique('total')
+            ->sortBy('total')
+            ->values()
+            ->all();
     }
 
+    /**
+     * @return array{total: int, initial: int, subsequent: int}|null
+     */
     #[Computed]
-    public function subsequentTenureMonths(): int
+    public function selectedTenureOption(): ?array
     {
-        return FlexiHybridTenure::subsequentMonthsFor($this->totalTenureMonths);
+        return collect($this->tenureOptions)->firstWhere('total', $this->totalTenureMonths);
     }
 
     /**
@@ -112,11 +128,13 @@ new class extends Component
     #[Computed]
     public function result(): ?array
     {
-        if ($this->principal <= 0) {
+        $option = $this->selectedTenureOption;
+
+        if ($option === null || $this->principal <= 0) {
             return null;
         }
 
-        return EmiCalculator::calculateHybrid($this->principal, $this->annualRate, $this->initialTenureMonths, $this->subsequentTenureMonths);
+        return EmiCalculator::calculateHybrid($this->principal, $this->annualRate, $option['initial'], $option['subsequent']);
     }
 
     /**
@@ -169,24 +187,25 @@ new class extends Component
      * Every active lender's own computed hybrid result for the *current*
      * loan amount and total tenure — so entering an amount once lets a
      * visitor compare all lenders side by side, each using its own rate and
-     * the same initial/subsequent split (set by the total tenure). A lender
-     * without a published rate reports result: null so the view can render
-     * its honest "Available on request" state instead of silently borrowing
-     * another lender's figures.
+     * its own structure — the one matching the entered total tenure, else
+     * its closest. A lender without a published rate or structure reports
+     * result: null so the view can render its honest "Available on request"
+     * state instead of silently borrowing another lender's figures.
      *
-     * @return array<int, array{offer: LenderProduct, result: array|null}>
+     * @return array<int, array{offer: LenderProduct, option: array{total: int, initial: int, subsequent: int}|null, result: array|null}>
      */
     #[Computed]
     public function lenderComparison(): array
     {
         return $this->lenderOptions->map(function (LenderProduct $offer) {
             $rate = $offer->interest_rate_from !== null ? (float) $offer->interest_rate_from : null;
+            $option = FlexiHybridTenure::nearest($offer->hybridTenureOptions(), $this->totalTenureMonths);
 
-            $result = $rate !== null
-                ? EmiCalculator::calculateHybrid($this->principal, $rate, $this->initialTenureMonths, $this->subsequentTenureMonths)
+            $result = ($rate !== null && $option !== null)
+                ? EmiCalculator::calculateHybrid($this->principal, $rate, $option['initial'], $option['subsequent'])
                 : null;
 
-            return ['offer' => $offer, 'result' => $result];
+            return ['offer' => $offer, 'option' => $option, 'result' => $result];
         })->all();
     }
 
@@ -240,6 +259,26 @@ new class extends Component
         if ($offer?->min_amount !== null) {
             $this->principal = max($this->principal, (float) $offer->min_amount);
         }
+
+        $this->snapTenureToOptions();
+        $this->resetErrorBag('totalTenureMonths');
+    }
+
+    /**
+     * Moves the total tenure onto the closest structure the current choice
+     * of lender actually offers. Returns false when it had to change it.
+     */
+    private function snapTenureToOptions(): bool
+    {
+        $nearest = FlexiHybridTenure::nearest($this->tenureOptions, $this->totalTenureMonths ?? 0);
+
+        if ($nearest === null || $nearest['total'] === ($this->totalTenureMonths ?? null)) {
+            return true;
+        }
+
+        $this->totalTenureMonths = $nearest['total'];
+
+        return false;
     }
 
     /**
@@ -259,16 +298,17 @@ new class extends Component
         // An emptied field leaves the typed property unset — treat it as below the minimum.
         $value = $this->{$property} ?? null;
 
-        // Flexi Hybrid is only offered for an 8- or 9-year total tenure.
+        // Only the repayment structures the lender(s) actually offer can be chosen.
         if ($property === 'totalTenureMonths') {
-            if ($value === null || ! FlexiHybridTenure::isAllowed((int) $value)) {
-                $this->totalTenureMonths = FlexiHybridTenure::nearestAllowed((int) ($value ?? 0));
-                $this->addError($property, "{$preset['label']} is available for an 8- or 9-year tenure only.");
-
-                return;
+            if ($value === null) {
+                $this->totalTenureMonths = 0;
             }
 
-            $this->resetErrorBag($property);
+            if ($this->snapTenureToOptions()) {
+                $this->resetErrorBag($property);
+            } else {
+                $this->addError($property, 'Adjusted the total tenure to the closest repayment structure on offer.');
+            }
 
             return;
         }
@@ -402,24 +442,24 @@ new class extends Component
             <div>
                 <p id="fh-tenure-label" class="text-sm font-medium text-ink">Total tenure</p>
                 <div class="mt-2 grid grid-cols-2 gap-2" role="radiogroup" aria-labelledby="fh-tenure-label">
-                    @foreach (\App\Support\Calculators\FlexiHybridTenure::totalTenureOptions() as $tenureOption)
+                    @forelse ($this->tenureOptions as $tenureOption)
                         <button
                             type="button"
                             role="radio"
-                            aria-checked="{{ $totalTenureMonths === $tenureOption ? 'true' : 'false' }}"
-                            wire:click="$set('totalTenureMonths', {{ $tenureOption }})"
+                            aria-checked="{{ $totalTenureMonths === $tenureOption['total'] ? 'true' : 'false' }}"
+                            wire:click="$set('totalTenureMonths', {{ $tenureOption['total'] }})"
                             @class([
                                 'rounded-xl border px-4 py-3 text-left transition-colors',
-                                'border-accent bg-accent-soft' => $totalTenureMonths === $tenureOption,
-                                'border-line-strong bg-surface hover:border-accent' => $totalTenureMonths !== $tenureOption,
+                                'border-accent bg-accent-soft' => $totalTenureMonths === $tenureOption['total'],
+                                'border-line-strong bg-surface hover:border-accent' => $totalTenureMonths !== $tenureOption['total'],
                             ])
                         >
-                            <span class="block text-sm font-semibold text-ink">{{ $tenureOption / 12 }} years</span>
-                            <span class="mt-0.5 block text-xs text-ink-muted">
-                                {{ \App\Support\Calculators\FlexiHybridTenure::initialMonthsFor($tenureOption) / 12 }} yrs initial + {{ \App\Support\Calculators\FlexiHybridTenure::subsequentMonthsFor($tenureOption) / 12 }} yrs subsequent
-                            </span>
+                            <span class="block text-sm font-semibold text-ink">{{ \App\Support\Calculators\FlexiHybridTenure::years($tenureOption['total']) }} years</span>
+                            <span class="mt-0.5 block text-xs text-ink-muted">{{ \App\Support\Calculators\FlexiHybridTenure::label($tenureOption) }} (initial + subsequent)</span>
                         </button>
-                    @endforeach
+                    @empty
+                        <p class="col-span-2 text-sm text-ink-muted">Tenure structure available on request.</p>
+                    @endforelse
                 </div>
                 @error('totalTenureMonths') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
@@ -430,17 +470,17 @@ new class extends Component
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">
-                            Initial EMI ({{ $this->result['initial_tenure_months'] }} mo)
+                            Initial EMI
                         </p>
-                        <p class="mt-1 font-display text-2xl font-semibold text-accent">₹{{ $this->formatAmount($this->result['initial_emi']) }}</p>
-                        <p class="mt-0.5 text-[0.65rem] text-ink-faint">Interest-only</p>
+                        <p class="mt-1 font-display text-2xl font-semibold text-accent">₹{{ $this->formatAmount($this->result['initial_emi']) }}<span class="ml-0.5 font-sans text-xs font-medium text-ink-faint">/month</span></p>
+                        <p class="mt-0.5 text-[0.65rem] text-ink-faint">Interest-only · for first {{ $this->result['initial_tenure_months'] }} months</p>
                     </div>
                     <div>
                         <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">
-                            Subsequent EMI ({{ $this->result['subsequent_tenure_months'] }} mo)
+                            Subsequent EMI
                         </p>
-                        <p class="mt-1 font-display text-2xl font-semibold text-ink">₹{{ $this->formatAmount($this->result['subsequent_emi']) }}</p>
-                        <p class="mt-0.5 text-[0.65rem] text-ink-faint">Principal + interest</p>
+                        <p class="mt-1 font-display text-2xl font-semibold text-ink">₹{{ $this->formatAmount($this->result['subsequent_emi']) }}<span class="ml-0.5 font-sans text-xs font-medium text-ink-faint">/month</span></p>
+                        <p class="mt-0.5 text-[0.65rem] text-ink-faint">Principal + interest · for next {{ $this->result['subsequent_tenure_months'] }} months</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4 border-t border-line pt-5">
@@ -453,10 +493,14 @@ new class extends Component
                         <p class="mt-1 text-lg font-medium text-ink">₹{{ $this->formatAmount($this->result['total_repayment']) }}</p>
                     </div>
                 </div>
-                <p class="text-xs text-ink-faint">Indicative only — {{ $this->result['initial_tenure_months'] / 12 }}-year interest-only initial tenure on a {{ $totalTenureMonths / 12 }}-year loan. Your actual EMI depends on the lender's exact terms at sanction.</p>
+                <p class="text-xs text-ink-faint">Indicative only — {{ \App\Support\Calculators\FlexiHybridTenure::label($this->selectedTenureOption) }} (interest-only initial + principal &amp; interest subsequent). Your actual EMI depends on the lender's exact terms at sanction.</p>
             @else
                 <p class="text-sm text-ink-muted">
-                    Enter a loan amount above to see an estimate.
+                    @if ($this->lenderProductId !== null)
+                        {{ $this->selectedLenderProduct?->lender?->name }} hasn't published its tenure structure for this product yet — available on request.
+                    @else
+                        Select a lender above to see an estimate.
+                    @endif
                 </p>
             @endif
         </div>
@@ -466,7 +510,7 @@ new class extends Component
     @if ($this->lenderOptions->isNotEmpty())
         <div class="mt-10">
             <p class="font-display text-lg font-semibold text-ink">Compare all lenders at this amount &amp; tenure</p>
-            <p class="mt-1 text-xs text-ink-faint">Each row uses that lender's own rate, with a {{ $this->initialTenureMonths }}-month initial tenure, for the ₹{{ $this->formatAmount($principal) }} amount and {{ $totalTenureMonths }}-month total tenure entered above.</p>
+            <p class="mt-1 text-xs text-ink-faint">Each row uses that lender's own rate and repayment structure (the one closest to the {{ $totalTenureMonths }}-month tenure entered above), for the ₹{{ $this->formatAmount($principal) }} amount.</p>
             {{-- `relative` keeps the "Select" <th>'s position:absolute .sr-only
                  span inside this scroll container instead of letting it widen
                  the whole page. --}}
@@ -476,6 +520,7 @@ new class extends Component
                         <tr class="border-b border-line bg-surface-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
                             <th scope="col" class="px-4 py-3">Lender</th>
                             <th scope="col" class="px-4 py-3">Rate</th>
+                            <th scope="col" class="px-4 py-3">Structure</th>
                             <th scope="col" class="px-4 py-3">Initial EMI</th>
                             <th scope="col" class="px-4 py-3">Subsequent EMI</th>
                             <th scope="col" class="px-4 py-3">Total interest</th>
@@ -488,11 +533,12 @@ new class extends Component
                                 <td class="whitespace-nowrap px-4 py-3 font-medium text-ink">{{ $row['offer']->lender->name }}</td>
                                 @if ($row['result'])
                                     <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">{{ $row['offer']->interest_rate_from }}%</td>
+                                    <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">{{ \App\Support\Calculators\FlexiHybridTenure::label($row['option']) }}</td>
                                     <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">₹{{ $this->formatAmount($row['result']['initial_emi']) }}</td>
                                     <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">₹{{ $this->formatAmount($row['result']['subsequent_emi']) }}</td>
                                     <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">₹{{ $this->formatAmount($row['result']['total_interest']) }}</td>
                                 @else
-                                    <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-faint" colspan="4">Available on request</td>
+                                    <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-faint" colspan="5">Available on request</td>
                                 @endif
                                 <td class="whitespace-nowrap px-4 py-3">
                                     <button type="button" wire:click="selectLender({{ $row['offer']->id }})" class="text-sm font-medium text-accent hover:underline">
