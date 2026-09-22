@@ -194,10 +194,18 @@
              which is position:absolute. Without a positioned ancestor here its
              containing block is the page itself, so it escaped this scroll
              container and stretched the document to the table's full width
-             (measured: +396px at 375px wide). --}}
-        <div class="relative mt-4 overflow-x-auto rounded-2xl border border-line bg-surface shadow-sm">
-            <table class="w-full min-w-[960px] border-collapse text-left text-sm">
-                <thead>
+             (measured: +396px at 375px wide).
+
+             Below md the same table renders as one stacked card per lender
+             (rows become 2-column grids, the header row is hidden and each cell
+             carries its own md:hidden label) instead of a 960px table the
+             visitor has to scroll sideways. It stays one table so the Alpine
+             sort/filter/compare above keeps working on `tr[data-lender-row]`;
+             `row.hidden` still wins over max-md:grid because Tailwind's base
+             layer forces `[hidden]` to display: none !important. --}}
+        <div class="relative mt-4 md:overflow-x-auto md:rounded-2xl md:border md:border-line md:bg-surface md:shadow-sm">
+            <table class="w-full border-collapse text-left text-sm max-md:block md:min-w-[960px]">
+                <thead class="max-md:hidden">
                     <tr class="bg-accent text-[0.68rem] font-semibold uppercase tracking-wider text-surface">
                         <th scope="col" class="sticky left-0 z-20 bg-accent px-5 py-4">Lender</th>
                         <th scope="col" class="px-4 py-4">Interest rate</th>
@@ -208,7 +216,7 @@
                         <th scope="col" class="px-4 py-4"><span class="sr-only">Apply</span></th>
                     </tr>
                 </thead>
-                <tbody x-ref="rows" class="divide-y divide-line">
+                <tbody x-ref="rows" class="divide-y divide-line max-md:flex max-md:flex-col max-md:gap-3 max-md:divide-y-0">
                     @foreach ($offers as $offer)
                         @php
                             $rate = $offer->interest_rate_from !== null ? (float) $offer->interest_rate_from : null;
@@ -217,6 +225,7 @@
                             $isLowestRate = $lowestRate !== null && $rate === $lowestRate;
                             $isHighestAmount = $highestAmount !== null && $maxAmount === $highestAmount;
                             $isLongestTenure = $longestTenure !== null && (int) $maxTenure === $longestTenure;
+                            $hasFeeDetails = $offer->processingFeeDisplay() !== null || filled($offer->processing_fee_note);
 
                             // Rate meter: the lowest rate fills the track, the
                             // highest fills a quarter — longer reads as better.
@@ -232,9 +241,14 @@
                             data-rate="{{ $rate ?? 999 }}"
                             data-amount="{{ $maxAmount ?? 0 }}"
                             data-tenure="{{ $maxTenure ?? 0 }}"
-                            class="group align-top transition-colors hover:bg-accent-soft/50"
+                            @class([
+                                'group align-top transition-colors hover:bg-accent-soft/50',
+                                'max-md:grid max-md:grid-cols-2 max-md:gap-x-4 max-md:gap-y-4 max-md:rounded-2xl max-md:border max-md:bg-surface max-md:p-4 max-md:shadow-sm',
+                                'max-md:border-pass' => $isLowestRate,
+                                'max-md:border-line' => ! $isLowestRate,
+                            ])
                         >
-                            <th scope="row" class="sticky left-0 z-10 bg-surface px-5 py-4 font-normal shadow-[inset_3px_0_0_transparent] transition-shadow group-hover:bg-accent-soft group-hover:shadow-[inset_3px_0_0_var(--color-accent)] {{ $isLowestRate ? 'shadow-[inset_3px_0_0_var(--color-pass)]' : '' }}">
+                            <th scope="row" class="bg-surface px-5 py-4 font-normal shadow-[inset_3px_0_0_transparent] transition-shadow group-hover:bg-accent-soft group-hover:shadow-[inset_3px_0_0_var(--color-accent)] max-md:col-span-2 max-md:bg-transparent max-md:p-0 max-md:shadow-none max-md:group-hover:bg-transparent max-md:group-hover:shadow-none md:sticky md:left-0 md:z-10 {{ $isLowestRate ? 'shadow-[inset_3px_0_0_var(--color-pass)]' : '' }}">
                                 <div class="flex items-center gap-3">
                                     <label class="flex shrink-0 cursor-pointer items-center" title="Add to compare">
                                         <input
@@ -248,7 +262,7 @@
                                     </label>
                                     <x-ui.lender-logo :lender="$offer->lender" size="md" />
                                     <div class="min-w-0">
-                                        <a href="{{ $applyUrl }}" class="block whitespace-nowrap font-semibold text-ink hover:text-accent">
+                                        <a href="{{ $applyUrl }}" class="block font-semibold text-ink hover:text-accent md:whitespace-nowrap">
                                             {{ $offer->lender->name }}
                                         </a>
                                         @if ($offer->lender->type)
@@ -270,15 +284,16 @@
                                     </div>
                                 @endif
                             </th>
-                            <td class="px-4 py-4">
+                            <td class="px-4 py-4 max-md:p-0">
+                                <p class="mb-1 font-mono text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">Interest rate</p>
                                 @if ($rate !== null)
-                                    <p class="whitespace-nowrap font-display text-xl font-semibold {{ $isLowestRate ? 'text-pass' : 'text-ink' }}">
+                                    <p class="font-display text-xl font-semibold md:whitespace-nowrap {{ $isLowestRate ? 'text-pass' : 'text-ink' }}">
                                         {{ $offer->interest_rate_from }}%
                                         @if ($offer->interest_rate_to)
                                             <span class="font-sans text-xs font-normal text-ink-faint">– {{ $offer->interest_rate_to }}%</span>
                                         @endif
                                     </p>
-                                    <div class="mt-2 h-1.5 w-28 overflow-hidden rounded-full bg-surface-2" aria-hidden="true">
+                                    <div class="mt-2 h-1.5 w-28 max-w-full overflow-hidden rounded-full bg-surface-2" aria-hidden="true">
                                         <div class="h-full rounded-full {{ $isLowestRate ? 'bg-pass' : 'bg-accent' }}" style="width: {{ round($rateFill) }}%"></div>
                                     </div>
                                     <p class="mt-1 text-[0.68rem] text-ink-faint">p.a. onwards</p>
@@ -286,26 +301,32 @@
                                     <span class="text-ink-faint">{{ $missing }}</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-4">
+                            <td class="px-4 py-4 max-md:p-0">
+                                <p class="mb-1 font-mono text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">Loan amount</p>
                                 @if ($offer->min_amount || $offer->max_amount)
-                                    <p class="whitespace-nowrap font-semibold text-ink">
+                                    <p class="font-semibold text-ink md:whitespace-nowrap">
                                         ₹{{ IndianNumberFormatter::compact((float) $offer->min_amount) }} – ₹{{ IndianNumberFormatter::compact((float) $offer->max_amount) }}
                                     </p>
-                                    <div class="mt-2 h-1.5 w-28 overflow-hidden rounded-full bg-surface-2" aria-hidden="true">
+                                    <div class="mt-2 h-1.5 w-28 max-w-full overflow-hidden rounded-full bg-surface-2" aria-hidden="true">
                                         <div class="h-full rounded-full bg-accent" style="width: {{ round($amountFill) }}%"></div>
                                     </div>
                                 @else
                                     <span class="text-ink-faint">{{ $missing }}</span>
                                 @endif
                             </td>
-                            <td class="whitespace-nowrap px-4 py-4 font-semibold text-ink">
+                            <td class="whitespace-nowrap px-4 py-4 font-semibold text-ink max-md:p-0">
+                                <p class="mb-1 font-mono font-normal text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">Tenure</p>
                                 @if ($tenureLabel($offer->min_tenure_months, $offer->max_tenure_months))
                                     {{ $tenureLabel($offer->min_tenure_months, $offer->max_tenure_months) }}
                                 @else
                                     <span class="font-normal text-ink-faint">{{ $missing }}</span>
                                 @endif
                             </td>
-                            <td class="max-w-56 px-4 py-4">
+                            {{-- A card drops a cell it has nothing to say in, rather than label an empty dash. --}}
+                            <td @class(['px-4 py-4 max-md:p-0 md:max-w-56', 'max-md:hidden' => ! $hasFeeDetails])>
+                                @if ($hasFeeDetails)
+                                    <p class="mb-1 font-mono text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">Processing fee</p>
+                                @endif
                                 <p class="font-medium text-ink">{{ $offer->processingFeeDisplay() ?? $missing }}</p>
                                 @if ($offer->processing_fee_note)
                                     <details class="mt-1 text-xs text-ink-muted">
@@ -314,8 +335,9 @@
                                     </details>
                                 @endif
                             </td>
-                            <td class="min-w-48 px-4 py-4">
+                            <td @class(['px-4 py-4 max-md:col-span-2 max-md:border-t max-md:border-line max-md:p-0 max-md:pt-3 md:min-w-48', 'max-md:hidden' => ! $offer->eligibilitySummaryPoints()])>
                                 @if ($offer->eligibilitySummaryPoints())
+                                    <p class="mb-1 font-mono text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">Eligibility</p>
                                     <ul class="space-y-1 text-xs text-ink-muted">
                                         @foreach ($offer->eligibilitySummaryPoints() as $point)
                                             <li class="flex items-start gap-1.5">
@@ -328,8 +350,8 @@
                                     <span class="text-ink-faint">{{ $missing }}</span>
                                 @endif
                             </td>
-                            <td class="whitespace-nowrap px-4 py-4 align-middle">
-                                <x-ui.button tag="a" :href="$applyUrl" size="sm" class="shadow-sm transition-transform group-hover:-translate-y-0.5">
+                            <td class="whitespace-nowrap px-4 py-4 align-middle max-md:col-span-2 max-md:p-0">
+                                <x-ui.button tag="a" :href="$applyUrl" size="sm" class="shadow-sm transition-transform group-hover:-translate-y-0.5 max-md:w-full max-md:justify-center">
                                     Apply Now <span aria-hidden="true">→</span>
                                 </x-ui.button>
                             </td>

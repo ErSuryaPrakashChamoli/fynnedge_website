@@ -85,6 +85,23 @@ it('does not award chart highlights when only one lender is listed', function ()
         ->assertDontSee('Longest tenure');
 });
 
+it('labels every lender figure so the comparison table can stack into cards on a phone', function () {
+    $product = LoanProduct::factory()->published()->create(['slug' => 'show-page-mobile-cards-test', 'category' => LoanCategory::PersonalLoan]);
+    LenderProduct::factory()->for($product, 'loanProduct')->create(['interest_rate_from' => 10.5, 'processing_fee_percent_max' => 2, 'min_age' => 21]);
+
+    $this->get("/loans/{$product->slug}")
+        ->assertOk()
+        ->assertSee('<thead class="max-md:hidden">', false)
+        ->assertSeeInOrder([
+            'data-lender-row',
+            'md:hidden">Interest rate',
+            'md:hidden">Loan amount',
+            'md:hidden">Tenure',
+            'md:hidden">Processing fee',
+            'md:hidden">Eligibility',
+        ], false);
+});
+
 it('shows the bank comparison table, apply now link, why fynnedge and matching testimonials', function () {
     $product = LoanProduct::factory()->published()->create([
         'slug' => 'show-page-full-sections-test',
