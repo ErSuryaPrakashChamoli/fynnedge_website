@@ -3,9 +3,13 @@
 namespace App\Support\Calculators;
 
 /**
- * A Flexi Hybrid Term Loan's repayment structure(s) — "initial + subsequent"
- * — derived from a lender offer's own tenure fields rather than hardcoded
- * per lender:
+ * A Flexi Hybrid Term Loan's repayment structure(s) — "initial + subsequent".
+ *
+ * Preferred source: the lender's own published list (fromStructures()), since
+ * lenders don't hold the subsequent tenure fixed — Tata Capital is 1 + 4,
+ * 1 + 5, 2 + 5 and 2 + 6, and Aditya Birla offers a 1- or 2-year holiday on
+ * the same 7-year loan. Fallback for an offer without that list, derived
+ * from its tenure fields:
  *
  * - min_tenure_months: the shortest total tenure offered
  * - initial_tenure_months: the interest-only initial tenure at that minimum
@@ -13,11 +17,34 @@ namespace App\Support\Calculators;
  *
  * The subsequent (principal + interest) tenure stays fixed at
  * min − initial; every extra year above the minimum lengthens the initial
- * tenure. So Kotak's "1 + 5" is 72/72/12, Piramal's and Tata Capital's
- * "2 + 5" is 84/84/24, and Bajaj's "2 + 6 or 3 + 6" is 96/108/24.
+ * tenure, e.g. "2 + 6 or 3 + 6" is 96/108/24.
  */
 class FlexiHybridTenure
 {
+    /**
+     * A lender's own structures, sorted by total then initial tenure, with
+     * incomplete or duplicate rows dropped.
+     *
+     * @param  array<int, array{initial_months?: mixed, subsequent_months?: mixed}>  $structures
+     * @return list<array{total: int, initial: int, subsequent: int}>
+     */
+    public static function fromStructures(array $structures): array
+    {
+        return collect($structures)
+            ->filter(fn (mixed $structure): bool => is_array($structure)
+                && (int) ($structure['initial_months'] ?? 0) > 0
+                && (int) ($structure['subsequent_months'] ?? 0) > 0)
+            ->map(fn (array $structure): array => [
+                'total' => (int) $structure['initial_months'] + (int) $structure['subsequent_months'],
+                'initial' => (int) $structure['initial_months'],
+                'subsequent' => (int) $structure['subsequent_months'],
+            ])
+            ->unique(fn (array $option): string => $option['initial'].'+'.$option['subsequent'])
+            ->sortBy([['total', 'asc'], ['initial', 'asc']])
+            ->values()
+            ->all();
+    }
+
     /**
      * @return list<array{total: int, initial: int, subsequent: int}>
      */
@@ -40,18 +67,31 @@ class FlexiHybridTenure
 
     /**
      * The option with this exact total tenure, or the closest one (the
-     * shorter one on a tie). Null only when there are no options.
+     * shorter one on a tie). Several options can share a total (a 1- or
+     * 2-year holiday on the same loan): $initialMonths picks among them,
+     * else the first — the shortest initial tenure. Null only when there are
+     * no options.
      *
      * @param  list<array{total: int, initial: int, subsequent: int}>  $options
      * @return array{total: int, initial: int, subsequent: int}|null
      */
-    public static function nearest(array $options, int $totalTenureMonths): ?array
+    public static function nearest(array $options, int $totalTenureMonths, ?int $initialMonths = null): ?array
     {
         $closest = null;
 
         foreach ($options as $option) {
             if ($closest === null || abs($option['total'] - $totalTenureMonths) < abs($closest['total'] - $totalTenureMonths)) {
                 $closest = $option;
+            }
+        }
+
+        if ($closest === null || $initialMonths === null) {
+            return $closest;
+        }
+
+        foreach ($options as $option) {
+            if ($option['total'] === $closest['total'] && $option['initial'] === $initialMonths) {
+                return $option;
             }
         }
 

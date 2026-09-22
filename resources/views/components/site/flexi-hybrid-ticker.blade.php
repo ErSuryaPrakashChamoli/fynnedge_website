@@ -56,7 +56,7 @@
                                     @else
                                         Flexi Hybrid Term Loan <span class="text-ink-faint">(Overdraft)</span>
                                         <span class="text-accent">—</span>
-                                        Bajaj Finance <span class="text-ink-faint">//</span> Tata Capital <span class="text-ink-faint">//</span> Piramal Finance <span class="text-ink-faint">//</span> Kotak Mahindra Bank
+                                        Bajaj Finance <span class="text-ink-faint">//</span> Tata Capital <span class="text-ink-faint">//</span> Aditya Birla Finance <span class="text-ink-faint">//</span> Piramal Finance
                                     @endif
                                 </span>
                                 <span class="text-accent" aria-hidden="true">&#9733;</span>

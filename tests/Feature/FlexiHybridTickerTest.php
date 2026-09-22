@@ -17,7 +17,7 @@ it('shows the Flexi Hybrid ticker strip immediately below the header on the home
         'Bajaj Finance',
         'Tata Capital',
         'Piramal Finance',
-        'Kotak Mahindra Bank',
+        'Aditya Birla Finance',
     ], false);
 });
 

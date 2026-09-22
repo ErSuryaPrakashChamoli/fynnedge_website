@@ -171,17 +171,16 @@ class JourneySeeder extends Seeder
         // its own calculator preset — see .ai/rules/calculators-models.md on
         // why LoanMegaMenu::categories() keys one product per category.
         // Amount/tenure/rate bounds here are the same illustrative-placeholder
-        // convention every other seeded LoanProduct uses; per-lender commercial
-        // terms are deliberately left unset in FlexiHybridTermLoanSeeder, since
-        // no real Bajaj/Tata Capital/Piramal Finance/Kotak figures for this
-        // product were sourced for this rollout.
+        // convention every other seeded LoanProduct uses; the per-lender
+        // commercial terms and repayment structures come from
+        // FlexiHybridLenderTerms, via FlexiHybridTermLoanSeeder.
         $flexiHybridTermLoan = LoanProduct::query()->updateOrCreate(
             ['slug' => 'flexi-hybrid-term-loan'],
             [
                 'name' => 'Flexi Hybrid Term Loan',
                 'category' => LoanCategory::FlexiHybridTermLoan,
                 'marketing_headline' => 'Lower Initial EMI. Flexible Access. Smarter Repayment.',
-                'summary' => 'A two-stage term loan: pay interest-only for an initial tenure, then principal + interest for the rest — compare Bajaj Finance, Tata Capital, Piramal Finance and Kotak.',
+                'summary' => 'A two-stage term loan: pay interest-only for an initial tenure, then principal + interest for the rest — compare Bajaj Finance, Tata Capital, Aditya Birla Finance and Piramal Finance.',
                 'body' => '<p>A Flexi Hybrid Term Loan repays in two stages. During the initial tenure, you typically pay '
                     .'interest only, keeping your early monthly outflow lower than a conventional EMI. Once the initial '
                     .'tenure ends, the loan converts to standard principal + interest EMIs for the remaining (subsequent) '

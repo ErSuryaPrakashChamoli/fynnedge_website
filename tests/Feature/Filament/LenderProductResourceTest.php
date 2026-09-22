@@ -49,6 +49,23 @@ it('creates a lender offer with eligibility criteria', function () {
         ->exists())->toBeTrue();
 });
 
+it('saves a hybrid lender\'s own initial + subsequent repayment structures', function () {
+    $offer = LenderProduct::factory()->create();
+
+    Livewire::test(EditLenderProduct::class, ['record' => $offer->getRouteKey()])
+        ->fillForm(['hybrid_structures' => [
+            ['initial_months' => 12, 'subsequent_months' => 48],
+            ['initial_months' => 24, 'subsequent_months' => 60],
+        ]])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($offer->fresh()->hybridTenureOptions())->toBe([
+        ['total' => 60, 'initial' => 12, 'subsequent' => 48],
+        ['total' => 84, 'initial' => 24, 'subsequent' => 60],
+    ]);
+});
+
 it('rejects a duplicate lender + loan product combination', function () {
     $lender = Lender::factory()->create();
     $loanProduct = LoanProduct::factory()->create();

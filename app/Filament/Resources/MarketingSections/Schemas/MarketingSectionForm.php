@@ -50,7 +50,7 @@ class MarketingSectionForm
                 Textarea::make('description')
                     ->rows(3)
                     ->columnSpanFull()
-                    ->helperText(fn (callable $get) => $get('placement') === 'home_flexi_hybrid_ticker' ? 'The scrolling marquee text, e.g. "Flexi Hybrid Term Loan (Overdraft) — Bajaj Finance // Tata Capital // Piramal Finance // Kotak Mahindra Bank".' : null),
+                    ->helperText(fn (callable $get) => $get('placement') === 'home_flexi_hybrid_ticker' ? 'The scrolling marquee text, e.g. "Flexi Hybrid Term Loan (Overdraft) — Bajaj Finance // Tata Capital // Aditya Birla Finance // Piramal Finance".' : null),
                 FileUpload::make('image_path')
                     ->label('Image')
                     ->image()

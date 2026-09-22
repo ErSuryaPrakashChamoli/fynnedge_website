@@ -126,17 +126,6 @@
             </div>
         @endif
 
-        @if ($loanProduct->lenderProducts->isNotEmpty())
-            <div class="mt-12" data-ai-context="Lender Offers">
-                <h2 data-reveal="right" class="font-display text-xl font-semibold text-ink">Lenders offering this product</h2>
-                <div class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                    @foreach ($loanProduct->lenderProducts as $offer)
-                        <x-site.lender-offer-card :offer="$offer" :loan-product="$loanProduct" />
-                    @endforeach
-                </div>
-                <p class="mt-3 text-xs text-ink-faint">Indicative terms shared by each lender — subject to their final verification and underwriting.</p>
-            </div>
-        @endif
 
         <x-site.lender-comparison-table :offers="$loanProduct->lenderProducts" :loan-product="$loanProduct" />
 

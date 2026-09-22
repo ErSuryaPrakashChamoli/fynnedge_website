@@ -4,6 +4,7 @@ use App\Enums\LenderStatus;
 use App\Enums\LoanCategory;
 use App\Models\LenderProduct;
 use App\Support\Calculators\EmiCalculator;
+use App\Support\Calculators\FlexiHybridLenderTerms;
 use App\Support\Calculators\FlexiHybridTenure;
 use App\Support\Calculators\LoanCalculatorPreset;
 use App\Support\Formatting\IndianNumberFormatter;
@@ -31,6 +32,12 @@ new class extends Component
 
     public ?int $lenderProductId = null;
 
+    /**
+     * Which structure on the chosen total tenure — Aditya Birla, for one,
+     * offers a 1- or 2-year holiday on the same 7-year loan.
+     */
+    public ?int $initialTenureMonths = null;
+
     public function mount(): void
     {
         $preset = $this->preset;
@@ -39,8 +46,7 @@ new class extends Component
         $this->annualRate = $preset['default_rate'];
         $this->totalTenureMonths = $preset['default_years'] * 12;
 
-        $firstLender = $this->lenderOptions->first();
-        $this->lenderProductId = $firstLender?->id;
+        $this->lenderProductId = $this->defaultLenderProduct?->id;
         $this->snapTenureToOptions();
     }
 
@@ -63,6 +69,7 @@ new class extends Component
      * Every active lender offer on the Flexi Hybrid Term Loan product —
      * the same relation the lender comparison table and product page use,
      * so this list never drifts from what's shown elsewhere on the page.
+     * The default lender (Bajaj Finance) is listed first.
      *
      * @return \Illuminate\Support\Collection<int, LenderProduct>
      */
@@ -78,7 +85,20 @@ new class extends Component
         return $product->lenderProducts()
             ->where('status', LenderStatus::Active)
             ->with('lender')
-            ->get();
+            ->get()
+            ->sortBy(fn (LenderProduct $offer): int => $offer->lender?->slug === FlexiHybridLenderTerms::DEFAULT_LENDER_SLUG ? 0 : 1)
+            ->values();
+    }
+
+    /**
+     * The lender the calculator opens on, and whose repayment policy the
+     * generic estimate follows.
+     */
+    #[Computed]
+    public function defaultLenderProduct(): ?LenderProduct
+    {
+        return $this->lenderOptions->first(fn (LenderProduct $offer): bool => $offer->lender?->slug === FlexiHybridLenderTerms::DEFAULT_LENDER_SLUG)
+            ?? $this->lenderOptions->first();
     }
 
     #[Computed]
@@ -93,24 +113,18 @@ new class extends Component
 
     /**
      * The repayment structures a visitor can pick: the selected lender's own
-     * (e.g. Kotak "1 + 5", Bajaj "2 + 6" / "3 + 6"), or — for the generic
-     * estimate — every active lender's structures, one per total tenure.
+     * (e.g. Tata Capital "1 + 4" … "2 + 6"), or — for the generic estimate —
+     * the default lender's, so the initial/subsequent split always follows
+     * a real lender's policy instead of mixing structures across lenders.
      *
      * @return list<array{total: int, initial: int, subsequent: int}>
      */
     #[Computed]
     public function tenureOptions(): array
     {
-        if ($this->lenderProductId !== null) {
-            return $this->selectedLenderProduct?->hybridTenureOptions() ?? [];
-        }
+        $offer = $this->lenderProductId !== null ? $this->selectedLenderProduct : $this->defaultLenderProduct;
 
-        return $this->lenderOptions
-            ->flatMap(fn (LenderProduct $offer) => $offer->hybridTenureOptions())
-            ->unique('total')
-            ->sortBy('total')
-            ->values()
-            ->all();
+        return $offer?->hybridTenureOptions() ?? [];
     }
 
     /**
@@ -119,7 +133,9 @@ new class extends Component
     #[Computed]
     public function selectedTenureOption(): ?array
     {
-        return collect($this->tenureOptions)->firstWhere('total', $this->totalTenureMonths);
+        $options = collect($this->tenureOptions)->where('total', $this->totalTenureMonths);
+
+        return $options->firstWhere('initial', $this->initialTenureMonths) ?? $options->first();
     }
 
     /**
@@ -187,26 +203,33 @@ new class extends Component
      * Every active lender's own computed hybrid result for the *current*
      * loan amount and total tenure — so entering an amount once lets a
      * visitor compare all lenders side by side, each using its own rate and
-     * its own structure — the one matching the entered total tenure, else
-     * its closest. A lender without a published rate or structure reports
-     * result: null so the view can render its honest "Available on request"
-     * state instead of silently borrowing another lender's figures.
+     * its own structure — the one matching the entered total tenure (and
+     * initial tenure, where it offers a choice), else its closest. A lender
+     * without a published rate or structure is left out rather than shown
+     * with borrowed or placeholder figures.
      *
-     * @return array<int, array{offer: LenderProduct, option: array{total: int, initial: int, subsequent: int}|null, result: array|null}>
+     * @return array<int, array{offer: LenderProduct, option: array{total: int, initial: int, subsequent: int}, result: array}>
      */
     #[Computed]
     public function lenderComparison(): array
     {
-        return $this->lenderOptions->map(function (LenderProduct $offer) {
-            $rate = $offer->interest_rate_from !== null ? (float) $offer->interest_rate_from : null;
-            $option = FlexiHybridTenure::nearest($offer->hybridTenureOptions(), $this->totalTenureMonths);
+        return $this->lenderOptions
+            ->map(function (LenderProduct $offer): ?array {
+                $option = FlexiHybridTenure::nearest($offer->hybridTenureOptions(), $this->totalTenureMonths, $this->selectedTenureOption['initial'] ?? null);
 
-            $result = ($rate !== null && $option !== null)
-                ? EmiCalculator::calculateHybrid($this->principal, $rate, $option['initial'], $option['subsequent'])
-                : null;
+                if ($offer->interest_rate_from === null || $option === null) {
+                    return null;
+                }
 
-            return ['offer' => $offer, 'option' => $option, 'result' => $result];
-        })->all();
+                return [
+                    'offer' => $offer,
+                    'option' => $option,
+                    'result' => EmiCalculator::calculateHybrid($this->principal, (float) $offer->interest_rate_from, $option['initial'], $option['subsequent']),
+                ];
+            })
+            ->filter()
+            ->values()
+            ->all();
     }
 
     /**
@@ -264,15 +287,30 @@ new class extends Component
         $this->resetErrorBag('totalTenureMonths');
     }
 
+    public function selectStructure(int $totalMonths, int $initialMonths): void
+    {
+        $this->totalTenureMonths = $totalMonths;
+        $this->initialTenureMonths = $initialMonths;
+
+        $this->snapTenureToOptions();
+        $this->resetErrorBag('totalTenureMonths');
+    }
+
     /**
      * Moves the total tenure onto the closest structure the current choice
      * of lender actually offers. Returns false when it had to change it.
      */
     private function snapTenureToOptions(): bool
     {
-        $nearest = FlexiHybridTenure::nearest($this->tenureOptions, $this->totalTenureMonths ?? 0);
+        $nearest = FlexiHybridTenure::nearest($this->tenureOptions, $this->totalTenureMonths ?? 0, $this->initialTenureMonths);
 
-        if ($nearest === null || $nearest['total'] === ($this->totalTenureMonths ?? null)) {
+        if ($nearest === null) {
+            return true;
+        }
+
+        $this->initialTenureMonths = $nearest['initial'];
+
+        if ($nearest['total'] === ($this->totalTenureMonths ?? null)) {
             return true;
         }
 
@@ -443,15 +481,16 @@ new class extends Component
                 <p id="fh-tenure-label" class="text-sm font-medium text-ink">Total tenure</p>
                 <div class="mt-2 grid grid-cols-2 gap-2" role="radiogroup" aria-labelledby="fh-tenure-label">
                     @forelse ($this->tenureOptions as $tenureOption)
+                        @php $isSelectedStructure = $this->selectedTenureOption === $tenureOption; @endphp
                         <button
                             type="button"
                             role="radio"
-                            aria-checked="{{ $totalTenureMonths === $tenureOption['total'] ? 'true' : 'false' }}"
-                            wire:click="$set('totalTenureMonths', {{ $tenureOption['total'] }})"
+                            aria-checked="{{ $isSelectedStructure ? 'true' : 'false' }}"
+                            wire:click="selectStructure({{ $tenureOption['total'] }}, {{ $tenureOption['initial'] }})"
                             @class([
                                 'rounded-xl border px-4 py-3 text-left transition-colors',
-                                'border-accent bg-accent-soft' => $totalTenureMonths === $tenureOption['total'],
-                                'border-line-strong bg-surface hover:border-accent' => $totalTenureMonths !== $tenureOption['total'],
+                                'border-accent bg-accent-soft' => $isSelectedStructure,
+                                'border-line-strong bg-surface hover:border-accent' => ! $isSelectedStructure,
                             ])
                         >
                             <span class="block text-sm font-semibold text-ink">{{ \App\Support\Calculators\FlexiHybridTenure::years($tenureOption['total']) }} years</span>
@@ -461,6 +500,9 @@ new class extends Component
                         <p class="col-span-2 text-sm text-ink-muted">Tenure structure available on request.</p>
                     @endforelse
                 </div>
+                @if ($lenderProductId === null && $this->defaultLenderProduct)
+                    <p class="mt-2 text-xs text-ink-faint">Generic estimate follows {{ $this->defaultLenderProduct->lender->name }}'s initial + subsequent tenure policy.</p>
+                @endif
                 @error('totalTenureMonths') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -507,7 +549,7 @@ new class extends Component
     </div>
 
     {{-- Compare all lenders live, at the amount/tenure entered above --}}
-    @if ($this->lenderOptions->isNotEmpty())
+    @if ($this->lenderComparison !== [])
         <div class="mt-10">
             <p class="font-display text-lg font-semibold text-ink">Compare all lenders at this amount &amp; tenure</p>
             <p class="mt-1 text-xs text-ink-faint">Each row uses that lender's own rate and repayment structure (the one closest to the {{ $totalTenureMonths }}-month tenure entered above), for the ₹{{ $this->formatAmount($principal) }} amount.</p>
@@ -531,15 +573,11 @@ new class extends Component
                         @foreach ($this->lenderComparison as $row)
                             <tr @class(['bg-accent-soft' => $lenderProductId === $row['offer']->id])>
                                 <td class="whitespace-nowrap px-4 py-3 font-medium text-ink">{{ $row['offer']->lender->name }}</td>
-                                @if ($row['result'])
-                                    <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">{{ $row['offer']->interest_rate_from }}%</td>
-                                    <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">{{ \App\Support\Calculators\FlexiHybridTenure::label($row['option']) }}</td>
-                                    <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">₹{{ $this->formatAmount($row['result']['initial_emi']) }}</td>
-                                    <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">₹{{ $this->formatAmount($row['result']['subsequent_emi']) }}</td>
-                                    <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">₹{{ $this->formatAmount($row['result']['total_interest']) }}</td>
-                                @else
-                                    <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-faint" colspan="5">Available on request</td>
-                                @endif
+                                <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">{{ $row['offer']->interest_rate_from }}%</td>
+                                <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">{{ \App\Support\Calculators\FlexiHybridTenure::label($row['option']) }}</td>
+                                <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">₹{{ $this->formatAmount($row['result']['initial_emi']) }}</td>
+                                <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">₹{{ $this->formatAmount($row['result']['subsequent_emi']) }}</td>
+                                <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">₹{{ $this->formatAmount($row['result']['total_interest']) }}</td>
                                 <td class="whitespace-nowrap px-4 py-3">
                                     <button type="button" wire:click="selectLender({{ $row['offer']->id }})" class="text-sm font-medium text-accent hover:underline">
                                         {{ $lenderProductId === $row['offer']->id ? 'Selected' : 'Select' }}

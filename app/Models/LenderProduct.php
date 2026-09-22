@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'lender_id', 'loan_product_id', 'min_amount', 'max_amount',
-    'min_tenure_months', 'max_tenure_months', 'initial_tenure_months', 'interest_rate_from',
+    'min_tenure_months', 'max_tenure_months', 'initial_tenure_months', 'hybrid_structures', 'interest_rate_from',
     'interest_rate_to', 'processing_fee_note', 'processing_fee_percent_min', 'processing_fee_percent_max',
     'processing_fee_flat_amount_min', 'processing_fee_flat_amount_max', 'processing_fee_gst_extra',
     'min_age', 'max_age', 'min_credit_score', 'min_monthly_income',
@@ -45,6 +45,7 @@ class LenderProduct extends Model
             'processing_fee_gst_extra' => 'boolean',
             'min_monthly_income' => 'decimal:2',
             'employment_types' => 'array',
+            'hybrid_structures' => 'array',
         ];
     }
 
@@ -130,15 +131,20 @@ class LenderProduct extends Model
     }
 
     /**
-     * This offer's Flexi Hybrid repayment structure(s), e.g. Kotak's
-     * "1 + 5" or Bajaj's "2 + 6 or 3 + 6" — see FlexiHybridTenure for how
-     * they're derived from min/max tenure and initial tenure. Empty when
-     * this offer isn't configured well enough to run the hybrid calculator.
+     * This offer's Flexi Hybrid repayment structure(s), e.g. Tata Capital's
+     * "1 + 4, 1 + 5, 2 + 5, 2 + 6". The lender's own list (hybrid_structures)
+     * wins; without one they're derived from min/max tenure and initial
+     * tenure — see FlexiHybridTenure. Empty when this offer isn't configured
+     * well enough to run the hybrid calculator.
      *
      * @return list<array{total: int, initial: int, subsequent: int}>
      */
     public function hybridTenureOptions(): array
     {
+        if (filled($this->hybrid_structures)) {
+            return FlexiHybridTenure::fromStructures($this->hybrid_structures);
+        }
+
         return FlexiHybridTenure::options($this->min_tenure_months, $this->max_tenure_months, $this->effectiveInitialTenureMonths());
     }
 
