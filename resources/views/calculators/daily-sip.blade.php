@@ -1,4 +1,4 @@
-<x-layouts.app :title="$content['meta_title']" :description="$content['meta_description']">
+<x-layouts.app :title="$content['meta_title']" :description="$content['meta_description']" :robots="$robots">
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Calculators' => route('calculators.index'), 'Daily SIP Calculator' => null]" />
 

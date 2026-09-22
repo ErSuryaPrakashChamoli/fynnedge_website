@@ -6,6 +6,7 @@ use App\Enums\LoanCategory;
 use App\Models\CalculatorPage;
 use App\Models\LoanProduct;
 use App\Support\Calculators\CalculatorCatalog;
+use App\Support\Calculators\CalculatorIndexing;
 use App\Support\Calculators\CalculatorPageKey;
 use App\Support\Calculators\CalculatorPagesContent;
 use App\Support\Calculators\LoanCalculatorPreset;
@@ -14,7 +15,8 @@ use Illuminate\Support\Facades\Route;
 
 /**
  * Every page's title, headline and introduction is admin-editable (Website
- * Settings → Calculators Page) through CalculatorPagesContent.
+ * Settings → Calculators Page) through CalculatorPagesContent, and whether
+ * search engines may index it through CalculatorIndexing.
  */
 class CalculatorController extends Controller
 {
@@ -23,6 +25,7 @@ class CalculatorController extends Controller
         return view('calculators.index', [
             'groups' => CalculatorCatalog::groups(),
             'content' => CalculatorPagesContent::forPage('index'),
+            'robots' => CalculatorIndexing::robotsFor('index'),
         ]);
     }
 
@@ -35,6 +38,7 @@ class CalculatorController extends Controller
         return view('calculators.emi', [
             'category' => $loanCategory,
             'content' => CalculatorPagesContent::forPage('emi', $loanCategory),
+            'robots' => CalculatorIndexing::robotsFor('emi/'.$loanCategory->value),
         ]);
     }
 
@@ -43,6 +47,7 @@ class CalculatorController extends Controller
         return view('calculators.fixed-deposit', [
             'calculatorPage' => $this->calculatorPageFor(CalculatorPageKey::FixedDeposit),
             'content' => CalculatorPagesContent::forPage('fixed_deposit'),
+            'robots' => CalculatorIndexing::robotsFor('fixed-deposit'),
             'eligibilityUrl' => $this->generalEligibilityUrl(),
         ]);
     }
@@ -52,6 +57,7 @@ class CalculatorController extends Controller
         return view('calculators.sip', [
             'calculatorPage' => $this->calculatorPageFor(CalculatorPageKey::Sip),
             'content' => CalculatorPagesContent::forPage('sip'),
+            'robots' => CalculatorIndexing::robotsFor('sip'),
             'eligibilityUrl' => $this->generalEligibilityUrl(),
         ]);
     }
@@ -61,6 +67,7 @@ class CalculatorController extends Controller
         return view('calculators.daily-sip', [
             'calculatorPage' => $this->calculatorPageFor(CalculatorPageKey::DailySip),
             'content' => CalculatorPagesContent::forPage('daily_sip'),
+            'robots' => CalculatorIndexing::robotsFor('daily-sip'),
             'eligibilityUrl' => $this->generalEligibilityUrl(),
         ]);
     }
@@ -70,6 +77,7 @@ class CalculatorController extends Controller
         return view('calculators.gst', [
             'calculatorPage' => $this->calculatorPageFor(CalculatorPageKey::Gst),
             'content' => CalculatorPagesContent::forPage('gst'),
+            'robots' => CalculatorIndexing::robotsFor('gst'),
             'eligibilityUrl' => $this->generalEligibilityUrl(),
         ]);
     }
@@ -85,6 +93,7 @@ class CalculatorController extends Controller
         return view('calculators.eligibility', [
             'category' => $loanCategory,
             'content' => CalculatorPagesContent::forPage('eligibility', $loanCategory),
+            'robots' => CalculatorIndexing::robotsFor('eligibility/'.$loanCategory->value),
             'explanation' => $this->explanationFor($product),
             'applyUrl' => ($product && Route::has('loans.apply')) ? route('loans.apply', $product) : null,
         ]);
@@ -101,6 +110,7 @@ class CalculatorController extends Controller
         return view('calculators.prepayment', [
             'category' => $loanCategory,
             'content' => CalculatorPagesContent::forPage('prepayment', $loanCategory),
+            'robots' => CalculatorIndexing::robotsFor('prepayment/'.$loanCategory->value),
             'explanation' => $this->explanationFor($product),
             'eligibilityUrl' => $this->eligibilityUrlFor($loanCategory),
             'applyUrl' => ($product && Route::has('loans.apply')) ? route('loans.apply', $product) : null,

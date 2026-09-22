@@ -8,6 +8,7 @@ use App\Models\LoanProduct;
 use App\Models\Page;
 use App\Models\SeoMeta;
 use App\Support\Calculators\CalculatorCatalog;
+use App\Support\Calculators\CalculatorIndexing;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -107,7 +108,6 @@ class Sitemap
             'eligibility.index',
             'quick-enquiry.show',
             'partners.index',
-            'calculators.index',
             'resources.index',
             'faqs.index',
             'about',
@@ -119,7 +119,8 @@ class Sitemap
     /**
      * Reuses the same catalog that renders the header mega menu and the
      * /calculators directory, so a calculator can't exist in one and not
-     * the other.
+     * the other. Pages hidden under Calculators Page → Search engine indexing
+     * are left out, since they tell crawlers not to index them.
      *
      * @return Collection<int, SitemapEntry>
      */
@@ -127,6 +128,10 @@ class Sitemap
     {
         return collect(CalculatorCatalog::groups())
             ->flatten(1)
+            ->prepend(['route' => 'calculators.index', 'params' => []])
+            ->filter(fn (array $calculator): bool => CalculatorIndexing::isIndexable(
+                CalculatorIndexing::pageKey($calculator['route'], $calculator['params']),
+            ))
             ->map(fn (array $calculator): array => [
                 'loc' => route($calculator['route'], $calculator['params']),
                 'lastmod' => null,
