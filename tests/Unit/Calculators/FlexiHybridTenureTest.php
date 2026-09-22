@@ -33,3 +33,28 @@ it('labels a structure in years', function () {
     expect(FlexiHybridTenure::label(['total' => 72, 'initial' => 12, 'subsequent' => 60]))->toBe('1 + 5 yrs')
         ->and(FlexiHybridTenure::label(['total' => 66, 'initial' => 6, 'subsequent' => 60]))->toBe('0.5 + 5 yrs');
 });
+
+it('reads a lender\'s own structures, sorted, skipping incomplete and duplicate rows', function () {
+    expect(FlexiHybridTenure::fromStructures([
+        ['initial_months' => 24, 'subsequent_months' => 60],
+        ['initial_months' => 12, 'subsequent_months' => 48],
+        ['initial_months' => 12, 'subsequent_months' => 72],
+        ['initial_months' => 12, 'subsequent_months' => 48],
+        ['initial_months' => null, 'subsequent_months' => 60],
+    ]))->toBe([
+        ['total' => 60, 'initial' => 12, 'subsequent' => 48],
+        ['total' => 84, 'initial' => 12, 'subsequent' => 72],
+        ['total' => 84, 'initial' => 24, 'subsequent' => 60],
+    ]);
+});
+
+it('prefers the requested initial tenure among structures sharing a total', function () {
+    $options = FlexiHybridTenure::fromStructures([
+        ['initial_months' => 12, 'subsequent_months' => 72],
+        ['initial_months' => 24, 'subsequent_months' => 60],
+    ]);
+
+    expect(FlexiHybridTenure::nearest($options, 84)['initial'])->toBe(12)
+        ->and(FlexiHybridTenure::nearest($options, 84, 24)['initial'])->toBe(24)
+        ->and(FlexiHybridTenure::nearest($options, 90, 24)['initial'])->toBe(24);
+});

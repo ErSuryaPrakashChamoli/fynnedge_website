@@ -109,3 +109,14 @@ it('does not change the comparison table for an ordinary, non-hybrid loan produc
     $response->assertDontSee('Initial tenure')
         ->assertDontSee('Subsequent tenure');
 });
+
+it('leaves the initial and subsequent tenure split out of the lender chart', function () {
+    $product = makeFlexiHybridProduct();
+    LenderProduct::factory()->for($product, 'loanProduct')->create();
+
+    $this->get("/loans/{$product->slug}")
+        ->assertOk()
+        ->assertSee('Compare lenders side by side')
+        ->assertDontSee('Initial tenure</th>', false)
+        ->assertDontSee('Subsequent tenure</th>', false);
+});

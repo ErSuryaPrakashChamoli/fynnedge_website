@@ -5,6 +5,7 @@ namespace App\Filament\Resources\LenderProducts\Schemas;
 use App\Enums\EmploymentType;
 use App\Enums\LenderStatus;
 use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -68,7 +69,30 @@ class LenderProductForm
                 ->label('Initial tenure (hybrid products only)')
                 ->numeric()
                 ->suffix('months')
-                ->helperText('Only applies to a hybrid/flexi-structured loan product: this lender\'s interest-only initial tenure at its minimum tenure. The subsequent tenure is min tenure − initial; each extra year up to max tenure adds to the initial tenure (e.g. 2 + 6 or 3 + 6 = min 96, max 108, initial 24). Leave blank to use the product\'s default.'),
+                ->helperText('Only applies to a hybrid/flexi-structured loan product, and only when "Repayment structures" below is empty: this lender\'s interest-only initial tenure at its minimum tenure. The subsequent tenure is min tenure − initial; each extra year up to max tenure adds to the initial tenure (e.g. 2 + 6 or 3 + 6 = min 96, max 108, initial 24). Leave blank to use the product\'s default.'),
+            Repeater::make('hybrid_structures')
+                ->label('Repayment structures (hybrid products only)')
+                ->helperText('The lender\'s own initial + subsequent tenure for each total tenure it offers, e.g. Tata Capital: 12 + 48, 12 + 60, 24 + 60, 24 + 72. When set, these replace the initial tenure rule above.')
+                ->schema([
+                    TextInput::make('initial_months')
+                        ->label('Initial (interest-only)')
+                        ->numeric()
+                        ->integer()
+                        ->minValue(1)
+                        ->required()
+                        ->suffix('months'),
+                    TextInput::make('subsequent_months')
+                        ->label('Subsequent (principal + interest)')
+                        ->numeric()
+                        ->integer()
+                        ->minValue(1)
+                        ->required()
+                        ->suffix('months'),
+                ])
+                ->columns(2)
+                ->defaultItems(0)
+                ->addActionLabel('Add structure')
+                ->columnSpanFull(),
             TextInput::make('interest_rate_from')->numeric()->suffix('%'),
             TextInput::make('interest_rate_to')->numeric()->suffix('%'),
             Fieldset::make('Processing fee')

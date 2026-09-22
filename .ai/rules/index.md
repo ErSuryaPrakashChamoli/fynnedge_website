@@ -77,8 +77,10 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Models/VideoTestimonial.php,app/Support/Testimonials/**,app/Filament/Resources/VideoTestimonials/**,resources/views/components/site/video-testimonial*.blade.php | .ai/rules/video-testimonials-views-components-site.md |
 | config/filesystems.php,resources/views/components/layouts/app.blade.php,tests/** | .ai/rules/views-components-layouts.md |
 | app/Support/Calculators/**,app/Http/Controllers/LoanProductController.php,resources/views/loans/**,resources/views/components/site/flexi-hybrid-hero.blade.php | .ai/rules/views-components-site.md |
+| database/seeders/FlexiHybridTermLoanSeeder.php,app/Support/Calculators/FlexiHybrid*.php,resources/views/components/⚡flexi-hybrid-calculator.blade.php | .ai/rules/views-components.md |
 | resources/views/**,resources/css/app.css | .ai/rules/views-css.md |
 | resources/views/about.blade.php,app/Http/Controllers/AboutController.php | .ai/rules/views-http-controllers.md |
+| resources/views/components/site/lender-comparison-table.blade.php,resources/views/loans/** | .ai/rules/views-loans.md |
 | app/Filament/Resources/Articles/**,app/Models/Article.php,resources/views/resources/** | .ai/rules/views-resources.md |
 | app/Support/Enquiries/PartnerLenders.php,app/Support/Enquiries/QuickEnquiryPageContent.php,app/Http/Controllers/PartnerLenderController.php,app/Http/Controllers/QuickEnquiryPageController.php,resources/views/partners.blade.php,resources/views/quick-enquiry.blade.php | .ai/rules/views-views.md |
 | resources/css/**,resources/views/** | .ai/rules/views.md |
