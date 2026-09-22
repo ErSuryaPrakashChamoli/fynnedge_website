@@ -4,6 +4,7 @@ use App\Enums\LoanCategory;
 use App\Filament\Pages\CalculatorPagesSettings;
 use App\Models\Setting;
 use App\Models\User;
+use App\Support\Calculators\CalculatorIndexing;
 use App\Support\Calculators\CalculatorPagesContent;
 use Database\Seeders\RoleSeeder;
 use Livewire\Livewire;
@@ -99,4 +100,63 @@ it('is only available to admins holding the page permission, which the marketing
     $editor->syncRoles(['Marketing']);
 
     $this->actingAs($editor->fresh())->get('/admin/calculator-pages-settings')->assertOk();
+});
+
+it('lets every calculator page be indexed until an admin hides it', function () {
+    Livewire::test(CalculatorPagesSettings::class)
+        ->assertSet('data.indexing.enabled', true)
+        ->assertSet('data.indexing.noindex', []);
+
+    $this->get(route('calculators.gst'))
+        ->assertOk()
+        ->assertSee('<meta name="robots" content="index, follow">', false);
+});
+
+it('hides a single calculator page from search engines and the sitemap', function () {
+    seedCalculatorProduct(LoanCategory::PersonalLoan);
+
+    Livewire::test(CalculatorPagesSettings::class)
+        ->fillForm(['indexing.noindex' => ['gst', 'emi/home-loan']])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    $this->get(route('calculators.gst'))
+        ->assertOk()
+        ->assertSee('<meta name="robots" content="noindex, follow">', false);
+
+    $this->get(route('calculators.emi', 'personal-loan'))
+        ->assertOk()
+        ->assertSee('<meta name="robots" content="index, follow">', false);
+
+    $this->get('/sitemap.xml')
+        ->assertOk()
+        ->assertDontSee(['<loc>'.route('calculators.gst').'</loc>', '<loc>'.route('calculators.emi', 'home-loan').'</loc>'], false)
+        ->assertSee(['<loc>'.route('calculators.index').'</loc>', '<loc>'.route('calculators.emi', 'personal-loan').'</loc>'], false);
+});
+
+it('hides the whole calculator section with the main switch', function () {
+    Livewire::test(CalculatorPagesSettings::class)
+        ->fillForm(['indexing.enabled' => false])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    $this->get(route('calculators.index'))
+        ->assertOk()
+        ->assertSee('<meta name="robots" content="noindex, follow">', false);
+
+    $this->get(route('calculators.sip'))
+        ->assertOk()
+        ->assertSee('<meta name="robots" content="noindex, follow">', false);
+
+    $this->get('/sitemap.xml')->assertOk()->assertDontSee(route('calculators.index'));
+});
+
+it('keeps the indexing choices when the wording is reset', function () {
+    Setting::set(CalculatorIndexing::SETTING_KEY, ['enabled' => true, 'noindex' => ['sip']]);
+
+    Livewire::test(CalculatorPagesSettings::class)
+        ->call('resetToDefaults')
+        ->assertSet('data.indexing.noindex', ['sip']);
+
+    expect(CalculatorIndexing::isIndexable('sip'))->toBeFalse();
 });

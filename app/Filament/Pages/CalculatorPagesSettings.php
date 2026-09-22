@@ -3,16 +3,20 @@
 namespace App\Filament\Pages;
 
 use App\Models\Setting;
+use App\Support\Calculators\CalculatorIndexing;
 use App\Support\Calculators\CalculatorPagesContent;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Arr;
 
 /**
  * The heading copy on /calculators and each calculator page, saved as one
@@ -22,6 +26,10 @@ use Filament\Support\Icons\Heroicon;
  * The "About this calculator" body is edited elsewhere: Content → Calculator
  * Pages (FD, SIP, Daily SIP, GST) or each Loan Product's calculator
  * explanation (EMI, Eligibility, Prepayment).
+ *
+ * The "Search engine indexing" section is saved separately through
+ * CalculatorIndexing, so resetting the wording never changes which pages
+ * search engines may index.
  */
 class CalculatorPagesSettings extends Page
 {
@@ -62,7 +70,7 @@ class CalculatorPagesSettings extends Page
 
     public function mount(): void
     {
-        $this->form->fill(CalculatorPagesContent::resolve());
+        $this->fillForm();
     }
 
     public function form(Schema $schema): Schema
@@ -71,47 +79,80 @@ class CalculatorPagesSettings extends Page
 
         return $schema
             ->statePath('data')
-            ->components(collect(self::SECTIONS)
-                ->map(fn (array $section, string $page): Section => Section::make($section[0])
-                    ->description($section[1].' Leave a field blank to use its default wording.')
-                    ->collapsible()
-                    ->collapsed($page !== 'index')
-                    ->columns(2)
-                    ->components(array_values(array_filter([
-                        TextInput::make("{$page}.heading")
-                            ->label('Headline')
+            ->components([
+                $this->indexingSection(),
+                ...$this->wordingSections($defaults),
+            ]);
+    }
+
+    private function indexingSection(): Section
+    {
+        return Section::make('Search engine indexing')
+            ->description('Choose whether Google and other search engines may list the calculator pages. Hidden pages get a "noindex" tag and are left out of the sitemap. The sitewide switch under Website Settings → SEO & Analytics still overrides this.')
+            ->collapsible()
+            ->components([
+                Toggle::make('indexing.enabled')
+                    ->label('Allow search engines to index the calculator pages')
+                    ->helperText('Turn off to hide /calculators and every calculator page from search at once.'),
+                CheckboxList::make('indexing.noindex')
+                    ->label('Hide these pages from search engines')
+                    ->helperText('Only applies while the switch above is on — when it is off, every calculator page is hidden.')
+                    ->options(CalculatorIndexing::pages())
+                    ->bulkToggleable()
+                    ->columns(2),
+            ]);
+    }
+
+    /**
+     * @param  array<string, array<string, string>>  $defaults
+     * @return array<int, Section>
+     */
+    private function wordingSections(array $defaults): array
+    {
+        return collect(self::SECTIONS)
+            ->map(fn (array $section, string $page): Section => Section::make($section[0])
+                ->description($section[1].' Leave a field blank to use its default wording.')
+                ->collapsible()
+                ->collapsed($page !== 'index')
+                ->columns(2)
+                ->components(array_values(array_filter([
+                    TextInput::make("{$page}.heading")
+                        ->label('Headline')
+                        ->maxLength(100)
+                        ->placeholder($defaults[$page]['heading']),
+                    isset($defaults[$page]['about_heading'])
+                        ? TextInput::make("{$page}.about_heading")
+                            ->label('"About" section heading')
                             ->maxLength(100)
-                            ->placeholder($defaults[$page]['heading']),
-                        isset($defaults[$page]['about_heading'])
-                            ? TextInput::make("{$page}.about_heading")
-                                ->label('"About" section heading')
-                                ->maxLength(100)
-                                ->placeholder($defaults[$page]['about_heading'])
-                                ->helperText('Above the loan explanation lower down the page.')
-                            : null,
-                        Textarea::make("{$page}.description")
-                            ->label('Introduction')
-                            ->rows(2)
-                            ->maxLength(300)
-                            ->placeholder($defaults[$page]['description'])
-                            ->columnSpanFull(),
-                        TextInput::make("{$page}.meta_title")
-                            ->label('Page title (browser tab & search results)')
-                            ->maxLength(70)
-                            ->placeholder($defaults[$page]['meta_title']),
-                        Textarea::make("{$page}.meta_description")
-                            ->label('Meta description')
-                            ->rows(2)
-                            ->maxLength(160)
-                            ->placeholder($defaults[$page]['meta_description']),
-                    ]))))
-                ->values()
-                ->all());
+                            ->placeholder($defaults[$page]['about_heading'])
+                            ->helperText('Above the loan explanation lower down the page.')
+                        : null,
+                    Textarea::make("{$page}.description")
+                        ->label('Introduction')
+                        ->rows(2)
+                        ->maxLength(300)
+                        ->placeholder($defaults[$page]['description'])
+                        ->columnSpanFull(),
+                    TextInput::make("{$page}.meta_title")
+                        ->label('Page title (browser tab & search results)')
+                        ->maxLength(70)
+                        ->placeholder($defaults[$page]['meta_title']),
+                    Textarea::make("{$page}.meta_description")
+                        ->label('Meta description')
+                        ->rows(2)
+                        ->maxLength(160)
+                        ->placeholder($defaults[$page]['meta_description']),
+                ]))))
+            ->values()
+            ->all();
     }
 
     public function save(): void
     {
-        Setting::set(CalculatorPagesContent::SETTING_KEY, $this->form->getState());
+        $state = $this->form->getState();
+
+        CalculatorIndexing::save(Arr::pull($state, 'indexing', []));
+        Setting::set(CalculatorPagesContent::SETTING_KEY, $state);
 
         Notification::make()->title('Calculator pages saved')->success()->send();
     }
@@ -120,9 +161,17 @@ class CalculatorPagesSettings extends Page
     {
         Setting::set(CalculatorPagesContent::SETTING_KEY, null);
 
-        $this->form->fill(CalculatorPagesContent::resolve());
+        $this->fillForm();
 
         Notification::make()->title('Calculator pages reset to default wording')->success()->send();
+    }
+
+    private function fillForm(): void
+    {
+        $this->form->fill([
+            ...CalculatorPagesContent::resolve(),
+            'indexing' => CalculatorIndexing::formState(),
+        ]);
     }
 
     /**
@@ -139,7 +188,7 @@ class CalculatorPagesSettings extends Page
                 ->label('Reset to defaults')
                 ->color('gray')
                 ->requiresConfirmation()
-                ->modalDescription('Every field on this page goes back to the built-in wording. This cannot be undone.')
+                ->modalDescription('Every wording field on this page goes back to the built-in text. Search engine indexing is not changed. This cannot be undone.')
                 ->action('resetToDefaults'),
             Action::make('save')
                 ->label('Save')
