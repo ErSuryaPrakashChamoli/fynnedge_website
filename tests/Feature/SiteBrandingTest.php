@@ -92,3 +92,13 @@ it('falls back to the default sitewide social share image when a page has none o
 
     $response->assertSee('<meta property="og:image" content="'.url(Storage::disk('public')->url('seo/default-og.jpg')).'">', false);
 });
+
+it('wraps a long hero eyebrow instead of widening the hero column', function () {
+    Setting::set('hero_eyebrow', 'Low Credit Score? No Problem. Har Loan Ka Perfect Solution.');
+
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect($html)
+        ->toContain('inline-flex max-w-full self-start items-center')
+        ->not->toContain('inline-flex w-max items-center');
+});

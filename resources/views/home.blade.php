@@ -32,9 +32,9 @@
                 'lg:grid-cols-[2fr_3fr]' => $banners->isNotEmpty(),
             ])>
                 {{-- Left 40% — static, never animated. --}}
-                <div class="flex flex-col justify-center">
+                <div class="flex min-w-0 flex-col justify-center">
                     @if ($hero['eyebrow'])
-                        <p data-reveal="up" class="inline-flex w-max items-center gap-2 rounded-full border border-line bg-surface/80 px-3 py-1 font-mono text-xs font-semibold uppercase tracking-[0.14em] text-accent shadow-sm backdrop-blur">
+                        <p data-reveal="up" class="inline-flex max-w-full self-start items-center gap-2 rounded-full border border-line bg-surface/80 px-3 py-1 font-mono text-xs font-semibold uppercase tracking-[0.14em] text-accent shadow-sm backdrop-blur">
                             {{ $hero['eyebrow'] }}
                         </p>
                     @endif

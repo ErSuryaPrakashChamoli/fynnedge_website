@@ -61,8 +61,12 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Filament/Resources/Pages/Schemas/PageForm.php,resources/views/components/site/footer.blade.php,app/Providers/AppServiceProvider.php | .ai/rules/providers.md |
 | app/Models/Redirect.php,app/Http/Middleware/HandleRedirects.php,app/Filament/Resources/Redirects/** | .ai/rules/redirects.md |
 | app/Filament/Schemas/HtmlBodyEditor.php,app/Filament/Resources/**/Schemas/*Form.php | .ai/rules/resources-schemas.md |
+<<<<<<< HEAD
+| resources/views/quick-enquiry.blade.php, resources/views/**, resources/views/home.blade.php | .ai/rules/resources-views.md |
+=======
 | resources/views/components/layouts/app.blade.php | .ai/rules/resources-views-components-layouts.md |
 | resources/views/quick-enquiry.blade.php, resources/views/** | .ai/rules/resources-views.md |
+>>>>>>> main
 | app/Filament/Resources/** | .ai/rules/resources.md |
 | app/Support/Enquiries/EnquiryFormContent.php,app/Filament/Resources/MarketingSections/Schemas/MarketingSectionForm.php,resources/views/components/site/quick-enquiry.blade.php | .ai/rules/schemas-views-components-site.md |
 | app/Support/Seo/**,app/Filament/Pages/StructuredData.php,app/Filament/Resources/SchemaTemplates/**,app/Filament/Schemas/SeoFormSection.php | .ai/rules/schemas.md |

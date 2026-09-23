@@ -17,3 +17,13 @@ it('allows admin users into the admin panel', function () {
 
     $this->actingAs($admin)->get('/admin')->assertOk();
 });
+
+it('does not advertise Filament on the dashboard', function () {
+    $admin = User::factory()->create(['is_admin' => true]);
+
+    $this->actingAs($admin)->get('/admin')
+        ->assertOk()
+        ->assertSee('Welcome')
+        ->assertDontSee('filamentphp.com')
+        ->assertDontSee('filamentphp/filament');
+});
