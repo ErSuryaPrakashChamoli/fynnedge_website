@@ -14,9 +14,10 @@ use Filament\Support\Contracts\HasLabel;
  * have their own tab on LoanProductResource, so this layer is for the shared
  * questions that belong on a whole class of page.
  *
- * Deliberately excluded: the journey/application/credit-score funnel. Those are
- * per-visitor transactional screens that already send `noindex, nofollow`, not
- * marketing pages an FAQ belongs on.
+ * Deliberately excluded: the journey/application funnel. Those are per-visitor
+ * transactional screens that already send `noindex, nofollow`, not marketing
+ * pages an FAQ belongs on. The credit score pages are the exception: each has
+ * admin-managed content like a calculator page, so FAQs can be pinned to them.
  */
 enum FaqPlacement: string implements HasLabel
 {
@@ -42,6 +43,8 @@ enum FaqPlacement: string implements HasLabel
     case SipCalculator = 'calculators.sip';
     case DailySipCalculator = 'calculators.daily-sip';
     case GstCalculator = 'calculators.gst';
+
+    case CreditScorePages = 'credit-score.show';
 
     case Grievance = 'grievance';
     case PrivacyPolicy = 'privacy-policy';
@@ -75,6 +78,8 @@ enum FaqPlacement: string implements HasLabel
             self::DailySipCalculator => 'Daily SIP calculator',
             self::GstCalculator => 'GST calculator',
 
+            self::CreditScorePages => 'Every credit score page',
+
             self::Grievance => 'Grievance redressal',
             self::PrivacyPolicy => 'Privacy policy',
             self::Terms => 'Terms & conditions',
@@ -92,6 +97,7 @@ enum FaqPlacement: string implements HasLabel
             self::CalculatorsDirectory, self::EmiCalculators, self::EligibilityCalculators,
             self::PrepaymentCalculators, self::FixedDepositCalculator, self::SipCalculator,
             self::DailySipCalculator, self::GstCalculator => 'Calculators',
+            self::CreditScorePages => 'Credit score pages',
             self::Grievance, self::PrivacyPolicy, self::Terms, self::Disclaimer, self::CreditReportTerms => 'Legal & policy',
         };
     }

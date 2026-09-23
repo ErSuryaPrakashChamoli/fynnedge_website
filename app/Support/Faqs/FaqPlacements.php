@@ -7,6 +7,7 @@ use App\Enums\LoanCategory;
 use App\Models\Article;
 use App\Models\LoanLandingPage;
 use App\Models\LoanProduct;
+use App\Modules\CreditScore\Enums\BureauName;
 use App\Support\Calculators\LoanCalculatorPreset;
 use BackedEnum;
 use Illuminate\Database\Eloquent\Model;
@@ -46,6 +47,7 @@ class FaqPlacements
         'calculators.emi' => 'category',
         'calculators.eligibility' => 'category',
         'calculators.prepayment' => 'category',
+        'credit-score.show' => 'bureau',
     ];
 
     /**
@@ -141,6 +143,11 @@ class FaqPlacements
             $options[$placement->getLabel()] = self::expand($placement, self::calculatorCategories());
         }
 
+        $options[FaqPlacement::CreditScorePages->group()] = self::expand(
+            FaqPlacement::CreditScorePages,
+            collect(BureauName::cases())->mapWithKeys(fn (BureauName $bureau): array => [$bureau->value => $bureau->getLabel().' score page'])->all(),
+        );
+
         // The per-page groups now carry the "every ..." entry themselves.
         foreach ([FaqPlacement::LoanProductPages, FaqPlacement::LoanLandingPages, FaqPlacement::ArticlePages] as $placement) {
             unset($options[$placement->group()][$placement->value]);
@@ -200,6 +207,7 @@ class FaqPlacements
             'loans.show' => LoanProduct::query()->where('slug', $identifier)->value('name') ?? $identifier,
             'loans.landing-pages.show' => LoanLandingPage::query()->where('slug', $identifier)->value('title') ?? $identifier,
             'resources.show' => Article::query()->where('slug', $identifier)->value('title') ?? $identifier,
+            'credit-score.show' => (BureauName::tryFrom($identifier)?->getLabel() ?? $identifier).' score page',
             'calculators.emi', 'calculators.eligibility', 'calculators.prepayment' => trim(
                 (LoanCategory::tryFrom($identifier)?->getLabel() ?? $identifier).' — '.(FaqPlacement::tryFrom($routeName)?->getLabel() ?? $routeName)
             ),

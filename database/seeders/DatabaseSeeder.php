@@ -132,6 +132,7 @@ class DatabaseSeeder extends Seeder
         $this->call(DocumentRequirementSeeder::class);
         $this->call(LegalPageSeeder::class);
         $this->call(CalculatorPageSeeder::class);
+        $this->call(CreditScorePageSeeder::class);
         $this->call(JobOpeningSeeder::class);
         $this->call(ArticleSeeder::class);
         $this->call(FaqSeeder::class);

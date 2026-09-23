@@ -33,6 +33,13 @@ Allow: /
 @foreach ($disallowedPaths as $path)
 Disallow: {!! $path !!}
 @endforeach
+@if ($allowedPaths)
+
+# Credit score pages opted in to search (Admin → Website Settings → Credit Score Page).
+@foreach ($allowedPaths as $path)
+Allow: {!! $path !!}
+@endforeach
+@endif
 @if ($extraDirectives)
 
 # --- Added in Admin → Website Settings → SEO & Tracking ---

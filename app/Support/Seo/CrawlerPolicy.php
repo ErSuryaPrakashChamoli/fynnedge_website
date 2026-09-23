@@ -3,6 +3,8 @@
 namespace App\Support\Seo;
 
 use App\Models\Setting;
+use App\Modules\CreditScore\Enums\BureauName;
+use App\Support\Pages\CreditScoreIndexing;
 
 /**
  * The crawler policy /robots.txt is generated from.
@@ -86,5 +88,21 @@ class CrawlerPolicy
             '/storage/private', '/up',
             '/*?signature=', '/*&signature=',
         ];
+    }
+
+    /**
+     * Exceptions to disallowedPaths(): the credit score pages an admin opted
+     * in to search (CreditScoreIndexing). The longer, more specific Allow
+     * wins over `Disallow: /credit-score/` for crawlers that follow the
+     * robots.txt standard (RFC 9309).
+     *
+     * @return array<int, string>
+     */
+    public static function allowedPaths(): array
+    {
+        return array_map(
+            fn (BureauName $bureau): string => '/credit-score/'.$bureau->value,
+            CreditScoreIndexing::indexedPages(),
+        );
     }
 }

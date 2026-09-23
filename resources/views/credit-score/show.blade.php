@@ -1,10 +1,10 @@
-{{-- Part of the per-visitor funnel (PAN + mobile), kept out of search the same way
-     as /journey and /applications: robots.txt disallows /credit-score/ and the
-     sitemap never lists it (CrawlerPolicy, Sitemap). --}}
+{{-- Kept out of search by default like the rest of the per-visitor funnel (PAN +
+     mobile): $robots is "noindex, nofollow", robots.txt disallows /credit-score/
+     and the sitemap skips it — unless an admin opts this page in (CreditScoreIndexing). --}}
 <x-layouts.app
     :title="$content['meta_title']"
     :description="$content['meta_description']"
-    robots="noindex, nofollow"
+    :robots="$robots"
 >
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Credit Score' => null, $bureau->getLabel() => null]" />
@@ -59,5 +59,7 @@
                 <livewire:credit-score-check :bureau="$bureau->value" />
             </div>
         </div>
+
+        <x-site.calculator-explainer :heading="$about['heading']" :body="$about['body']" />
     </section>
 </x-layouts.app>

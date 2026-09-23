@@ -8,8 +8,10 @@ use App\Models\LoanProduct;
 use App\Models\Page;
 use App\Models\PageSeo;
 use App\Models\SeoMeta;
+use App\Modules\CreditScore\Enums\BureauName;
 use App\Support\Calculators\CalculatorCatalog;
 use App\Support\Calculators\CalculatorIndexing;
+use App\Support\Pages\CreditScoreIndexing;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -21,9 +23,9 @@ use Illuminate\Support\Collection;
  * `published()` scopes the public controllers use, so an unpublished,
  * scheduled-for-later or expired record can never leak into the sitemap
  * while its page still 404s. Deliberately excluded: the admin panel, the
- * per-visitor journey/application/credit-score funnel (already
- * `noindex, nofollow` in the page head), signed draft previews and the
- * health probe.
+ * per-visitor journey/application funnel (already `noindex, nofollow` in the
+ * page head), signed draft previews and the health probe. The credit score
+ * pages are funnel pages too and stay out unless an admin opts one in.
  *
  * Two rules apply to every entry, applied centrally in resolve() rather than
  * per source:
@@ -37,7 +39,7 @@ use Illuminate\Support\Collection;
  * "Effective" follows the layout's own precedence exactly: an active Page SEO
  * row for the URL (Content → Page SEOs) wins field by field, and a blank field
  * falls through to the value the page itself set (its record's SEO section, or
- * the calculator indexing setting).
+ * the calculator or credit score indexing setting).
  *
  * @phpstan-type SitemapEntry array{loc: string, lastmod: string|null}
  * @phpstan-type SitemapCandidate array{url: string, robots: string|null, canonical: string|null, lastmod: string|null}
@@ -76,6 +78,7 @@ class Sitemap
             collect()
                 ->concat(self::staticPages())
                 ->concat(self::calculators())
+                ->concat(self::creditScorePages())
                 ->concat(self::loanProducts())
                 ->concat(self::loanLandingPages())
                 ->concat(self::articles())
@@ -197,6 +200,23 @@ class Sitemap
                 'canonical' => null,
                 'lastmod' => null,
             ]);
+    }
+
+    /**
+     * Every bureau page, carrying the same `robots` value its controller
+     * passes the layout, so resolve() drops all but the pages an admin opted
+     * in under Credit Score Page → Search engines.
+     *
+     * @return Collection<int, SitemapCandidate>
+     */
+    private static function creditScorePages(): Collection
+    {
+        return collect(BureauName::cases())->map(fn (BureauName $bureau): array => [
+            'url' => route('credit-score.show', ['bureau' => $bureau]),
+            'robots' => CreditScoreIndexing::robotsFor($bureau),
+            'canonical' => null,
+            'lastmod' => null,
+        ]);
     }
 
     /**
