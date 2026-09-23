@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Models\Setting;
 use App\Modules\CreditScore\Enums\BureauName;
+use App\Support\Pages\CreditScoreIndexing;
 use App\Support\Pages\CreditScorePageContent;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -11,11 +12,13 @@ use Filament\Actions\ActionGroup;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Arr;
 use Livewire\Attributes\Url;
 
 /**
@@ -23,6 +26,10 @@ use Livewire\Attributes\Url;
  * edited and saved on its own (`?bureau=experian` picks which), through
  * CreditScorePageContent — which is also where the defaults live, so this form
  * opens showing exactly what that page currently says.
+ *
+ * Whether search engines may index the page is saved separately through
+ * CreditScoreIndexing, so resetting the wording never changes it. The page's
+ * "About" section is edited under Content → Credit Score Pages.
  *
  * The check form's own steps (OTP, details, result) are not edited here.
  */
@@ -58,7 +65,7 @@ class CreditScorePageSettings extends Page
     {
         abort_if(BureauName::tryFrom($this->bureau) === null, 404);
 
-        $this->form->fill(CreditScorePageContent::resolve($this->editingBureau()));
+        $this->fillForm();
     }
 
     public function getTitle(): string
@@ -140,6 +147,10 @@ class CreditScorePageSettings extends Page
                     ->description('The browser tab title and description. {bureau} works here too.')
                     ->columns(2)
                     ->components([
+                        Toggle::make('indexable')
+                            ->label('Allow search engines to index this page')
+                            ->helperText('Off by default: the page sends "noindex, nofollow", robots.txt blocks it and the sitemap leaves it out. Turning it on changes only this bureau page. The sitewide switch under Website Settings → SEO & Tracking still overrides this.')
+                            ->columnSpanFull(),
                         TextInput::make('meta_title')
                             ->label('Page title')
                             ->maxLength(70)
@@ -155,10 +166,14 @@ class CreditScorePageSettings extends Page
 
     public function save(): void
     {
+        $state = $this->form->getState();
+
+        CreditScoreIndexing::setIndexable($this->editingBureau(), (bool) Arr::pull($state, 'indexable', false));
+
         // Repeater state is keyed by item UUIDs; store plain lists.
         Setting::set(CreditScorePageContent::settingKey($this->editingBureau()), array_map(
             fn (mixed $value): mixed => is_array($value) ? array_values($value) : $value,
-            $this->form->getState(),
+            $state,
         ));
 
         Notification::make()->title($this->editingBureau()->getLabel().' score page saved')->success()->send();
@@ -169,9 +184,17 @@ class CreditScorePageSettings extends Page
         // An empty list, not null: null would fall back to the legacy shared copy.
         Setting::set(CreditScorePageContent::settingKey($this->editingBureau()), []);
 
-        $this->form->fill(CreditScorePageContent::resolve($this->editingBureau()));
+        $this->fillForm();
 
         Notification::make()->title($this->editingBureau()->getLabel().' score page reset to default wording')->success()->send();
+    }
+
+    private function fillForm(): void
+    {
+        $this->form->fill([
+            ...CreditScorePageContent::resolve($this->editingBureau()),
+            'indexable' => CreditScoreIndexing::isIndexable($this->editingBureau()),
+        ]);
     }
 
     /**
@@ -198,7 +221,7 @@ class CreditScorePageSettings extends Page
                 ->label('Reset to defaults')
                 ->color('gray')
                 ->requiresConfirmation()
-                ->modalDescription('Every field on this bureau page goes back to the built-in wording. The other bureau pages are not changed. This cannot be undone.')
+                ->modalDescription('Every wording field on this bureau page goes back to the built-in text. Search engine indexing and the other bureau pages are not changed. This cannot be undone.')
                 ->action('resetToDefaults'),
             Action::make('save')
                 ->label('Save')

@@ -4,6 +4,7 @@ use App\Filament\Pages\CreditScorePageSettings;
 use App\Models\Setting;
 use App\Models\User;
 use App\Modules\CreditScore\Enums\BureauName;
+use App\Support\Pages\CreditScoreIndexing;
 use App\Support\Pages\CreditScorePageContent;
 use Database\Seeders\RoleSeeder;
 use Livewire\Livewire;
@@ -123,4 +124,17 @@ it('is only available to admins holding the page permission, which the marketing
     $editor->syncRoles(['Marketing']);
 
     $this->actingAs($editor->fresh())->get('/admin/credit-score-page-settings')->assertOk();
+});
+
+it('opts one bureau page in to search engines, and resetting the wording leaves that alone', function () {
+    Livewire::withQueryParams(['bureau' => 'equifax'])->test(CreditScorePageSettings::class)
+        ->assertSet('data.indexable', false)
+        ->fillForm(['indexable' => true])
+        ->call('save')
+        ->call('resetToDefaults')
+        ->assertSet('data.indexable', true);
+
+    expect(CreditScoreIndexing::indexedPages())->toBe([BureauName::Equifax]);
+    $this->get(route('credit-score.show', ['bureau' => 'equifax']))->assertSee('<meta name="robots" content="index, follow">', false);
+    $this->get(route('credit-score.show', ['bureau' => 'cibil']))->assertSee('<meta name="robots" content="noindex, nofollow">', false);
 });

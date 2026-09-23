@@ -30,7 +30,7 @@ class RoleSeeder extends Seeder
     {
         $marketingPermissions = $this->permissionsFor([
             'Article', 'Banner', 'Testimonial', 'CompanyPhoto', 'JobOpening', 'Faq',
-            'MarketingSection', 'NavigationLink', 'HowItWorksStep', 'CalculatorPage',
+            'MarketingSection', 'NavigationLink', 'HowItWorksStep', 'CalculatorPage', 'CreditScorePage',
             'Achievement', 'VideoTestimonial', 'PromoBar',
         ], ['ViewAny', 'View', 'Create', 'Update', 'Delete'])
             ->merge($this->permissionsFor(['LoanProductContent', 'LoanLandingPageContent'], ['ViewAny', 'View', 'Update']))

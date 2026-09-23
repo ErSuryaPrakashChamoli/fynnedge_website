@@ -37,6 +37,7 @@ class RobotsController extends Controller
                 'aiCrawlersAllowed' => CrawlerPolicy::aiCrawlersAllowed(),
                 'searchCrawlers' => CrawlerPolicy::SEARCH_CRAWLERS,
                 'disallowedPaths' => CrawlerPolicy::disallowedPaths(),
+                'allowedPaths' => CrawlerPolicy::allowedPaths(),
                 'extraDirectives' => CrawlerPolicy::extraDirectives(),
             ])
             ->header('Content-Type', 'text/plain; charset=UTF-8');
