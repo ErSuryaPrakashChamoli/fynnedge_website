@@ -73,3 +73,67 @@ it('shows the loan product calculator_explanation and both CTAs on the prepaymen
         ->assertSee('Check Your Eligibility')
         ->assertSee(route('loans.apply', $product), false);
 });
+
+it('shows each loan calculator page its own About content, independent of the others', function () {
+    seedCalculatorProduct(LoanCategory::PersonalLoan);
+    seedCalculatorProduct(LoanCategory::HomeLoan);
+    CalculatorPage::factory()->create(['calculator_key' => 'emi/personal-loan', 'title' => null, 'body' => '<p>TEST ABOUT PERSONAL LOAN EMI</p>']);
+    CalculatorPage::factory()->create(['calculator_key' => 'emi/home-loan', 'title' => null, 'body' => '<p>TEST ABOUT HOME LOAN EMI</p>']);
+    CalculatorPage::factory()->create(['calculator_key' => 'eligibility/home-loan', 'title' => null, 'body' => '<p>TEST ABOUT HOME LOAN ELIGIBILITY</p>']);
+
+    $this->get('/calculators/emi/personal-loan')
+        ->assertOk()
+        ->assertSee('About the Personal Loan')
+        ->assertSee('TEST ABOUT PERSONAL LOAN EMI')
+        ->assertDontSee('TEST ABOUT HOME LOAN');
+
+    $this->get('/calculators/emi/home-loan')
+        ->assertOk()
+        ->assertSee('TEST ABOUT HOME LOAN EMI')
+        ->assertDontSee('TEST ABOUT HOME LOAN ELIGIBILITY')
+        ->assertDontSee('TEST ABOUT PERSONAL LOAN EMI');
+
+    $this->get('/calculators/eligibility/home-loan')
+        ->assertOk()
+        ->assertSee('TEST ABOUT HOME LOAN ELIGIBILITY')
+        ->assertDontSee('TEST ABOUT HOME LOAN EMI');
+});
+
+it('prefers the calculator page About content over the loan product calculator_explanation', function () {
+    LoanProduct::factory()->published()->create([
+        'category' => LoanCategory::PersonalLoan,
+        'calculator_explanation' => '<p>Shared loan explanation.</p>',
+    ]);
+    CalculatorPage::factory()->create(['calculator_key' => 'eligibility/personal-loan', 'body' => '<p>Eligibility-only copy.</p>']);
+
+    $this->get('/calculators/eligibility/personal-loan')
+        ->assertOk()
+        ->assertSee('Eligibility-only copy.')
+        ->assertDontSee('Shared loan explanation.');
+});
+
+it('headings the About section with the admin title, else the calculator name', function () {
+    CalculatorPage::factory()->create(['calculator_key' => 'sip', 'title' => null, 'body' => '<p>SIP copy.</p>']);
+    CalculatorPage::factory()->create(['calculator_key' => 'gst', 'title' => 'Understanding GST', 'body' => '<p>GST copy.</p>']);
+
+    $this->get('/calculators/sip')->assertOk()->assertSee('About the SIP Calculator');
+    $this->get('/calculators/gst')->assertOk()->assertSee('Understanding GST')->assertDontSee('About the GST Calculator');
+});
+
+it('hides the About section when the saved content is only empty editor markup', function () {
+    CalculatorPage::factory()->create(['calculator_key' => 'sip', 'title' => 'About SIPs', 'body' => '<p></p><p>&nbsp;</p>']);
+
+    $this->get('/calculators/sip')
+        ->assertOk()
+        ->assertDontSee('About SIPs');
+});
+
+it('shows the About section on the Flexi Hybrid EMI calculator page', function () {
+    seedCalculatorProduct(LoanCategory::FlexiHybridTermLoan);
+    CalculatorPage::factory()->create(['calculator_key' => 'emi/flexi-hybrid-term-loan', 'title' => null, 'body' => '<p>TEST ABOUT FLEXI HYBRID</p>']);
+
+    $this->get('/calculators/emi/flexi-hybrid-term-loan')
+        ->assertOk()
+        ->assertSee('About the Flexi Hybrid Term Loan EMI Calculator')
+        ->assertSee('TEST ABOUT FLEXI HYBRID');
+});

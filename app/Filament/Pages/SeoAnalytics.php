@@ -134,9 +134,17 @@ class SeoAnalytics extends Page
             Section::make('Search engine indexing')
                 ->description('Whether search engines may index the public website at all.')
                 ->components([
+                    /*
+                     * Disabled (and so not saved) while the environment forces
+                     * indexing off: switching it ON there would do nothing, and
+                     * saving the page must not overwrite the stored value.
+                     */
                     Toggle::make('seo_indexing_enabled')
                         ->label('Allow search engine indexing')
-                        ->helperText('Turn this OFF to prevent search engines from indexing the public website. Every page then sends "noindex, nofollow", robots.txt disallows everything and the sitemap stops being served. The admin panel is unaffected.'),
+                        ->disabled(fn (): bool => SearchEngineIndexing::forcedOffByEnvironment())
+                        ->helperText(fn (): string => SearchEngineIndexing::forcedOffByEnvironment()
+                            ? 'Locked OFF by this server\'s configuration (SEO_INDEXING_ENABLED=false), whatever is saved here. This is how staging and development servers are kept out of search results.'
+                            : 'Turn this OFF to prevent search engines from indexing the public website. Every page then sends "noindex, nofollow", robots.txt disallows everything and the sitemap stops being served. The admin panel is unaffected.'),
                 ]),
 
             Section::make('Default meta tags')

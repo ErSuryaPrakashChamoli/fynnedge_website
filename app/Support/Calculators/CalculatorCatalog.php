@@ -40,4 +40,22 @@ class CalculatorCatalog
             ],
         ];
     }
+
+    /**
+     * Every calculator page as key => label, keyed by its path under
+     * /calculators (CalculatorIndexing::pageKey(), e.g. `gst` or
+     * `emi/home-loan`). The same key identifies the page's CalculatorPage
+     * "About" content and its search indexing setting.
+     *
+     * @return array<string, string>
+     */
+    public static function pages(): array
+    {
+        return collect(self::groups())
+            ->flatten(1)
+            ->mapWithKeys(fn (array $calculator): array => [
+                CalculatorIndexing::pageKey($calculator['route'], $calculator['params']) => $calculator['label'],
+            ])
+            ->all();
+    }
 }

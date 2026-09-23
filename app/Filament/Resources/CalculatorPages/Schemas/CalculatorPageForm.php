@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\CalculatorPages\Schemas;
 
 use App\Models\CalculatorPage;
-use App\Support\Calculators\CalculatorPageKey;
+use App\Support\Calculators\CalculatorCatalog;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -17,15 +17,17 @@ class CalculatorPageForm
             ->components([
                 Select::make('calculator_key')
                     ->label('Calculator')
-                    ->options(CalculatorPageKey::class)
+                    ->options(CalculatorCatalog::pages())
+                    ->searchable()
                     ->required()
                     ->unique(CalculatorPage::class, 'calculator_key', ignoreRecord: true)
-                    ->helperText('Which calculator page this content appears on. Loan-category calculators (EMI, Eligibility, Prepayment) instead use the "Calculator explanation" field on the relevant Loan Product.'),
+                    ->helperText('Which calculator page this content appears on. Each calculator has its own content — e.g. the Home Loan EMI and Home Loan Eligibility calculators are edited separately.'),
                 TextInput::make('title')
-                    ->helperText('Optional — leave blank to use the default section heading ("About this calculator").'),
+                    ->label('Heading')
+                    ->helperText('Optional — leave blank to use the default heading, e.g. "About the Home Loan EMI Calculator".'),
                 RichEditor::make('body')
-                    ->label('Content')
-                    ->helperText('Shown below the calculator, above the page footer. Written by the marketing team — edit anytime, changes go live immediately.')
+                    ->label('About Calculator')
+                    ->helperText('Shown below the calculator. Leave empty to hide the section — loan calculators then fall back to the Loan Product\'s "EMI calculation explanation". Changes go live immediately.')
                     ->columnSpanFull(),
             ]);
     }

@@ -174,6 +174,33 @@ it('saves newsletter settings and applies them to the public site immediately', 
         ->and(App\Modules\Newsletter\Services\NewsletterSettings::doubleOptInEnabled())->toBeFalse();
 });
 
+it('lets an admin edit the footer signup heading and description', function () {
+    Livewire::test(NewsletterSettings::class)
+        ->assertSchemaStateSet([
+            'newsletter_footer_heading' => 'FynnEdge Insights',
+            'newsletter_footer_description' => 'Practical financial insights and loan tips, straight to your inbox.',
+        ])
+        ->fillForm([
+            'newsletter_footer_heading' => 'Money Matters Weekly',
+            'newsletter_footer_description' => 'Short, useful money reads.',
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('Money Matters Weekly')
+        ->assertSee('Short, useful money reads.')
+        ->assertDontSee('FynnEdge Insights');
+});
+
+it('requires a footer signup heading', function () {
+    Livewire::test(NewsletterSettings::class)
+        ->fillForm(['newsletter_footer_heading' => ''])
+        ->call('save')
+        ->assertHasFormErrors(['newsletter_footer_heading' => 'required']);
+});
+
 it('hides the whole newsletter section from an admin without the permissions', function () {
     $editor = User::factory()->create(['is_admin' => true]);
     $editor->syncRoles([]);

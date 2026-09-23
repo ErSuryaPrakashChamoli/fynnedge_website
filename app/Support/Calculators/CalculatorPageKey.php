@@ -5,10 +5,9 @@ namespace App\Support\Calculators;
 use Filament\Support\Contracts\HasLabel;
 
 /**
- * The calculator pages that have no LoanProduct to hang admin-editable
- * "about this calculator" content off — see App\Models\CalculatorPage.
- * Loan-category calculators (EMI, Eligibility, Prepayment) aren't listed
- * here; they reuse LoanProduct::calculator_explanation instead.
+ * The investment calculator pages whose "About" content CalculatorPageSeeder
+ * ships. Every calculator page (loan ones included) can have a CalculatorPage
+ * row — the admin's list comes from CalculatorCatalog::pages().
  */
 enum CalculatorPageKey: string implements HasLabel
 {

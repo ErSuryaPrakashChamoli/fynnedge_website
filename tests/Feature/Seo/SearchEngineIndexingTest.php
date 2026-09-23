@@ -38,10 +38,28 @@ it('falls back to the configured default when the setting has never been saved',
     expect(SearchEngineIndexing::enabled())->toBeFalse();
 });
 
-it('lets a saved setting win over the environment default', function () {
+it('keeps the site noindexed when the environment forbids indexing, even if the saved setting allows it', function () {
+    // A production database restored onto staging carries the setting as ON.
     config()->set('seo.indexing_enabled', false);
     Setting::set('seo_indexing_enabled', true);
 
+    expect(SearchEngineIndexing::enabled())->toBeFalse();
+
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('<meta name="robots" content="noindex, nofollow">', false)
+        ->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+    $this->get('/sitemap.xml')->assertNotFound();
+    expect($this->get('/robots.txt')->getContent())->toContain("User-agent: *\nDisallow: /");
+});
+
+it('lets the saved setting decide while the environment allows indexing', function () {
+    config()->set('seo.indexing_enabled', true);
+
+    Setting::set('seo_indexing_enabled', false);
+    expect(SearchEngineIndexing::enabled())->toBeFalse();
+
+    Setting::set('seo_indexing_enabled', true);
     expect(SearchEngineIndexing::enabled())->toBeTrue();
 });
 

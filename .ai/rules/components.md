@@ -13,7 +13,7 @@ paths:
 ⚡emi-calculator.blade.php's "About this loan" panel (explanation, tenure/rate comparison, eligibility/apply CTAs, related resources, FAQs) only renders when `showLoanDetails` is true (the default). loans/show.blade.php explicitly passes `:show-loan-details="false"` because it already renders an equivalent section itself — don't remove that flag or the content will duplicate there.
 
 The panel's content is deliberately CMS-driven, not hardcoded:
-- Explanation copy comes from LoanProduct::calculator_explanation (nullable, separate from the general `body` field so marketing can edit calculator copy independently), falling back to `summary`.
+- Heading and explanation come from the `about` computed property: CalculatorPage row `emi/{category}` first (per-page, admin-editable in Content → Calculator Pages), then LoanProduct::calculator_explanation, then `summary`.
 - Tenure/rate comparison tables are fully computed live via EmiCalculator::calculate() (LoanCalculatorPreset's min/mid/max tenure and min/current/max rate) — never hand-maintained copy.
 - Related resources come from Article::forCategoryOrGeneral($category) (articles.category is nullable — untagged = general/shown everywhere).
 - FAQs and the FAQPage JSON-LD both come from LoanProduct::faqs() (already admin-managed via FaqsRelationManager) — keep reusing that relation rather than adding a parallel FAQ source.

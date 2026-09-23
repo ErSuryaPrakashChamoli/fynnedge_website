@@ -5,6 +5,7 @@ namespace App\Filament\Schemas;
 use App\Enums\SchemaPageType;
 use App\Support\Seo\SchemaGraph;
 use App\Support\Seo\SchemaTemplateRenderer;
+use App\Support\Seo\SearchEngineIndexing;
 use Closure;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -40,7 +41,14 @@ class SeoFormSection
         return (bool) auth()->user()?->can('View:StructuredData');
     }
 
-    public static function make(): Section
+    /**
+     * A record's own SEO section defaults robots to "index, follow". An
+     * OVERRIDE layer (Page SEO) passes null instead: a filled robots value there
+     * wins over the page's own, so a default would silently re-index a page
+     * that set itself noindex whenever an admin added a row just to change
+     * its title. Blank means "don't override".
+     */
+    public static function make(?string $defaultRobots = SearchEngineIndexing::DEFAULT_ROBOTS): Section
     {
         return Section::make('SEO')
             ->relationship('seoMeta')
@@ -63,12 +71,15 @@ class SeoFormSection
                     ->label('Canonical URL')
                     ->url(),
                 Select::make('robots')
+                    ->label('SEO indexing')
+                    ->helperText('Sets this page\'s <meta name="robots"> tag. Noindex pages are also left out of the sitemap.')
                     ->options([
                         'index, follow' => 'Index, follow',
                         'noindex, follow' => 'Noindex, follow',
                         'noindex, nofollow' => 'Noindex, nofollow',
                     ])
-                    ->default('index, follow'),
+                    ->default($defaultRobots)
+                    ->placeholder($defaultRobots === null ? "Don't override — keep the page's own setting" : null),
                 FileUpload::make('og_image_path')
                     ->label('Social share image')
                     ->image()

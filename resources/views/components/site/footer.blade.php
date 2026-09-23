@@ -82,21 +82,38 @@
             <div>
                 <p class="border-b border-line pb-2 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent">Company</p>
                 <ul class="mt-3 flex flex-col gap-2">
-                    <li><x-site.nav-link route="about" label="About" /></li>
-                    <li><x-site.nav-link route="careers" label="Careers" /></li>
+                    @if (in_array('about', $livePageSlugs, true))
+                        <li><x-site.nav-link route="about" label="About" /></li>
+                    @endif
+                    @if (in_array('careers', $livePageSlugs, true))
+                        <li><x-site.nav-link route="careers" label="Careers" /></li>
+                    @endif
                     <li><x-site.nav-link route="contact" label="Contact" /></li>
-                    <li><x-site.nav-link route="grievance" label="Grievance" /></li>
+                    @if (in_array('grievance', $livePageSlugs, true))
+                        <li><x-site.nav-link route="grievance" label="Grievance" /></li>
+                    @endif
                 </ul>
             </div>
 
+            {{-- Each Legal link is a `pages` row that 404s unless published, so only
+                 live ones render ($livePageSlugs, from AppServiceProvider). --}}
+            @php
+                $legalLinks = collect([
+                    'privacy-policy' => 'Privacy Policy',
+                    'terms' => 'Terms',
+                    'disclaimer' => 'Disclaimer',
+                    'credit-report-terms' => 'Credit Report Terms of Use',
+                ])->only($livePageSlugs);
+            @endphp
             <div>
-                <p class="border-b border-line pb-2 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent">Legal</p>
-                <ul class="mt-3 flex flex-col gap-2">
-                    <li><x-site.nav-link route="privacy-policy" label="Privacy Policy" /></li>
-                    <li><x-site.nav-link route="terms" label="Terms" /></li>
-                    <li><x-site.nav-link route="disclaimer" label="Disclaimer" /></li>
-                    <li><x-site.nav-link route="credit-report-terms" label="Credit Report Terms of Use" /></li>
-                </ul>
+                @if ($legalLinks->isNotEmpty())
+                    <p class="border-b border-line pb-2 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent">Legal</p>
+                    <ul class="mt-3 flex flex-col gap-2">
+                        @foreach ($legalLinks as $route => $label)
+                            <li><x-site.nav-link :route="$route" :label="$label" /></li>
+                        @endforeach
+                    </ul>
+                @endif
             </div>
 
             @if (($navigationLinks ?? collect())->isNotEmpty())
@@ -124,8 +141,8 @@
             <x-site.newsletter-form
                 variant="banner"
                 source="footer"
-                heading="FynnEdge Insights"
-                description="Practical financial insights and loan tips, straight to your inbox."
+                :heading="\App\Modules\Newsletter\Services\NewsletterSettings::footerHeading()"
+                :description="\App\Modules\Newsletter\Services\NewsletterSettings::footerDescription()"
                 note="One email, no noise."
             />
         </div>

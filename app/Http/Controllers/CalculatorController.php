@@ -7,7 +7,6 @@ use App\Models\CalculatorPage;
 use App\Models\LoanProduct;
 use App\Support\Calculators\CalculatorCatalog;
 use App\Support\Calculators\CalculatorIndexing;
-use App\Support\Calculators\CalculatorPageKey;
 use App\Support\Calculators\CalculatorPagesContent;
 use App\Support\Calculators\LoanCalculatorPreset;
 use Illuminate\Contracts\View\View;
@@ -15,8 +14,9 @@ use Illuminate\Support\Facades\Route;
 
 /**
  * Every page's title, headline and introduction is admin-editable (Website
- * Settings → Calculators Page) through CalculatorPagesContent, and whether
- * search engines may index it through CalculatorIndexing.
+ * Settings → Calculators Page) through CalculatorPagesContent, whether
+ * search engines may index it through CalculatorIndexing, and its "About"
+ * section (Content → Calculator Pages) through CalculatorPage.
  */
 class CalculatorController extends Controller
 {
@@ -39,13 +39,16 @@ class CalculatorController extends Controller
             'category' => $loanCategory,
             'content' => CalculatorPagesContent::forPage('emi', $loanCategory),
             'robots' => CalculatorIndexing::robotsFor('emi/'.$loanCategory->value),
+            'about' => $loanCategory->isHybridRepayment()
+                ? $this->aboutFor('emi/'.$loanCategory->value, null, $this->explanationFor(LoanCalculatorPreset::productFor($loanCategory)))
+                : null,
         ]);
     }
 
     public function fixedDeposit(): View
     {
         return view('calculators.fixed-deposit', [
-            'calculatorPage' => $this->calculatorPageFor(CalculatorPageKey::FixedDeposit),
+            'about' => $this->aboutFor('fixed-deposit'),
             'content' => CalculatorPagesContent::forPage('fixed_deposit'),
             'robots' => CalculatorIndexing::robotsFor('fixed-deposit'),
             'eligibilityUrl' => $this->generalEligibilityUrl(),
@@ -55,7 +58,7 @@ class CalculatorController extends Controller
     public function sip(): View
     {
         return view('calculators.sip', [
-            'calculatorPage' => $this->calculatorPageFor(CalculatorPageKey::Sip),
+            'about' => $this->aboutFor('sip'),
             'content' => CalculatorPagesContent::forPage('sip'),
             'robots' => CalculatorIndexing::robotsFor('sip'),
             'eligibilityUrl' => $this->generalEligibilityUrl(),
@@ -65,7 +68,7 @@ class CalculatorController extends Controller
     public function dailySip(): View
     {
         return view('calculators.daily-sip', [
-            'calculatorPage' => $this->calculatorPageFor(CalculatorPageKey::DailySip),
+            'about' => $this->aboutFor('daily-sip'),
             'content' => CalculatorPagesContent::forPage('daily_sip'),
             'robots' => CalculatorIndexing::robotsFor('daily-sip'),
             'eligibilityUrl' => $this->generalEligibilityUrl(),
@@ -75,7 +78,7 @@ class CalculatorController extends Controller
     public function gst(): View
     {
         return view('calculators.gst', [
-            'calculatorPage' => $this->calculatorPageFor(CalculatorPageKey::Gst),
+            'about' => $this->aboutFor('gst'),
             'content' => CalculatorPagesContent::forPage('gst'),
             'robots' => CalculatorIndexing::robotsFor('gst'),
             'eligibilityUrl' => $this->generalEligibilityUrl(),
@@ -90,11 +93,13 @@ class CalculatorController extends Controller
 
         $product = LoanCalculatorPreset::productFor($loanCategory);
 
+        $content = CalculatorPagesContent::forPage('eligibility', $loanCategory);
+
         return view('calculators.eligibility', [
             'category' => $loanCategory,
-            'content' => CalculatorPagesContent::forPage('eligibility', $loanCategory),
+            'content' => $content,
             'robots' => CalculatorIndexing::robotsFor('eligibility/'.$loanCategory->value),
-            'explanation' => $this->explanationFor($product),
+            'about' => $this->aboutFor('eligibility/'.$loanCategory->value, $content['about_heading'], $this->explanationFor($product)),
             'applyUrl' => ($product && Route::has('loans.apply')) ? route('loans.apply', $product) : null,
         ]);
     }
@@ -107,19 +112,30 @@ class CalculatorController extends Controller
 
         $product = LoanCalculatorPreset::productFor($loanCategory);
 
+        $content = CalculatorPagesContent::forPage('prepayment', $loanCategory);
+
         return view('calculators.prepayment', [
             'category' => $loanCategory,
-            'content' => CalculatorPagesContent::forPage('prepayment', $loanCategory),
+            'content' => $content,
             'robots' => CalculatorIndexing::robotsFor('prepayment/'.$loanCategory->value),
-            'explanation' => $this->explanationFor($product),
+            'about' => $this->aboutFor('prepayment/'.$loanCategory->value, $content['about_heading'], $this->explanationFor($product)),
             'eligibilityUrl' => $this->eligibilityUrlFor($loanCategory),
             'applyUrl' => ($product && Route::has('loans.apply')) ? route('loans.apply', $product) : null,
         ]);
     }
 
-    private function calculatorPageFor(CalculatorPageKey $key): ?CalculatorPage
+    /**
+     * The page's "About" heading and body. The heading defaults to "About the
+     * {calculator name}" from CalculatorCatalog unless the page has its own
+     * admin-editable default (Eligibility/Prepayment's about_heading).
+     *
+     * @return array{heading: string, body: ?string}
+     */
+    private function aboutFor(string $pageKey, ?string $defaultHeading = null, ?string $fallbackBody = null): array
     {
-        return CalculatorPage::query()->where('calculator_key', $key->value)->first();
+        $defaultHeading ??= 'About the '.(CalculatorCatalog::pages()[$pageKey] ?? 'calculator');
+
+        return CalculatorPage::aboutFor($pageKey, $defaultHeading, $fallbackBody);
     }
 
     /**

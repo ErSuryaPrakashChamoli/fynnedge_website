@@ -15,6 +15,10 @@ use App\Models\Setting;
  */
 class NewsletterSettings
 {
+    public const DEFAULT_FOOTER_HEADING = 'FynnEdge Insights';
+
+    public const DEFAULT_FOOTER_DESCRIPTION = 'Practical financial insights and loan tips, straight to your inbox.';
+
     public static function enabled(): bool
     {
         return (bool) Setting::get('newsletter_enabled', true);
@@ -45,6 +49,20 @@ class NewsletterSettings
     public static function replyTo(): ?string
     {
         return self::string('newsletter_reply_to') ?? self::string('contact_email');
+    }
+
+    /**
+     * Copy for the site-wide footer signup banner. Falls back to the original
+     * hardcoded wording, so an install that never saves it renders unchanged.
+     */
+    public static function footerHeading(): string
+    {
+        return self::string('newsletter_footer_heading') ?? self::DEFAULT_FOOTER_HEADING;
+    }
+
+    public static function footerDescription(): string
+    {
+        return self::string('newsletter_footer_description') ?? self::DEFAULT_FOOTER_DESCRIPTION;
     }
 
     /**

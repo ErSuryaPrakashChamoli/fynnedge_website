@@ -4,16 +4,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Search Engine Indexing
+    | Search Engine Indexing (environment switch)
     |--------------------------------------------------------------------------
     |
-    | Used only when the `seo_indexing_enabled` setting has never been saved
-    | from the admin panel, so a production site with a missing settings row
-    | stays indexable rather than silently dropping out of search results.
+    | true (the default, also when unset): the admin setting "Allow search
+    | engine indexing" decides, and a missing settings row means indexable, so
+    | production never silently drops out of search results.
     |
-    | Set SEO_INDEXING_ENABLED=false in a staging or development .env to keep
-    | that environment out of the index without an admin having to remember to
-    | toggle it after every database refresh from production.
+    | false: the site is noindexed no matter what the admin setting says. Set
+    | SEO_INDEXING_ENABLED=false in a staging or development .env so a database
+    | copied from production can never make that environment indexable.
     |
     */
 

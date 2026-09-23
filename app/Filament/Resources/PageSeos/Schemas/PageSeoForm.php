@@ -53,7 +53,7 @@ class PageSeoForm
                             ->default(true)
                             ->helperText('Turn off to keep the entry without applying it.'),
                     ]),
-                SeoFormSection::make()
+                SeoFormSection::make(defaultRobots: null)
                     ->collapsed(false)
                     ->description('These win over whatever the page sets for itself. Pages that already have their own SEO section (loan products, articles, CMS pages) are better edited there.'),
             ]);

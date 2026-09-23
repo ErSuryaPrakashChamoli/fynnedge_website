@@ -1,6 +1,10 @@
+{{-- Part of the per-visitor funnel (PAN + mobile), kept out of search the same way
+     as /journey and /applications: robots.txt disallows /credit-score/ and the
+     sitemap never lists it (CrawlerPolicy, Sitemap). --}}
 <x-layouts.app
     :title="$content['meta_title']"
     :description="$content['meta_description']"
+    robots="noindex, nofollow"
 >
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="['Credit Score' => null, $bureau->getLabel() => null]" />

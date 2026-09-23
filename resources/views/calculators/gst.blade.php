@@ -14,8 +14,8 @@
         </div>
 
         <x-site.calculator-explainer
-            :body="$calculatorPage?->body"
-            :heading="$calculatorPage?->title ?: 'About this calculator'"
+            :heading="$about['heading']"
+            :body="$about['body']"
             :eligibility-url="$eligibilityUrl"
         />
     </section>

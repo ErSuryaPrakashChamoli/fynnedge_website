@@ -14,8 +14,8 @@
         </div>
 
         <x-site.calculator-explainer
-            :heading="$content['about_heading']"
-            :body="$explanation"
+            :heading="$about['heading']"
+            :body="$about['body']"
             :eligibility-url="$eligibilityUrl"
             :apply-url="$applyUrl"
         />
