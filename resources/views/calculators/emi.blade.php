@@ -16,5 +16,10 @@
                 <livewire:emi-calculator :category="$category->value" :key="'calc-'.$category->value" />
             @endif
         </div>
+
+        {{-- The standard EMI calculator renders its own "About" panel; only the Flexi Hybrid one needs it here. --}}
+        @if ($about)
+            <x-site.calculator-explainer :heading="$about['heading']" :body="$about['body']" />
+        @endif
     </section>
 </x-layouts.app>

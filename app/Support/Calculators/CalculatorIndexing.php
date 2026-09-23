@@ -35,13 +35,7 @@ class CalculatorIndexing
      */
     public static function pages(): array
     {
-        return collect(CalculatorCatalog::groups())
-            ->flatten(1)
-            ->mapWithKeys(fn (array $calculator): array => [
-                self::pageKey($calculator['route'], $calculator['params']) => $calculator['label'],
-            ])
-            ->prepend('All calculators page (/calculators)', self::INDEX_PAGE)
-            ->all();
+        return [self::INDEX_PAGE => 'All calculators page (/calculators)', ...CalculatorCatalog::pages()];
     }
 
     /**

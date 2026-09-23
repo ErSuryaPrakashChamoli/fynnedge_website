@@ -5,10 +5,12 @@ namespace App\Providers;
 use App\Enums\LoanCategory;
 use App\Models\LoanProduct;
 use App\Models\NavigationLink;
+use App\Models\Page;
 use App\Models\Setting;
 use App\Modules\CreditBureau\Contracts\CreditBureauProvider;
 use App\Modules\CreditScore\Contracts\CreditScoreProvider;
 use App\Support\Analytics\TrackingScripts;
+use App\Support\Seo\Sitemap;
 use App\Support\Theme\SiteThemeStyles;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -100,6 +102,17 @@ class AppServiceProvider extends ServiceProvider
                 'name' => Setting::get('footer_legal_name', 'FynnEdge Advisory (OPC) Pvt Ltd'),
                 'disclaimer' => Setting::get('footer_disclaimer', 'Loan approval is subject to lender policies, documentation and underwriting. Eligibility results shown on this site are indicative, not a guarantee of approval.'),
             ]),
+        );
+
+        // The footer's hardcoded Company/Legal links point at `pages` rows that
+        // 404 unless published, so it only renders the ones live right now —
+        // one query for all of them, never one per link.
+        View::composer(
+            'components.site.footer',
+            fn ($view) => $view->with(
+                'livePageSlugs',
+                Page::query()->published()->whereIn('slug', Sitemap::publicPageSlugs())->pluck('slug')->all(),
+            ),
         );
 
         // Admin-managed links appended alongside the footer's existing hardcoded

@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\CalculatorPages\Tables;
 
-use App\Support\Calculators\CalculatorPageKey;
+use App\Support\Calculators\CalculatorCatalog;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -16,7 +16,7 @@ class CalculatorPagesTable
             ->columns([
                 TextColumn::make('calculator_key')
                     ->label('Calculator')
-                    ->formatStateUsing(fn (string $state) => CalculatorPageKey::tryFrom($state)?->getLabel() ?? $state)
+                    ->formatStateUsing(fn (string $state) => CalculatorCatalog::pages()[$state] ?? $state)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('title')->placeholder('— default heading —'),

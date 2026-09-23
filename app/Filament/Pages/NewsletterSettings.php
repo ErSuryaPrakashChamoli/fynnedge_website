@@ -6,6 +6,7 @@ use App\Models\Setting;
 use App\Modules\Newsletter\Services\NewsletterSettings as Settings;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
@@ -56,6 +57,8 @@ class NewsletterSettings extends Page
             'newsletter_sender_name' => Setting::get('newsletter_sender_name'),
             'newsletter_sender_email' => Setting::get('newsletter_sender_email'),
             'newsletter_reply_to' => Setting::get('newsletter_reply_to'),
+            'newsletter_footer_heading' => Settings::footerHeading(),
+            'newsletter_footer_description' => Settings::footerDescription(),
         ]);
     }
 
@@ -75,6 +78,20 @@ class NewsletterSettings extends Page
                         Toggle::make('welcome_email_enabled')
                             ->label('Send a welcome email')
                             ->helperText('Sent once, after a subscriber confirms.'),
+                    ]),
+
+                Section::make('Footer signup')
+                    ->description('The newsletter banner shown in the footer of every page.')
+                    ->components([
+                        TextInput::make('newsletter_footer_heading')
+                            ->label('Newsletter heading')
+                            ->required()
+                            ->maxLength(120),
+                        Textarea::make('newsletter_footer_description')
+                            ->label('Newsletter description')
+                            ->required()
+                            ->rows(2)
+                            ->maxLength(300),
                     ]),
 
                 Section::make('Sender identity')

@@ -149,7 +149,7 @@ class LoanProductForm
                             ->columnSpanFull(),
                         RichEditor::make('calculator_explanation')
                             ->label('EMI calculation explanation')
-                            ->helperText('Shown on the standalone EMI calculator page for this loan type — separate from the "Content" body above, so it can be edited independently.')
+                            ->helperText('Fallback "About" copy for this loan type\'s EMI, Eligibility and Prepayment calculator pages. Content → Calculator Pages overrides it per calculator page.')
                             ->columnSpanFull(),
                     ]),
 

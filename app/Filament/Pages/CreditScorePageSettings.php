@@ -7,6 +7,7 @@ use App\Modules\CreditScore\Enums\BureauName;
 use App\Support\Pages\CreditScorePageContent;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -15,11 +16,13 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Livewire\Attributes\Url;
 
 /**
- * The copy on the public /credit-score/{bureau} pages, saved as one Setting
- * through CreditScorePageContent — which is also where the defaults live, so
- * this form opens showing exactly what the pages currently say.
+ * The copy on the public /credit-score/{bureau} pages. Each bureau page is
+ * edited and saved on its own (`?bureau=experian` picks which), through
+ * CreditScorePageContent — which is also where the defaults live, so this form
+ * opens showing exactly what that page currently says.
  *
  * The check form's own steps (OTP, details, result) are not edited here.
  */
@@ -36,6 +39,12 @@ class CreditScorePageSettings extends Page
     protected static ?string $title = 'Credit Score Page';
 
     /**
+     * Which bureau page is being edited — a BureauName value.
+     */
+    #[Url]
+    public string $bureau = 'cibil';
+
+    /**
      * @var array<string, mixed>
      */
     public array $data = [];
@@ -47,7 +56,19 @@ class CreditScorePageSettings extends Page
 
     public function mount(): void
     {
-        $this->form->fill(CreditScorePageContent::resolve());
+        abort_if(BureauName::tryFrom($this->bureau) === null, 404);
+
+        $this->form->fill(CreditScorePageContent::resolve($this->editingBureau()));
+    }
+
+    public function getTitle(): string
+    {
+        return 'Credit Score Page — '.$this->editingBureau()->getLabel();
+    }
+
+    public function editingBureau(): BureauName
+    {
+        return BureauName::from($this->bureau);
     }
 
     public function form(Schema $schema): Schema
@@ -58,7 +79,7 @@ class CreditScorePageSettings extends Page
             ->statePath('data')
             ->components([
                 Section::make('Page heading')
-                    ->description('Shared by the CIBIL, Experian, Equifax and CRIF pages — write {bureau} wherever the bureau name should appear. Leave a field blank to use its default wording.')
+                    ->description(fn (): string => 'Only the '.$this->editingBureau()->getLabel().' page uses this wording — switch bureau at the top to edit another. {bureau} is replaced with the bureau name. Leave a field blank to use its default wording.')
                     ->components([
                         TextInput::make('badge')
                             ->label('Badge')
@@ -135,21 +156,22 @@ class CreditScorePageSettings extends Page
     public function save(): void
     {
         // Repeater state is keyed by item UUIDs; store plain lists.
-        Setting::set(CreditScorePageContent::SETTING_KEY, array_map(
+        Setting::set(CreditScorePageContent::settingKey($this->editingBureau()), array_map(
             fn (mixed $value): mixed => is_array($value) ? array_values($value) : $value,
             $this->form->getState(),
         ));
 
-        Notification::make()->title('Credit Score page saved')->success()->send();
+        Notification::make()->title($this->editingBureau()->getLabel().' score page saved')->success()->send();
     }
 
     public function resetToDefaults(): void
     {
-        Setting::set(CreditScorePageContent::SETTING_KEY, null);
+        // An empty list, not null: null would fall back to the legacy shared copy.
+        Setting::set(CreditScorePageContent::settingKey($this->editingBureau()), []);
 
-        $this->form->fill(CreditScorePageContent::resolve());
+        $this->form->fill(CreditScorePageContent::resolve($this->editingBureau()));
 
-        Notification::make()->title('Credit Score page reset to default wording')->success()->send();
+        Notification::make()->title($this->editingBureau()->getLabel().' score page reset to default wording')->success()->send();
     }
 
     /**
@@ -158,15 +180,25 @@ class CreditScorePageSettings extends Page
     protected function getHeaderActions(): array
     {
         return [
+            ActionGroup::make(array_map(
+                fn (BureauName $bureau): Action => Action::make('edit_'.$bureau->value)
+                    ->label($bureau->getLabel())
+                    ->url(static::getUrl(['bureau' => $bureau->value])),
+                BureauName::cases(),
+            ))
+                ->label('Bureau: '.$this->editingBureau()->getLabel())
+                ->icon(Heroicon::OutlinedChevronDown)
+                ->button()
+                ->color('gray'),
             Action::make('view')
                 ->label('View page')
                 ->color('gray')
-                ->url(route('credit-score.show', ['bureau' => BureauName::Cibil]), shouldOpenInNewTab: true),
+                ->url(route('credit-score.show', ['bureau' => $this->editingBureau()]), shouldOpenInNewTab: true),
             Action::make('reset')
                 ->label('Reset to defaults')
                 ->color('gray')
                 ->requiresConfirmation()
-                ->modalDescription('Every field on this page goes back to the built-in wording. This cannot be undone.')
+                ->modalDescription('Every field on this bureau page goes back to the built-in wording. The other bureau pages are not changed. This cannot be undone.')
                 ->action('resetToDefaults'),
             Action::make('save')
                 ->label('Save')

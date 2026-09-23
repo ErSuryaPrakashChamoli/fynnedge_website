@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\LoanLandingPage;
 use App\Models\LoanProduct;
 use App\Models\Page;
+use App\Models\PageSeo;
 use App\Models\SeoMeta;
 use App\Support\Calculators\CalculatorCatalog;
 use App\Support\Calculators\CalculatorIndexing;
@@ -24,45 +25,104 @@ use Illuminate\Support\Collection;
  * `noindex, nofollow` in the page head), signed draft previews and the
  * health probe.
  *
- * Two rules apply to every record-backed entry, applied centrally in
- * fromRecords() rather than per source:
- *   - a record whose SEO section sets a `noindex` robots value is EXCLUDED.
- *     Listing a URL that then tells the crawler not to index it is a
- *     self-contradiction, and it is the single most common way a sitemap and a
- *     page's meta drift apart.
- *   - a record with its own canonical URL is listed AT that canonical, since
- *     that is the URL it is asking to have indexed.
+ * Two rules apply to every entry, applied centrally in resolve() rather than
+ * per source:
+ *   - a URL whose effective robots value is `noindex` is EXCLUDED. Listing a
+ *     URL that then tells the crawler not to index it is a self-contradiction,
+ *     and it is the single most common way a sitemap and a page's meta drift
+ *     apart.
+ *   - a URL with a canonical is listed AT that canonical, since that is the URL
+ *     it is asking to have indexed.
+ *
+ * "Effective" follows the layout's own precedence exactly: an active Page SEO
+ * row for the URL (Content → Page SEOs) wins field by field, and a blank field
+ * falls through to the value the page itself set (its record's SEO section, or
+ * the calculator indexing setting).
  *
  * @phpstan-type SitemapEntry array{loc: string, lastmod: string|null}
+ * @phpstan-type SitemapCandidate array{url: string, robots: string|null, canonical: string|null, lastmod: string|null}
  */
 class Sitemap
 {
     /**
-     * CMS pages that have a public route. `pages` also holds rows for /about
-     * and /careers, which are served by their own controllers and listed as
-     * static entries instead — including them here would emit each twice.
+     * CMS pages served by PageController, one route each (routes/web.php).
      */
     public const ROUTED_PAGE_SLUGS = ['grievance', 'privacy-policy', 'terms', 'disclaimer', 'credit-report-terms'];
+
+    /**
+     * CMS pages served by their OWN controllers (AboutController,
+     * CareerController) at a route named after the slug. They 404 unless their
+     * `pages` row is published, so they are listed from that row like every
+     * other page — never as unconditional static entries.
+     */
+    public const CONTROLLER_PAGE_SLUGS = ['about', 'careers'];
+
+    /**
+     * Every `pages` slug a public URL depends on — renaming one 404s that URL.
+     *
+     * @return array<int, string>
+     */
+    public static function publicPageSlugs(): array
+    {
+        return [...self::ROUTED_PAGE_SLUGS, ...self::CONTROLLER_PAGE_SLUGS];
+    }
 
     /**
      * @return Collection<int, SitemapEntry>
      */
     public static function entries(): Collection
     {
-        return collect()
-            ->concat(self::staticPages())
-            ->concat(self::calculators())
-            ->concat(self::loanProducts())
-            ->concat(self::loanLandingPages())
-            ->concat(self::articles())
-            ->concat(self::legalPages())
+        return self::resolve(
+            collect()
+                ->concat(self::staticPages())
+                ->concat(self::calculators())
+                ->concat(self::loanProducts())
+                ->concat(self::loanLandingPages())
+                ->concat(self::articles())
+                ->concat(self::cmsPages()),
+        );
+    }
+
+    /**
+     * Applies Page SEO overrides, then drops noindex URLs and swaps in
+     * canonicals — the one place both rules live, for every source.
+     *
+     * Mirrors resources/views/components/layouts/app.blade.php: an active
+     * PageSeo row's robots/canonical win when filled, otherwise the page's own
+     * value stands. The rows are loaded in ONE query from the same cached
+     * path map the layout reads, so a URL with no row costs nothing.
+     *
+     * @param  Collection<int, SitemapCandidate>  $candidates
+     * @return Collection<int, SitemapEntry>
+     */
+    private static function resolve(Collection $candidates): Collection
+    {
+        $pageSeoIds = PageSeo::activeMap();
+
+        $overrides = $pageSeoIds === []
+            ? collect()
+            : PageSeo::query()->with('seoMeta')->whereKey(array_values($pageSeoIds))->get()->keyBy('id');
+
+        return $candidates
+            ->map(function (array $candidate) use ($pageSeoIds, $overrides): array {
+                $pageSeoId = $pageSeoIds[PageSeo::normalizePath($candidate['url'])] ?? null;
+                $override = $pageSeoId !== null ? $overrides->get($pageSeoId) : null;
+
+                return [
+                    'robots' => $override?->seoRobots() ?: $candidate['robots'],
+                    'loc' => $override?->seoCanonicalUrl() ?: ($candidate['canonical'] ?: $candidate['url']),
+                    'lastmod' => $candidate['lastmod'],
+                ];
+            })
+            ->reject(fn (array $entry): bool => str_contains(strtolower((string) $entry['robots']), 'noindex'))
+            ->map(fn (array $entry): array => ['loc' => $entry['loc'], 'lastmod' => $entry['lastmod']])
             ->unique('loc')
             ->values();
     }
 
     /**
-     * Turns published Seoable records into entries, dropping the ones marked
-     * noindex and preferring each record's canonical URL over its route URL.
+     * Turns published Seoable records into candidates carrying each record's
+     * own robots and canonical, for resolve() to apply.
      *
      * The seo_metas rows are fetched in ONE query keyed by (type, id) rather
      * than lazily per record: eager-loading the morphOne would work too, but
@@ -71,7 +131,7 @@ class Sitemap
      *
      * @param  Collection<int, Model>  $records
      * @param  callable(Model): string  $url
-     * @return Collection<int, SitemapEntry>
+     * @return Collection<int, SitemapCandidate>
      */
     private static function fromRecords(Collection $records, callable $url): Collection
     {
@@ -86,19 +146,20 @@ class Sitemap
             ->keyBy('seoable_id');
 
         return $records
-            ->reject(fn ($record): bool => str_contains(
-                strtolower((string) $meta->get($record->getKey())?->robots),
-                'noindex',
-            ))
             ->map(fn ($record): array => [
-                'loc' => $meta->get($record->getKey())?->canonical_url ?: $url($record),
+                'url' => $url($record),
+                'robots' => $meta->get($record->getKey())?->robots ?: null,
+                'canonical' => $meta->get($record->getKey())?->canonical_url ?: null,
                 'lastmod' => self::lastmod($record->updated_at),
             ])
             ->values();
     }
 
     /**
-     * @return Collection<int, SitemapEntry>
+     * Pages with no record of their own. Only a Page SEO row can noindex or
+     * re-canonicalise them, which resolve() applies.
+     *
+     * @return Collection<int, SitemapCandidate>
      */
     private static function staticPages(): Collection
     {
@@ -110,36 +171,36 @@ class Sitemap
             'partners.index',
             'resources.index',
             'faqs.index',
-            'about',
-            'careers',
             'contact',
-        ])->map(fn (string $name): array => ['loc' => route($name), 'lastmod' => null]);
+        ])->map(fn (string $name): array => ['url' => route($name), 'robots' => null, 'canonical' => null, 'lastmod' => null]);
     }
 
     /**
      * Reuses the same catalog that renders the header mega menu and the
      * /calculators directory, so a calculator can't exist in one and not
      * the other. Pages hidden under Calculators Page → Search engine indexing
-     * are left out, since they tell crawlers not to index them.
+     * carry the same `robots` value their controller passes the layout, so
+     * resolve() leaves them out.
      *
-     * @return Collection<int, SitemapEntry>
+     * @return Collection<int, SitemapCandidate>
      */
     private static function calculators(): Collection
     {
         return collect(CalculatorCatalog::groups())
             ->flatten(1)
             ->prepend(['route' => 'calculators.index', 'params' => []])
-            ->filter(fn (array $calculator): bool => CalculatorIndexing::isIndexable(
-                CalculatorIndexing::pageKey($calculator['route'], $calculator['params']),
-            ))
             ->map(fn (array $calculator): array => [
-                'loc' => route($calculator['route'], $calculator['params']),
+                'url' => route($calculator['route'], $calculator['params']),
+                'robots' => CalculatorIndexing::robotsFor(
+                    CalculatorIndexing::pageKey($calculator['route'], $calculator['params']),
+                ),
+                'canonical' => null,
                 'lastmod' => null,
             ]);
     }
 
     /**
-     * @return Collection<int, SitemapEntry>
+     * @return Collection<int, SitemapCandidate>
      */
     private static function loanProducts(): Collection
     {
@@ -154,7 +215,7 @@ class Sitemap
      * LoanLandingPageController 404s otherwise, and a sitemap entry for a
      * 404 is a crawl-budget error.
      *
-     * @return Collection<int, SitemapEntry>
+     * @return Collection<int, SitemapCandidate>
      */
     private static function loanLandingPages(): Collection
     {
@@ -172,7 +233,7 @@ class Sitemap
     }
 
     /**
-     * @return Collection<int, SitemapEntry>
+     * @return Collection<int, SitemapCandidate>
      */
     private static function articles(): Collection
     {
@@ -183,12 +244,15 @@ class Sitemap
     }
 
     /**
-     * @return Collection<int, SitemapEntry>
+     * Legal pages plus /about and /careers — every one has a route named after
+     * its slug, and every one 404s unless its row is published.
+     *
+     * @return Collection<int, SitemapCandidate>
      */
-    private static function legalPages(): Collection
+    private static function cmsPages(): Collection
     {
         return self::fromRecords(
-            Page::query()->published()->whereIn('slug', self::ROUTED_PAGE_SLUGS)->get(),
+            Page::query()->published()->whereIn('slug', self::publicPageSlugs())->get(),
             fn (Page $page): string => route($page->slug),
         );
     }

@@ -18,8 +18,10 @@ use App\Models\Setting;
  *
  * The default is deliberately "indexable": a production site whose settings row
  * is missing (fresh deploy, restored database, cleared table) must not silently
- * fall out of the index. Staging/dev flips it without touching the database via
- * SEO_INDEXING_ENABLED=false in .env — see config/seo.php.
+ * fall out of the index. Staging/dev sets SEO_INDEXING_ENABLED=false in .env —
+ * see config/seo.php — and that is a hard OFF the database cannot switch back
+ * on, so a production dump restored onto staging (setting saved as ON) still
+ * keeps staging out of search.
  */
 class SearchEngineIndexing
 {
@@ -29,7 +31,21 @@ class SearchEngineIndexing
 
     public static function enabled(): bool
     {
-        return (bool) Setting::get('seo_indexing_enabled', config('seo.indexing_enabled', true));
+        if (self::forcedOffByEnvironment()) {
+            return false;
+        }
+
+        return (bool) Setting::get('seo_indexing_enabled', true);
+    }
+
+    /**
+     * True when this environment's config forbids indexing whatever the admin
+     * setting says. An unset SEO_INDEXING_ENABLED is true, so only an explicit
+     * `false` forces it.
+     */
+    public static function forcedOffByEnvironment(): bool
+    {
+        return ! config('seo.indexing_enabled', true);
     }
 
     /**

@@ -9,7 +9,7 @@ it('renders the admin-set meta title and description on a page that has none of 
 
     $this->get('/')
         ->assertOk()
-        ->assertSee('<title>Compare Loan Offers in India — ', false)
+        ->assertSee('<title>Compare Loan Offers in India</title>', false)
         ->assertSee('<meta name="description" content="Check your eligibility with 40+ lenders in two minutes.">', false);
 });
 
@@ -18,7 +18,7 @@ it('overrides the meta tags a view hardcodes for itself', function () {
 
     $this->get('/contact')
         ->assertOk()
-        ->assertSee('<title>Talk to a FynnEdge Advisor — ', false)
+        ->assertSee('<title>Talk to a FynnEdge Advisor</title>', false)
         ->assertSee('<meta name="description" content="Call, email or visit our Dehradun office.">', false)
         ->assertDontSee('Get in touch with FynnEdge Advisory.', false);
 });
@@ -28,7 +28,7 @@ it('matches the request whatever casing, trailing slash or query string an admin
 
     $this->get('/contact')
         ->assertOk()
-        ->assertSee('<title>Normalised Match — ', false);
+        ->assertSee('<title>Normalised Match</title>', false);
 });
 
 it('leaves a blank field alone instead of blanking what the page already shows', function () {
@@ -36,7 +36,7 @@ it('leaves a blank field alone instead of blanking what the page already shows',
 
     $this->get('/contact')
         ->assertOk()
-        ->assertSee('<title>Only The Title Is Set — ', false)
+        ->assertSee('<title>Only The Title Is Set</title>', false)
         ->assertSee('<meta name="description" content="Get in touch with FynnEdge Advisory.">', false);
 });
 
@@ -46,7 +46,7 @@ it('ignores an inactive entry', function () {
     $this->get('/contact')
         ->assertOk()
         ->assertDontSee('Switched Off', false)
-        ->assertSee('<title>Contact — ', false);
+        ->assertSee('<title>Contact</title>', false);
 });
 
 it('applies the canonical, robots and social overrides from the same entry', function () {
@@ -80,4 +80,13 @@ it('suggests the fixed public pages and never the admin panel', function () {
         ->not->toContain('/sitemap.xml');
 
     expect(collect($paths)->filter(fn (string $path) => str_starts_with($path, '/admin')))->toBeEmpty();
+});
+
+it('renders the admin-set title exactly, without appending the site name', function () {
+    PageSeo::factory()->withMeta('/contact', 'Personal Loan – Apply Online')->create();
+
+    $this->get('/contact')
+        ->assertOk()
+        ->assertSee('<title>Personal Loan – Apply Online</title>', false)
+        ->assertDontSee('Personal Loan – Apply Online — FynnEdge', false);
 });

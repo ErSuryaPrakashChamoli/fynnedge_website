@@ -1,7 +1,9 @@
 <?php
 
+use App\Filament\Resources\Pages\Pages\CreatePage;
 use App\Filament\Resources\PageSeos\Pages\CreatePageSeo;
 use App\Filament\Resources\PageSeos\Pages\ListPageSeos;
+use App\Models\Page;
 use App\Models\PageSeo;
 use App\Models\User;
 use Livewire\Livewire;
@@ -36,7 +38,7 @@ it('creates an entry that immediately changes the live page', function () {
     expect(PageSeo::sole()->url_path)->toBe('/contact');
 
     $this->get('/contact')
-        ->assertSee('<title>Talk To Us — ', false)
+        ->assertSee('<title>Talk To Us</title>', false)
         ->assertSee('<meta name="description" content="Reach the FynnEdge team.">', false);
 });
 
@@ -93,4 +95,46 @@ it('still stops at the width of the column that stores it', function () {
         ])
         ->call('create')
         ->assertHasFormErrors(['seoMeta.title']);
+});
+
+it('leaves robots unset when the admin does not choose one, so the page keeps its own', function () {
+    $terms = Page::factory()->published()->create(['slug' => 'terms']);
+    $terms->seoMeta()->create(['robots' => 'noindex, follow']);
+
+    Livewire::test(CreatePageSeo::class)
+        ->assertSchemaStateSet(['seoMeta.robots' => null])
+        ->fillForm([
+            'url_path' => '/terms',
+            'is_active' => true,
+            'seoMeta' => ['title' => 'Only Changing The Title'],
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(PageSeo::sole()->seoMeta->robots)->toBeNull();
+
+    $this->get('/terms')
+        ->assertSee('<title>Only Changing The Title</title>', false)
+        ->assertSee('<meta name="robots" content="noindex, follow">', false);
+});
+
+it('still overrides the page when the admin explicitly chooses a robots value', function () {
+    $terms = Page::factory()->published()->create(['slug' => 'terms']);
+    $terms->seoMeta()->create(['robots' => 'index, follow']);
+
+    Livewire::test(CreatePageSeo::class)
+        ->fillForm([
+            'url_path' => '/terms',
+            'is_active' => true,
+            'seoMeta' => ['robots' => 'noindex, nofollow'],
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $this->get('/terms')->assertSee('<meta name="robots" content="noindex, nofollow">', false);
+});
+
+it('keeps "index, follow" as the robots default on a record\'s own SEO section', function () {
+    Livewire::test(CreatePage::class)
+        ->assertSchemaStateSet(['seoMeta.robots' => 'index, follow']);
 });

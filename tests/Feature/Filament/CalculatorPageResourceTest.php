@@ -38,3 +38,23 @@ it('requires a unique calculator key', function () {
         ->call('create')
         ->assertHasFormErrors(['calculator_key']);
 });
+
+it('creates About content for a loan calculator page', function () {
+    Livewire::test(CreateCalculatorPage::class)
+        ->fillForm([
+            'calculator_key' => 'emi/home-loan',
+            'body' => '<p>TEST ABOUT HOME LOAN EMI CALCULATOR CONTENT</p>',
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(CalculatorPage::query()->where('calculator_key', 'emi/home-loan')->value('body'))
+        ->toContain('TEST ABOUT HOME LOAN EMI CALCULATOR CONTENT');
+});
+
+it('rejects a calculator key that is not a real calculator page', function () {
+    Livewire::test(CreateCalculatorPage::class)
+        ->fillForm(['calculator_key' => 'emi/credit-card', 'body' => '<p>Nowhere to show this.</p>'])
+        ->call('create')
+        ->assertHasFormErrors(['calculator_key']);
+});

@@ -363,6 +363,13 @@ it('renders the credit score check page for a valid bureau', function (string $b
     ['crif', 'CRIF'],
 ]);
 
+it('keeps the credit score check pages out of search, matching robots.txt and the sitemap', function (string $bureau) {
+    $this->get("/credit-score/{$bureau}")
+        ->assertOk()
+        ->assertSee('<meta name="robots" content="noindex, nofollow">', false)
+        ->assertDontSee('content="index, follow"', false);
+})->with(['cibil', 'experian', 'equifax', 'crif']);
+
 it('404s the credit score page for an unrecognised bureau', function () {
     $this->get('/credit-score/not-a-real-bureau')->assertNotFound();
 });

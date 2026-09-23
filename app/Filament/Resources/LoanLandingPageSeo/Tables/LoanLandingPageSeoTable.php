@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\LoanLandingPageSeo\Tables;
 
 use App\Enums\LandingPageGroup;
+use App\Support\Seo\SearchEngineIndexing;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -26,6 +27,11 @@ class LoanLandingPageSeoTable
                     ->label('SEO title')
                     ->placeholder('— uses page default —')
                     ->toggleable(),
+                TextColumn::make('seoMeta.robots')
+                    ->label('SEO indexing')
+                    ->badge()
+                    ->color(fn (string $state): string => str_contains($state, 'noindex') ? 'danger' : 'success')
+                    ->placeholder(SearchEngineIndexing::DEFAULT_ROBOTS),
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()

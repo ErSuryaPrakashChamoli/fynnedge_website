@@ -33,6 +33,18 @@ it('saves the indexing, analytics and verification settings', function () {
         ->and(Setting::get('google_search_console_verification'))->toBe('abcDEF123456_ghiJKL-789');
 });
 
+it('locks the indexing toggle, and leaves the stored value alone, while the environment forces indexing off', function () {
+    config()->set('seo.indexing_enabled', false);
+    Setting::set('seo_indexing_enabled', true);
+
+    Livewire::test(SeoAnalytics::class)
+        ->assertFormFieldDisabled('seo_indexing_enabled')
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(Setting::get('seo_indexing_enabled'))->toBeTrue();
+});
+
 it('stores only the token when an admin pastes the whole verification meta tag', function () {
     Livewire::test(SeoAnalytics::class)
         ->fillForm(['google_search_console_verification' => '<meta name="google-site-verification" content="abcDEF123456_ghiJKL-789" />'])

@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\LoanLandingPage;
 use App\Models\LoanProduct;
 use App\Models\Page;
+use App\Models\PageSeo;
 
 /**
  * SimpleXMLElement is not a normal iterable for collect() — collect() reads it
@@ -44,6 +45,9 @@ it('is valid, well-formed XML with a urlset root', function () {
 });
 
 it('lists the core public pages', function () {
+    // /about is served from its `pages` row, and is only listed while that row is live.
+    Page::factory()->published()->create(['slug' => 'about']);
+
     expect(sitemapLocs())->toContain(
         route('home'),
         route('loans.index'),
@@ -108,8 +112,8 @@ it('never exposes admin, funnel or non-routed CMS pages', function () {
         expect($loc)->not->toContain('signature=');
     }
 
-    // The `about` CMS row is served by AboutController at /about, listed once
-    // as a static entry — it must not also appear as a second CMS-page URL.
+    // The `about` CMS row is served by AboutController at /about and listed
+    // from that row exactly once — never a second time as a static entry.
     expect(collect($locs)->filter(fn (string $loc): bool => $loc === route('about')))->toHaveCount(1);
 });
 
@@ -194,4 +198,66 @@ it('never lists the admin panel or the transactional funnel', function () {
             ->not->toContain('/applications/')
             ->not->toContain('/credit-score/');
     }
+});
+
+it('lists about and careers only while their pages are published and indexable', function (string $slug) {
+    $page = Page::factory()->published()->create(['slug' => $slug]);
+
+    expect(sitemapLocs())->toContain(route($slug));
+
+    $page->update(['status' => PublishStatus::Draft]);
+    expect(sitemapLocs())->not->toContain(route($slug));
+
+    $page->update(['status' => PublishStatus::Published, 'expires_at' => now()->subMinute()]);
+    expect(sitemapLocs())->not->toContain(route($slug));
+
+    $page->update(['expires_at' => null]);
+    $page->seoMeta()->create(['robots' => 'noindex, follow']);
+    expect(sitemapLocs())->not->toContain(route($slug));
+})->with(['about', 'careers']);
+
+it('drops a deleted about page from the sitemap', function () {
+    Page::factory()->published()->create(['slug' => 'about'])->delete();
+
+    expect(sitemapLocs())->not->toContain(route('about'));
+});
+
+it('excludes a page a Page SEO entry marks noindex', function (string $robots) {
+    $pageSeo = PageSeo::factory()->create(['url_path' => '/contact']);
+    $pageSeo->seoMeta()->create(['robots' => $robots]);
+
+    expect(sitemapLocs())->not->toContain(route('contact'))
+        ->toContain(route('faqs.index'));
+})->with(['noindex, follow', 'noindex, nofollow']);
+
+it('lists a page at the canonical its Page SEO entry sets', function () {
+    $pageSeo = PageSeo::factory()->create(['url_path' => '/faqs']);
+    $pageSeo->seoMeta()->create(['canonical_url' => 'https://fynnedge.com/help']);
+
+    expect(sitemapLocs())->toContain('https://fynnedge.com/help')
+        ->not->toContain(route('faqs.index'));
+});
+
+it('lets a Page SEO robots value win over the record, exactly as the page head does', function () {
+    $terms = Page::factory()->published()->create(['slug' => 'terms']);
+    $terms->seoMeta()->create(['robots' => 'index, follow']);
+    PageSeo::factory()->create(['url_path' => '/terms'])->seoMeta()->create(['robots' => 'noindex, follow']);
+
+    $this->get('/terms')->assertSee('<meta name="robots" content="noindex, follow">', false);
+    expect(sitemapLocs())->not->toContain(route('terms'));
+});
+
+it('keeps the record robots when a Page SEO entry leaves robots blank', function () {
+    $terms = Page::factory()->published()->create(['slug' => 'terms']);
+    $terms->seoMeta()->create(['robots' => 'noindex, follow']);
+    PageSeo::factory()->withMeta('/terms', 'Only The Title')->create();
+
+    $this->get('/terms')->assertSee('<meta name="robots" content="noindex, follow">', false);
+    expect(sitemapLocs())->not->toContain(route('terms'));
+});
+
+it('ignores an inactive Page SEO entry', function () {
+    PageSeo::factory()->inactive()->create(['url_path' => '/contact'])->seoMeta()->create(['robots' => 'noindex, nofollow']);
+
+    expect(sitemapLocs())->toContain(route('contact'));
 });

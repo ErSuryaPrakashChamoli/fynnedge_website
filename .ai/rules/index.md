@@ -45,6 +45,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Support/Seo/**,app/Filament/Pages/Settings.php,resources/views/loans/** | .ai/rules/loans.md |
 | app/Http/Middleware/SecurityHeaders.php | .ai/rules/middleware.md |
 | database/migrations/** | .ai/rules/migrations.md |
+| app/Support/Seo/Sitemap.php,app/Models/PageSeo.php,app/Filament/Schemas/SeoFormSection.php | .ai/rules/models-filament-schemas.md |
 | app/Models/**,app/Filament/** | .ai/rules/models-filament.md |
 | app/Filament/Resources/Articles/**,app/Models/Article.php,resources/views/home.blade.php | .ai/rules/models-views.md |
 | app/Modules/**/Models/*.php | .ai/rules/models.md |
@@ -57,15 +58,22 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Models/PromoBar.php,app/Support/PromoBars/**,app/Filament/Resources/PromoBars/**,resources/views/components/site/promo-bar.blade.php | .ai/rules/promo-bars-views-components-site.md |
 | resources/views/components/site/promo-bar.blade.php,resources/js/app.js,app/Models/PromoBar.php,app/Filament/Resources/PromoBars/** | .ai/rules/promo-bars.md |
 | app/Http/Middleware/SecurityHeaders.php,app/Providers/Filament/AdminPanelProvider.php | .ai/rules/providers-filament.md |
+| app/Filament/Resources/Pages/Schemas/PageForm.php,resources/views/components/site/footer.blade.php,app/Providers/AppServiceProvider.php | .ai/rules/providers.md |
 | app/Models/Redirect.php,app/Http/Middleware/HandleRedirects.php,app/Filament/Resources/Redirects/** | .ai/rules/redirects.md |
 | app/Filament/Schemas/HtmlBodyEditor.php,app/Filament/Resources/**/Schemas/*Form.php | .ai/rules/resources-schemas.md |
+<<<<<<< HEAD
 | resources/views/quick-enquiry.blade.php, resources/views/**, resources/views/home.blade.php | .ai/rules/resources-views.md |
+=======
+| resources/views/components/layouts/app.blade.php | .ai/rules/resources-views-components-layouts.md |
+| resources/views/quick-enquiry.blade.php, resources/views/** | .ai/rules/resources-views.md |
+>>>>>>> main
 | app/Filament/Resources/** | .ai/rules/resources.md |
 | app/Support/Enquiries/EnquiryFormContent.php,app/Filament/Resources/MarketingSections/Schemas/MarketingSectionForm.php,resources/views/components/site/quick-enquiry.blade.php | .ai/rules/schemas-views-components-site.md |
 | app/Support/Seo/**,app/Filament/Pages/StructuredData.php,app/Filament/Resources/SchemaTemplates/**,app/Filament/Schemas/SeoFormSection.php | .ai/rules/schemas.md |
 | app/Support/Seo/OrganizationSchema.php,database/seeders/BusinessProfileSeeder.php,app/Filament/Pages/Settings.php | .ai/rules/seeders-filament-pages.md |
 | database/seeders/FlexiHybridTermLoanSeeder.php,database/seeders/JourneySeeder.php | .ai/rules/seeders-seeders.md |
 | database/seeders/**, database/seeders/LegalPageSeeder.php | .ai/rules/seeders.md |
+| app/Support/Seo/SearchEngineIndexing.php,config/seo.php,app/Filament/Pages/SeoAnalytics.php | .ai/rules/seo-filament-pages.md |
 | app/Models/MarketingSection.php,app/Models/NavigationLink.php,resources/views/home.blade.php,resources/views/components/site/footer.blade.php,resources/views/components/site/flexi-hybrid-ticker.blade.php | .ai/rules/site-views-components-site.md |
 | app/Http/Controllers/QuickEnquiryPageController.php,app/Modules/Enquiries/Concerns/ValidatesLoanEnquiries.php,resources/views/components/site/loan-enquiry-form.blade.php,resources/views/quick-enquiry.blade.php | .ai/rules/site-views.md |
 | resources/views/components/site/nav-link.blade.php, resources/views/components/site/banner-carousel.blade.php, resources/views/components/site/header.blade.php, resources/views/components/site/testimonials.blade.php | .ai/rules/site.md |

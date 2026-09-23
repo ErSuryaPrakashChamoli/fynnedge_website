@@ -86,7 +86,8 @@
         }
     @endphp
 
-    <title>{{ $resolvedTitle }}{{ isset($title) ? ' — '.$siteBranding['name'] : ' — '.$siteBranding['tagline'] }}</title>
+    {{-- A page's own title renders exactly as set — no site-name suffix. Only a page with no title falls back to "site name — tagline". --}}
+    <title>{{ isset($title) ? $resolvedTitle : $resolvedTitle.' — '.$siteBranding['tagline'] }}</title>
     <meta name="description" content="{{ $resolvedDescription }}">
     {{-- A page can only ever be LESS indexable than the sitewide setting: --}}
     {{-- SearchEngineIndexing forces noindex when the switch is off, whatever this page asked for. --}}

@@ -7,11 +7,14 @@ use App\Modules\CreditScore\Enums\BureauName;
 
 /**
  * Everything on the /credit-score/{bureau} pages an admin can reword (Admin →
- * Website Settings → Credit Score Page), kept in ONE Setting so the page is
- * saved, cached and reset as a unit.
+ * Website Settings → Credit Score Page). Each bureau page has its OWN Setting
+ * (`credit_score_page.cibil`, …), saved, cached and reset as a unit, so the
+ * CIBIL page can say something different from the Experian page.
  *
- * One set of copy serves all four bureau pages: any `{bureau}` in a field is
- * replaced with that page's bureau name (CIBIL, Experian, …) by forBureau().
+ * A bureau never saved on its own falls back to the legacy shared Setting
+ * (`credit_score_page`, from when one copy served all four pages), then to the
+ * defaults. Any `{bureau}` in a field is replaced with that page's bureau name
+ * by forBureau(), so the defaults still read correctly on every page.
  *
  * Same additive contract as AboutPageContent: nothing saved means the page
  * reads exactly as built, and a blank text field falls back to its default
@@ -24,6 +27,9 @@ use App\Modules\CreditScore\Enums\BureauName;
  */
 class CreditScorePageContent
 {
+    /**
+     * Legacy: the one Setting all four pages shared. Read-only fallback now.
+     */
     public const SETTING_KEY = 'credit_score_page';
 
     public const BUREAU_PLACEHOLDER = '{bureau}';
@@ -35,6 +41,14 @@ class CreditScorePageContent
         'benefits' => ['text'],
         'stats' => ['value'],
     ];
+
+    /**
+     * Where this bureau page's own copy is stored.
+     */
+    public static function settingKey(BureauName $bureau): string
+    {
+        return self::SETTING_KEY.'.'.$bureau->value;
+    }
 
     /**
      * @return array{
@@ -71,7 +85,7 @@ class CreditScorePageContent
     }
 
     /**
-     * The saved content laid over the defaults, field by field, with
+     * The bureau's saved content laid over the defaults, field by field, with
      * `{bureau}` still in place — what the admin form edits.
      *
      * @return array{
@@ -85,9 +99,9 @@ class CreditScorePageContent
      *     stats: array<int, array{value: string, label: string}>,
      * }
      */
-    public static function resolve(): array
+    public static function resolve(BureauName $bureau): array
     {
-        $saved = Setting::get(self::SETTING_KEY);
+        $saved = Setting::get(self::settingKey($bureau)) ?? Setting::get(self::SETTING_KEY);
         $saved = is_array($saved) ? $saved : [];
         $content = [];
 
@@ -125,7 +139,7 @@ class CreditScorePageContent
             fn (mixed $value): mixed => is_array($value)
                 ? array_map(fn (array $item): array => array_map($replace, $item), $value)
                 : $replace($value),
-            self::resolve(),
+            self::resolve($bureau),
         );
     }
 

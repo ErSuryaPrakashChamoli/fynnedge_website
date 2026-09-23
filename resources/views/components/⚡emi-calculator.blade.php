@@ -2,6 +2,7 @@
 
 use App\Enums\LoanCategory;
 use App\Models\Article;
+use App\Models\CalculatorPage;
 use App\Models\LoanProduct;
 use App\Support\Calculators\EmiCalculator;
 use App\Support\Calculators\LoanCalculatorPreset;
@@ -174,6 +175,22 @@ new class extends Component
     public function product(): ?LoanProduct
     {
         return LoanCalculatorPreset::productFor(LoanCategory::from($this->category));
+    }
+
+    /**
+     * This loan type's EMI calculator "About" heading and body from Content →
+     * Calculator Pages (key `emi/{category}`), falling back to the product's
+     * calculator_explanation, then its summary.
+     *
+     * @return array{heading: string, body: ?string}
+     */
+    #[Computed]
+    public function about(): array
+    {
+        $product = $this->product;
+        $fallbackBody = $product?->calculator_explanation ?: ($product?->summary ? '<p>'.e($product->summary).'</p>' : null);
+
+        return CalculatorPage::aboutFor('emi/'.$this->category, 'About the '.$this->preset['label'], $fallbackBody);
     }
 
     /**
@@ -690,11 +707,11 @@ new class extends Component
     @if ($this->showLoanDetails && $this->product)
         @php($product = $this->product)
         <div class="mt-14 border-t border-line pt-10">
-            <h2 class="font-display text-2xl font-semibold text-ink">About the {{ $this->preset['label'] }}</h2>
+            <h2 class="font-display text-2xl font-semibold text-ink">{{ $this->about['heading'] }}</h2>
 
-            @if ($product->calculator_explanation || $product->summary)
+            @if ($this->about['body'])
                 <div class="rich-text mt-4 max-w-none text-ink-muted text-justify hyphens-auto">
-                    {!! $product->calculator_explanation ?: '<p>'.e($product->summary).'</p>' !!}
+                    {!! $this->about['body'] !!}
                 </div>
             @endif
 
