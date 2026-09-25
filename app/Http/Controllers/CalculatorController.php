@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\Route;
 
 /**
  * Every page's title, headline and introduction is admin-editable (Website
- * Settings → Calculators Page) through CalculatorPagesContent, whether
+ * Settings → Calculators Page) through CalculatorPagesContent, overridable
+ * per page (Content → Calculator Pages) through CalculatorPage, whether
  * search engines may index it through CalculatorIndexing, and its "About"
  * section (Content → Calculator Pages) through CalculatorPage.
  */
@@ -37,7 +38,7 @@ class CalculatorController extends Controller
 
         return view('calculators.emi', [
             'category' => $loanCategory,
-            'content' => CalculatorPagesContent::forPage('emi', $loanCategory),
+            'content' => $this->contentFor('emi', 'emi/'.$loanCategory->value, $loanCategory),
             'robots' => CalculatorIndexing::robotsFor('emi/'.$loanCategory->value),
             'about' => $loanCategory->isHybridRepayment()
                 ? $this->aboutFor('emi/'.$loanCategory->value, null, $this->explanationFor(LoanCalculatorPreset::productFor($loanCategory)))
@@ -49,7 +50,7 @@ class CalculatorController extends Controller
     {
         return view('calculators.fixed-deposit', [
             'about' => $this->aboutFor('fixed-deposit'),
-            'content' => CalculatorPagesContent::forPage('fixed_deposit'),
+            'content' => $this->contentFor('fixed_deposit', 'fixed-deposit'),
             'robots' => CalculatorIndexing::robotsFor('fixed-deposit'),
             'eligibilityUrl' => $this->generalEligibilityUrl(),
         ]);
@@ -59,7 +60,7 @@ class CalculatorController extends Controller
     {
         return view('calculators.sip', [
             'about' => $this->aboutFor('sip'),
-            'content' => CalculatorPagesContent::forPage('sip'),
+            'content' => $this->contentFor('sip', 'sip'),
             'robots' => CalculatorIndexing::robotsFor('sip'),
             'eligibilityUrl' => $this->generalEligibilityUrl(),
         ]);
@@ -69,7 +70,7 @@ class CalculatorController extends Controller
     {
         return view('calculators.daily-sip', [
             'about' => $this->aboutFor('daily-sip'),
-            'content' => CalculatorPagesContent::forPage('daily_sip'),
+            'content' => $this->contentFor('daily_sip', 'daily-sip'),
             'robots' => CalculatorIndexing::robotsFor('daily-sip'),
             'eligibilityUrl' => $this->generalEligibilityUrl(),
         ]);
@@ -79,7 +80,7 @@ class CalculatorController extends Controller
     {
         return view('calculators.gst', [
             'about' => $this->aboutFor('gst'),
-            'content' => CalculatorPagesContent::forPage('gst'),
+            'content' => $this->contentFor('gst', 'gst'),
             'robots' => CalculatorIndexing::robotsFor('gst'),
             'eligibilityUrl' => $this->generalEligibilityUrl(),
         ]);
@@ -93,7 +94,7 @@ class CalculatorController extends Controller
 
         $product = LoanCalculatorPreset::productFor($loanCategory);
 
-        $content = CalculatorPagesContent::forPage('eligibility', $loanCategory);
+        $content = $this->contentFor('eligibility', 'eligibility/'.$loanCategory->value, $loanCategory);
 
         return view('calculators.eligibility', [
             'category' => $loanCategory,
@@ -112,7 +113,7 @@ class CalculatorController extends Controller
 
         $product = LoanCalculatorPreset::productFor($loanCategory);
 
-        $content = CalculatorPagesContent::forPage('prepayment', $loanCategory);
+        $content = $this->contentFor('prepayment', 'prepayment/'.$loanCategory->value, $loanCategory);
 
         return view('calculators.prepayment', [
             'category' => $loanCategory,
@@ -122,6 +123,17 @@ class CalculatorController extends Controller
             'eligibilityUrl' => $this->eligibilityUrlFor($loanCategory),
             'applyUrl' => ($product && Route::has('loans.apply')) ? route('loans.apply', $product) : null,
         ]);
+    }
+
+    /**
+     * The calculator type's shared copy, overridden field by field with
+     * whatever this one page has set in Content → Calculator Pages.
+     *
+     * @return array<string, string>
+     */
+    private function contentFor(string $contentKey, string $pageKey, ?LoanCategory $category = null): array
+    {
+        return CalculatorPage::contentFor($pageKey, CalculatorPagesContent::forPage($contentKey, $category));
     }
 
     /**

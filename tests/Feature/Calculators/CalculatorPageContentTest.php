@@ -137,3 +137,45 @@ it('shows the About section on the Flexi Hybrid EMI calculator page', function (
         ->assertSee('About the Flexi Hybrid Term Loan EMI Calculator')
         ->assertSee('TEST ABOUT FLEXI HYBRID');
 });
+
+it('gives one loan calculator page its own headline and introduction without changing the others', function () {
+    seedCalculatorProduct(LoanCategory::PersonalLoan);
+    seedCalculatorProduct(LoanCategory::HomeLoan);
+    CalculatorPage::factory()->create([
+        'calculator_key' => 'emi/home-loan',
+        'heading' => 'Unique home loan EMI headline',
+        'description' => 'Unique home loan EMI introduction.',
+        'meta_title' => 'Unique home loan EMI title',
+    ]);
+
+    $this->get('/calculators/emi/home-loan')
+        ->assertOk()
+        ->assertSee('Unique home loan EMI headline')
+        ->assertSee('Unique home loan EMI introduction.')
+        ->assertSee('Unique home loan EMI title');
+
+    $this->get('/calculators/emi/personal-loan')
+        ->assertOk()
+        ->assertDontSee('Unique home loan EMI headline')
+        ->assertSee('Personal Loan EMI Calculator');
+});
+
+it('keeps the shared wording for fields the calculator page leaves blank', function () {
+    CalculatorPage::factory()->create(['calculator_key' => 'gst', 'heading' => 'Unique GST headline', 'description' => null]);
+
+    $this->get('/calculators/gst')
+        ->assertOk()
+        ->assertSee('Unique GST headline')
+        ->assertSee('Add GST to a base amount, or work out the base amount and GST already included in a total.');
+});
+
+it('links the loan type tabs on the EMI calculator page to each loan type\'s own page', function () {
+    seedCalculatorProduct(LoanCategory::PersonalLoan);
+    seedCalculatorProduct(LoanCategory::HomeLoan);
+    CalculatorPage::factory()->create(['calculator_key' => 'emi/home-loan', 'heading' => 'Unique home loan EMI headline']);
+
+    $this->get('/calculators/emi/home-loan')
+        ->assertOk()
+        ->assertSee('href="'.route('calculators.emi', LoanCategory::PersonalLoan->value).'"', false)
+        ->assertDontSee("selectCategory('personal-loan')", false);
+});

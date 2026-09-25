@@ -39,7 +39,7 @@ class CalculatorPagesSettings extends Page
      */
     private const SECTIONS = [
         'index' => ['All calculators page (/calculators)', 'The directory page listing every calculator.'],
-        'emi' => ['Loan EMI calculators', 'Shared by every loan type — write {loan} wherever the loan name should appear, e.g. "{loan} EMI Calculator" shows as "Home Loan EMI Calculator".'],
+        'emi' => ['Loan EMI calculators', 'Shared by every loan type — write {loan} wherever the loan name should appear, e.g. "{loan} EMI Calculator" shows as "Home Loan EMI Calculator". To give one page its own headline, edit it under Content → Calculator Pages.'],
         'eligibility' => ['Loan eligibility calculators', 'Shared by the Personal Loan and Home Loan pages — {loan} becomes the loan name.'],
         'prepayment' => ['Loan prepayment calculators', 'Shared by every loan type — {loan} becomes the loan name.'],
         'fixed_deposit' => ['Fixed Deposit Calculator', 'The "About this calculator" text is under Content → Calculator Pages.'],
