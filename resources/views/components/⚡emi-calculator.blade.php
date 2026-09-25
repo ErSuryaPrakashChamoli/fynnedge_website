@@ -437,20 +437,36 @@ new class extends Component
 
 <div>
     <div class="flex flex-wrap gap-2" role="tablist" aria-label="Loan type">
+        {{-- On /calculators/emi/{category} each loan type is its own page (own headline, intro, About, and the Flexi Hybrid calculator), so the tabs link there instead of switching in place. --}}
         @foreach ($this->categories as $option)
-            <button
-                type="button"
-                role="tab"
-                aria-selected="{{ $category === $option->value ? 'true' : 'false' }}"
-                wire:click="selectCategory('{{ $option->value }}')"
-                @class([
-                    'rounded-full px-4 py-2 text-sm font-medium transition-colors',
-                    'bg-accent text-white' => $category === $option->value,
-                    'bg-surface-2 text-ink-muted hover:text-ink' => $category !== $option->value,
-                ])
-            >
-                {{ $option->getLabel() }}
-            </button>
+            @if ($placementRoute === 'calculators.emi')
+                <a
+                    href="{{ route('calculators.emi', $option->value) }}"
+                    role="tab"
+                    aria-selected="{{ $category === $option->value ? 'true' : 'false' }}"
+                    @class([
+                        'rounded-full px-4 py-2 text-sm font-medium transition-colors',
+                        'bg-accent text-white' => $category === $option->value,
+                        'bg-surface-2 text-ink-muted hover:text-ink' => $category !== $option->value,
+                    ])
+                >
+                    {{ $option->getLabel() }}
+                </a>
+            @else
+                <button
+                    type="button"
+                    role="tab"
+                    aria-selected="{{ $category === $option->value ? 'true' : 'false' }}"
+                    wire:click="selectCategory('{{ $option->value }}')"
+                    @class([
+                        'rounded-full px-4 py-2 text-sm font-medium transition-colors',
+                        'bg-accent text-white' => $category === $option->value,
+                        'bg-surface-2 text-ink-muted hover:text-ink' => $category !== $option->value,
+                    ])
+                >
+                    {{ $option->getLabel() }}
+                </button>
+            @endif
         @endforeach
     </div>
 
