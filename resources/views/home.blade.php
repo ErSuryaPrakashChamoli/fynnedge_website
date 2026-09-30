@@ -1,4 +1,153 @@
 <x-layouts.app handles-faqs handles-video-testimonials>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": [
+                    "Organization",
+                    "FinancialService"
+                ],
+                "@id": "https://www.fynnedge.com/#organization",
+                "name": "FynnEdge",
+                "legalName": "FynnEdge Advisory (OPC) Pvt Ltd",
+                "url": "https://www.fynnedge.com/",
+                "logo": {
+                    "@type": "ImageObject",
+                    "@id": "https://www.fynnedge.com/#logo",
+                    "url": "https://www.fynnedge.com/assets/logo.png",
+                    "width": 512,
+                    "height": 512
+                },
+                "image": {
+                    "@type": "ImageObject",
+                    "@id": "https://www.fynnedge.com/#og-image",
+                    "url": "https://www.fynnedge.com/assets/og-image.jpg"
+                },
+                "description": "FynnEdge Advisory is a loan advisory platform that facilitates loans from leading banks and NBFCs across India. Customers can explore loan products, check eligibility, compare suitable lending options and receive expert assistance.",
+                "slogan": "Simplifying Loan, Amplifying Trust",
+                "foundingDate": "2025",
+                "email": "connect@fynnedge.com",
+                "telephone": "+91-8800 250 320",
+                "areaServed": {
+                    "@type": "Country",
+                    "name": "India"
+                },
+                "address": {
+                    "@type": "PostalAddress",
+                    "streetAddress": "A-70, Sector-2",
+                    "addressLocality": "Noida",
+                    "addressRegion": "Uttar Pradesh",
+                    "postalCode": "201301",
+                    "addressCountry": "IN"
+                },
+
+                /*
+                 * Add the real CIN before production.
+                 * Remove this entire property if you do not want
+                 * to publish the CIN in structured data.
+                 */
+                "identifier": [
+                    {
+                        "@type": "PropertyValue",
+                        "propertyID": "CIN",
+                        "value": "U46109UP2025OPC224949"
+                    }
+                ],
+
+                "contactPoint": [
+                    {
+                        "@type": "ContactPoint",
+                        "contactType": "customer support",
+                        "telephone": "+91-8800 250 320",
+                        "email": "connect@fynnedge.com",
+                        "areaServed": "IN",
+                        "availableLanguage": [
+                            "English",
+                            "Hindi"
+                        ]
+                    },
+                    {
+                        "@type": "ContactPoint",
+                        "contactType": "grievance officer",
+                        "email": "swati.choudhary@fynnedge.com",
+                        "areaServed": "IN"
+                    }
+                ],
+
+                "hasOfferCatalog": {
+                    "@type": "OfferCatalog",
+                    "name": "FynnEdge Loan Products",
+                    "itemListElement": [
+                        {
+                            "@type": "Offer",
+                            "itemOffered": {
+                                "@id": "https://www.fynnedge.com/personal-loan#loan"
+                            }
+                        },
+                        {
+                            "@type": "Offer",
+                            "itemOffered": {
+                                "@id": "https://www.fynnedge.com/flexi-loan#loan"
+                            }
+                        }
+                    ]
+                },
+
+                /*
+                 * Keep only profiles that actually exist and belong
+                 * to FynnEdge. Replace these placeholders with the
+                 * exact live profile URLs.
+                 */
+                "sameAs": [
+                    "https://www.linkedin.com/company/YOUR_FYNNEDGE_LINKEDIN",
+                    "https://twitter.com/YOUR_FYNNEDGE_X",
+                    "https://www.facebook.com/YOUR_FYNNEDGE_FACEBOOK",
+                    "https://www.instagram.com/YOUR_FYNNEDGE_INSTAGRAM",
+                    "https://www.youtube.com/@YOUR_FYNNEDGE_YOUTUBE",
+                    "https://www.crunchbase.com/organization/YOUR_FYNNEDGE_CRUNCHBASE",
+                    "https://maps.app.goo.gl/UycZuL8645VUzFLb8"
+                ]
+            },
+
+            {
+                "@type": "WebSite",
+                "@id": "https://www.fynnedge.com/#website",
+                "url": "https://www.fynnedge.com/",
+                "name": "FynnEdge",
+                "description": "FynnEdge provides loan advisory and facilitates loan options from banks and NBFCs across India.",
+                "inLanguage": "en-IN",
+                "publisher": {
+                    "@id": "https://www.fynnedge.com/#organization"
+                }
+            },
+
+            {
+                "@type": "WebPage",
+                "@id": "https://www.fynnedge.com/#webpage",
+                "url": "https://www.fynnedge.com/",
+                "name": "FynnEdge – Personal Loans from 10.49% | Free Loan Eligibility Check",
+                "description": "Get personal loans and other loan solutions from leading banks and NBFCs. Compare available loan options, check eligibility online and get expert support.",
+                "isPartOf": {
+                    "@id": "https://www.fynnedge.com/#website"
+                },
+                "about": {
+                    "@id": "https://www.fynnedge.com/#organization"
+                },
+                "publisher": {
+                    "@id": "https://www.fynnedge.com/#organization"
+                },
+                "primaryImageOfPage": {
+                    "@id": "https://www.fynnedge.com/#logo"
+                },
+                "inLanguage": "en-IN",
+                "dateModified": "2026-09-29"
+            }
+        ]
+    }
+    </script>
+
     <x-site.flexi-hybrid-ticker :loan-product="$flexiHybridProduct" :marketing="$flexiHybridTicker" />
 
     {{--
@@ -19,11 +168,18 @@
         With no banner published the left column simply spans the full width —
         an empty promotional slot must never render as an empty grey box.
     --}}
+
+
+
     <section class="relative overflow-hidden border-b border-line">
         <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
-            <div class="absolute -top-32 left-1/2 h-[32rem] w-[32rem] -translate-x-1/2 rounded-full bg-accent/10 blur-3xl"></div>
+            <div
+                class="absolute -top-32 left-1/2 h-[32rem] w-[32rem] -translate-x-1/2 rounded-full bg-accent/10 blur-3xl">
+            </div>
             <div class="absolute -right-24 top-1/3 h-72 w-72 rounded-full bg-pass/10 blur-3xl"></div>
-            <div class="absolute inset-0 [background-image:radial-gradient(var(--color-line-strong)_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_0%,black,transparent)] opacity-40"></div>
+            <div
+                class="absolute inset-0 [background-image:radial-gradient(var(--color-line-strong)_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_0%,black,transparent)] opacity-40">
+            </div>
         </div>
 
         <div class="mx-auto max-w-7xl px-6 py-5 lg:px-8 lg:py-6">
@@ -34,11 +190,13 @@
                 {{-- Left 40% — static, never animated. --}}
                 <div class="flex min-w-0 flex-col justify-center">
                     @if ($hero['eyebrow'])
-                        <p data-reveal="up" class="inline-flex max-w-full self-start items-center gap-2 rounded-full border border-line bg-surface/80 px-3 py-1 font-mono text-xs font-semibold uppercase tracking-[0.14em] text-accent shadow-sm backdrop-blur">
+                        <p data-reveal="up"
+                            class="inline-flex max-w-full self-start items-center gap-2 rounded-full border border-line bg-surface/80 px-3 py-1 font-mono text-xs font-semibold uppercase tracking-[0.14em] text-accent shadow-sm backdrop-blur">
                             {{ $hero['eyebrow'] }}
                         </p>
                     @endif
-                    <h1 data-reveal="up delay-1" class="mt-4 text-balance font-display text-3xl font-semibold leading-[1.03] tracking-tight text-ink sm:text-4xl lg:text-[2.5rem] xl:text-5xl">
+                    <h1 data-reveal="up delay-1"
+                        class="mt-4 text-balance font-display text-3xl font-semibold leading-[1.03] tracking-tight text-ink sm:text-4xl lg:text-[2.5rem] xl:text-5xl">
                         {{ $hero['heading'] }}
                         <span class="text-accent">{{ $hero['headingAccent'] }}</span>
                     </h1>
@@ -56,7 +214,8 @@
                              the other two share the second; from @md up all three
                              sit on one line. --}}
                         <div class="grid grid-cols-2 gap-2 @md:flex @min-[38rem]:gap-3">
-                            <x-ui.button tag="a" :href="route('quick-enquiry.show')" size="fit" class="col-span-2 shadow-lg shadow-accent/25 ring-4 ring-accent/10 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0">
+                            <x-ui.button tag="a" :href="route('quick-enquiry.show')" size="fit"
+                                class="col-span-2 shadow-lg shadow-accent/25 ring-4 ring-accent/10 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0">
                                 {{ $quickEnquiryButtonLabel }}
                             </x-ui.button>
                             <x-ui.button :tag="Route::has('eligibility.index') ? 'a' : 'button'" :href="Route::has('eligibility.index') ? route('eligibility.index') : null" variant="outline" size="fit">
@@ -86,19 +245,26 @@
     @if ($lenders->isNotEmpty())
         <section class="border-b border-line bg-surface">
             <div data-reveal="fade" class="mx-auto max-w-7xl px-6 py-4 lg:px-8">
-                <p class="text-center font-mono text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink-faint sm:text-left">
+                <p
+                    class="text-center font-mono text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink-faint sm:text-left">
                     Trusted by leading banks &amp; NBFCs
                 </p>
-                <div class="relative mt-3 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-                    <div class="flex w-max animate-marquee items-center gap-6 hover:[animation-play-state:paused] motion-reduce:animate-none">
+                <div
+                    class="relative mt-3 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+                    <div
+                        class="flex w-max animate-marquee items-center gap-6 hover:[animation-play-state:paused] motion-reduce:animate-none">
                         @for ($copy = 0; $copy < 2; $copy++)
-                            <div class="flex shrink-0 items-center gap-6" @if ($copy === 1) aria-hidden="true" @endif>
+                            <div class="flex shrink-0 items-center gap-6"
+                                @if ($copy === 1) aria-hidden="true" @endif>
                                 @foreach ($lenders as $lender)
-                                    <div class="flex h-14 w-36 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-line bg-white px-3 py-2 sm:h-16 sm:w-44" title="{{ $lender->name }}">
+                                    <div class="flex h-14 w-36 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-line bg-white px-3 py-2 sm:h-16 sm:w-44"
+                                        title="{{ $lender->name }}">
                                         @if ($lender->logoUrl())
-                                            <img src="{{ $lender->logoUrl() }}" alt="{{ $lender->name }}" loading="lazy" class="h-full w-full object-contain">
+                                            <img src="{{ $lender->logoUrl() }}" alt="{{ $lender->name }}" loading="lazy"
+                                                class="h-full w-full object-contain">
                                         @else
-                                            <span class="line-clamp-2 text-center font-display text-sm font-semibold leading-tight text-ink-muted">{{ $lender->name }}</span>
+                                            <span
+                                                class="line-clamp-2 text-center font-display text-sm font-semibold leading-tight text-ink-muted">{{ $lender->name }}</span>
                                         @endif
                                     </div>
                                 @endforeach
@@ -134,15 +300,12 @@
                 <div x-data="{ active: '{{ $loanProducts->first()->slug }}' }" class="mt-8">
                     <div class="flex flex-wrap gap-2" role="tablist" aria-label="Loan products">
                         @foreach ($loanProducts as $product)
-                            <button
-                                type="button"
-                                role="tab"
-                                data-reveal="left stagger"
+                            <button type="button" role="tab" data-reveal="left stagger"
                                 :aria-selected="active === '{{ $product->slug }}'"
                                 @click="active = '{{ $product->slug }}'"
-                                :class="active === '{{ $product->slug }}' ? 'border-accent bg-accent text-white' : 'border-line text-ink-muted hover:border-line-strong hover:text-ink'"
-                                class="cursor-pointer rounded-full border px-4 py-2 text-sm font-medium transition-colors"
-                            >
+                                :class="active === '{{ $product->slug }}' ? 'border-accent bg-accent text-white' :
+                                    'border-line text-ink-muted hover:border-line-strong hover:text-ink'"
+                                class="cursor-pointer rounded-full border px-4 py-2 text-sm font-medium transition-colors">
                                 {{ $product->name }}
                             </button>
                         @endforeach
@@ -154,7 +317,8 @@
                                 <div class="flex flex-wrap items-start justify-between gap-6">
                                     <div>
                                         <x-ui.badge tone="accent">{{ $product->category->getLabel() }}</x-ui.badge>
-                                        <p class="mt-3 font-display text-2xl font-semibold text-ink">{{ $product->name }}</p>
+                                        <p class="mt-3 font-display text-2xl font-semibold text-ink">
+                                            {{ $product->name }}</p>
                                         @if ($product->summary)
                                             <p class="mt-2 max-w-xl text-ink-muted">{{ $product->summary }}</p>
                                         @endif
@@ -164,20 +328,30 @@
                                     </x-ui.button>
                                 </div>
 
-                                @if (! empty($product->benefits))
+                                @if (!empty($product->benefits))
                                     <ul class="mt-6 grid gap-2.5 sm:grid-cols-2">
                                         @foreach (array_slice($product->benefits, 0, 4) as $benefit)
                                             <li class="flex items-start gap-2.5 text-sm text-ink-muted">
-                                                <svg viewBox="0 0 20 20" fill="currentColor" class="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4L8 11.6l6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd" /></svg>
+                                                <svg viewBox="0 0 20 20" fill="currentColor"
+                                                    class="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true">
+                                                    <path fill-rule="evenodd"
+                                                        d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4L8 11.6l6.8-6.8a1 1 0 0 1 1.4 0Z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
                                                 {{ $benefit }}
                                             </li>
                                         @endforeach
                                     </ul>
                                 @endif
 
-                                <a href="{{ route('loans.show', $product) }}" class="mt-6 inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline">
+                                <a href="{{ route('loans.show', $product) }}"
+                                    class="mt-6 inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline">
                                     View full details
-                                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8h10m0 0-4-4m4 4-4 4" /></svg>
+                                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
+                                        class="h-3.5 w-3.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M3 8h10m0 0-4-4m4 4-4 4" />
+                                    </svg>
                                 </a>
                             </div>
                         @endforeach
@@ -214,7 +388,12 @@
                 @if ($howItWorksSteps->isNotEmpty())
                     <x-site.how-it-works :steps="$howItWorksSteps" />
                 @else
-                    <x-ui.stepper :steps="['Tell us about yourself', 'See lenders you\'re likely eligible for', 'Compare and apply', 'Track your application to disbursal']" :current="0" />
+                    <x-ui.stepper :steps="[
+                        'Tell us about yourself',
+                        'See lenders you\'re likely eligible for',
+                        'Compare and apply',
+                        'Track your application to disbursal',
+                    ]" :current="0" />
                 @endif
                 <p class="text-sm text-ink-muted lg:pt-1">
                     One profile, matched against multiple lenders' criteria at once — instead of applying
@@ -225,10 +404,12 @@
     </section>
 
     <section class="border-t border-line bg-surface-2">
-        <div class="mx-auto grid max-w-7xl gap-12 px-6 py-16 lg:grid-cols-[1fr_360px] lg:items-center lg:gap-16 lg:px-8">
+        <div
+            class="mx-auto grid max-w-7xl gap-12 px-6 py-16 lg:grid-cols-[1fr_360px] lg:items-center lg:gap-16 lg:px-8">
             <div data-reveal="left">
                 <x-ui.badge tone="accent">Free score check</x-ui.badge>
-                <h2 class="mt-4 max-w-lg text-balance font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+                <h2
+                    class="mt-4 max-w-lg text-balance font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
                     Know your credit score before you apply
                 </h2>
                 <p class="mt-3 max-w-lg text-ink-muted">
@@ -237,10 +418,14 @@
                 </p>
 
                 <div class="mt-6 flex flex-wrap gap-3">
-                    <x-ui.button tag="a" :href="route('credit-score.show', ['bureau' => 'cibil'])" variant="secondary" size="sm">CIBIL</x-ui.button>
-                    <x-ui.button tag="a" :href="route('credit-score.show', ['bureau' => 'experian'])" variant="secondary" size="sm">Experian</x-ui.button>
-                    <x-ui.button tag="a" :href="route('credit-score.show', ['bureau' => 'equifax'])" variant="secondary" size="sm">Equifax</x-ui.button>
-                    <x-ui.button tag="a" :href="route('credit-score.show', ['bureau' => 'crif'])" variant="secondary" size="sm">CRIF</x-ui.button>
+                    <x-ui.button tag="a" :href="route('credit-score.show', ['bureau' => 'cibil'])" variant="secondary"
+                        size="sm">CIBIL</x-ui.button>
+                    <x-ui.button tag="a" :href="route('credit-score.show', ['bureau' => 'experian'])" variant="secondary"
+                        size="sm">Experian</x-ui.button>
+                    <x-ui.button tag="a" :href="route('credit-score.show', ['bureau' => 'equifax'])" variant="secondary"
+                        size="sm">Equifax</x-ui.button>
+                    <x-ui.button tag="a" :href="route('credit-score.show', ['bureau' => 'crif'])" variant="secondary"
+                        size="sm">CRIF</x-ui.button>
                 </div>
             </div>
 
@@ -251,61 +436,63 @@
                 falls exactly as it falls. Using two independent CSS/JS animations for
                 these (one for rotation, one for a number tween) would not guarantee that.
             --}}
-            <x-ui.card
-                x-data="{
-                    min: 300,
-                    max: 900,
-                    angleMin: -80,
-                    angleMax: 80,
-                    angle: -80,
-                    score: 300,
-                    frame: null,
-                    tick(timestamp) {
-                        // A sawtooth, not a back-and-forth oscillation: score
-                        // rises from 300 to 900, holds briefly, then resets
-                        // straight back to 300 and rises again — a repeating
-                        // count-up rather than a needle swinging both ways.
-                        const riseDuration = 3000;
-                        const holdDuration = 500;
-                        const period = riseDuration + holdDuration;
-                        const cyclePosition = timestamp % period;
-                        const linearProgress = Math.min(cyclePosition / riseDuration, 1);
-                        const progress = 1 - ((1 - linearProgress) ** 2);
-                        this.angle = this.angleMin + (progress * (this.angleMax - this.angleMin));
-                        this.score = Math.round(this.min + (progress * (this.max - this.min)));
-                        this.frame = requestAnimationFrame((t) => this.tick(t));
-                    },
-                    start() {
-                        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                            this.angle = 20;
-                            this.score = 760;
+            <x-ui.card x-data="{
+                min: 300,
+                max: 900,
+                angleMin: -80,
+                angleMax: 80,
+                angle: -80,
+                score: 300,
+                frame: null,
+                tick(timestamp) {
+                    // A sawtooth, not a back-and-forth oscillation: score
+                    // rises from 300 to 900, holds briefly, then resets
+                    // straight back to 300 and rises again — a repeating
+                    // count-up rather than a needle swinging both ways.
+                    const riseDuration = 3000;
+                    const holdDuration = 500;
+                    const period = riseDuration + holdDuration;
+                    const cyclePosition = timestamp % period;
+                    const linearProgress = Math.min(cyclePosition / riseDuration, 1);
+                    const progress = 1 - ((1 - linearProgress) ** 2);
+                    this.angle = this.angleMin + (progress * (this.angleMax - this.angleMin));
+                    this.score = Math.round(this.min + (progress * (this.max - this.min)));
+                    this.frame = requestAnimationFrame((t) => this.tick(t));
+                },
+                start() {
+                    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                        this.angle = 20;
+                        this.score = 760;
 
-                            return;
-                        }
+                        return;
+                    }
 
-                        this.frame = requestAnimationFrame((t) => this.tick(t));
-                    },
-                }"
-                x-init="start()"
-                data-reveal="right"
-                class="card-lift text-center"
-            >
+                    this.frame = requestAnimationFrame((t) => this.tick(t));
+                },
+            }" x-init="start()" data-reveal="right"
+                class="card-lift text-center">
                 <svg viewBox="0 0 200 128" class="mx-auto w-full max-w-[260px]" aria-hidden="true">
                     <defs>
-                        <linearGradient id="scoreGaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <linearGradient id="scoreGaugeGradient" x1="0%" y1="0%" x2="100%"
+                            y2="0%">
                             <stop offset="0%" style="stop-color: var(--color-warn)" />
                             <stop offset="50%" style="stop-color: var(--color-warn-soft)" />
                             <stop offset="100%" style="stop-color: var(--color-pass)" />
                         </linearGradient>
                     </defs>
 
-                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--color-line)" stroke-width="18" stroke-linecap="round" />
-                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#scoreGaugeGradient)" stroke-width="13" stroke-linecap="round" />
+                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--color-line)"
+                        stroke-width="18" stroke-linecap="round" />
+                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#scoreGaugeGradient)"
+                        stroke-width="13" stroke-linecap="round" />
 
-                    <text x="20" y="118" text-anchor="middle" class="font-mono" style="fill: var(--color-ink-faint); font-size: 9px;">300</text>
-                    <text x="180" y="118" text-anchor="middle" class="font-mono" style="fill: var(--color-ink-faint); font-size: 9px;">900</text>
+                    <text x="20" y="118" text-anchor="middle" class="font-mono"
+                        style="fill: var(--color-ink-faint); font-size: 9px;">300</text>
+                    <text x="180" y="118" text-anchor="middle" class="font-mono"
+                        style="fill: var(--color-ink-faint); font-size: 9px;">900</text>
 
-                    <g :style="`transform: rotate(${angle}deg); transform-box: view-box; transform-origin: 100px 100px;`">
+                    <g
+                        :style="`transform: rotate(${angle}deg); transform-box: view-box; transform-origin: 100px 100px;`">
                         <polygon points="96,100 100,26 104,100" style="fill: var(--color-ink)" />
                         <polygon points="97,100 100,110 103,100" style="fill: var(--color-ink-faint)" />
                     </g>
@@ -313,8 +500,10 @@
                     <circle cx="100" cy="100" r="3.5" style="fill: var(--color-surface)" />
                 </svg>
                 <p class="-mt-1 font-display text-3xl font-semibold text-ink" x-text="score">760</p>
-                <p class="mt-1 font-mono text-[0.65rem] uppercase tracking-wider text-ink-faint">Score — check yours free</p>
-                <p class="mt-3 whitespace-nowrap font-display text-[0.72rem] font-semibold tracking-tight text-accent">Know Your Credit. Unlock Your Possibilities.</p>
+                <p class="mt-1 font-mono text-[0.65rem] uppercase tracking-wider text-ink-faint">Score — check yours
+                    free</p>
+                <p class="mt-3 whitespace-nowrap font-display text-[0.72rem] font-semibold tracking-tight text-accent">
+                    Know Your Credit. Unlock Your Possibilities.</p>
             </x-ui.card>
         </div>
     </section>
@@ -322,12 +511,15 @@
     <section class="border-t border-line bg-surface">
         <div data-reveal="down" class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
             <div class="flex flex-wrap items-end justify-between gap-4">
-                <h2 class="max-w-xl text-balance font-display text-2xl font-semibold text-ink">{{ $emiCta->heading ?? 'Plan your EMI' }}</h2>
+                <h2 class="max-w-xl text-balance font-display text-2xl font-semibold text-ink">
+                    {{ $emiCta->heading ?? 'Plan your EMI' }}</h2>
                 <x-ui.button tag="a" :href="$emiCta->cta_url ?? route('calculators.index')" variant="secondary" size="sm">
                     {{ $emiCta->cta_label ?? 'Open calculator' }}
                 </x-ui.button>
             </div>
-            <p class="mt-3 text-ink-muted text-justify hyphens-auto">{{ $emiCta->description ?? 'Estimate your monthly instalment before you apply, for any loan type.' }}</p>
+            <p class="mt-3 text-ink-muted text-justify hyphens-auto">
+                {{ $emiCta->description ?? 'Estimate your monthly instalment before you apply, for any loan type.' }}
+            </p>
         </div>
     </section>
 
@@ -337,8 +529,10 @@
             <div class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
                 <div data-reveal="down" class="flex flex-wrap items-end justify-between gap-4">
                     <div>
-                        <p class="font-mono text-xs font-semibold uppercase tracking-wider text-ink-faint">Guides &amp; resources</p>
-                        <h2 class="mt-2 max-w-xl text-balance font-display text-2xl font-semibold text-ink">Latest articles</h2>
+                        <p class="font-mono text-xs font-semibold uppercase tracking-wider text-ink-faint">Guides &amp;
+                            resources</p>
+                        <h2 class="mt-2 max-w-xl text-balance font-display text-2xl font-semibold text-ink">Latest
+                            articles</h2>
                     </div>
                     <x-ui.button tag="a" :href="route('resources.index')" variant="secondary" size="sm">
                         View all articles
