@@ -1,6 +1,7 @@
 <x-layouts.app handles-faqs handles-video-testimonials>
 
-    <script type="application/ld+json">
+    @verbatim
+        <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@graph": [
@@ -44,10 +45,10 @@
                 },
 
                 /*
-                 * Add the real CIN before production.
-                 * Remove this entire property if you do not want
-                 * to publish the CIN in structured data.
-                 */
+ * Keep only profiles that actually exist...
+ */
+
+
                 "identifier": [
                     {
                         "@type": "PropertyValue",
@@ -145,8 +146,9 @@
                 "dateModified": "2026-09-29"
             }
         ]
-    }
+      }
     </script>
+    @endverbatim
 
     <x-site.flexi-hybrid-ticker :loan-product="$flexiHybridProduct" :marketing="$flexiHybridTicker" />
 
