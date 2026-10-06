@@ -28,6 +28,7 @@ Route::get('/', HomeController::class)->name('home');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/robots.txt', RobotsController::class)->name('robots');
 Route::get('/about', AboutController::class)->name('about');
+Route::permanentRedirect('/about-us', '/about');
 Route::get('/careers', CareerController::class)->name('careers');
 Route::get('/partners', PartnerLenderController::class)->name('partners.index');
 

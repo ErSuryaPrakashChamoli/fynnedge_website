@@ -192,6 +192,10 @@ it('renders the about page body edited in admin', function () {
         ->assertSee('FynnEdge Advisory connects borrowers with suitable lenders.');
 });
 
+it('permanently redirects the legacy /about-us URL to /about', function () {
+    $this->get('/about-us')->assertStatus(301)->assertRedirect('/about');
+});
+
 it('404s the about page when no about content is published', function () {
     Page::query()->delete();
 
