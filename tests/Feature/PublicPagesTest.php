@@ -55,6 +55,24 @@ it('shows the admin-configured contact details in the footer', function () {
         ->assertSee('care@fynnedge.com');
 });
 
+it('shows the admin-configured grievance phone and email in the footer', function () {
+    Setting::set('grievance_phone', '+91-9999-000-111');
+    Setting::set('grievance_email', 'grievance@fynnedge.com');
+
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('Grievance redressal')
+        ->assertSee('href="tel:+91-9999-000-111"', false)
+        ->assertSee('href="mailto:grievance@fynnedge.com"', false);
+});
+
+it('omits the footer grievance block when no grievance contact is configured', function () {
+    Setting::set('grievance_phone', '');
+    Setting::set('grievance_email', '');
+
+    $this->get('/')->assertOk()->assertDontSee('Grievance redressal');
+});
+
 it('applies the admin-configured appearance settings to the public page head', function () {
     Setting::set('theme_header_bg_color', '#112233');
     Setting::set('theme_footer_font_color', '#aabbcc');

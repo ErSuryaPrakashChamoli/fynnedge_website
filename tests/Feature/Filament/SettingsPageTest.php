@@ -35,6 +35,26 @@ it('lets an admin save contact channel settings', function () {
     expect(Setting::get('contact_map_url'))->toBe('https://www.google.com/maps/embed?pb=abc123');
 });
 
+it('lets an admin save the grievance phone and email', function () {
+    Livewire::test(Settings::class)
+        ->fillForm([
+            'grievance_phone' => '+91-9999-000-111',
+            'grievance_email' => 'grievance@fynnedge.com',
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(Setting::get('grievance_phone'))->toBe('+91-9999-000-111');
+    expect(Setting::get('grievance_email'))->toBe('grievance@fynnedge.com');
+});
+
+it('rejects a grievance email that is not an email address', function () {
+    Livewire::test(Settings::class)
+        ->fillForm(['grievance_email' => 'not an email'])
+        ->call('save')
+        ->assertHasFormErrors(['grievance_email' => 'email']);
+});
+
 it('lets an admin save a YouTube channel link', function () {
     Livewire::test(Settings::class)
         ->fillForm(['social_youtube' => 'https://youtube.com/@fynnedge'])

@@ -120,6 +120,8 @@ class DatabaseSeeder extends Seeder
         Setting::set('contact_whatsapp', Setting::get('contact_whatsapp', ''));
         Setting::set('contact_address', Setting::get('contact_address', ''));
         Setting::set('contact_map_url', Setting::get('contact_map_url', ''));
+        Setting::set('grievance_phone', Setting::get('grievance_phone', ''));
+        Setting::set('grievance_email', Setting::get('grievance_email', ''));
 
         $this->call(BusinessProfileSeeder::class);
         $this->call(RoleSeeder::class);

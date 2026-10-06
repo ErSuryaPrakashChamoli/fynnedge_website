@@ -49,6 +49,8 @@ class Settings extends Page
             'contact_whatsapp' => Setting::get('contact_whatsapp'),
             'contact_address' => Setting::get('contact_address'),
             'contact_map_url' => Setting::get('contact_map_url'),
+            'grievance_phone' => Setting::get('grievance_phone'),
+            'grievance_email' => Setting::get('grievance_email'),
             'business_description' => Setting::get('business_description'),
             'business_street_address' => Setting::get('business_street_address'),
             'business_locality' => Setting::get('business_locality'),
@@ -203,6 +205,14 @@ class Settings extends Page
                             ->columnSpanFull()
                             ->placeholder('https://maps.google.com/maps?q=...')
                             ->helperText('Paste a Google Maps link for your location — Share → Copy link, or Share → Embed a map. Either works.'),
+                    ]),
+
+                Section::make('Grievance redressal')
+                    ->description('Shown under a "Grievance redressal" heading in the site footer. Leave both blank to hide it.')
+                    ->columns(2)
+                    ->components([
+                        TextInput::make('grievance_phone')->tel()->label('Grievance phone'),
+                        TextInput::make('grievance_email')->email()->label('Grievance email'),
                     ]),
 
                 Section::make('Business profile (structured data)')

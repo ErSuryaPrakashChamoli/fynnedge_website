@@ -98,6 +98,14 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer(
             'components.site.footer',
+            fn ($view) => $view->with('grievanceContact', [
+                'phone' => Setting::get('grievance_phone'),
+                'email' => Setting::get('grievance_email'),
+            ]),
+        );
+
+        View::composer(
+            'components.site.footer',
             fn ($view) => $view->with('footerLegal', [
                 'name' => Setting::get('footer_legal_name', 'FynnEdge Advisory (OPC) Pvt Ltd'),
                 'disclaimer' => Setting::get('footer_disclaimer', 'Loan approval is subject to lender policies, documentation and underwriting. Eligibility results shown on this site are indicative, not a guarantee of approval.'),
