@@ -12,13 +12,31 @@ it('shows the admin-configured map embed on the contact page', function () {
 });
 
 it('positions the map pin label with one transform so it stays centred over the pin', function () {
-    Setting::set('contact_map_url', 'https://www.google.com/maps/embed?pb=abc123');
+    Setting::set('contact_map_url', 'https://maps.google.com/maps?q=28.5854%2C77.3130&z=17&output=embed');
 
     $html = $this->get('/contact')->getContent();
 
     preg_match('/class="([^"]*)"\s+style="transform: translate\(-50%, [^"]*\)"/', $html, $labelOverlay);
 
     expect($labelOverlay[1] ?? null)->toBeString()->not->toContain('translate-');
+});
+
+it('leaves a Google listing map to name its own pin', function (string $mapUrl) {
+    Setting::set('contact_map_url', $mapUrl);
+
+    $this->get('/contact')
+        ->assertSee('<iframe', false)
+        ->assertDontSee('style="transform: translate(-50%', false)
+        ->assertDontSee('location in Google Maps');
+})->with([
+    'embed code' => 'https://www.google.com/maps/embed?pb=abc123',
+    'place search' => 'https://maps.google.com/maps?q=Fynnedge+Advisory+Pvt.+Ltd.&ll=28.585606%2C77.31294&z=17&output=embed',
+]);
+
+it('hides a saved map link that Google refuses to show inside the site', function () {
+    Setting::set('contact_map_url', 'https://maps.app.goo.gl/nMFxPSk98pK1nzDr9?output=embed');
+
+    $this->get('/contact')->assertDontSee('<iframe', false);
 });
 
 it('omits the map embed when no map url is configured', function () {

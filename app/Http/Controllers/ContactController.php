@@ -13,7 +13,7 @@ class ContactController extends Controller
 {
     public function show(Request $request): View
     {
-        $contactMapUrl = Setting::get('contact_map_url');
+        $contactMapUrl = OfficeMap::embedUrl();
 
         return view('contact', [
             'contactPhone' => Setting::get('contact_phone'),

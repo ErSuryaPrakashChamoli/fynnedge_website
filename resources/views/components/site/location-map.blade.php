@@ -21,21 +21,24 @@
         title="{{ $title }}"
     ></iframe>
 
-    {{-- The map link centers on our office coordinates, so the red pin always
-         lands at the iframe's exact center — this label floats just above it.
-         Positioned by the inline transform alone: Tailwind v4's -translate-x-*
-         sets the separate `translate` property, which stacks with `transform`
-         and pushed the label a full width left of the pin. --}}
-    <div
-        class="pointer-events-none absolute left-1/2 top-1/2"
-        style="transform: translate(-50%, calc(-100% - 44px))"
-    >
-        <span class="whitespace-nowrap rounded-full border border-line bg-surface px-3 py-1 text-xs font-semibold text-ink shadow-md">
-            {{ $label }}
-        </span>
-    </div>
-
+    {{-- $viewUrl is only set for a bare coordinate pin (OfficeMap::viewUrl()). A map
+         of a Google listing names its own pin and shows a place card, so neither
+         overlay is drawn over it. --}}
     @if ($viewUrl)
+        {{-- The map link centers on our office coordinates, so the red pin always
+             lands at the iframe's exact center — this label floats just above it.
+             Positioned by the inline transform alone: Tailwind v4's -translate-x-*
+             sets the separate `translate` property, which stacks with `transform`
+             and pushed the label a full width left of the pin. --}}
+        <div
+            class="pointer-events-none absolute left-1/2 top-1/2"
+            style="transform: translate(-50%, calc(-100% - 44px))"
+        >
+            <span class="whitespace-nowrap rounded-full border border-line bg-surface px-3 py-1 text-xs font-semibold text-ink shadow-md">
+                {{ $label }}
+            </span>
+        </div>
+
         {{-- Clicking the pin itself tries to load Google Place details, which fails
              with "Place info couldn't load" since there's no listing at this address.
              This sits on top of just the pin's icon and opens real Google Maps instead. --}}

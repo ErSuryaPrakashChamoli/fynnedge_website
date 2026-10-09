@@ -44,6 +44,14 @@ it('leaves the office map out when no map URL is configured', function () {
     $response->assertDontSee('Visit our office');
 });
 
+it('leaves the office map out when the saved link is one Google refuses to show inside the site', function () {
+    Setting::set('contact_map_url', 'https://maps.app.goo.gl/nMFxPSk98pK1nzDr9?output=embed');
+
+    $response = $this->get('/');
+
+    $response->assertDontSee('Visit our office');
+});
+
 it('does not repeat the map in the footer on the contact page', function () {
     Setting::set('contact_map_url', 'https://www.google.com/maps/embed?pb=abc123');
 

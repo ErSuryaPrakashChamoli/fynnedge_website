@@ -4,6 +4,7 @@ use App\Filament\Pages\Settings;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
@@ -99,6 +100,58 @@ it('leaves an already-embeddable map URL untouched on save', function () {
 
     expect(Setting::get('contact_map_url'))->toBe('https://www.google.com/maps/embed?pb=abc123');
 });
+
+it('keeps only the map src when an admin pastes the whole Embed a map code', function () {
+    Livewire::test(Settings::class)
+        ->fillForm(['contact_map_url' => '<iframe src="https://www.google.com/maps/embed?pb=!1m18!3m3!1m2!1s0x390ce55861eb298f%3A0xd0bfe46bb90c72f8!2sFynnedge%20Advisory%20Pvt.%20Ltd.!5e0" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(Setting::get('contact_map_url'))
+        ->toBe('https://www.google.com/maps/embed?pb=!1m18!3m3!1m2!1s0x390ce55861eb298f%3A0xd0bfe46bb90c72f8!2sFynnedge%20Advisory%20Pvt.%20Ltd.!5e0');
+});
+
+it('turns a Google Maps place link, which Google refuses to frame, into a place search map', function () {
+    Livewire::test(Settings::class)
+        ->fillForm(['contact_map_url' => 'https://www.google.com/maps/place/Fynnedge+Advisory+Pvt.+Ltd./@28.585606,77.31294,17z/data=!3m1!4b1!4m6!3m5!1s0x390ce55861eb298f:0xd0bfe46bb90c72f8!8m2!3d28.585606!4d77.31294!16s%2Fg%2F11zgr_b31z?entry=ttu'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(Setting::get('contact_map_url'))
+        ->toBe('https://maps.google.com/maps?q=Fynnedge+Advisory+Pvt.+Ltd.&ll=28.585606%2C77.31294&z=17&output=embed');
+});
+
+it('follows a Share → Copy link short link to the place it points at', function () {
+    Http::preventStrayRequests();
+    Http::fake([
+        'maps.app.goo.gl/*' => Http::response('', 302, [
+            'Location' => 'https://www.google.com/maps/place/Fynnedge+Advisory+Pvt.+Ltd./@28.585606,77.31294,17z/data=!4m6!3m5!1s0x390ce55861eb298f:0xd0bfe46bb90c72f8!8m2!3d28.585606!4d77.31294!16s%2Fg%2F11zgr_b31z?entry=tts',
+        ]),
+    ]);
+
+    Livewire::test(Settings::class)
+        ->fillForm(['contact_map_url' => 'https://maps.app.goo.gl/nMFxPSk98pK1nzDr9'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(Setting::get('contact_map_url'))
+        ->toBe('https://maps.google.com/maps?q=Fynnedge+Advisory+Pvt.+Ltd.&ll=28.585606%2C77.31294&z=17&output=embed');
+});
+
+it('rejects a map link that cannot be shown inside the site and keeps the saved one', function (string $mapLink) {
+    Http::fake(['maps.app.goo.gl/*' => Http::failedConnection()]);
+    Setting::set('contact_map_url', 'https://www.google.com/maps/embed?pb=abc123');
+
+    Livewire::test(Settings::class)
+        ->fillForm(['contact_map_url' => $mapLink])
+        ->call('save')
+        ->assertHasFormErrors(['contact_map_url']);
+
+    expect(Setting::get('contact_map_url'))->toBe('https://www.google.com/maps/embed?pb=abc123');
+})->with([
+    'not a Google Maps link' => 'https://example.com/our-office',
+    'short link while Google is unreachable' => 'https://maps.app.goo.gl/nMFxPSk98pK1nzDr9',
+]);
 
 it('lets an admin save branding, hero and footer text settings', function () {
     Livewire::test(Settings::class)

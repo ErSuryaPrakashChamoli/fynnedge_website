@@ -18,6 +18,7 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Validation\ValidationException;
 
 class Settings extends Page
 {
@@ -203,11 +204,10 @@ class Settings extends Page
                         TextInput::make('contact_whatsapp')->tel()->label('WhatsApp'),
                         Textarea::make('contact_address')->label('Address')->rows(2)->columnSpanFull(),
                         TextInput::make('contact_map_url')
-                            ->label('Map location URL')
-                            ->url()
+                            ->label('Map location')
                             ->columnSpanFull()
-                            ->placeholder('https://maps.google.com/maps?q=...')
-                            ->helperText('Paste a Google Maps link for your location — Share → Copy link, or Share → Embed a map. Either works.'),
+                            ->placeholder('<iframe src="https://www.google.com/maps/embed?pb=..."></iframe>')
+                            ->helperText('In Google Maps, open your business and click Share. Best: "Embed a map" → Copy HTML, and paste the whole code here (shows your Google listing with name and reviews). "Copy link" also works. Saved as a map link Google allows on this site.'),
                         Toggle::make('footer_map_enabled')
                             ->label('Show map in site footer')
                             ->helperText('Adds a "Visit our office" map card, with a Get directions button, to the footer of every page. Uses the map location URL above; the Contact page keeps its own larger map instead.')
@@ -400,7 +400,10 @@ class Settings extends Page
         $state = $this->form->getState();
 
         if (filled($state['contact_map_url'] ?? null)) {
-            $state['contact_map_url'] = self::normalizeMapUrl($state['contact_map_url']);
+            $state['contact_map_url'] = OfficeMap::embedUrlFrom($state['contact_map_url'])
+                ?? throw ValidationException::withMessages([
+                    'data.contact_map_url' => 'Google Maps won\'t show this link inside the site. In Google Maps open your business, click Share → Embed a map → Copy HTML, and paste that here (Share → Copy link also works).',
+                ]);
         }
 
         foreach ($state as $key => $value) {
@@ -411,23 +414,6 @@ class Settings extends Page
             ->title('Settings saved')
             ->success()
             ->send();
-    }
-
-    /**
-     * A plain Google Maps share link (google.com/maps?q=... or maps.google.com/maps?q=...)
-     * serves the full Maps app, which sends X-Frame-Options: sameorigin and gets refused
-     * when framed — only the dedicated embed variant (output=embed, or the /maps/embed?pb=...
-     * src from Share > Embed a map) is safe to iframe. Admins reliably paste the former
-     * (it's what "Share > Copy link" gives you), so normalize it here rather than relying
-     * on everyone finding the Embed a map option.
-     */
-    private static function normalizeMapUrl(string $url): string
-    {
-        if (str_contains($url, '/maps/embed') || str_contains($url, 'output=embed')) {
-            return $url;
-        }
-
-        return $url.(str_contains($url, '?') ? '&' : '?').'output=embed';
     }
 
     protected function getHeaderActions(): array

@@ -23,6 +23,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | config/filesystems.php,app/Filament/**/*Form.php,docker/entrypoint.sh | .ai/rules/config-filament.md |
 | config/database.php,.env*, config/cache.php,config/queue.php,config/session.php,.env*, config/{cache,queue,session}.php | .ai/rules/config.md |
 | app/Models/ContactEnquiry.php,app/Modules/Enquiries/**,app/Http/Controllers/QuickEnquiryController.php,app/Http/Controllers/LoanEnquiryController.php,app/Support/Enquiries/**,app/Filament/Resources/ContactEnquiries/**,resources/views/components/site/loan-enquiry*.blade.php | .ai/rules/contact-enquiries.md |
+| app/Support/Contact/** | .ai/rules/contact.md |
 | app/Http/Controllers/QuickEnquiryController.php,resources/views/components/site/quick-enquiry.blade.php | .ai/rules/controllers-views-components-site.md |
 | app/Filament/RelationManagers/FaqsRelationManager.php,app/Models/Page.php,app/Http/Controllers/PageController.php | .ai/rules/controllers.md |
 | app/Support/Pages/CreditScorePageContent.php,app/Filament/Pages/CreditScorePageSettings.php,resources/views/credit-score/show.blade.php | .ai/rules/credit-score.md |
