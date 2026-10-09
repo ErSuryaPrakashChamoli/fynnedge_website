@@ -35,6 +35,16 @@ it('lets an admin save contact channel settings', function () {
     expect(Setting::get('contact_map_url'))->toBe('https://www.google.com/maps/embed?pb=abc123');
 });
 
+it('lets an admin switch the footer map off', function () {
+    Livewire::test(Settings::class)
+        ->assertFormSet(['footer_map_enabled' => true])
+        ->fillForm(['footer_map_enabled' => false])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(Setting::get('footer_map_enabled'))->toBeFalse();
+});
+
 it('lets an admin save the grievance phone and email', function () {
     Livewire::test(Settings::class)
         ->fillForm([

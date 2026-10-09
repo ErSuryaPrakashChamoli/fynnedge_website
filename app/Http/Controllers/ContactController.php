@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ContactEnquiry;
 use App\Models\Setting;
+use App\Support\Contact\OfficeMap;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class ContactController extends Controller
             'contactWhatsapp' => Setting::get('contact_whatsapp'),
             'contactAddress' => Setting::get('contact_address'),
             'contactMapUrl' => $contactMapUrl,
-            'contactMapViewUrl' => self::mapViewUrl($contactMapUrl),
+            'contactMapViewUrl' => OfficeMap::viewUrl($contactMapUrl),
             'prefillMessage' => $request->string('message')->limit(2000)->toString(),
         ]);
     }
@@ -47,24 +48,5 @@ class ContactController extends Controller
             'statusTitle' => 'Your Loan Query Has Been Submitted Successfully! 🎉',
             'status' => 'Thank you for choosing FynnEdge. Our loan expert will connect with you shortly to understand your requirement and guide you through the next steps.',
         ]);
-    }
-
-    /**
-     * The embed variant of a `maps?q=...` link fails to load place details when clicked
-     * on a bare coordinate pin with no registered Google Business listing — the contact
-     * view catches that click with an overlay pointing here instead, to open the same
-     * location on the full Google Maps site rather than the broken embedded info window.
-     * The dedicated `/maps/embed?pb=...` variant (from Share > Embed a map) has no plain
-     * equivalent to link to, so it's left as null and the click passes through untouched.
-     */
-    private static function mapViewUrl(?string $embedUrl): ?string
-    {
-        if (! $embedUrl || str_contains($embedUrl, '/maps/embed')) {
-            return null;
-        }
-
-        $viewUrl = preg_replace('/([?&])output=embed&?/', '$1', $embedUrl);
-
-        return rtrim($viewUrl, '?&');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\Setting;
+use App\Support\Contact\OfficeMap;
 use App\Support\Theme\SiteThemeStyles;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -11,6 +12,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
@@ -49,6 +51,7 @@ class Settings extends Page
             'contact_whatsapp' => Setting::get('contact_whatsapp'),
             'contact_address' => Setting::get('contact_address'),
             'contact_map_url' => Setting::get('contact_map_url'),
+            'footer_map_enabled' => OfficeMap::footerEnabled(),
             'grievance_phone' => Setting::get('grievance_phone'),
             'grievance_email' => Setting::get('grievance_email'),
             'business_description' => Setting::get('business_description'),
@@ -205,6 +208,10 @@ class Settings extends Page
                             ->columnSpanFull()
                             ->placeholder('https://maps.google.com/maps?q=...')
                             ->helperText('Paste a Google Maps link for your location — Share → Copy link, or Share → Embed a map. Either works.'),
+                        Toggle::make('footer_map_enabled')
+                            ->label('Show map in site footer')
+                            ->helperText('Adds a "Visit our office" map card, with a Get directions button, to the footer of every page. Uses the map location URL above; the Contact page keeps its own larger map instead.')
+                            ->columnSpanFull(),
                     ]),
 
                 Section::make('Grievance redressal')

@@ -161,6 +161,51 @@
             @endif
         </div>
 
+        @if ($footerMap ?? null)
+            <div class="mt-10 grid overflow-hidden rounded-3xl border border-line-strong bg-surface-2 lg:grid-cols-5">
+                <div class="relative isolate flex min-w-0 flex-col justify-center gap-5 overflow-hidden p-6 sm:p-8 lg:col-span-2 lg:p-10">
+                    <div aria-hidden="true" class="pointer-events-none absolute -bottom-24 -left-20 -z-10 h-56 w-56 rounded-full bg-accent/15 blur-3xl"></div>
+
+                    <div>
+                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent">Visit our office</p>
+                        <p class="mt-2 font-display text-xl font-semibold text-ink sm:text-2xl">{{ $footerLegal['name'] }}</p>
+                    </div>
+
+                    @if ($footerMap['address'])
+                        <p class="flex items-start gap-3 text-sm text-ink-muted">
+                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4 w-4" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                </svg>
+                            </span>
+                            <span class="pt-1">{{ $footerMap['address'] }}</span>
+                        </p>
+                    @endif
+
+                    <div class="flex flex-wrap gap-3">
+                        @if ($footerMap['directionsUrl'])
+                            <x-ui.button tag="a" size="sm" variant="contrast" href="{{ $footerMap['directionsUrl'] }}" target="_blank" rel="noopener noreferrer">
+                                Get directions
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" class="h-4 w-4" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                </svg>
+                            </x-ui.button>
+                        @endif
+                        <x-ui.button tag="a" size="sm" variant="secondary" href="{{ route('contact') }}">Contact us</x-ui.button>
+                    </div>
+                </div>
+
+                <x-site.location-map
+                    class="h-64 border-t border-line sm:h-72 lg:col-span-3 lg:h-auto lg:min-h-80 lg:border-l lg:border-t-0"
+                    :src="$footerMap['embedUrl']"
+                    :view-url="$footerMap['viewUrl']"
+                    :label="$siteBranding['name']"
+                    title="{{ $siteBranding['name'] }} office location"
+                />
+            </div>
+        @endif
+
         <div class="mt-10">
             <x-site.newsletter-form
                 variant="banner"

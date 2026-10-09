@@ -10,6 +10,7 @@ use App\Models\Setting;
 use App\Modules\CreditBureau\Contracts\CreditBureauProvider;
 use App\Modules\CreditScore\Contracts\CreditScoreProvider;
 use App\Support\Analytics\TrackingScripts;
+use App\Support\Contact\OfficeMap;
 use App\Support\Seo\Sitemap;
 use App\Support\Theme\SiteThemeStyles;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -110,6 +111,13 @@ class AppServiceProvider extends ServiceProvider
                 'name' => Setting::get('footer_legal_name', 'FynnEdge Advisory (OPC) Pvt Ltd'),
                 'disclaimer' => Setting::get('footer_disclaimer', 'Loan approval is subject to lender policies, documentation and underwriting. Eligibility results shown on this site are indicative, not a guarantee of approval.'),
             ]),
+        );
+
+        // The office map card, switched on/off under Settings → Contact channels.
+        // Left off /contact, which already shows the same map at full width.
+        View::composer(
+            'components.site.footer',
+            fn ($view) => $view->with('footerMap', request()->routeIs('contact') ? null : OfficeMap::forFooter()),
         );
 
         // The footer's hardcoded Company/Legal links point at `pages` rows that

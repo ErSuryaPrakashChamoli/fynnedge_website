@@ -37,41 +37,13 @@
         </form>
 
         @if ($contactMapUrl)
-            <div data-reveal="zoom" class="relative mt-12 overflow-hidden rounded-2xl border border-line">
-                <iframe
-                    src="{{ $contactMapUrl }}"
-                    class="h-80 w-full sm:h-96"
-                    style="border: 0"
-                    allowfullscreen
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"
-                    title="Our location"
-                ></iframe>
-
-                {{-- The map link centers on our office coordinates, so the red pin always
-                     lands at the iframe's exact center — this label floats just above it. --}}
-                <div
-                    class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2"
-                    style="transform: translate(-50%, calc(-100% - 34px))"
-                >
-                    <span class="whitespace-nowrap rounded-full border border-line bg-surface px-3 py-1 text-xs font-semibold text-ink shadow-md">
-                        FynnEdge Advisory
-                    </span>
-                </div>
-
-                @if ($contactMapViewUrl)
-                    {{-- Clicking the pin itself tries to load Google Place details, which fails
-                         with "Place info couldn't load" since there's no listing at this address.
-                         This sits on top of just the pin's icon and opens real Google Maps instead. --}}
-                    <a
-                        href="{{ $contactMapViewUrl }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="absolute left-1/2 top-1/2 h-11 w-9 -translate-x-1/2 -translate-y-full cursor-pointer"
-                        aria-label="Open FynnEdge Advisory location in Google Maps"
-                    ></a>
-                @endif
-            </div>
+            <x-site.location-map
+                data-reveal="zoom"
+                class="mt-12 h-80 rounded-2xl border border-line sm:h-96"
+                :src="$contactMapUrl"
+                :view-url="$contactMapViewUrl"
+                label="FynnEdge Advisory"
+            />
         @endif
     </section>
 </x-layouts.app>
