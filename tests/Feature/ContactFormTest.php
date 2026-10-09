@@ -11,6 +11,16 @@ it('shows the admin-configured map embed on the contact page', function () {
         ->assertSee('https://www.google.com/maps/embed?pb=abc123', false);
 });
 
+it('positions the map pin label with one transform so it stays centred over the pin', function () {
+    Setting::set('contact_map_url', 'https://www.google.com/maps/embed?pb=abc123');
+
+    $html = $this->get('/contact')->getContent();
+
+    preg_match('/class="([^"]*)"\s+style="transform: translate\(-50%, [^"]*\)"/', $html, $labelOverlay);
+
+    expect($labelOverlay[1] ?? null)->toBeString()->not->toContain('translate-');
+});
+
 it('omits the map embed when no map url is configured', function () {
     Setting::set('contact_map_url', '');
 

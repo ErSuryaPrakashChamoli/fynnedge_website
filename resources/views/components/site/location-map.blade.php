@@ -22,10 +22,13 @@
     ></iframe>
 
     {{-- The map link centers on our office coordinates, so the red pin always
-         lands at the iframe's exact center — this label floats just above it. --}}
+         lands at the iframe's exact center — this label floats just above it.
+         Positioned by the inline transform alone: Tailwind v4's -translate-x-*
+         sets the separate `translate` property, which stacks with `transform`
+         and pushed the label a full width left of the pin. --}}
     <div
-        class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2"
-        style="transform: translate(-50%, calc(-100% - 34px))"
+        class="pointer-events-none absolute left-1/2 top-1/2"
+        style="transform: translate(-50%, calc(-100% - 44px))"
     >
         <span class="whitespace-nowrap rounded-full border border-line bg-surface px-3 py-1 text-xs font-semibold text-ink shadow-md">
             {{ $label }}
