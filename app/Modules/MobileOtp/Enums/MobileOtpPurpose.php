@@ -20,12 +20,16 @@ enum MobileOtpPurpose: string implements HasLabel
     /** The public free credit-score check. */
     case CreditScoreCheck = 'credit_score_check';
 
+    /** The contact page form, only when the visitor fills in the optional phone number. */
+    case ContactEnquiry = 'contact_enquiry';
+
     public function getLabel(): string
     {
         return match ($this) {
             self::LoanEnquiry => 'Loan enquiry',
             self::LoanApplication => 'Loan application',
             self::CreditScoreCheck => 'Credit score check',
+            self::ContactEnquiry => 'Contact form',
         };
     }
 }

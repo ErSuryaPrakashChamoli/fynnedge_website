@@ -66,7 +66,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Filament/Schemas/HtmlBodyEditor.php,app/Filament/Resources/**/Schemas/*Form.php | .ai/rules/resources-schemas.md |
 | resources/views/components/layouts/app.blade.php | .ai/rules/resources-views-components-layouts.md |
 | resources/views/components/⚡credit-score-check.blade.php | .ai/rules/resources-views-components.md |
-| resources/views/quick-enquiry.blade.php, resources/views/**, resources/views/home.blade.php | .ai/rules/resources-views.md |
+| resources/views/quick-enquiry.blade.php, resources/views/**, resources/views/home.blade.php, resources/views/contact.blade.php | .ai/rules/resources-views.md |
 | app/Filament/Resources/** | .ai/rules/resources.md |
 | routes/api.php | .ai/rules/routes.md |
 | app/Support/Enquiries/EnquiryFormContent.php,app/Filament/Resources/MarketingSections/Schemas/MarketingSectionForm.php,resources/views/components/site/quick-enquiry.blade.php | .ai/rules/schemas-views-components-site.md |

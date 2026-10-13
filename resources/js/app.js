@@ -354,7 +354,195 @@ function otpResendTimer() {
     };
 }
 
+/**
+ * Mirrors MobileNumber::normalize() on the server: digits only, a pasted
+ * +91 / 91 / 0 prefix removed, capped at ten digits. The server normalises and
+ * validates again; this only keeps what the visitor sees in step with it.
+ */
+function normalizeIndianMobile(value) {
+    let digits = String(value ?? '').replace(/\D+/g, '');
+
+    if (digits.length === 12 && digits.startsWith('91')) {
+        digits = digits.slice(2);
+    } else if (digits.length === 11 && digits.startsWith('0')) {
+        digits = digits.slice(1);
+    }
+
+    return digits.slice(0, 10);
+}
+
+/**
+ * POSTs JSON and always resolves with the parsed body (or {}), so callers branch
+ * on `data.success` / `data.message` instead of juggling status codes.
+ *
+ * @returns {Promise<{response: Response, data: object}>}
+ */
+async function postJson(url, body) {
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+        },
+        body: JSON.stringify(body),
+    });
+
+    return { response, data: await response.json().catch(() => ({})) };
+}
+
 document.addEventListener('alpine:init', () => {
+    /**
+     * The contact page's optional phone. Blank is fine; a filled-in number must be
+     * verified through the public OTP API (purpose contact_enquiry) before the form
+     * submits, and only then is the challenge id posted with it. Changing the number
+     * drops the code and the verification. ContactController::store() checks and
+     * spends the verification again, so nothing here is the real gate.
+     */
+    window.Alpine.data('contactPhoneOtp', (config) => ({
+        ...otpResendTimer(),
+
+        phone: normalizeIndianMobile(config.phone),
+        otpLength: config.otpLength ?? 6,
+        otpCode: '',
+        challengeId: null,
+        sentTo: null,
+        sent: false,
+        verified: false,
+        loading: false,
+        error: null,
+
+        get maskedPhone() {
+            return this.sentTo ? `******${this.sentTo.slice(-4)}` : '';
+        },
+
+        onPhoneInput(event) {
+            this.phone = normalizeIndianMobile(event.target.value);
+            event.target.value = this.phone;
+            this.error = null;
+
+            if ((this.sent || this.verified) && this.phone !== this.sentTo) {
+                this.resetVerification();
+            }
+        },
+
+        onOtpInput(event) {
+            this.otpCode = event.target.value.replace(/\D+/g, '').slice(0, this.otpLength);
+            event.target.value = this.otpCode;
+            this.error = null;
+        },
+
+        resetVerification() {
+            this.sent = false;
+            this.verified = false;
+            this.challengeId = null;
+            this.sentTo = null;
+            this.otpCode = '';
+            this.startResendCountdown(0);
+        },
+
+        async sendCode() {
+            if (this.loading || this.resendIn > 0) {
+                return;
+            }
+
+            if (!/^[6-9]\d{9}$/.test(this.phone)) {
+                this.error = 'Please enter a valid 10-digit mobile number, or leave the phone blank.';
+
+                return;
+            }
+
+            this.loading = true;
+            this.error = null;
+
+            try {
+                const { data } = await postJson(config.sendUrl, {
+                    mobile_number: this.phone,
+                    country_code: 'IN',
+                    purpose: 'contact_enquiry',
+                });
+
+                if (!data.success) {
+                    this.error = data.message ?? 'We could not send a code. Please try again.';
+
+                    if (data.data?.retry_after_seconds) {
+                        this.startResendCountdown(data.data.retry_after_seconds);
+                    }
+
+                    return;
+                }
+
+                this.challengeId = data.data.challenge_id;
+                this.sentTo = this.phone;
+                this.sent = true;
+                this.otpCode = '';
+                this.startResendCountdown(data.data.resend_after_seconds ?? 0);
+                this.$nextTick(() => document.getElementById('contact-otp')?.focus());
+            } catch {
+                this.error = 'Something went wrong. Please try again.';
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async verifyCode() {
+            if (this.loading) {
+                return;
+            }
+
+            if (this.otpCode.length !== this.otpLength) {
+                this.error = `Please enter the ${this.otpLength}-digit code we sent you.`;
+
+                return;
+            }
+
+            this.loading = true;
+            this.error = null;
+
+            try {
+                const { data } = await postJson(config.verifyUrl, {
+                    challenge_id: this.challengeId,
+                    mobile_number: this.sentTo,
+                    country_code: 'IN',
+                    purpose: 'contact_enquiry',
+                    otp: this.otpCode,
+                });
+
+                if (!data.success) {
+                    this.error = data.message ?? 'That code is incorrect or has expired. You can request a new one.';
+
+                    return;
+                }
+
+                this.verified = true;
+            } catch {
+                this.error = 'Something went wrong. Please try again.';
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        /** Back to editing the number, keeping what was typed. */
+        changeNumber() {
+            this.resetVerification();
+            this.error = null;
+            this.$nextTick(() => document.getElementById('phone')?.focus());
+        },
+
+        /** Blank or verified phones submit; anything else stays on the page with a reason. */
+        guardSubmit(event) {
+            if (this.phone === '' || this.verified) {
+                return;
+            }
+
+            event.preventDefault();
+            this.error = this.sent
+                ? 'Enter the code we texted you to confirm this number, or clear the phone field.'
+                : 'Tap "Send code" to confirm this number, or clear the phone field.';
+            document.getElementById('phone')?.focus();
+        },
+    }));
+
     // Standalone form of the timer for Livewire views (the credit-score check),
     // where the cooldown arrives as a rendered value instead of a fetch response.
     window.Alpine.data('otpResendCountdown', (seconds = 0) => ({
@@ -576,7 +764,7 @@ document.addEventListener('alpine:init', () => {
          * rejected on submit.
          */
         onInput(event) {
-            this.phone = event.target.value.replace(/\D+/g, '').slice(0, 10);
+            this.phone = normalizeIndianMobile(event.target.value);
             event.target.value = this.phone;
             this.error = null;
 

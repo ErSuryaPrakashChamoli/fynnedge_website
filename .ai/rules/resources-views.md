@@ -3,6 +3,7 @@ paths:
   - resources/views/quick-enquiry.blade.php
   - 'resources/views/**'
   - resources/views/home.blade.php
+  - resources/views/contact.blade.php
 ---
 
 # Resources Views
@@ -24,3 +25,6 @@ Every public page's outer section uses `mx-auto max-w-7xl px-6 lg:px-8`, the sam
 
 ## Never mix Tailwind translate-* classes with an inline transform on one element
 Tailwind v4 compiles -translate-x-1/2 / -translate-y-full etc. to the separate CSS `translate` property, not `transform`. An element that also has `style="transform: translate(...)"` gets BOTH applied, so the shifts add up. This put the map pin label in x-site.location-map a full label-width left of the pin (2026-10-09). Position an element with either the utilities or the inline transform, never both. Pinned by ContactFormTest "positions the map pin label with one transform". Headless Chromium/Firefox --screenshot never paint the lazy cross-origin Google Maps iframe (it shows as a blank/grey box), so a blank map in those screenshots is not a bug. Check maps with a CDP-driven Chromium that scrolls the iframe into view and waits a few seconds.
+
+## Contact form phone is optional but OTP-verified when filled
+A blank phone submits with no code. A filled phone must be an Indian mobile (MobileNumber::PATTERN, normalised first) verified via the public API with purpose contact_enquiry; the page (Alpine contactPhoneOtp in app.js) posts only a verified otp_challenge_id. ContactController::store() re-checks findForVerification(id, phone, ContactEnquiry) + isVerified() and consumeFor() inside the same transaction that creates the ContactEnquiry with phone_verified_at — never trust a browser flag. With JavaScript off a filled phone cannot be verified, so the error tells the visitor to leave it blank. Use x-on:click (not @click) on x-ui.button in this view. Pinned by ContactFormTest.

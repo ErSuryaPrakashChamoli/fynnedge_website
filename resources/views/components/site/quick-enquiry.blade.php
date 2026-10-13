@@ -119,7 +119,7 @@
                         name="phone"
                         inputmode="numeric"
                         autocomplete="tel-national"
-                        maxlength="10"
+                        maxlength="16"
                         placeholder="10-digit mobile number"
                         required
                         value="{{ old('phone') }}"

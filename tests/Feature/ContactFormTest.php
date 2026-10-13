@@ -2,6 +2,9 @@
 
 use App\Models\ContactEnquiry;
 use App\Models\Setting;
+use App\Modules\MobileOtp\Enums\MobileOtpPurpose;
+use App\Modules\MobileOtp\Models\MobileOtpChallenge;
+use Illuminate\Support\Js;
 
 it('shows the admin-configured map embed on the contact page', function () {
     Setting::set('contact_map_url', 'https://www.google.com/maps/embed?pb=abc123');
@@ -46,10 +49,13 @@ it('omits the map embed when no map url is configured', function () {
 });
 
 it('stores a valid enquiry and redirects back with a status message', function () {
+    $challenge = MobileOtpChallenge::factory()->verified()->forPurpose(MobileOtpPurpose::ContactEnquiry)->create(['mobile_number' => '9876543210']);
+
     $response = $this->from('/contact')->post('/contact', [
         'name' => 'Jordan',
         'email' => 'jordan@example.com',
         'phone' => '9876543210',
+        'otp_challenge_id' => $challenge->public_id,
         'message' => 'I would like to know more about home loans.',
     ]);
 
@@ -69,4 +75,121 @@ it('rejects an enquiry missing required fields', function () {
 
     $response->assertSessionHasErrors(['name', 'email', 'message']);
     expect(ContactEnquiry::query()->count())->toBe(0);
+});
+
+it('takes an enquiry without a phone and without any code', function () {
+    $this->from('/contact')->post('/contact', [
+        'name' => 'Jordan',
+        'email' => 'jordan@example.com',
+        'phone' => '',
+        'message' => 'Please email me about home loans.',
+    ])->assertRedirect('/contact')->assertSessionHasNoErrors();
+
+    expect(ContactEnquiry::query()->sole())
+        ->phone->toBeNull()
+        ->phone_verified_at->toBeNull();
+});
+
+it('refuses a phone number that was not verified', function (?Closure $makeChallenge) {
+    $challenge = $makeChallenge?->call($this);
+
+    $this->from('/contact')->post('/contact', [
+        'name' => 'Jordan',
+        'email' => 'jordan@example.com',
+        'phone' => '9876543210',
+        'otp_challenge_id' => $challenge?->public_id,
+        'message' => 'Call me back.',
+    ])->assertSessionHasErrors(['phone' => 'Please verify this number with the code we text you, or leave the phone blank.']);
+
+    expect(ContactEnquiry::query()->count())->toBe(0);
+})->with([
+    'no challenge at all' => [null],
+    'code sent but never entered' => [fn () => MobileOtpChallenge::factory()->forPurpose(MobileOtpPurpose::ContactEnquiry)->create(['mobile_number' => '9876543210'])],
+    'verified for another number' => [fn () => MobileOtpChallenge::factory()->verified()->forPurpose(MobileOtpPurpose::ContactEnquiry)->create(['mobile_number' => '9123456780'])],
+    'verified for another form' => [fn () => MobileOtpChallenge::factory()->verified()->forPurpose(MobileOtpPurpose::LoanEnquiry)->create(['mobile_number' => '9876543210'])],
+]);
+
+it('stores the verified number normalised and marked as verified', function () {
+    $challenge = MobileOtpChallenge::factory()->verified()->forPurpose(MobileOtpPurpose::ContactEnquiry)->create(['mobile_number' => '9876543210']);
+
+    $this->from('/contact')->post('/contact', [
+        'name' => 'Jordan',
+        'email' => 'jordan@example.com',
+        'phone' => '+91 98765-43210',
+        'otp_challenge_id' => $challenge->public_id,
+        'message' => 'Call me back.',
+    ])->assertSessionHasNoErrors();
+
+    expect(ContactEnquiry::query()->sole())
+        ->phone->toBe('9876543210')
+        ->phone_verified_at->not->toBeNull();
+    expect($challenge->fresh()->consumed_at)->not->toBeNull();
+});
+
+it('spends one verification on one enquiry only', function () {
+    $challenge = MobileOtpChallenge::factory()->verified()->forPurpose(MobileOtpPurpose::ContactEnquiry)->create(['mobile_number' => '9876543210']);
+    $payload = [
+        'name' => 'Jordan',
+        'email' => 'jordan@example.com',
+        'phone' => '9876543210',
+        'otp_challenge_id' => $challenge->public_id,
+        'message' => 'Call me back.',
+    ];
+    $this->from('/contact')->post('/contact', $payload)->assertSessionHasNoErrors();
+
+    $this->from('/contact')->post('/contact', $payload)->assertSessionHasErrors('phone');
+
+    expect(ContactEnquiry::query()->count())->toBe(1);
+});
+
+it('rejects a phone that is not an indian mobile number', function () {
+    $this->from('/contact')->post('/contact', [
+        'name' => 'Jordan',
+        'email' => 'jordan@example.com',
+        'phone' => '0120-123456',
+        'message' => 'Call me back.',
+    ])->assertSessionHasErrors(['phone' => 'Please enter a valid 10-digit mobile number, or leave the phone blank.']);
+});
+
+it('ignores a verified flag posted by the browser', function () {
+    $this->from('/contact')->post('/contact', [
+        'name' => 'Jordan',
+        'email' => 'jordan@example.com',
+        'phone' => '9876543210',
+        'phone_verified' => true,
+        'phone_verified_at' => now()->toDateTimeString(),
+        'message' => 'Call me back.',
+    ])->assertSessionHasErrors('phone');
+
+    expect(ContactEnquiry::query()->count())->toBe(0);
+});
+
+it('verifies a contact phone end to end through the public api', function () {
+    fakeAreachSms();
+    $challengeId = $this->postJson('/api/v1/mobile-otp/send', ['mobile_number' => '9876543210', 'purpose' => 'contact_enquiry'])
+        ->assertCreated()
+        ->json('data.challenge_id');
+    $this->postJson('/api/v1/mobile-otp/verify', [
+        'challenge_id' => $challengeId,
+        'mobile_number' => '9876543210',
+        'purpose' => 'contact_enquiry',
+        'otp' => lastTextedOtp(),
+    ])->assertOk();
+
+    $this->from('/contact')->post('/contact', [
+        'name' => 'Jordan',
+        'email' => 'jordan@example.com',
+        'phone' => '9876543210',
+        'otp_challenge_id' => $challengeId,
+        'message' => 'Call me back.',
+    ])->assertSessionHasNoErrors();
+
+    expect(ContactEnquiry::query()->sole()->phone_verified_at)->not->toBeNull();
+});
+
+it('renders the phone verification on the contact page', function () {
+    $this->get('/contact')
+        ->assertSee('contactPhoneOtp', false)
+        ->assertSee(Js::from(route('api.v1.mobile-otp.send'))->toHtml(), false)
+        ->assertSee('name="otp_challenge_id"', false);
 });

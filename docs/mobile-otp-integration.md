@@ -32,9 +32,10 @@ Everything lives in `app/Modules/MobileOtp/`. Every OTP on the site goes through
 | Homepage Quick Enquiry box | `loan_enquiry` | `POST /quick-enquiry/otp`, `POST /quick-enquiry` | Lead in `contact_enquiries` with `phone_verified_at` |
 | Loan application journey | `loan_application` | `POST /journey/{session}/phone/send-otp`, `.../verify-otp` | `journey_sessions.phone_verified_at`; `JourneyController::update()` refuses any other number |
 | Free credit-score check (Livewire) | `credit_score_check` | Livewire actions | `CreditScoreCheck` row |
+| Contact page, only when a phone is filled in | `contact_enquiry` | The public API from the page, then `POST /contact` with `otp_challenge_id` | `contact_enquiries` row with `phone_verified_at`; a blank phone needs no code |
 | Public API | any purpose | `POST /api/v1/mobile-otp/send`, `/verify` | Redeemable once on `POST /quick-enquiry` (see §15) |
 
-Not OTP-protected (unchanged and deliberate): the loan-page enquiry form, the `/quick-enquiry` page form and the contact form.
+Not OTP-protected (unchanged and deliberate): the loan-page enquiry form and the `/quick-enquiry` page form.
 
 ---
 
@@ -98,7 +99,7 @@ Migration `2026_10_13_071135_add_sms_delivery_and_lifecycle_to_mobile_otp_challe
 
 | Column | Meaning |
 | --- | --- |
-| `purpose` | `loan_enquiry` / `loan_application` / `credit_score_check`. NULL on rows created before this migration. |
+| `purpose` | `loan_enquiry` / `loan_application` / `credit_score_check` / `contact_enquiry`. NULL on rows created before this migration. |
 | `status` | Challenge lifecycle (§12). Default `pending`. |
 | `max_attempts` | Attempt cap captured at issue time. |
 | `consumed_at` | When a protected action redeemed the verified challenge. |
@@ -118,7 +119,7 @@ Public and stateless (`api` middleware group): no session, no CSRF, no authentic
 | --- | --- |
 | `mobile_number` | required. Normalised first (`+91 98765-43210` → `9876543210`), then must be 10 digits starting 6–9. |
 | `country_code` | optional, default `IN`; only `IN` is supported. |
-| `purpose` | required; `loan_enquiry` \| `loan_application` \| `credit_score_check`. |
+| `purpose` | required; `loan_enquiry` \| `loan_application` \| `credit_score_check` \| `contact_enquiry`. |
 
 ```bash
 curl --location "$APP_URL/api/v1/mobile-otp/send" \
@@ -297,6 +298,7 @@ The API uses Laravel's default CORS (`api/*`, any origin). The rate limits are t
 | Quick Enquiry box | Alpine `quickEnquiryForm` + no-JS fallback | `resources/views/components/site/quick-enquiry.blade.php`, `resources/js/app.js` |
 | Journey phone step | Alpine `journeyStep` | `resources/views/components/journey/field.blade.php` |
 | Credit score check | Livewire `⚡credit-score-check` | `resources/views/components/⚡credit-score-check.blade.php` |
+| Contact page phone | Alpine `contactPhoneOtp`, calling the public API | `resources/views/contact.blade.php`, `resources/js/app.js` |
 
 What the forms share:
 
