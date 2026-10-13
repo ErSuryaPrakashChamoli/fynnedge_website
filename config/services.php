@@ -46,6 +46,16 @@ return [
         'terms_version' => env('CREDIT_BUREAU_TERMS_VERSION', 'v1'),
     ],
 
+    'areach' => [
+        // SMS gateway for mobile OTPs (App\Modules\MobileOtp\Providers\AreachSmsProvider).
+        // The key is a server-side secret: set it in the server's environment only —
+        // never in .env.example, Git, Blade, JavaScript or a log line.
+        'base_url' => env('AREACH_BASE_URL', 'https://api.areach.in/v1'),
+        'key' => env('AREACH_API_KEY'),
+        'sender' => env('AREACH_SENDER', 'FYNNED'),
+        'timeout' => (int) env('AREACH_SMS_TIMEOUT', 10),
+    ],
+
     'credit_score' => [
         // Backs the public "check your free credit score" page. Demo-by-default —
         // unlike credit_bureau above — because that page's whole purpose today is

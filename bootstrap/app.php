@@ -13,11 +13,14 @@ use Symfony\Component\HttpFoundation\Response;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->appendToGroup('web', SecurityHeaders::class);
+        // The public JSON API gets the same nosniff/framing/CSP headers as every page.
+        $middleware->appendToGroup('api', SecurityHeaders::class);
 
         // GLOBAL, not on the `web` group: group middleware only runs once a route has
         // matched, and the main thing a redirect has to cover is a URL that no longer

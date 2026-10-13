@@ -1,36 +1,52 @@
 <?php
 
-use App\Modules\CreditScore\Actions\RequestMobileOtp;
 use App\Modules\CreditScore\Actions\SubmitCreditScoreCheck;
-use App\Modules\CreditScore\Actions\VerifyMobileOtp;
 use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
-use App\Modules\CreditScore\Models\MobileOtpChallenge;
+use App\Modules\MobileOtp\Actions\RequestMobileOtp;
+use App\Modules\MobileOtp\Actions\VerifyMobileOtp;
+use App\Modules\MobileOtp\Enums\MobileOtpPurpose;
+use App\Modules\MobileOtp\Enums\MobileOtpStatus;
+use App\Modules\MobileOtp\Enums\MobileOtpVerificationResult;
+use App\Modules\MobileOtp\Exceptions\MobileOtpThrottled;
+use App\Modules\MobileOtp\Models\MobileOtpChallenge;
+use App\Modules\MobileOtp\Services\MobileNumber;
 use Illuminate\Support\Facades\Validator;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 new class extends Component
 {
     public string $bureau;
 
-    /** @var 'mobile'|'otp'|'details'|'result' */
+    /**
+     * Locked: every public property is otherwise writable from the browser, and
+     * an unlocked step let a visitor jump straight to 'details' without a code.
+     *
+     * @var 'mobile'|'otp'|'details'|'result'
+     */
+    #[Locked]
     public string $step = 'mobile';
 
     public string $mobileNumber = '';
 
     public string $otpCode = '';
 
-    public ?int $otpChallengeId = null;
+    /** The challenge's public_id — the internal row id never reaches the browser. */
+    #[Locked]
+    public ?string $otpChallengeId = null;
 
     /**
-     * Held only in the component's own memory for the current session — never
-     * persisted in plaintext (MobileOtpChallenge stores a hash). Shown directly
-     * on screen because there's no SMS gateway configured yet; this is clearly
-     * labelled "demo mode" in the view rather than silently pretending an SMS
-     * went out.
+     * The number the code was verified for. mobileNumber stays wire:model-bound,
+     * so the check is run against this locked copy, never against whatever the
+     * input holds by the time the details are submitted.
      */
-    public ?string $demoOtpCode = null;
+    #[Locked]
+    public ?string $verifiedMobileNumber = null;
+
+    #[Locked]
+    public int $resendAfterSeconds = 0;
 
     public string $fullName = '';
 
@@ -71,16 +87,43 @@ new class extends Component
         };
     }
 
+    #[Computed]
+    public function otpLength(): int
+    {
+        return MobileOtpChallenge::codeLength();
+    }
+
+    #[Computed]
+    public function maskedMobileNumber(): string
+    {
+        return MobileNumber::mask($this->mobileNumber);
+    }
+
     public function sendOtp(RequestMobileOtp $action): void
     {
+        $this->mobileNumber = MobileNumber::normalize($this->mobileNumber);
+
         $this->validate([
-            'mobileNumber' => ['required', 'regex:/^[6-9]\d{9}$/'],
+            'mobileNumber' => ['required', 'regex:'.MobileNumber::PATTERN],
         ], [], ['mobileNumber' => 'mobile number']);
 
-        ['challenge' => $challenge, 'code' => $code] = $action->handle($this->mobileNumber, request()->ip());
+        try {
+            $challenge = $action->handle($this->mobileNumber, MobileOtpPurpose::CreditScoreCheck, request()->ip());
+        } catch (MobileOtpThrottled $exception) {
+            $this->addError($this->step === 'otp' ? 'otpCode' : 'mobileNumber', $exception->getMessage());
 
-        $this->otpChallengeId = $challenge->id;
-        $this->demoOtpCode = $code;
+            return;
+        }
+
+        if ($challenge->status === MobileOtpStatus::Failed) {
+            $this->addError($this->step === 'otp' ? 'otpCode' : 'mobileNumber', 'We could not send a verification code right now. Please try again shortly.');
+
+            return;
+        }
+
+        $this->otpChallengeId = $challenge->public_id;
+        $this->verifiedMobileNumber = null;
+        $this->resendAfterSeconds = $challenge->resendAvailableInSeconds();
         $this->otpCode = '';
         $this->step = 'otp';
     }
@@ -93,17 +136,23 @@ new class extends Component
     public function verifyOtp(VerifyMobileOtp $action): void
     {
         $this->validate([
-            'otpCode' => ['required', 'digits:6'],
+            'otpCode' => ['required', 'digits:'.$this->otpLength],
         ]);
 
-        $challenge = $this->otpChallengeId ? MobileOtpChallenge::find($this->otpChallengeId) : null;
+        // Matched on the number too: editing the input after the code was sent
+        // can never verify a different number than the one that received it.
+        $challenge = MobileOtpChallenge::findForVerification($this->otpChallengeId, $this->mobileNumber, MobileOtpPurpose::CreditScoreCheck);
+        $result = $challenge ? $action->handle($challenge, $this->otpCode) : MobileOtpVerificationResult::NotFound;
 
-        if (! $challenge || ! $action->handle($challenge, $this->otpCode)) {
-            $this->addError('otpCode', 'That code is incorrect or has expired. You can resend a new one.');
+        if (! $result->isVerified()) {
+            $this->addError('otpCode', $result === MobileOtpVerificationResult::AttemptsExhausted
+                ? $result->message()
+                : 'That code is incorrect or has expired. You can resend a new one.');
 
             return;
         }
 
+        $this->verifiedMobileNumber = $challenge->mobile_number;
         $this->step = 'details';
     }
 
@@ -114,6 +163,12 @@ new class extends Component
 
     public function submitDetails(SubmitCreditScoreCheck $action): void
     {
+        if ($this->step !== 'details' || $this->verifiedMobileNumber === null) {
+            $this->restart();
+
+            return;
+        }
+
         $validated = $this->validate([
             'fullName' => ['required', 'string', 'max:120'],
             'dateOfBirth' => ['required', 'date', 'before:-18 years'],
@@ -125,6 +180,17 @@ new class extends Component
             'consent.accepted' => 'Please provide consent to continue.',
         ]);
 
+        // The verification is spent on exactly one check — re-submitting, or a
+        // second tab replaying the same component state, has nothing left to spend.
+        $challenge = MobileOtpChallenge::findForVerification($this->otpChallengeId, $this->verifiedMobileNumber, MobileOtpPurpose::CreditScoreCheck);
+
+        if (! $challenge?->consumeFor($this->verifiedMobileNumber, MobileOtpPurpose::CreditScoreCheck)) {
+            $this->restart();
+            $this->addError('mobileNumber', 'Your verification has expired. Please verify your mobile number again.');
+
+            return;
+        }
+
         $check = $action->handle(
             [
                 'full_name' => $validated['fullName'],
@@ -132,7 +198,7 @@ new class extends Component
                 'pan_number' => $validated['panNumber'],
             ],
             BureauName::from($this->bureau),
-            $this->mobileNumber,
+            $this->verifiedMobileNumber,
             request()->ip(),
         );
 
@@ -143,7 +209,7 @@ new class extends Component
     public function restart(): void
     {
         $this->reset([
-            'step', 'mobileNumber', 'otpCode', 'otpChallengeId', 'demoOtpCode',
+            'step', 'mobileNumber', 'otpCode', 'otpChallengeId', 'verifiedMobileNumber', 'resendAfterSeconds',
             'fullName', 'dateOfBirth', 'panNumber', 'consent', 'resultScore',
         ]);
     }
@@ -197,24 +263,32 @@ new class extends Component
             @elseif ($step === 'otp')
                 <p class="font-display text-xl font-semibold text-ink">Verify your number</p>
                 <div class="mt-4 flex flex-col gap-4">
-                    <x-ui.alert tone="accent" title="Demo mode">
-                        There's no SMS gateway connected yet, so your one-time code is shown right here instead of being texted to you: <span class="font-mono text-base font-semibold text-ink">{{ $demoOtpCode }}</span>
-                    </x-ui.alert>
+                    <p class="text-sm text-ink-muted">
+                        We've sent a {{ $this->otpLength }}-digit code by SMS to <span class="font-medium text-ink">+91 {{ $this->maskedMobileNumber }}</span>. It may take a moment to arrive.
+                    </p>
                     <div>
-                        <label for="otpCode" class="text-sm font-medium text-ink">Enter the 6-digit code</label>
+                        <label for="otpCode" class="text-sm font-medium text-ink">Enter the {{ $this->otpLength }}-digit code</label>
                         <input
                             id="otpCode"
                             type="text"
                             inputmode="numeric"
-                            maxlength="6"
+                            autocomplete="one-time-code"
+                            maxlength="{{ $this->otpLength }}"
                             wire:model="otpCode"
                             class="mt-1.5 w-full rounded-lg border border-line-strong bg-surface px-3.5 py-2.5 text-sm tracking-[0.3em] text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
                         >
                         @error('otpCode') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
                     </div>
-                    <div class="flex items-center gap-3">
+                    {{-- Keyed on the challenge so a resend re-mounts the countdown from the new code's cooldown. --}}
+                    <div
+                        class="flex items-center gap-3"
+                        wire:key="otp-resend-{{ $otpChallengeId }}"
+                        x-data="otpResendCountdown(@js($resendAfterSeconds))"
+                    >
                         <x-ui.button wire:click="verifyOtp" wire:loading.attr="disabled">Verify &amp; continue</x-ui.button>
-                        <x-ui.button wire:click="resendOtp" wire:loading.attr="disabled" variant="ghost" size="sm">Resend code</x-ui.button>
+                        <x-ui.button wire:click="resendOtp" wire:loading.attr="disabled" ::disabled="resendIn > 0" variant="ghost" size="sm">
+                            <span x-text="resendIn > 0 ? `Resend code in ${resendIn}s` : 'Resend code'">Resend code</span>
+                        </x-ui.button>
                     </div>
                 </div>
             @elseif ($step === 'details')

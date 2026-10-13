@@ -4,25 +4,35 @@ namespace App\Http\Controllers;
 
 use App\Enums\EnquiryType;
 use App\Models\ContactEnquiry;
-use App\Modules\CreditScore\Actions\RequestMobileOtp;
-use App\Modules\CreditScore\Actions\VerifyMobileOtp;
-use App\Modules\CreditScore\Models\MobileOtpChallenge;
 use App\Modules\Enquiries\Actions\RecordEnquiry;
 use App\Modules\Enquiries\Concerns\AnswersEnquirySubmissions;
 use App\Modules\Enquiries\DataTransferObjects\EnquiryDraft;
+use App\Modules\MobileOtp\Actions\RequestMobileOtp;
+use App\Modules\MobileOtp\Actions\VerifyMobileOtp;
+use App\Modules\MobileOtp\Enums\MobileOtpPurpose;
+use App\Modules\MobileOtp\Enums\MobileOtpStatus;
+use App\Modules\MobileOtp\Enums\MobileOtpVerificationResult;
+use App\Modules\MobileOtp\Exceptions\MobileOtpThrottled;
+use App\Modules\MobileOtp\Models\MobileOtpChallenge;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 /**
  * The Quick Enquiry endpoint: one mobile number in, one message out.
  *
  * Two steps, because the number is OTP-verified before a lead is written:
- * requestOtp() issues a challenge for the number, store() will not record
- * anything until that challenge has been verified with the code. A lead
- * created here is therefore always a number someone could actually receive a
- * message on, which is the whole point of the box — the team calls it back.
+ * requestOtp() texts a code for the number (purpose loan_enquiry), store() will
+ * not record anything until that challenge has been verified and redeemed. A
+ * lead created here is therefore always a number someone could actually
+ * receive a message on, which is the whole point of the box — the team calls
+ * it back.
+ *
+ * store() accepts the code itself (the box's own second step), or no code for
+ * a challenge already verified through POST /api/v1/mobile-otp/verify. Either
+ * way the challenge is redeemed once, so one verification is one lead.
  *
  * The response body is two strings and an outcome word. No record id, no
  * public_id, no name, no count, nothing about what the team has or has not
@@ -57,59 +67,70 @@ class QuickEnquiryController extends Controller
     {
         $validated = $this->validatePhone($request);
 
-        ['challenge' => $challenge, 'code' => $code] = $this->issueChallenge($action, $validated['phone'], $request->ip());
+        $challenge = $this->issueChallenge($action, $validated['phone'], $request->ip());
 
         if (! $request->expectsJson()) {
-            return back()->withInput()->with([
-                'quickEnquiryChallenge' => $challenge->public_id,
-                // No SMS gateway is connected yet, so the code is handed straight
-                // back instead of being texted — mirrors the journey's OTP step
-                // and the credit-score check's demo mode.
-                'quickEnquiryDemoOtp' => $code,
-            ]);
+            return back()->withInput()->with('quickEnquiryChallenge', $challenge->public_id);
         }
 
+        // Never the code: it reaches the visitor by SMS only.
         return response()->json([
             'otp_challenge_id' => $challenge->public_id,
-            'demo_otp_code' => $code,
+            'expires_in_seconds' => $challenge->expiresInSeconds(),
+            'resend_after_seconds' => $challenge->resendAvailableInSeconds(),
         ], 201);
     }
 
     /**
      * Step two: verify the code, then record the lead. The challenge is matched
-     * on the submitted number as well as its id, so a verified challenge for one
-     * number can never be used to wave through a different one.
+     * on the submitted number and purpose as well as its id, so a challenge for
+     * one number (or one form) can never be used to wave through another.
      */
     public function store(Request $request, VerifyMobileOtp $verify, RecordEnquiry $record): JsonResponse|RedirectResponse
     {
+        $length = MobileOtpChallenge::codeLength();
+
         $validated = $this->validatePhone($request, [
             'otp_challenge_id' => ['required', 'string', 'max:64'],
-            'otp_code' => ['required', 'digits:6'],
+            'otp_code' => ['nullable', "digits:{$length}"],
             'source' => ['nullable', 'string', 'max:40'],
         ], [
             'otp_challenge_id.required' => 'Please request a verification code first.',
-            'otp_code.required' => 'Please enter the 6-digit code we sent you.',
-            'otp_code.digits' => 'Please enter the 6-digit code we sent you.',
+            'otp_code.digits' => "Please enter the {$length}-digit code we sent you.",
         ]);
 
-        $challenge = MobileOtpChallenge::query()
-            ->where('public_id', $validated['otp_challenge_id'])
-            ->where('mobile_number', $validated['phone'])
-            ->first();
+        $challenge = MobileOtpChallenge::findForVerification($validated['otp_challenge_id'], $validated['phone'], MobileOtpPurpose::LoanEnquiry);
 
-        if (! $challenge || ! $verify->handle($challenge, $validated['otp_code'])) {
-            throw ValidationException::withMessages([
-                'otp_code' => 'That code is incorrect or has expired. You can request a new one.',
-            ]);
+        if (! $challenge) {
+            $this->rejectCode(MobileOtpVerificationResult::NotFound);
         }
 
-        $outcome = $record->handle(new EnquiryDraft(
-            phone: $validated['phone'],
-            type: EnquiryType::QuickEnquiry,
-            enquirySource: self::PLACEMENTS[$validated['source'] ?? 'website'] ?? self::PLACEMENTS['website'],
-            landingPage: $this->resolveLandingPage($request),
-            phoneVerified: true,
-        ));
+        if (filled($validated['otp_code'] ?? null)) {
+            $result = $verify->handle($challenge, $validated['otp_code']);
+
+            if (! $result->isVerified()) {
+                $this->rejectCode($result);
+            }
+        } elseif ($challenge->status !== MobileOtpStatus::Verified) {
+            throw ValidationException::withMessages(['otp_code' => "Please enter the {$length}-digit code we sent you."]);
+        }
+
+        // Redeeming the challenge and writing the lead succeed or fail together,
+        // and the conditional update inside consumeFor() lets exactly one of two
+        // simultaneous submissions through.
+        $outcome = DB::transaction(function () use ($challenge, $validated, $request, $record) {
+            if (! $challenge->consumeFor($validated['phone'], MobileOtpPurpose::LoanEnquiry)) {
+                $this->rejectCode(MobileOtpVerificationResult::AlreadyVerified);
+            }
+
+            return $record->handle(new EnquiryDraft(
+                phone: $validated['phone'],
+                type: EnquiryType::QuickEnquiry,
+                enquirySource: self::PLACEMENTS[$validated['source'] ?? 'website'] ?? self::PLACEMENTS['website'],
+                landingPage: $this->resolveLandingPage($request),
+                phoneVerified: true,
+            ));
+        });
 
         return $this->respondTo($request, $outcome);
     }
@@ -142,21 +163,37 @@ class QuickEnquiryController extends Controller
     }
 
     /**
-     * RequestMobileOtp raises its per-number rate limit against `mobileNumber`,
-     * the field name the credit-score component uses. This form's field is
-     * `phone`, and an error keyed to a field that is not on the page would never
-     * be shown, so the message is re-raised where the visitor can read it.
-     *
-     * @return array{challenge: MobileOtpChallenge, code: string}
+     * Rate limits, the resend cooldown and a send the gateway refused all come
+     * back as an error on `phone` — the field the visitor is looking at — on
+     * both the JSON and the no-JavaScript path.
      */
-    private function issueChallenge(RequestMobileOtp $action, string $phone, ?string $ipAddress): array
+    private function issueChallenge(RequestMobileOtp $action, string $phone, ?string $ipAddress): MobileOtpChallenge
     {
         try {
-            return $action->handle($phone, $ipAddress);
-        } catch (ValidationException $exception) {
+            $challenge = $action->handle($phone, MobileOtpPurpose::LoanEnquiry, $ipAddress);
+        } catch (MobileOtpThrottled $exception) {
+            throw ValidationException::withMessages(['phone' => $exception->getMessage()]);
+        }
+
+        if ($challenge->status === MobileOtpStatus::Failed) {
             throw ValidationException::withMessages([
-                'phone' => $exception->errors()['mobileNumber'] ?? $exception->getMessage(),
+                'phone' => 'We could not send a verification code right now. Please try again shortly.',
             ]);
         }
+
+        return $challenge;
+    }
+
+    /**
+     * A wrong, expired or unknown code all read the same to the visitor, except
+     * a locked-out challenge, which needs a new code rather than another guess.
+     */
+    private function rejectCode(MobileOtpVerificationResult $result): never
+    {
+        throw ValidationException::withMessages([
+            'otp_code' => $result === MobileOtpVerificationResult::AttemptsExhausted
+                ? $result->message()
+                : MobileOtpVerificationResult::Incorrect->message(),
+        ]);
     }
 }

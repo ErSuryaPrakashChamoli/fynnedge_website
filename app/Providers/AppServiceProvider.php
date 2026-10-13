@@ -9,6 +9,7 @@ use App\Models\Page;
 use App\Models\Setting;
 use App\Modules\CreditBureau\Contracts\CreditBureauProvider;
 use App\Modules\CreditScore\Contracts\CreditScoreProvider;
+use App\Modules\MobileOtp\Contracts\SmsProvider;
 use App\Support\Analytics\TrackingScripts;
 use App\Support\Contact\OfficeMap;
 use App\Support\Seo\Sitemap;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use InvalidArgumentException;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,6 +38,20 @@ class AppServiceProvider extends ServiceProvider
             CreditScoreProvider::class,
             fn () => $this->app->make(config('services.credit_score.provider')),
         );
+
+        // Resolved by name from config/mobile_otp.php, so swapping or adding an SMS
+        // gateway never touches a controller, action or form. An unknown name fails
+        // loudly rather than falling back to anything that might not really send.
+        $this->app->bind(SmsProvider::class, function (): SmsProvider {
+            $name = (string) config('mobile_otp.sms_provider');
+            $class = config("mobile_otp.providers.{$name}");
+
+            if (! is_string($class)) {
+                throw new InvalidArgumentException("Unknown mobile OTP SMS provider [{$name}]. Check MOBILE_OTP_SMS_PROVIDER.");
+            }
+
+            return $this->app->make($class);
+        });
     }
 
     /**
@@ -189,6 +205,19 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('enquiry-forms', fn (Request $request) => app()->runningUnitTests()
             ? Limit::none()
             : [Limit::perMinute(5)->by($request->ip()), Limit::perDay(30)->by($request->ip())]);
+
+        // The public OTP API. Sending costs money and lands on a stranger's phone, so
+        // it is capped like the enquiry forms; RequestMobileOtp adds its own per-number
+        // and per-IP hourly caps and the resend cooldown on top. Verifying is cheaper
+        // but is where guessing happens — each challenge also locks after
+        // mobile_otp.max_attempts wrong codes.
+        RateLimiter::for('mobile-otp-send', fn (Request $request) => app()->runningUnitTests()
+            ? Limit::none()
+            : [Limit::perMinute(5)->by('minute:'.$request->ip()), Limit::perDay(30)->by('day:'.$request->ip())]);
+
+        RateLimiter::for('mobile-otp-verify', fn (Request $request) => app()->runningUnitTests()
+            ? Limit::none()
+            : [Limit::perMinute(10)->by('minute:'.$request->ip()), Limit::perHour(60)->by('hour:'.$request->ip())]);
     }
 
     private static function settingFileUrl(string $key): ?string

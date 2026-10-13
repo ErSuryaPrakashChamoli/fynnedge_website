@@ -2,7 +2,10 @@
 
 use App\Enums\LoanCategory;
 use App\Models\LoanProduct;
+use App\Modules\MobileOtp\Models\MobileOtpChallenge;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 /*
@@ -66,4 +69,42 @@ function seedCalculatorProduct(LoanCategory $category, array $overrides = []): L
         ->state(['category' => $category])
         ->withCalculatorLimits()
         ->create($overrides);
+}
+
+/**
+ * Puts the suite on the real Areach provider behind Http::fake(), so a flow
+ * test runs the actual send path end to end. Stray requests are refused, so a
+ * test can never reach the real gateway even if the fake is mistyped.
+ *
+ * @param  mixed  $response  Any Http::fake() stub; defaults to an explicit success.
+ */
+function fakeAreachSms(mixed $response = null): void
+{
+    config([
+        'mobile_otp.sms_provider' => 'areach',
+        'services.areach.base_url' => 'https://api.areach.in/v1',
+        'services.areach.key' => 'test-areach-key',
+        'services.areach.sender' => 'FYNNED',
+        'services.areach.timeout' => 10,
+    ]);
+
+    Http::preventStrayRequests();
+    Http::fake([
+        'api.areach.in/*' => $response ?? Http::response(['status' => 'success', 'message_id' => 'areach-msg-1']),
+    ]);
+}
+
+/**
+ * The code from the most recent faked Areach SMS — the only place a code ever
+ * appears, since no response, session or log line carries it.
+ */
+function lastTextedOtp(): ?string
+{
+    $request = collect(Http::recorded())
+        ->map(fn (array $pair): Request => $pair[0])
+        ->last(fn (Request $request): bool => str_contains($request->url(), 'api.areach.in'));
+
+    $length = MobileOtpChallenge::codeLength();
+
+    return $request && preg_match('/\b(\d{'.$length.'})\b/', (string) $request['text'], $match) ? $match[1] : null;
 }

@@ -1,14 +1,16 @@
 <?php
 
 use App\Models\LoanProduct;
-use App\Modules\CreditScore\Models\MobileOtpChallenge;
 use App\Modules\Journey\Enums\FieldType;
 use App\Modules\Journey\Enums\JourneyDefinitionStatus;
 use App\Modules\Journey\Models\JourneyDefinition;
 use App\Modules\Journey\Models\JourneySession;
 use App\Modules\Journey\Models\JourneyStep;
 use App\Modules\Journey\Models\JourneyStepField;
+use App\Modules\MobileOtp\Enums\MobileOtpPurpose;
+use App\Modules\MobileOtp\Models\MobileOtpChallenge;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 function journeyWithPhoneStep(): LoanProduct
 {
@@ -29,15 +31,18 @@ function journeyWithPhoneStep(): LoanProduct
 }
 
 it('sends an otp for a valid mobile number', function () {
+    fakeAreachSms();
     $product = journeyWithPhoneStep();
     $this->get("/loans/{$product->slug}/apply");
     $session = JourneySession::query()->where('loan_product_id', $product->id)->firstOrFail();
 
     $response = $this->postJson(route('journey.phone.send-otp', $session), ['phone' => '9998887777']);
 
-    $response->assertCreated();
-    $response->assertJsonStructure(['otp_challenge_id', 'demo_otp_code']);
-    expect(MobileOtpChallenge::query()->where('mobile_number', '9998887777')->exists())->toBeTrue();
+    $response->assertCreated()
+        ->assertJsonStructure(['otp_challenge_id', 'expires_in_seconds', 'resend_after_seconds'])
+        ->assertJsonMissingPath('demo_otp_code');
+    expect($response->getContent())->not->toContain(lastTextedOtp());
+    expect(MobileOtpChallenge::query()->where('mobile_number', '9998887777')->sole()->purpose)->toBe(MobileOtpPurpose::LoanApplication);
 });
 
 it('rejects an otp request for a malformed mobile number', function () {
@@ -56,7 +61,7 @@ it('verifies the otp and marks the session phone as verified', function () {
     $this->get("/loans/{$product->slug}/apply");
     $session = JourneySession::query()->where('loan_product_id', $product->id)->firstOrFail();
 
-    $challenge = MobileOtpChallenge::factory()->create([
+    $challenge = MobileOtpChallenge::factory()->forPurpose(MobileOtpPurpose::LoanApplication)->create([
         'mobile_number' => '9998887777',
         'otp_hash' => Hash::make('654321'),
     ]);
@@ -77,7 +82,7 @@ it('rejects an incorrect otp code', function () {
     $this->get("/loans/{$product->slug}/apply");
     $session = JourneySession::query()->where('loan_product_id', $product->id)->firstOrFail();
 
-    $challenge = MobileOtpChallenge::factory()->create([
+    $challenge = MobileOtpChallenge::factory()->forPurpose(MobileOtpPurpose::LoanApplication)->create([
         'mobile_number' => '9998887777',
         'otp_hash' => Hash::make('654321'),
     ]);
@@ -123,4 +128,50 @@ it('lets a verified phone number through to the next step', function () {
     $response = $this->post(route('journey.update', $session), ['phone' => '9998887777', 'city' => 'Pune']);
 
     $response->assertSessionDoesntHaveErrors();
+});
+
+it('will not verify the journey phone with a code issued for another form', function () {
+    $product = journeyWithPhoneStep();
+    $this->get("/loans/{$product->slug}/apply");
+    $session = JourneySession::query()->where('loan_product_id', $product->id)->firstOrFail();
+    $challenge = MobileOtpChallenge::factory()->forPurpose(MobileOtpPurpose::LoanEnquiry)->create([
+        'mobile_number' => '9998887777',
+        'otp_hash' => Hash::make('654321'),
+    ]);
+
+    $this->postJson(route('journey.phone.verify-otp', $session), [
+        'otp_challenge_id' => $challenge->public_id,
+        'otp_code' => '654321',
+    ])->assertUnprocessable();
+
+    expect($session->fresh()->phone_verified_at)->toBeNull();
+});
+
+it('binds one verified code to one journey session only', function () {
+    $product = journeyWithPhoneStep();
+    $this->get("/loans/{$product->slug}/apply");
+    $first = JourneySession::query()->where('loan_product_id', $product->id)->firstOrFail();
+    $second = JourneySession::query()->create($first->only(['loan_product_id', 'journey_definition_id']));
+    $challenge = MobileOtpChallenge::factory()->forPurpose(MobileOtpPurpose::LoanApplication)->create([
+        'mobile_number' => '9998887777',
+        'otp_hash' => Hash::make('654321'),
+    ]);
+    $payload = ['otp_challenge_id' => $challenge->public_id, 'otp_code' => '654321'];
+
+    $this->postJson(route('journey.phone.verify-otp', $first), $payload)->assertOk();
+    $this->postJson(route('journey.phone.verify-otp', $second), $payload)->assertUnprocessable();
+
+    expect($challenge->fresh()->consumed_at)->not->toBeNull()
+        ->and($second->fresh()->phone_verified_at)->toBeNull();
+});
+
+it('reports a refused send to the journey form without a code', function () {
+    fakeAreachSms(Http::response(['status' => 'error'], 401));
+    $product = journeyWithPhoneStep();
+    $this->get("/loans/{$product->slug}/apply");
+    $session = JourneySession::query()->where('loan_product_id', $product->id)->firstOrFail();
+
+    $this->postJson(route('journey.phone.send-otp', $session), ['phone' => '9998887777'])
+        ->assertServiceUnavailable()
+        ->assertExactJson(['message' => 'We could not send a verification code right now. Please try again shortly.']);
 });

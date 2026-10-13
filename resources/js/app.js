@@ -318,31 +318,88 @@ if (document.readyState === 'loading') {
     initScrollReveal();
 }
 
+/**
+ * Resend countdown shared by every OTP form (Quick Enquiry, the journey's phone
+ * step and the credit-score check). Spread into a component, so it is plain
+ * properties and methods only — a getter would be evaluated once by the spread
+ * and never update. Counts down to a deadline rather than decrementing a
+ * number, because browsers slow timers in background tabs.
+ *
+ * Only ever a convenience: the server enforces the cooldown itself and answers
+ * an early resend with an error.
+ */
+function otpResendTimer() {
+    return {
+        resendIn: 0,
+        resendDeadline: 0,
+        resendTimer: null,
+
+        startResendCountdown(seconds) {
+            clearInterval(this.resendTimer);
+            this.resendDeadline = Date.now() + Math.max(0, Number(seconds) || 0) * 1000;
+            this.tickResendCountdown();
+
+            if (this.resendIn > 0) {
+                this.resendTimer = setInterval(() => this.tickResendCountdown(), 1000);
+            }
+        },
+
+        tickResendCountdown() {
+            this.resendIn = Math.max(0, Math.ceil((this.resendDeadline - Date.now()) / 1000));
+
+            if (this.resendIn === 0) {
+                clearInterval(this.resendTimer);
+            }
+        },
+    };
+}
+
 document.addEventListener('alpine:init', () => {
+    // Standalone form of the timer for Livewire views (the credit-score check),
+    // where the cooldown arrives as a rendered value instead of a fetch response.
+    window.Alpine.data('otpResendCountdown', (seconds = 0) => ({
+        ...otpResendTimer(),
+
+        init() {
+            this.startResendCountdown(seconds);
+        },
+
+        destroy() {
+            clearInterval(this.resendTimer);
+        },
+    }));
+
     window.Alpine.data('journeyStep', (initialValues, conditions, phoneVerification = {}) => ({
+        ...otpResendTimer(),
+
         values: initialValues,
 
         phoneRequiresVerification: phoneVerification.required ?? false,
         phoneVerified: phoneVerification.verified ?? false,
         verifiedPhoneNumber: phoneVerification.verifiedNumber ?? null,
         phoneOtpSent: false,
+        phoneOtpNumber: null,
         phoneOtpCode: '',
         phoneOtpChallengeId: null,
-        phoneDemoOtpCode: null,
         phoneOtpError: null,
         phoneOtpLoading: false,
 
         init() {
-            // Editing the number after it's been verified invalidates that verification —
-            // otherwise someone could verify one number, then swap in a different one and
-            // still pass the (now stale) phoneVerified flag.
+            // Editing the number after a code was sent to it, or after it was verified,
+            // drops that code and that verification — otherwise someone could verify one
+            // number, swap in another and still pass the (now stale) phoneVerified flag.
+            // JourneyController::update() refuses a mismatched number regardless.
             this.$watch('values.phone', (value) => {
-                if (this.phoneVerified && value !== this.verifiedPhoneNumber) {
+                const boundNumber = this.phoneVerified ? this.verifiedPhoneNumber : this.phoneOtpNumber;
+
+                if ((this.phoneVerified || this.phoneOtpSent) && value !== boundNumber) {
                     this.phoneVerified = false;
                     this.phoneOtpSent = false;
+                    this.phoneOtpNumber = null;
                     this.phoneOtpCode = '';
                     this.phoneOtpChallengeId = null;
-                    this.phoneDemoOtpCode = null;
+                    this.phoneOtpError = null;
+                    this.startResendCountdown(0);
                 }
             });
         },
@@ -388,6 +445,10 @@ document.addEventListener('alpine:init', () => {
         },
 
         async sendPhoneOtp() {
+            if (this.phoneOtpLoading || this.resendIn > 0) {
+                return;
+            }
+
             this.phoneOtpError = null;
             this.phoneOtpLoading = true;
 
@@ -397,19 +458,30 @@ document.addEventListener('alpine:init', () => {
                 if (!ok) {
                     this.phoneOtpError = data.message ?? data.errors?.phone?.[0] ?? 'Could not send the code. Please check the number and try again.';
 
+                    if (data.retry_after_seconds) {
+                        this.startResendCountdown(data.retry_after_seconds);
+                    }
+
                     return;
                 }
 
                 this.phoneOtpChallengeId = data.otp_challenge_id;
-                this.phoneDemoOtpCode = data.demo_otp_code ?? null;
+                this.phoneOtpNumber = this.values.phone;
                 this.phoneOtpSent = true;
                 this.phoneOtpCode = '';
+                this.startResendCountdown(data.resend_after_seconds ?? 0);
+            } catch {
+                this.phoneOtpError = 'Something went wrong. Please try again.';
             } finally {
                 this.phoneOtpLoading = false;
             }
         },
 
         async verifyPhoneOtp() {
+            if (this.phoneOtpLoading) {
+                return;
+            }
+
             this.phoneOtpError = null;
             this.phoneOtpLoading = true;
 
@@ -426,7 +498,9 @@ document.addEventListener('alpine:init', () => {
                 }
 
                 this.phoneVerified = true;
-                this.verifiedPhoneNumber = this.values.phone;
+                this.verifiedPhoneNumber = this.phoneOtpNumber;
+            } catch {
+                this.phoneOtpError = 'Something went wrong. Please try again.';
             } finally {
                 this.phoneOtpLoading = false;
             }
@@ -468,13 +542,15 @@ document.addEventListener('alpine:init', () => {
      * knows what it is.
      */
     window.Alpine.data('quickEnquiryForm', (config) => ({
+        ...otpResendTimer(),
+
         phone: config.phone ?? '',
         otpCode: '',
+        otpLength: config.otpLength ?? 6,
         // Seeded from the server so a no-JavaScript round trip that already sent
         // a code is picked up mid-flow rather than restarted from the number.
         step: config.step ?? 'phone',
         challengeId: config.challengeId ?? null,
-        demoCode: config.demoCode ?? null,
         error: null,
         otpError: null,
         loading: false,
@@ -510,18 +586,18 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        /** Same digits-only treatment for the six-digit code. */
+        /** Same digits-only treatment for the code. */
         onOtpInput(event) {
-            this.otpCode = event.target.value.replace(/\D+/g, '').slice(0, 6);
+            this.otpCode = event.target.value.replace(/\D+/g, '').slice(0, this.otpLength);
             event.target.value = this.otpCode;
             this.otpError = null;
         },
 
-        /** Step one: ask the server to text (for now, hand back) a code. */
+        /** Step one: ask the server to text a code to the number. */
         async sendOtp() {
             // The button is disabled while a request is in flight; this guards the
             // Enter key, which submits the form regardless of the button's state.
-            if (this.loading) {
+            if (this.loading || this.resendIn > 0) {
                 return;
             }
 
@@ -544,25 +620,32 @@ document.addEventListener('alpine:init', () => {
                 });
 
                 if (response.status === 429) {
-                    this.error = 'Too many attempts. Please try again in a few minutes.';
+                    this[this.step === 'otp' ? 'otpError' : 'error'] = 'Too many attempts. Please try again in a few minutes.';
 
                     return;
                 }
 
                 if (!response.ok) {
-                    this.error = data.errors?.phone?.[0] ?? data.message ?? 'Please enter a valid 10-digit mobile number.';
+                    const message = data.errors?.phone?.[0] ?? data.message ?? 'Please enter a valid 10-digit mobile number.';
+
+                    // On step two the number field is hidden, so a refused resend
+                    // (cooldown, hourly cap, gateway down) is shown under the code.
+                    if (this.step === 'otp') {
+                        this.otpError = message;
+                    } else {
+                        this.error = message;
+                    }
+
                     trackQuickEnquiry('quick_enquiry_validation_failed', { source: config.source });
 
                     return;
                 }
 
                 this.challengeId = data.otp_challenge_id;
-                // Null once an SMS gateway is connected; the panel only shows the
-                // demo-mode notice while the server is still handing the code back.
-                this.demoCode = data.demo_otp_code ?? null;
                 this.otpCode = '';
                 this.otpError = null;
                 this.step = 'otp';
+                this.startResendCountdown(data.resend_after_seconds ?? 0);
                 trackQuickEnquiry('quick_enquiry_otp_sent', { source: config.source });
                 this.$nextTick(() => this.$el.querySelector('input[name="otp_code"]')?.focus());
             } catch {
@@ -581,7 +664,6 @@ document.addEventListener('alpine:init', () => {
         editPhone() {
             this.step = 'phone';
             this.challengeId = null;
-            this.demoCode = null;
             this.otpCode = '';
             this.otpError = null;
             this.error = null;
@@ -593,8 +675,8 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
 
-            if (!/^\d{6}$/.test(this.otpCode)) {
-                this.otpError = 'Please enter the 6-digit code we sent you.';
+            if (this.otpCode.length !== this.otpLength || /\D/.test(this.otpCode)) {
+                this.otpError = `Please enter the ${this.otpLength}-digit code we sent you.`;
 
                 return;
             }

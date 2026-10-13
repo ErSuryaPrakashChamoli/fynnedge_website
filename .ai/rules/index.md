@@ -47,6 +47,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Support/Seo/**,app/Filament/Pages/Settings.php,resources/views/loans/** | .ai/rules/loans.md |
 | app/Http/Middleware/SecurityHeaders.php | .ai/rules/middleware.md |
 | database/migrations/** | .ai/rules/migrations.md |
+| app/Modules/MobileOtp/** | .ai/rules/mobile-otp.md |
 | app/Support/Seo/Sitemap.php,app/Models/PageSeo.php,app/Filament/Schemas/SeoFormSection.php | .ai/rules/models-filament-schemas.md |
 | app/Models/**,app/Filament/** | .ai/rules/models-filament.md |
 | app/Filament/Resources/Articles/**,app/Models/Article.php,resources/views/home.blade.php | .ai/rules/models-views.md |
@@ -64,8 +65,10 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Models/Redirect.php,app/Http/Middleware/HandleRedirects.php,app/Filament/Resources/Redirects/** | .ai/rules/redirects.md |
 | app/Filament/Schemas/HtmlBodyEditor.php,app/Filament/Resources/**/Schemas/*Form.php | .ai/rules/resources-schemas.md |
 | resources/views/components/layouts/app.blade.php | .ai/rules/resources-views-components-layouts.md |
+| resources/views/components/⚡credit-score-check.blade.php | .ai/rules/resources-views-components.md |
 | resources/views/quick-enquiry.blade.php, resources/views/**, resources/views/home.blade.php | .ai/rules/resources-views.md |
 | app/Filament/Resources/** | .ai/rules/resources.md |
+| routes/api.php | .ai/rules/routes.md |
 | app/Support/Enquiries/EnquiryFormContent.php,app/Filament/Resources/MarketingSections/Schemas/MarketingSectionForm.php,resources/views/components/site/quick-enquiry.blade.php | .ai/rules/schemas-views-components-site.md |
 | app/Support/Seo/**,app/Filament/Pages/StructuredData.php,app/Filament/Resources/SchemaTemplates/**,app/Filament/Schemas/SeoFormSection.php | .ai/rules/schemas.md |
 | app/Support/Seo/OrganizationSchema.php,database/seeders/BusinessProfileSeeder.php,app/Filament/Pages/Settings.php | .ai/rules/seeders-filament-pages.md |

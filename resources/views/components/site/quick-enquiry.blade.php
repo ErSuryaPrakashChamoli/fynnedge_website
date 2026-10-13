@@ -7,7 +7,7 @@
 
 @php
     /*
-        Two steps, one box: the number, then the 6-digit code sent to it. Alpine
+        Two steps, one box: the number, then the one-time code texted to it. Alpine
         intercepts both submits and posts JSON to quick-enquiry.otp and
         quick-enquiry.store, swapping the panel in place — a page reload here
         would cost the visitor the few seconds this form exists to save.
@@ -25,6 +25,7 @@
         other section. Behaviour lives in the `quickEnquiryForm` Alpine
         component in resources/js/app.js.
     */
+    use App\Modules\MobileOtp\Models\MobileOtpChallenge;
     use App\Support\Enquiries\EnquiryFormContent;
 
     /*
@@ -52,8 +53,8 @@
         number they already gave us.
     */
     $serverChallengeId = session('quickEnquiryChallenge') ?: old('otp_challenge_id');
-    $serverDemoOtp = session('quickEnquiryDemoOtp');
     $onOtpStep = (bool) $serverChallengeId;
+    $otpLength = MobileOtpChallenge::codeLength();
 @endphp
 
 <div
@@ -66,7 +67,7 @@
         source: @js($source),
         phone: @js(old('phone', '')),
         challengeId: @js($serverChallengeId),
-        demoCode: @js($serverDemoOtp),
+        otpLength: @js($otpLength),
         step: @js($onOtpStep ? 'otp' : 'phone'),
     })"
 >
@@ -75,7 +76,7 @@
 
         <p class="mt-2 text-sm text-ink-muted sm:text-base" style="{{ $onOtpStep ? 'display:none' : '' }}" x-show="step !== 'otp'">{{ $subheading }}</p>
         <p class="mt-2 text-sm text-ink-muted sm:text-base" style="{{ $onOtpStep ? '' : 'display:none' }}" x-show="step === 'otp'">
-            Enter the 6-digit code we sent to <span class="font-medium text-ink">+91 <span x-text="phone">{{ old('phone') }}</span></span>.
+            Enter the {{ $otpLength }}-digit code we sent by SMS to <span class="font-medium text-ink">+91 <span x-text="phone">{{ old('phone') }}</span></span>. It may take a moment to arrive.
         </p>
 
         @if ($serverStatus)
@@ -167,27 +168,17 @@
             <input type="hidden" name="phone" value="{{ old('phone') }}" :value="phone">
             <input type="hidden" name="otp_challenge_id" value="{{ $serverChallengeId }}" :value="challengeId">
 
-            {{-- There is no SMS gateway connected yet, so the code is shown here
-                 rather than pretending a message went out. Same demo-mode wording
-                 as the credit-score check and the journey's OTP step. --}}
-            <div style="{{ $serverDemoOtp ? '' : 'display:none' }}" x-show="demoCode">
-                <x-ui.alert tone="accent" title="Demo mode">
-                    There's no SMS gateway connected yet, so your one-time code is shown right here instead of being texted to you:
-                    <span class="font-mono text-base font-semibold text-ink" x-text="demoCode">{{ $serverDemoOtp }}</span>
-                </x-ui.alert>
-            </div>
-
-            <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-start">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-start">
                 <div class="flex-1">
-                    <label for="{{ $otpFieldId }}" class="sr-only">6-digit verification code</label>
+                    <label for="{{ $otpFieldId }}" class="sr-only">{{ $otpLength }}-digit verification code</label>
                     <input
                         type="text"
                         id="{{ $otpFieldId }}"
                         name="otp_code"
                         inputmode="numeric"
                         autocomplete="one-time-code"
-                        maxlength="6"
-                        placeholder="6-digit code"
+                        maxlength="{{ $otpLength }}"
+                        placeholder="{{ $otpLength }}-digit code"
                         required
                         aria-describedby="{{ $otpFieldId }}-error"
                         @if ($serverOtpError) aria-invalid="true" @endif
@@ -225,14 +216,18 @@
                  the OTP endpoint for a fresh code, and "Change number" is a plain
                  link back to the page, which drops the flashed challenge and
                  renders step one again. Neither strands the visitor on a code
-                 that will not arrive. --}}
+                 that will not arrive. With JavaScript on, resend waits out the
+                 server's cooldown (the server refuses an early one regardless). --}}
             <p class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-faint">
                 <button
                     type="submit"
                     formaction="{{ route('quick-enquiry.otp') }}"
                     class="font-medium text-accent underline-offset-2 hover:underline disabled:opacity-50"
                     @click.prevent="resendOtp"
-                    ::disabled="loading"
+                    {{-- Single colon: this is a plain element, not a Blade component,
+                         so `::` would reach Alpine verbatim and bind nothing. --}}
+                    :disabled="loading || resendIn > 0"
+                    x-text="resendIn > 0 ? `Resend code in ${resendIn}s` : 'Resend code'"
                 >Resend code</button>
                 <a
                     href="{{ url()->current() }}"

@@ -1,4 +1,5 @@
 @use('App\Modules\Journey\Enums\FieldType')
+@use('App\Modules\MobileOtp\Models\MobileOtpChallenge')
 
 @props(['field', 'value' => null])
 
@@ -22,6 +23,7 @@
     $numericMin = $parseIntRule($field->validation_rules, 'min:');
     $numericMax = $parseIntRule($field->validation_rules, 'max:');
     $numericMaxLength = $numericMax !== null ? strlen((string) $numericMax) : null;
+    $otpLength = MobileOtpChallenge::codeLength();
 @endphp
 
 <div
@@ -314,9 +316,9 @@
                             type="button"
                             x-show="! phoneVerified"
                             x-on:click="sendPhoneOtp()"
-                            x-bind:disabled="phoneOtpLoading || ! values['{{ $field->key }}']"
+                            x-bind:disabled="phoneOtpLoading || resendIn > 0 || ! values['{{ $field->key }}']"
                             class="shrink-0 cursor-pointer rounded-lg bg-accent-soft px-4 py-2.5 text-sm font-medium text-accent transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                            x-text="phoneOtpSent ? 'Resend OTP' : 'Send OTP'"
+                            x-text="phoneOtpSent ? (resendIn > 0 ? `Resend in ${resendIn}s` : 'Resend OTP') : 'Send OTP'"
                         ></button>
                         <span x-show="phoneVerified" x-cloak class="flex shrink-0 items-center gap-1.5 rounded-lg bg-pass-soft px-3.5 py-2.5 text-sm font-medium text-pass">
                             <svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4L8 11.6l6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd" /></svg>
@@ -326,24 +328,23 @@
 
                     <template x-if="phoneOtpSent && ! phoneVerified">
                         <div class="mt-1 flex flex-col gap-2 rounded-lg border border-line bg-surface-2 p-3">
-                            <template x-if="phoneDemoOtpCode">
-                                <p class="text-xs text-ink-faint">
-                                    Demo mode — no SMS gateway connected, so your code is shown here: <span class="font-mono font-semibold text-ink" x-text="phoneDemoOtpCode"></span>
-                                </p>
-                            </template>
+                            <p class="text-xs text-ink-faint">
+                                We've sent a {{ $otpLength }}-digit code by SMS to +91 <span x-text="phoneOtpNumber"></span>. It may take a moment to arrive.
+                            </p>
                             <div class="flex gap-2">
                                 <input
                                     type="text"
                                     inputmode="numeric"
-                                    maxlength="6"
-                                    placeholder="6-digit code"
+                                    autocomplete="one-time-code"
+                                    maxlength="{{ $otpLength }}"
+                                    placeholder="{{ $otpLength }}-digit code"
                                     x-model="phoneOtpCode"
                                     class="w-32 rounded-lg border border-line-strong bg-surface px-3 py-2 text-sm tracking-[0.3em] text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
                                 >
                                 <button
                                     type="button"
                                     x-on:click="verifyPhoneOtp()"
-                                    x-bind:disabled="phoneOtpLoading || phoneOtpCode.length !== 6"
+                                    x-bind:disabled="phoneOtpLoading || phoneOtpCode.length !== {{ $otpLength }}"
                                     class="cursor-pointer rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                                 >
                                     Verify

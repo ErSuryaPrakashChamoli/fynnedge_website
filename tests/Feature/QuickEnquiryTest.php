@@ -5,8 +5,10 @@ use App\Enums\EnquiryType;
 use App\Filament\Resources\ContactEnquiries\Pages\ListContactEnquiries;
 use App\Models\ContactEnquiry;
 use App\Models\User;
-use App\Modules\CreditScore\Models\MobileOtpChallenge;
+use App\Modules\MobileOtp\Enums\MobileOtpPurpose;
+use App\Modules\MobileOtp\Models\MobileOtpChallenge;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Livewire;
 
@@ -211,11 +213,17 @@ it('falls back to the default placement when an unknown source is posted', funct
 });
 
 it('issues an otp challenge without creating a lead', function () {
+    fakeAreachSms();
+
     $response = $this->postJson('/quick-enquiry/otp', ['phone' => '9876543210']);
 
-    $response->assertCreated()->assertJsonStructure(['otp_challenge_id', 'demo_otp_code']);
+    // The code reaches the visitor by SMS only — never in the response.
+    $response->assertCreated()
+        ->assertJsonStructure(['otp_challenge_id', 'expires_in_seconds', 'resend_after_seconds'])
+        ->assertJsonMissingPath('demo_otp_code');
+    expect($response->getContent())->not->toContain(lastTextedOtp());
 
-    expect(MobileOtpChallenge::query()->where('mobile_number', '9876543210')->exists())->toBeTrue()
+    expect(MobileOtpChallenge::query()->where('mobile_number', '9876543210')->sole()->purpose)->toBe(MobileOtpPurpose::LoanEnquiry)
         // An unverified number must never reach the marketing table — that is the
         // whole point of putting the challenge in front of it.
         ->and(ContactEnquiry::query()->count())->toBe(0);
@@ -236,10 +244,11 @@ it('refuses to issue a challenge for a malformed number', function () {
 });
 
 it('reports the per-number otp request limit against the field the form shows', function () {
-    // RequestMobileOtp raises its limit against `mobileNumber`; this form has no
-    // such field, so an error left under that key would never be seen.
+    // The limit is raised by the shared action; this form's field is `phone`,
+    // so the message must land there or the visitor never sees it.
     foreach (range(1, 5) as $attempt) {
         $this->postJson('/quick-enquiry/otp', ['phone' => '9876543210'])->assertCreated();
+        $this->travel(61)->seconds();
     }
 
     $this->postJson('/quick-enquiry/otp', ['phone' => '9876543210'])
@@ -321,11 +330,13 @@ it('will not let one verified challenge be replayed for a second lead', function
 });
 
 it('walks a javascript-free visitor through both steps with flashed state', function () {
+    fakeAreachSms();
+
     $this->from('/')
         ->post('/quick-enquiry/otp', ['phone' => '9876543210'])
         ->assertRedirect('/')
         ->assertSessionHas('quickEnquiryChallenge')
-        ->assertSessionHas('quickEnquiryDemoOtp');
+        ->assertSessionMissing('quickEnquiryDemoOtp');
 
     $challenge = MobileOtpChallenge::query()->sole();
 
@@ -336,7 +347,7 @@ it('walks a javascript-free visitor through both steps with flashed state', func
         ->post('/quick-enquiry', [
             'phone' => '9876543210',
             'otp_challenge_id' => $challenge->public_id,
-            'otp_code' => session('quickEnquiryDemoOtp'),
+            'otp_code' => lastTextedOtp(),
         ])
         ->assertRedirect('/')
         ->assertSessionHas('quickEnquiryTitle', 'Thank You!');
@@ -367,4 +378,87 @@ it('throttles the otp endpoint on the same per-ip limiter as the submission', fu
     expect(collect(app('router')->getRoutes()->getByName('quick-enquiry.otp')->gatherMiddleware()))
         ->toContain('web')
         ->toContain('throttle:enquiry-forms');
+});
+
+it('makes the visitor wait out the resend cooldown, on the phone field', function () {
+    fakeAreachSms();
+    $this->postJson('/quick-enquiry/otp', ['phone' => '9876543210'])->assertCreated();
+
+    $this->postJson('/quick-enquiry/otp', ['phone' => '9876543210'])
+        ->assertUnprocessable()
+        ->assertJsonPath('errors.phone.0', 'Please wait 60 seconds before requesting another code.');
+
+    Http::assertSentCount(1);
+});
+
+it('tells the visitor when the code could not be sent', function () {
+    fakeAreachSms(Http::response(['status' => 'error'], 500));
+
+    $this->postJson('/quick-enquiry/otp', ['phone' => '9876543210'])
+        ->assertUnprocessable()
+        ->assertJsonPath('errors.phone.0', 'We could not send a verification code right now. Please try again shortly.');
+});
+
+it('records a lead for a challenge already verified through the api, once', function () {
+    $challenge = MobileOtpChallenge::factory()->verified()->create(['mobile_number' => '9876543210']);
+    $payload = ['phone' => '9876543210', 'otp_challenge_id' => $challenge->public_id];
+
+    $this->postJson('/quick-enquiry', $payload)->assertCreated();
+    ContactEnquiry::query()->delete();
+    $this->postJson('/quick-enquiry', $payload)->assertUnprocessable();
+
+    expect(ContactEnquiry::query()->count())->toBe(0)
+        ->and($challenge->fresh()->consumed_at)->not->toBeNull();
+});
+
+it('records nothing for an unverified challenge submitted without a code', function () {
+    $challenge = MobileOtpChallenge::factory()->create(['mobile_number' => '9876543210']);
+
+    $this->postJson('/quick-enquiry', ['phone' => '9876543210', 'otp_challenge_id' => $challenge->public_id])
+        ->assertUnprocessable()
+        ->assertJsonPath('errors.otp_code.0', 'Please enter the 6-digit code we sent you.');
+
+    expect(ContactEnquiry::query()->count())->toBe(0);
+});
+
+it('will not accept a challenge issued for a different form', function () {
+    $challenge = MobileOtpChallenge::factory()->forPurpose(MobileOtpPurpose::LoanApplication)->create([
+        'mobile_number' => '9876543210',
+        'otp_hash' => Hash::make('123456'),
+    ]);
+
+    $this->postJson('/quick-enquiry', ['phone' => '9876543210', 'otp_challenge_id' => $challenge->public_id, 'otp_code' => '123456'])
+        ->assertUnprocessable();
+
+    expect(ContactEnquiry::query()->count())->toBe(0)
+        ->and($challenge->fresh()->attempts)->toBe(0);
+});
+
+it('ignores a verified flag posted by the browser', function () {
+    $challenge = MobileOtpChallenge::factory()->create(['mobile_number' => '9876543210']);
+
+    $this->postJson('/quick-enquiry', [
+        'phone' => '9876543210',
+        'otp_challenge_id' => $challenge->public_id,
+        'mobile_verified' => true,
+        'phone_verified' => true,
+    ])->assertUnprocessable();
+
+    expect(ContactEnquiry::query()->count())->toBe(0);
+});
+
+it('locks the visitor out after too many wrong codes', function () {
+    $challenge = MobileOtpChallenge::factory()->create([
+        'mobile_number' => '9876543210',
+        'otp_hash' => Hash::make('123456'),
+        'attempts' => 4,
+    ]);
+
+    $this->postJson('/quick-enquiry', ['phone' => '9876543210', 'otp_challenge_id' => $challenge->public_id, 'otp_code' => '000000'])
+        ->assertUnprocessable()
+        ->assertJsonPath('errors.otp_code.0', 'Too many incorrect attempts. Please request a new code.');
+});
+
+it('no longer shows a demo code on the homepage box', function () {
+    $this->get('/')->assertDontSee('Demo mode')->assertDontSee('demoCode');
 });

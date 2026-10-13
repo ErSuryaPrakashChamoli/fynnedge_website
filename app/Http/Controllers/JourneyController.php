@@ -3,15 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\LoanProduct;
-use App\Modules\CreditScore\Actions\RequestMobileOtp;
-use App\Modules\CreditScore\Actions\VerifyMobileOtp;
-use App\Modules\CreditScore\Models\MobileOtpChallenge;
 use App\Modules\Journey\Actions\GoToPreviousJourneyStep;
 use App\Modules\Journey\Actions\StartJourneySession;
 use App\Modules\Journey\Actions\SubmitJourneyStepResponses;
 use App\Modules\Journey\Enums\JourneySessionStatus;
 use App\Modules\Journey\Models\JourneySession;
 use App\Modules\Journey\Services\JourneyStepResolver;
+use App\Modules\MobileOtp\Actions\RequestMobileOtp;
+use App\Modules\MobileOtp\Actions\VerifyMobileOtp;
+use App\Modules\MobileOtp\Enums\MobileOtpPurpose;
+use App\Modules\MobileOtp\Enums\MobileOtpStatus;
+use App\Modules\MobileOtp\Enums\MobileOtpVerificationResult;
+use App\Modules\MobileOtp\Exceptions\MobileOtpThrottled;
+use App\Modules\MobileOtp\Models\MobileOtpChallenge;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -123,28 +127,54 @@ class JourneyController extends Controller
             'phone' => ['required', 'regex:/^[6-9]\d{9}$/'],
         ], [], ['phone' => 'mobile number']);
 
-        ['challenge' => $challenge, 'code' => $code] = $action->handle($validated['phone'], $request->ip());
+        try {
+            $challenge = $action->handle($validated['phone'], MobileOtpPurpose::LoanApplication, $request->ip());
+        } catch (MobileOtpThrottled $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'retry_after_seconds' => $exception->retryAfterSeconds,
+            ], 429);
+        }
 
+        if ($challenge->status === MobileOtpStatus::Failed) {
+            return response()->json([
+                'message' => 'We could not send a verification code right now. Please try again shortly.',
+            ], 503);
+        }
+
+        // Never the code: it reaches the applicant by SMS only.
         return response()->json([
             'otp_challenge_id' => $challenge->public_id,
-            // No SMS gateway is connected yet, so the code is handed straight back
-            // instead of being texted — mirrors the credit-score check's demo mode.
-            'demo_otp_code' => $code,
+            'expires_in_seconds' => $challenge->expiresInSeconds(),
+            'resend_after_seconds' => $challenge->resendAvailableInSeconds(),
         ], 201);
     }
 
+    /**
+     * Verifies the code and binds the number to this session. The challenge is
+     * redeemed in the same step, so one verification can never be bound to a
+     * second session; update() then refuses any phone value other than the
+     * one bound here.
+     */
     public function verifyPhoneOtp(JourneySession $session, Request $request, VerifyMobileOtp $action): JsonResponse
     {
         $validated = $request->validate([
             'otp_challenge_id' => ['required', 'string'],
-            'otp_code' => ['required', 'digits:6'],
+            'otp_code' => ['required', 'digits:'.MobileOtpChallenge::codeLength()],
         ]);
 
-        $challenge = MobileOtpChallenge::query()->where('public_id', $validated['otp_challenge_id'])->first();
+        $challenge = MobileOtpChallenge::query()
+            ->where('public_id', $validated['otp_challenge_id'])
+            ->where('purpose', MobileOtpPurpose::LoanApplication)
+            ->first();
 
-        if (! $challenge || ! $action->handle($challenge, $validated['otp_code'])) {
+        $result = $challenge ? $action->handle($challenge, $validated['otp_code']) : MobileOtpVerificationResult::NotFound;
+
+        if (! $result->isVerified() || ! $challenge->consumeFor($challenge->mobile_number, MobileOtpPurpose::LoanApplication)) {
             return response()->json([
-                'message' => 'That code is incorrect or has expired. You can resend a new one.',
+                'message' => $result === MobileOtpVerificationResult::AttemptsExhausted
+                    ? $result->message()
+                    : 'That code is incorrect or has expired. You can resend a new one.',
             ], 422);
         }
 

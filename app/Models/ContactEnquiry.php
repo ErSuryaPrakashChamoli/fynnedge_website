@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\EnquiryStatus;
 use App\Enums\EnquiryType;
 use App\Models\Concerns\HasPublicId;
+use App\Modules\MobileOtp\Services\MobileNumber;
 use Database\Factories\ContactEnquiryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -71,20 +72,13 @@ class ContactEnquiry extends Model
      * spaces, hyphens, brackets, a +91/91/0 prefix. Anything that is not a
      * recognisable 10-digit number is returned cleaned but unchanged, so
      * validation (not this method) is what rejects it.
+     *
+     * Delegates to MobileNumber so the enquiry forms and the OTP challenge
+     * they are verified against can never disagree about the stored number.
      */
     public static function normalizePhone(?string $value): string
     {
-        $digits = preg_replace('/\D+/', '', (string) $value) ?? '';
-
-        if (strlen($digits) === 12 && str_starts_with($digits, '91')) {
-            return substr($digits, 2);
-        }
-
-        if (strlen($digits) === 11 && str_starts_with($digits, '0')) {
-            return substr($digits, 1);
-        }
-
-        return $digits;
+        return MobileNumber::normalize($value);
     }
 
     /**
