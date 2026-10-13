@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Support\Rates\RateRoles;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Models\Permission;
@@ -80,6 +81,11 @@ class RoleSeeder extends Seeder
             ->merge([Permission::findOrCreate('View:NewsletterDashboard')]);
 
         Role::findOrCreate('Marketing')->givePermissionTo($newsletterPermissions);
+
+        // Interest rates: Marketing edits and submits drafts; the Marketing
+        // Publisher role approves and publishes; Rate Reviewer is read-only.
+        // Last, because the syncPermissions() above would otherwise drop them.
+        RateRoles::grant();
     }
 
     /**

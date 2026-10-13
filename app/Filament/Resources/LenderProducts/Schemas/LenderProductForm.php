@@ -4,6 +4,7 @@ namespace App\Filament\Resources\LenderProducts\Schemas;
 
 use App\Enums\EmploymentType;
 use App\Enums\LenderStatus;
+use App\Support\Rates\RateText;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -93,8 +94,21 @@ class LenderProductForm
                 ->defaultItems(0)
                 ->addActionLabel('Add structure')
                 ->columnSpanFull(),
-            TextInput::make('interest_rate_from')->numeric()->suffix('%'),
-            TextInput::make('interest_rate_to')->numeric()->suffix('%'),
+            // Read-only: set when a rate is published in Catalog → Interest Rates
+            // (RateWorkflow::syncOfferRate). Visitors never see these two
+            // columns — every public rate comes from RateBook — they only feed
+            // the eligibility engine's EMI/FOIR estimate.
+            TextInput::make('interest_rate_from')
+                ->label('Rate from (eligibility estimate)')
+                ->numeric()
+                ->suffix('%')
+                ->disabled()
+                ->helperText('Set automatically when a rate is published in Catalog → Interest Rates.'),
+            TextInput::make('interest_rate_to')
+                ->label('Rate to (eligibility estimate)')
+                ->numeric()
+                ->suffix('%')
+                ->disabled(),
             Fieldset::make('Processing fee')
                 ->columns(2)
                 ->columnSpanFull()
@@ -122,7 +136,8 @@ class LenderProductForm
                         ->columnSpanFull(),
                     TextInput::make('processing_fee_note')
                         ->label('Note')
-                        ->helperText('Use this for slab specifics, e.g. "1% up to ₹5L, 2% above ₹5L".')
+                        ->rule(fn () => RateText::rule())
+                        ->helperText('Use this for slab specifics, e.g. "1% up to ₹5L, 2% above ₹5L". Interest rates belong in Catalog → Interest Rates; any part of a note that states a rate is hidden from visitors.')
                         ->columnSpanFull(),
                 ]),
             Fieldset::make('Who typically qualifies')

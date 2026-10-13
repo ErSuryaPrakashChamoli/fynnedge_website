@@ -1,3 +1,4 @@
+@use('App\Support\Rates\RateBook')
 @php
     $eligibleCount = $results->filter(fn ($result) => $result->status->value === 'eligible')->count();
 @endphp
@@ -36,11 +37,12 @@
             <div class="mt-10 flex flex-col gap-5">
                 @php
                     // The results collection is already sorted eligible-first, then by lowest
-                    // interest rate — so the very first eligible row with a configured rate is,
-                    // by construction, the best-rate eligible option. Not shown when no eligible
-                    // result has a rate to compare, since "lowest of one unknown" isn't a claim.
+                    // live, verified rate (RateBook) — so the very first eligible row with a
+                    // published rate is, by construction, the best-rate eligible option. Not
+                    // shown when no eligible result has one, since "lowest of one unknown"
+                    // isn't a claim.
                     $recommendedId = optional($results->first(
-                        fn ($result) => $result->status->value === 'eligible' && $result->lenderProduct->interest_rate_from !== null,
+                        fn ($result) => $result->status->value === 'eligible' && RateBook::quoteFor($result->lender_product_id) !== null,
                     ))->id;
                 @endphp
                 @foreach ($results as $result)
@@ -50,8 +52,10 @@
                                 <x-ui.lender-logo :lender="$result->lenderProduct->lender" size="sm" />
                                 <div>
                                     <p class="font-display text-lg font-semibold text-ink">{{ $result->lenderProduct->lender->name }}</p>
-                                    @if ($result->lenderProduct->interest_rate_from !== null)
-                                        <p class="font-mono text-xs text-ink-faint">Rate from {{ $result->lenderProduct->interest_rate_from }}% p.a.</p>
+                                    @if ($quote = RateBook::quoteFor($result->lender_product_id))
+                                        <p class="font-mono text-xs text-ink-faint">Rate from {{ $quote->startingLabel() }} {{ $quote->unit->suffix() }}</p>
+                                    @else
+                                        <p class="font-mono text-xs text-ink-faint">Rate confirmed by the lender</p>
                                     @endif
                                 </div>
                             </div>

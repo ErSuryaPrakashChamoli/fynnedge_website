@@ -27,17 +27,20 @@
         not been given that field, so a sparsely filled product still looks
         deliberate.
     */
+    use App\Enums\RateUnit;
     use App\Support\Enquiries\EnquiryFormContent;
     use App\Support\Formatting\IndianNumberFormatter;
+    use App\Support\Rates\RateBook;
 
     $label = $label ?: $loanProduct->name;
     $content = EnquiryFormContent::forLoanPage($label, $description ?: $loanProduct->summary);
 
     $highlights = array_slice(array_filter($loanProduct->benefits ?: $loanProduct->features ?: []), 0, 3);
 
-    $rate = $loanProduct->min_interest_rate
-        ? rtrim(rtrim(number_format((float) $loanProduct->min_interest_rate, 2), '0'), '.').'%'
-        : null;
+    // The lowest live, verified rate open to all borrowers (RateBook) — the
+    // same figure as the comparison table's "Rates from". With none, the stat
+    // is left out rather than filled with an unverified number.
+    $rateHeadline = RateBook::headlineFor($loanProduct);
 
     $tenure = $loanProduct->max_tenure_months
         ? ($loanProduct->max_tenure_months >= 24
@@ -53,7 +56,10 @@
     $statColumns = [1 => 'grid-cols-1', 2 => 'grid-cols-2', 3 => 'grid-cols-3'];
 
     $stats = array_filter([
-        $rate ? ['label' => 'Interest from', 'value' => $rate] : null,
+        $rateHeadline ? [
+            'label' => $rateHeadline->unit() === RateUnit::PerMonth ? 'Finance charge from' : 'Interest from',
+            'value' => $rateHeadline->startingLabel().($rateHeadline->unit() === RateUnit::PerMonth ? ' /mo' : ''),
+        ] : null,
         $loanProduct->max_amount ? ['label' => 'Loan up to', 'value' => '₹'.IndianNumberFormatter::compact($loanProduct->max_amount)] : null,
         $tenure ? ['label' => 'Tenure up to', 'value' => $tenure] : null,
     ]);

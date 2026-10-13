@@ -39,8 +39,25 @@
     <article class="mx-auto max-w-7xl px-6 pb-14 lg:px-8">
         @if ($landingPage->body)
             <div data-reveal="fade" class="rich-text mt-12 max-w-none text-ink-muted text-justify hyphens-auto">
-                {!! $landingPage->body !!}
+                {!! \App\Support\Rates\RateText::render($landingPage->body) !!}
             </div>
+        @endif
+
+        @if ($otherLocations->isNotEmpty())
+            <nav data-reveal="fade" class="mt-12" aria-label="{{ $loanProduct->name }} in other cities" data-ai-context="Other cities">
+                <h2 class="font-display text-xl font-semibold text-ink">{{ $loanProduct->name }} in other cities</h2>
+                <p class="mt-2 text-sm text-ink-faint">The same partner lenders and eligibility check are available across these metro and prime cities.</p>
+                <ul class="mt-6 flex flex-wrap gap-2">
+                    @foreach ($otherLocations as $location)
+                        <li>
+                            <a href="{{ route('loans.landing-pages.show', ['loanProduct' => $loanProduct, 'landingPage' => $location]) }}" class="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-4 py-2 text-sm text-ink-muted transition-colors hover:border-accent hover:text-accent">
+                                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5 shrink-0" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M10 17.5s5.5-4.6 5.5-9.25a5.5 5.5 0 1 0-11 0C4.5 12.9 10 17.5 10 17.5Z" /><circle cx="10" cy="8.25" r="1.9" /></svg>
+                                {{ $location->title }}
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            </nav>
         @endif
 
         @if ($calculatorSupported)

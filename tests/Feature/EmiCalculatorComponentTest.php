@@ -4,6 +4,7 @@ use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
 use App\Models\Article;
 use App\Models\Faq;
+use App\Models\LenderProduct;
 use App\Models\LoanProduct;
 use App\Support\Calculators\EmiCalculator;
 use App\Support\Formatting\IndianNumberFormatter;
@@ -184,11 +185,23 @@ it('renders the amortization table and pie chart split', function () {
         ->assertSee('Principal & interest paid per year');
 });
 
-it('shows the maximum amount, maximum tenure and indicative rate range near the calculator fields', function () {
+it('shows the maximum amount and tenure, and claims no rate range while no lender has a published rate', function () {
     Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
         ->assertSee('Maximum loan amount: ₹50,00,000') // Indian digit grouping, not 5,000,000
         ->assertSee('Maximum tenure: 7 years (84 months)')
-        ->assertSee('10.49% – 24.00%');
+        ->assertSee('Personal Loan rates vary by lender')
+        ->assertDontSee('10.49% – 24.00%')
+        ->assertDontSee("Lenders' published rates", false);
+});
+
+it('opens on the lowest published rate and states the lenders\' published range', function () {
+    $product = LoanProduct::query()->where('category', LoanCategory::PersonalLoan)->sole();
+    publishRate(LenderProduct::factory()->for($product, 'loanProduct')->create(), 9.99, 21.0);
+    publishRate(LenderProduct::factory()->for($product, 'loanProduct')->create(), 11.25, 26.0);
+
+    Livewire::test('emi-calculator', ['category' => LoanCategory::PersonalLoan->value])
+        ->assertSet('annualRate', 9.99)
+        ->assertSee("Lenders' published rates for Personal Loan: 9.99%–26.00% p.a.", false);
 });
 
 it('shows a paired number input alongside each range slider', function () {

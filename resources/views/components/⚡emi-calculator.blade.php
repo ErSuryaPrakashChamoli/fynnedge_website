@@ -539,7 +539,12 @@ new class extends Component
                     class="mt-2 w-full accent-accent"
                 >
                 <p class="mt-1 text-xs text-ink-faint">
-                    Indicative range for {{ $this->preset['label'] }}: {{ $this->preset['rate_note'] ?? number_format($this->preset['min_rate'], 2).'% – '.number_format($this->preset['max_rate'], 2).'%' }}
+                    @if ($this->preset['published_rate_range'] ?? null)
+                        Lenders' published rates for {{ $this->preset['label'] }}: {{ $this->preset['published_rate_range'] }}.
+                    @else
+                        Set the rate you have been offered — {{ $this->preset['label'] }} rates vary by lender.
+                    @endif
+                    {{ $this->preset['rate_note'] }}
                 </p>
                 @error('annualRate') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>

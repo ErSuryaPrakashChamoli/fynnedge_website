@@ -9,6 +9,7 @@ use App\Models\Concerns\HasPublicId;
 use App\Models\Concerns\Publishable;
 use App\Models\Concerns\Seoable;
 use App\Modules\Journey\Models\JourneyDefinition;
+use App\Support\Rates\RateBook;
 use Database\Factories\LoanProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -34,6 +35,17 @@ class LoanProduct extends Model
 {
     /** @use HasFactory<LoanProductFactory> */
     use Auditable, HasFactory, HasPublicId, Publishable, Seoable, SoftDeletes;
+
+    /**
+     * RateBook caches each rate with its product's slug and category (the
+     * [rate:slug] content tokens and the quoting unit), so a product change
+     * drops those cached rows.
+     */
+    protected static function booted(): void
+    {
+        static::saved(fn () => RateBook::flush());
+        static::deleted(fn () => RateBook::flush());
+    }
 
     protected function casts(): array
     {

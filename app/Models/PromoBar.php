@@ -9,6 +9,7 @@ use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPagePlacements;
 use App\Models\Concerns\HasPublicId;
 use App\Models\Concerns\Publishable;
+use App\Support\Rates\RateText;
 use App\Support\Theme\SiteThemeStyles;
 use Carbon\CarbonInterface;
 use Database\Factories\PromoBarFactory;
@@ -80,6 +81,8 @@ class PromoBar extends Model
 
     /**
      * The headline followed by any rotating messages, each ready to echo.
+     * [rate:loan-slug] tokens become the live, verified rate (RateText) before
+     * escaping, so a promo never shows a figure that has since changed.
      *
      * @return array<int, HtmlString>
      */
@@ -87,7 +90,7 @@ class PromoBar extends Model
     {
         return collect([$this->headline, ...($this->rotating_messages ?? [])])
             ->filter(fn (mixed $message): bool => is_string($message) && filled($message))
-            ->map(fn (string $message): HtmlString => self::emphasise($message))
+            ->map(fn (string $message): HtmlString => self::emphasise(RateText::render($message)))
             ->values()
             ->all();
     }

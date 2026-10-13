@@ -3,6 +3,7 @@
 use App\Enums\EnquiryType;
 use App\Enums\LoanCategory;
 use App\Models\ContactEnquiry;
+use App\Models\LenderProduct;
 use App\Models\LoanProduct;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -45,15 +46,15 @@ it('links to the quick enquiry page from the homepage hero', function () {
 });
 
 it('offers only currently published loan products in the loan type dropdown', function () {
-    quickPageProduct(LoanCategory::PersonalLoan);
-    quickPageProduct(LoanCategory::HomeLoan);
+    publishRate(LenderProduct::factory()->for(quickPageProduct(LoanCategory::PersonalLoan), 'loanProduct')->create(), 10.49);
+    publishRate(LenderProduct::factory()->for(quickPageProduct(LoanCategory::HomeLoan), 'loanProduct')->create(), 7.0);
     LoanProduct::factory()->create(['name' => 'Draft Loan', 'slug' => 'draft-loan']);
 
     $html = $this->get('/quick-enquiry')
         ->assertOk()
         ->assertSee('name="loan_product"', false)
-        ->assertSee('Personal Loan · from 10.49%')
-        ->assertSee('Home Loan · from 7%')
+        ->assertSee('Personal Loan · from 10.49% p.a.')
+        ->assertSee('Home Loan · from 7.00% p.a.')
         ->assertDontSee('Draft Loan')
         ->assertSee(route('quick-enquiry.apply'), false)
         ->getContent();

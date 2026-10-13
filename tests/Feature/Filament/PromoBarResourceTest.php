@@ -26,7 +26,7 @@ function promoBarFormData(array $overrides = []): array
 {
     return [
         'name' => 'Festive personal loan offer',
-        'headline' => 'Get up to *₹50 Lakhs* starting at 9.99%',
+        'headline' => 'Get up to *₹50 Lakhs* *[rate:personal-loan]*',
         'cta_label' => 'Apply now',
         'cta_url' => '/eligibility',
         'placements' => [PromoBars::EVERY_PAGE],

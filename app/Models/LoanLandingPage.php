@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['loan_product_id', 'group', 'title', 'slug', 'amount', 'excerpt', 'cta_label', 'body', 'sort_order', 'status', 'published_at', 'expires_at'])]
+#[Fillable(['loan_product_id', 'group', 'title', 'slug', 'amount', 'city', 'excerpt', 'cta_label', 'body', 'sort_order', 'status', 'published_at', 'expires_at'])]
 class LoanLandingPage extends Model
 {
     /** @use HasFactory<LoanLandingPageFactory> */
@@ -35,5 +35,18 @@ class LoanLandingPage extends Model
     public function loanProduct(): BelongsTo
     {
         return $this->belongsTo(LoanProduct::class);
+    }
+
+    /**
+     * The link text for lists already scoped to this page's loan product —
+     * the header mega menu and the product overview. A location page reads
+     * as just its city there ("Delhi" under Personal Loan); every other page
+     * keeps its full title.
+     */
+    public function shortLabel(): string
+    {
+        return $this->group === LandingPageGroup::ByLocation && filled($this->city)
+            ? $this->city
+            : $this->title;
     }
 }

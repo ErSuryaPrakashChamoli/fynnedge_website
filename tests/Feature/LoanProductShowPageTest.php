@@ -49,20 +49,20 @@ it('does not show a processing fee row on the lender card when unset', function 
 
 it('orders the lender chart by lowest rate and highlights the best offer in each column', function () {
     $product = LoanProduct::factory()->published()->create(['slug' => 'show-page-chart-test', 'category' => LoanCategory::PersonalLoan]);
-    LenderProduct::factory()->for($product, 'loanProduct')->for(Lender::factory()->state(['name' => 'Costlier Bank']))->create([
-        'interest_rate_from' => 11.5,
+    $costlier = LenderProduct::factory()->for($product, 'loanProduct')->for(Lender::factory()->state(['name' => 'Costlier Bank']))->create([
         'min_amount' => 100000,
         'max_amount' => 5000000,
         'min_tenure_months' => 12,
         'max_tenure_months' => 84,
     ]);
-    LenderProduct::factory()->for($product, 'loanProduct')->for(Lender::factory()->state(['name' => 'Cheaper Bank']))->create([
-        'interest_rate_from' => 9.25,
+    $cheaper = LenderProduct::factory()->for($product, 'loanProduct')->for(Lender::factory()->state(['name' => 'Cheaper Bank']))->create([
         'min_amount' => 50000,
         'max_amount' => 2500000,
         'min_tenure_months' => 12,
         'max_tenure_months' => 60,
     ]);
+    publishRate($costlier, 11.5);
+    publishRate($cheaper, 9.25);
 
     $this->get("/loans/{$product->slug}")
         ->assertOk()
@@ -75,7 +75,7 @@ it('orders the lender chart by lowest rate and highlights the best offer in each
 
 it('does not award chart highlights when only one lender is listed', function () {
     $product = LoanProduct::factory()->published()->create(['slug' => 'show-page-single-lender-test', 'category' => LoanCategory::PersonalLoan]);
-    LenderProduct::factory()->for($product, 'loanProduct')->create(['interest_rate_from' => 10.5]);
+    publishRate(LenderProduct::factory()->for($product, 'loanProduct')->create(), 10.5);
 
     $this->get("/loans/{$product->slug}")
         ->assertOk()

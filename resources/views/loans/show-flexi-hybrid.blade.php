@@ -31,7 +31,7 @@
                 @endif
                 @if ($loanProduct->body)
                     <div class="rich-text mt-4 max-w-none text-ink-muted text-justify hyphens-auto">
-                        {!! $loanProduct->body !!}
+                        {!! \App\Support\Rates\RateText::render($loanProduct->body) !!}
                     </div>
                 @endif
             </div>

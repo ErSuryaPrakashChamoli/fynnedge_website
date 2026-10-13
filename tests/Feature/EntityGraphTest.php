@@ -45,6 +45,17 @@ it('emits one graph carrying Organization, WebSite and WebPage with stable @ids'
     expect(collect($nodes)->pluck('@id')->duplicates())->toBeEmpty();
 });
 
+it('emits only parseable JSON-LD on the homepage, with a single graph', function () {
+    $html = $this->get('/')->getContent();
+
+    $blocks = collect(explode('<script type="application/ld+json">', $html))
+        ->skip(1)
+        ->map(fn (string $chunk) => json_decode(explode('</script>', $chunk)[0], true));
+
+    expect($blocks)->not->toContain(null);
+    expect($blocks->filter(fn (array $data): bool => isset($data['@graph'])))->toHaveCount(1);
+});
+
 it('wires the graph together by reference instead of repeating entities', function () {
     $nodes = graphNodes('/');
 

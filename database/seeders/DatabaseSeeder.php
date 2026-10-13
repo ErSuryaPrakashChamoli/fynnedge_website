@@ -131,6 +131,8 @@ class DatabaseSeeder extends Seeder
         $this->call(EligibilitySeeder::class);
         $this->call(LenderRosterSeeder::class);
         $this->call(FlexiHybridTermLoanSeeder::class);
+        // After both sub-page seeders above: it adds city pages to every product they gave pages to.
+        $this->call(LoanLocationPageSeeder::class);
         $this->call(DocumentRequirementSeeder::class);
         $this->call(LegalPageSeeder::class);
         $this->call(CalculatorPageSeeder::class);

@@ -6,6 +6,7 @@ use App\Enums\BannerHorizontalAlignment;
 use App\Enums\BannerVerticalAlignment;
 use App\Enums\PublishStatus;
 use App\Models\Banner;
+use App\Support\Rates\RateText;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -34,8 +35,11 @@ class BannerForm
                     ->label('Image alt text')
                     ->columnSpanFull(),
                 TextInput::make('heading')
+                    ->rule(fn () => RateText::rule())
+                    ->helperText('For a rate, write [rate:loan-slug] (e.g. [rate:home-loan]) instead of a number — it always shows the current published, verified rate.')
                     ->columnSpanFull(),
                 TextInput::make('subtitle')
+                    ->rule(fn () => RateText::rule())
                     ->columnSpanFull(),
                 TextInput::make('cta_label')
                     ->label('Button label'),

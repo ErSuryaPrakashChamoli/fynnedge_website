@@ -7,6 +7,7 @@ use App\Enums\PublishStatus;
 use App\Filament\Schemas\HtmlBodyEditor;
 use App\Filament\Schemas\SeoFormSection;
 use App\Models\LoanProduct;
+use App\Support\Rates\RateText;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
@@ -140,12 +141,14 @@ class LoanProductForm
                             ->suffix('% p.a.')
                             ->helperText('Set above the quoted ceiling for a "24%+"-style range, so the slider can actually reach higher rates.'),
                         TextInput::make('default_interest_rate')
-                            ->label('Default rate')
+                            ->label('Default rate (no published rate)')
                             ->numeric()
-                            ->suffix('% p.a.'),
+                            ->suffix('% p.a.')
+                            ->helperText('Calculator settings only — not shown as an offer. The calculator opens on, and describes, the lenders\' published rates from Catalog → Interest Rates; this default applies only while no lender has one.'),
                         TextInput::make('interest_rate_note')
-                            ->label('Displayed rate range')
-                            ->helperText('The indicative range shown to visitors, e.g. "10.49% – 24%+". Purely text — does not affect the slider.')
+                            ->label('Calculator rate note')
+                            ->helperText('Optional extra wording under the calculator\'s rate slider, e.g. "Floating rates move with the repo rate." Do not type rate figures here — the published range is shown automatically.')
+                            ->rule(fn () => RateText::rule())
                             ->columnSpanFull(),
                         RichEditor::make('calculator_explanation')
                             ->label('EMI calculation explanation')

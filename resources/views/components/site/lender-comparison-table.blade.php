@@ -1,6 +1,9 @@
 @props(['offers', 'loanProduct'])
 
 @use('App\Support\Formatting\IndianNumberFormatter')
+@use('App\Support\Rates\RateBook')
+@use('App\Support\Rates\RateFormat')
+@use('App\Enums\RateUnit')
 
 @php
     // A hybrid-structured product (Flexi Hybrid Term Loan) says "Available on
@@ -9,22 +12,34 @@
     $isHybrid = $loanProduct->category->isHybridRepayment();
     $missing = $isHybrid ? 'Available on request' : '—';
 
-    // Lowest rate first, offers without a configured rate last, so the chart
-    // reads best-first even before Alpine boots (or with JS off).
+    // Every rate in this chart comes from RateBook: published, verified and
+    // inside its validity dates right now. An offer without one says "Check
+    // current rates" — never an unverified or lapsed figure. The first quote
+    // per offer is the one for all borrowers where there is one.
+    $quotes = $offers->mapWithKeys(fn ($offer) => [$offer->id => RateBook::quotesFor($offer->id)]);
+    $quoteFor = fn ($offer) => $quotes[$offer->id][0] ?? null;
+    $headline = RateBook::headlineFor($loanProduct);
+    $isCard = $loanProduct->category->rateUnit() === RateUnit::PerMonth;
+
+    // Lowest rate first, offers without a live rate last, so the chart reads
+    // best-first even before Alpine boots (or with JS off).
     $offers = $offers->sortBy(fn ($offer) => [
-        $offer->interest_rate_from === null ? 1 : 0,
-        (float) $offer->interest_rate_from,
+        $quoteFor($offer) === null ? 1 : 0,
+        $quoteFor($offer)?->startingRate() ?? 0,
         $offer->lender->name,
     ])->values();
 
-    $rates = $offers->pluck('interest_rate_from')->filter()->map(fn ($rate) => (float) $rate);
+    $rates = $offers->map($quoteFor)->filter()->map(fn ($quote) => $quote->startingRate());
     $maxAmounts = $offers->pluck('max_amount')->filter()->map(fn ($amount) => (float) $amount);
     $maxTenures = $offers->pluck('max_tenure_months')->filter()->map(fn ($months) => (int) $months);
 
     // Each highlight is only awarded once at least two offers actually have
     // that figure configured — "best of one" is not a comparison, and an
-    // offer marked "Available on request" is never guessed at.
-    $lowestRate = $rates->count() > 1 ? $rates->min() : null;
+    // offer marked "Available on request" is never guessed at. "Lowest rate"
+    // only counts rates open to all borrowers, so a women-only or
+    // employer-specific rate never wears it.
+    $openRates = $offers->map($quoteFor)->filter(fn ($quote) => $quote?->isForAllBorrowers())->map(fn ($quote) => $quote->startingRate());
+    $lowestRate = $openRates->count() > 1 ? $openRates->min() : null;
     $highestAmount = $maxAmounts->count() > 1 ? $maxAmounts->max() : null;
     $longestTenure = $maxTenures->count() > 1 ? $maxTenures->max() : null;
 
@@ -106,13 +121,15 @@
                 <dd class="mt-1 font-display text-2xl font-semibold text-ink">{{ $offers->count() }}</dd>
             </div>
             <div class="bg-surface px-5 py-4">
-                <dt class="font-mono text-[0.65rem] uppercase tracking-wider text-ink-faint">Rates from</dt>
-                <dd class="mt-1 font-display text-2xl font-semibold text-pass">
-                    {{ $rates->isNotEmpty() ? rtrim(rtrim(number_format($rates->min(), 2), '0'), '.').'%' : $missing }}
-                    @if ($rates->isNotEmpty())
-                        <span class="font-sans text-xs font-normal text-ink-faint">p.a.</span>
-                    @endif
-                </dd>
+                <dt class="font-mono text-[0.65rem] uppercase tracking-wider text-ink-faint">{{ $isCard ? 'Finance charges from' : 'Rates from' }}</dt>
+                @if ($headline)
+                    <dd class="mt-1 font-display text-2xl font-semibold text-pass" title="{{ $headline->backingNote() }}">
+                        {{ $headline->startingLabel() }}
+                        <span class="font-sans text-xs font-normal text-ink-faint">{{ $headline->unit()->suffix() }}</span>
+                    </dd>
+                @else
+                    <dd class="mt-1 text-sm font-semibold text-ink-muted">Check current rates</dd>
+                @endif
             </div>
             <div class="bg-surface px-5 py-4">
                 <dt class="font-mono text-[0.65rem] uppercase tracking-wider text-ink-faint">Loan up to</dt>
@@ -133,7 +150,7 @@
         <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
             <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Sort lenders">
                 <span class="text-xs font-medium text-ink-faint">Sort by</span>
-                @foreach (['rate' => 'Interest rate', 'amount' => 'Loan amount', 'tenure' => 'Tenure', 'name' => 'A–Z'] as $key => $label)
+                @foreach (['rate' => $isCard ? 'Finance charge' : 'Interest rate', 'amount' => 'Loan amount', 'tenure' => 'Tenure', 'name' => 'A–Z'] as $key => $label)
                     <button
                         type="button"
                         x-on:click="sort = '{{ $key }}'"
@@ -208,7 +225,7 @@
                 <thead class="max-md:hidden">
                     <tr class="bg-accent text-[0.68rem] font-semibold uppercase tracking-wider text-surface">
                         <th scope="col" class="sticky left-0 z-20 bg-accent px-5 py-4">Lender</th>
-                        <th scope="col" class="px-4 py-4">Interest rate</th>
+                        <th scope="col" class="px-4 py-4">{{ $isCard ? 'Finance charge' : 'Interest rate' }}</th>
                         <th scope="col" class="px-4 py-4">Loan amount</th>
                         <th scope="col" class="px-4 py-4">Tenure</th>
                         <th scope="col" class="px-4 py-4">Processing fee</th>
@@ -219,13 +236,15 @@
                 <tbody x-ref="rows" class="divide-y divide-line max-md:flex max-md:flex-col max-md:gap-3 max-md:divide-y-0">
                     @foreach ($offers as $offer)
                         @php
-                            $rate = $offer->interest_rate_from !== null ? (float) $offer->interest_rate_from : null;
+                            $quote = $quoteFor($offer);
+                            $otherQuotes = array_slice($quotes[$offer->id], 1);
+                            $rate = $quote?->startingRate();
                             $maxAmount = $offer->max_amount !== null ? (float) $offer->max_amount : null;
                             $maxTenure = $offer->max_tenure_months;
-                            $isLowestRate = $lowestRate !== null && $rate === $lowestRate;
+                            $isLowestRate = $lowestRate !== null && $quote?->isForAllBorrowers() && $rate === $lowestRate;
                             $isHighestAmount = $highestAmount !== null && $maxAmount === $highestAmount;
                             $isLongestTenure = $longestTenure !== null && (int) $maxTenure === $longestTenure;
-                            $hasFeeDetails = $offer->processingFeeDisplay() !== null || filled($offer->processing_fee_note);
+                            $hasFeeDetails = $offer->processingFeeDisplay() !== null || filled($offer->publicFeeNote());
 
                             // Rate meter: the lowest rate fills the track, the
                             // highest fills a quarter — longer reads as better.
@@ -270,8 +289,11 @@
                                         @endif
                                     </div>
                                 </div>
-                                @if ($isLowestRate || $isHighestAmount || $isLongestTenure)
+                                @if ($isLowestRate || $isHighestAmount || $isLongestTenure || $quote?->featured)
                                     <div class="mt-2 flex flex-wrap gap-1">
+                                        @if ($quote?->featured)
+                                            <x-ui.badge tone="accent" class="px-2! py-0.5! text-[0.58rem]!">Featured</x-ui.badge>
+                                        @endif
                                         @if ($isLowestRate)
                                             <x-ui.badge tone="pass" class="px-2! py-0.5! text-[0.58rem]!">Lowest rate</x-ui.badge>
                                         @endif
@@ -285,20 +307,51 @@
                                 @endif
                             </th>
                             <td class="px-4 py-4 max-md:p-0">
-                                <p class="mb-1 font-mono text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">Interest rate</p>
-                                @if ($rate !== null)
-                                    <p class="font-display text-xl font-semibold md:whitespace-nowrap {{ $isLowestRate ? 'text-pass' : 'text-ink' }}">
-                                        {{ $offer->interest_rate_from }}%
-                                        @if ($offer->interest_rate_to)
-                                            <span class="font-sans text-xs font-normal text-ink-faint">– {{ $offer->interest_rate_to }}%</span>
+                                <p class="mb-1 font-mono text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">{{ $isCard ? 'Finance charge' : 'Interest rate' }}</p>
+                                @if ($quote)
+                                    {{-- The lender's published product rate; a promotional
+                                         rate is shown beside it as an offer, never in its place. --}}
+                                    <p class="font-display text-xl font-semibold md:whitespace-nowrap {{ $isLowestRate ? 'text-pass' : 'text-ink' }}" data-rate-figure>
+                                        {{ RateFormat::percent($quote->rateMin) }}
+                                        @if ($quote->rateMax !== null && $quote->rateMax > $quote->rateMin)
+                                            <span class="font-sans text-xs font-normal text-ink-faint">– {{ RateFormat::percent($quote->rateMax) }}</span>
                                         @endif
                                     </p>
                                     <div class="mt-2 h-1.5 w-28 max-w-full overflow-hidden rounded-full bg-surface-2" aria-hidden="true">
                                         <div class="h-full rounded-full {{ $isLowestRate ? 'bg-pass' : 'bg-accent' }}" style="width: {{ round($rateFill) }}%"></div>
                                     </div>
-                                    <p class="mt-1 text-[0.68rem] text-ink-faint">p.a. onwards</p>
+                                    <p class="mt-1 text-[0.68rem] text-ink-faint">{{ $quote->unit->suffix() }}{{ $quote->rateMax === null ? ' onwards' : '' }}{{ $quote->repaymentNote() ? ' · '.$quote->repaymentNote() : '' }}</p>
+                                    @if ($quote->isPromotional())
+                                        <x-ui.badge tone="accent" class="mt-1.5 whitespace-normal px-2! py-0.5! text-[0.6rem]! normal-case! tracking-normal!">{{ $quote->promotionLabel() }}</x-ui.badge>
+                                    @endif
+                                    @if (! $quote->isForAllBorrowers())
+                                        <p class="mt-1 text-[0.68rem] font-medium text-warn">Only for: {{ $quote->borrowerSegment }}</p>
+                                    @endif
+                                    @if ($quote->eligibilityNotes || $quote->disclaimer)
+                                        <p class="mt-1 max-w-56 text-[0.68rem] leading-snug text-ink-faint">{{ collect([$quote->eligibilityNotes, $quote->disclaimer])->filter()->implode(' ') }}</p>
+                                    @endif
+                                    <p class="mt-1 text-[0.65rem] text-ink-faint">
+                                        {{ $quote->verifiedLabel() }}@if ($quote->sourceUrl) · <a href="{{ $quote->sourceUrl }}" target="_blank" rel="nofollow noopener noreferrer" class="underline hover:text-accent">lender's rates</a>@endif
+                                    </p>
+                                    @if ($otherQuotes)
+                                        <details class="mt-1 text-xs text-ink-muted">
+                                            <summary class="cursor-pointer font-medium text-accent hover:underline">Other rates ({{ count($otherQuotes) }})</summary>
+                                            <ul class="mt-1 space-y-1">
+                                                @foreach ($otherQuotes as $other)
+                                                    <li>
+                                                        <span class="font-medium text-ink">{{ $other->variant ?: ($other->borrowerSegment ?: 'Standard') }}:</span>
+                                                        {{ $other->rangeLabel() }}
+                                                        @if ($other->variant && $other->borrowerSegment)
+                                                            <span class="text-ink-faint">(only for: {{ $other->borrowerSegment }})</span>
+                                                        @endif
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </details>
+                                    @endif
                                 @else
-                                    <span class="text-ink-faint">{{ $missing }}</span>
+                                    <p class="text-sm font-medium text-ink-muted">Check current rates</p>
+                                    <p class="mt-1 text-[0.68rem] text-ink-faint">Rate confirmed by the lender when you apply</p>
                                 @endif
                             </td>
                             <td class="px-4 py-4 max-md:p-0">
@@ -328,10 +381,10 @@
                                     <p class="mb-1 font-mono text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">Processing fee</p>
                                 @endif
                                 <p class="font-medium text-ink">{{ $offer->processingFeeDisplay() ?? $missing }}</p>
-                                @if ($offer->processing_fee_note)
+                                @if ($offer->publicFeeNote())
                                     <details class="mt-1 text-xs text-ink-muted">
                                         <summary class="cursor-pointer font-medium text-accent hover:underline">Fee details</summary>
-                                        <p class="mt-1 leading-relaxed">{{ $offer->processing_fee_note }}</p>
+                                        <p class="mt-1 leading-relaxed">{{ $offer->publicFeeNote() }}</p>
                                     </details>
                                 @endif
                             </td>
@@ -368,6 +421,9 @@
             </p>
             <x-ui.button tag="a" :href="$applyUrl" size="sm">Check eligibility</x-ui.button>
         </div>
-        <p class="mt-3 text-xs text-ink-faint">Indicative terms shared by each lender — subject to their final verification and underwriting.</p>
+        <p class="mt-3 text-xs text-ink-faint">
+            Rates are each lender's own published figures, checked against the lender's website on the date shown.
+            The rate, amount and approval you are offered depend on the lender's assessment of your profile — FynnEdge does not guarantee approval, disbursal or any particular rate.
+        </p>
     </div>
 @endif

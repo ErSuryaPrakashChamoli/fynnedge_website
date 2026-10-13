@@ -1,6 +1,8 @@
 <?php
 
 use App\Enums\LoanCategory;
+use App\Models\LenderProduct;
+use App\Models\LenderProductRate;
 use App\Models\LoanProduct;
 use App\Modules\MobileOtp\Models\MobileOtpChallenge;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -69,6 +71,25 @@ function seedCalculatorProduct(LoanCategory $category, array $overrides = []): L
         ->state(['category' => $category])
         ->withCalculatorLimits()
         ->create($overrides);
+}
+
+/**
+ * Public pages only show a rate that is published, verified and in date
+ * (App\Support\Rates\RateBook) — the old interest_rate_from/to columns on a
+ * lender offer are never displayed. A test that needs a lender's rate on a
+ * page publishes one through this helper.
+ */
+function publishRate(LenderProduct $offer, float $rateFrom, ?float $rateTo = null, array $overrides = []): LenderProductRate
+{
+    return LenderProductRate::factory()
+        ->published()
+        ->for($offer, 'lenderProduct')
+        ->create([
+            'rate_min' => $rateFrom,
+            'rate_max' => $rateTo,
+            'rate_unit' => $offer->loanProduct->category->rateUnit(),
+            ...$overrides,
+        ]);
 }
 
 /**

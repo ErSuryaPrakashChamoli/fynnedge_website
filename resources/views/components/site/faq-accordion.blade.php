@@ -10,7 +10,7 @@
                         {{ $faq->question }}
                         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-4 w-4 shrink-0 transition-transform group-open:rotate-45"><path stroke-linecap="round" d="M10 4v12M4 10h12" /></svg>
                     </summary>
-                    <p class="mt-3 text-sm text-ink-muted">{{ $faq->answer }}</p>
+                    <p class="mt-3 text-sm text-ink-muted">{{ \App\Support\Rates\RateText::render($faq->answer) }}</p>
                 </details>
             @endforeach
         </div>

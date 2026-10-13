@@ -61,7 +61,7 @@
 
         @if ($loanProduct->body)
             <div data-reveal="fade" class="rich-text mt-12 max-w-none text-ink-muted text-justify hyphens-auto">
-                {!! $loanProduct->body !!}
+                {!! \App\Support\Rates\RateText::render($loanProduct->body) !!}
             </div>
         @endif
 
@@ -131,16 +131,20 @@
 
         @if ($loanProduct->landingPages->isNotEmpty())
             <div class="mt-12">
-                <h2 data-reveal="fade" class="font-display text-xl font-semibold text-ink">Explore {{ $loanProduct->name }} by amount, type &amp; need</h2>
-                <div class="mt-4 grid gap-6 sm:grid-cols-3">
-                    @foreach ($loanProduct->landingPages->groupBy(fn ($page) => $page->group->getLabel()) as $groupLabel => $pages)
+                <h2 data-reveal="fade" class="font-display text-xl font-semibold text-ink">Explore {{ $loanProduct->name }} by amount, type, need &amp; location</h2>
+                <div class="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                    @foreach (collect(\App\Enums\LandingPageGroup::cases())->mapWithKeys(fn ($group) => [$group->getLabel() => $loanProduct->landingPages->where('group', $group)])->filter->isNotEmpty() as $groupLabel => $pages)
                         <div data-reveal="up stagger">
                             <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ $groupLabel }}</p>
-                            <ul class="mt-2 flex flex-col gap-1.5">
+                            <ul @class([
+                                'mt-2 gap-1.5',
+                                'grid grid-cols-2 gap-x-4' => $groupLabel === \App\Enums\LandingPageGroup::ByLocation->getLabel(),
+                                'flex flex-col' => $groupLabel !== \App\Enums\LandingPageGroup::ByLocation->getLabel(),
+                            ])>
                                 @foreach ($pages as $page)
                                     <li>
-                                        <a href="{{ route('loans.landing-pages.show', ['loanProduct' => $loanProduct, 'landingPage' => $page]) }}" class="text-sm font-medium text-ink-muted transition-colors hover:text-ink">
-                                            {{ $page->title }}
+                                        <a href="{{ route('loans.landing-pages.show', ['loanProduct' => $loanProduct, 'landingPage' => $page]) }}" @if ($page->shortLabel() !== $page->title) aria-label="{{ $page->title }}" @endif class="text-sm font-medium text-ink-muted transition-colors hover:text-ink">
+                                            {{ $page->shortLabel() }}
                                         </a>
                                     </li>
                                 @endforeach

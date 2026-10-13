@@ -12,6 +12,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 
@@ -43,7 +44,12 @@ class LoanLandingPageForm
                         TextInput::make('amount')
                             ->label('Amount (₹)')
                             ->numeric()
-                            ->visible(fn (callable $get) => $get('group') === LandingPageGroup::ByAmount->value),
+                            ->visible(fn (Get $get): bool => $get->enum('group', LandingPageGroup::class, isNullable: true) === LandingPageGroup::ByAmount),
+                        TextInput::make('city')
+                            ->helperText('Shown on its own under "By Location" in the Loans menu, e.g. "Delhi".')
+                            ->maxLength(255)
+                            ->required(fn (Get $get): bool => $get->enum('group', LandingPageGroup::class, isNullable: true) === LandingPageGroup::ByLocation)
+                            ->visible(fn (Get $get): bool => $get->enum('group', LandingPageGroup::class, isNullable: true) === LandingPageGroup::ByLocation),
                         TextInput::make('excerpt')
                             ->maxLength(160)
                             ->columnSpanFull(),

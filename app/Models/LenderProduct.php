@@ -10,6 +10,8 @@ use App\Modules\Applications\Models\LenderProductDocumentRequirement;
 use App\Modules\Eligibility\Enums\EligibilityRuleSetStatus;
 use App\Modules\Eligibility\Models\EligibilityRuleSet;
 use App\Support\Calculators\FlexiHybridTenure;
+use App\Support\Rates\RateBook;
+use App\Support\Rates\RateText;
 use Database\Factories\LenderProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -29,6 +31,16 @@ class LenderProduct extends Model
 {
     /** @use HasFactory<LenderProductFactory> */
     use Auditable, HasFactory, HasPublicId;
+
+    /**
+     * An offer's status decides whether its rates may show, so any change to
+     * an offer drops RateBook's cached rows.
+     */
+    protected static function booted(): void
+    {
+        static::saved(fn () => RateBook::flush());
+        static::deleted(fn () => RateBook::flush());
+    }
 
     protected function casts(): array
     {
@@ -83,6 +95,17 @@ class LenderProduct extends Model
         }
 
         return $this->processing_fee_gst_extra ? "{$amount} + GST" : $amount;
+    }
+
+    /**
+     * processing_fee_note as visitors may see it: any part of it that states
+     * an interest rate or cites a comparison site is dropped (RateText), so a
+     * fee note can never carry a rate around the Interest Rates approval
+     * workflow. The stored note is unchanged and stays visible in the admin.
+     */
+    public function publicFeeNote(): ?string
+    {
+        return RateText::withoutRateClaims($this->processing_fee_note);
     }
 
     /**
@@ -156,6 +179,15 @@ class LenderProduct extends Model
     public function loanProduct(): BelongsTo
     {
         return $this->belongsTo(LoanProduct::class);
+    }
+
+    /**
+     * Every version of every rate line for this offer. Public pages read the
+     * live ones through RateBook, never through this relation.
+     */
+    public function rates(): HasMany
+    {
+        return $this->hasMany(LenderProductRate::class);
     }
 
     public function eligibilityRuleSets(): HasMany

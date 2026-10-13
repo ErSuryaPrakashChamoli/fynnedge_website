@@ -3,7 +3,9 @@
 namespace App\Support\Calculators;
 
 use App\Enums\LoanCategory;
+use App\Enums\RateUnit;
 use App\Models\LoanProduct;
+use App\Support\Rates\RateBook;
 
 /**
  * Slider ranges, validation bounds and starting values for the loan
@@ -17,17 +19,18 @@ use App\Models\LoanProduct;
  * numbers nobody set. Credit Card always returns null: it doesn't repay on
  * a fixed EMI schedule, so there's nothing here to configure for it.
  *
- * A specific lender can already state its own narrower range on
- * lender_products (min_amount/max_amount/min_tenure_months/
- * max_tenure_months/interest_rate_from/interest_rate_to). This class reads
- * only the generic product-level configuration for now; a future per-lender
- * calculator can layer a LenderProduct override on top of for()'s result
- * without restructuring either table.
+ * The product's min/max/default interest rate are only the calculator's
+ * slider configuration. The rate the calculator OPENS on, and the range it
+ * describes to the visitor, come from the lenders' live, verified rates
+ * (RateBook) — the same "from X%" figure the loan page shows — and the slider
+ * is widened if those published rates fall outside its configured bounds.
+ * With no verified rate, the configured default is used and no published
+ * range is claimed.
  */
 class LoanCalculatorPreset
 {
     /**
-     * @return array{label: string, min_amount: float, max_amount: float, default_amount: float, min_rate: float, max_rate: float, default_rate: float, min_years: int, max_years: int, default_years: int, rate_note: ?string, is_hybrid: bool, default_initial_tenure_months: ?int}|null
+     * @return array{label: string, min_amount: float, max_amount: float, default_amount: float, min_rate: float, max_rate: float, default_rate: float, min_years: int, max_years: int, default_years: int, rate_note: ?string, published_rate_range: ?string, is_hybrid: bool, default_initial_tenure_months: ?int}|null
      */
     public static function for(LoanCategory $category): ?array
     {
@@ -48,6 +51,17 @@ class LoanCalculatorPreset
         $maxTenureMonths = (int) $product->max_tenure_months;
         $minRate = (float) $product->min_interest_rate;
         $maxRate = (float) $product->max_interest_rate;
+        $defaultRate = (float) ($product->default_interest_rate ?? $minRate);
+
+        $headline = RateBook::headlineFor($product);
+
+        if ($headline !== null && $headline->unit() === RateUnit::PerAnnum) {
+            $minRate = min($minRate, $headline->startingRate());
+            $maxRate = max($maxRate, $headline->highest);
+            $defaultRate = $headline->startingRate();
+        } else {
+            $headline = null;
+        }
 
         return [
             'label' => $category->getLabel(),
@@ -56,7 +70,7 @@ class LoanCalculatorPreset
             'default_amount' => self::clamp((float) ($product->default_amount ?? $minAmount), $minAmount, $maxAmount),
             'min_rate' => $minRate,
             'max_rate' => $maxRate,
-            'default_rate' => self::clamp((float) ($product->default_interest_rate ?? $minRate), $minRate, $maxRate),
+            'default_rate' => self::clamp($defaultRate, $minRate, $maxRate),
             'min_years' => max(1, (int) ceil($minTenureMonths / 12)),
             'max_years' => max(1, (int) floor($maxTenureMonths / 12)),
             'default_years' => self::clampInt(
@@ -65,6 +79,7 @@ class LoanCalculatorPreset
                 max(1, (int) floor($maxTenureMonths / 12)),
             ),
             'rate_note' => $product->interest_rate_note,
+            'published_rate_range' => $headline?->rangeLabel(),
             'is_hybrid' => $category->isHybridRepayment(),
             'default_initial_tenure_months' => $product->default_initial_tenure_months,
         ];

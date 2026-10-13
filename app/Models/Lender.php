@@ -8,6 +8,7 @@ use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
 use App\Modules\Eligibility\Models\EmployerCategory;
 use App\Modules\Eligibility\Models\EmployerRating;
+use App\Support\Rates\RateBook;
 use Database\Factories\LenderFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,6 +22,17 @@ class Lender extends Model
 {
     /** @use HasFactory<LenderFactory> */
     use Auditable, HasFactory, HasPublicId, SoftDeletes;
+
+    /**
+     * A lender's status (and soft delete) decides whether its rates may show,
+     * so any change drops RateBook's cached rows.
+     */
+    protected static function booted(): void
+    {
+        static::saved(fn () => RateBook::flush());
+        static::deleted(fn () => RateBook::flush());
+        static::restored(fn () => RateBook::flush());
+    }
 
     protected function casts(): array
     {

@@ -49,4 +49,14 @@ enum LoanCategory: string implements HasLabel
     {
         return $this === self::FlexiHybridTermLoan;
     }
+
+    /**
+     * The unit lenders quote this product's rate in. Card issuers publish a
+     * monthly finance charge on revolving balances, not a loan rate, so a card
+     * rate is stored and shown per month — never dressed up as "p.a. onwards".
+     */
+    public function rateUnit(): RateUnit
+    {
+        return $this === self::CreditCard ? RateUnit::PerMonth : RateUnit::PerAnnum;
+    }
 }

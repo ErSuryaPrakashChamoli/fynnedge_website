@@ -9,6 +9,7 @@ enum LandingPageGroup: string implements HasLabel
     case ByAmount = 'by-amount';
     case ByType = 'by-type';
     case ByNeed = 'by-need';
+    case ByLocation = 'by-location';
 
     public function getLabel(): string
     {
@@ -16,6 +17,7 @@ enum LandingPageGroup: string implements HasLabel
             self::ByAmount => 'By Amount',
             self::ByType => 'By Type',
             self::ByNeed => 'By Need',
+            self::ByLocation => 'By Location',
         };
     }
 }

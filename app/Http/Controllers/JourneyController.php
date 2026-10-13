@@ -16,6 +16,7 @@ use App\Modules\MobileOtp\Enums\MobileOtpStatus;
 use App\Modules\MobileOtp\Enums\MobileOtpVerificationResult;
 use App\Modules\MobileOtp\Exceptions\MobileOtpThrottled;
 use App\Modules\MobileOtp\Models\MobileOtpChallenge;
+use App\Support\Rates\RateBook;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -50,19 +51,19 @@ class JourneyController extends Controller
         if ($session->status === JourneySessionStatus::Completed || ! $session->currentStep) {
             return view('journey.complete', [
                 'session' => $session,
-                // Eligible results first, then ranked by lowest interest rate — a lender
-                // product with no rate configured sorts to the back of its eligible/
-                // not-eligible group. Uses bare two-argument comparators (not the
-                // [callback, direction] pair form) — that form takes the *value*
-                // through an intermediate array keyed by the sort value, and a huge
-                // sentinel float there gets truncated to int by PHP and throws.
+                // Eligible results first, then ranked by lowest live, verified rate
+                // (RateBook) — a lender with no published rate sorts to the back of
+                // its eligible/not-eligible group. Uses bare two-argument comparators
+                // (not the [callback, direction] pair form) — that form takes the
+                // *value* through an intermediate array keyed by the sort value, and
+                // a huge sentinel float there gets truncated to int by PHP and throws.
                 'results' => $session->eligibilityResults()
                     ->with(['lenderProduct.lender', 'reasons'])
                     ->get()
                     ->sortBy([
                         fn ($a, $b) => ($a->status->value === 'eligible' ? 0 : 1) <=> ($b->status->value === 'eligible' ? 0 : 1),
-                        fn ($a, $b) => ($a->lenderProduct->interest_rate_from !== null ? 0 : 1) <=> ($b->lenderProduct->interest_rate_from !== null ? 0 : 1),
-                        fn ($a, $b) => (float) ($a->lenderProduct->interest_rate_from ?? 0) <=> (float) ($b->lenderProduct->interest_rate_from ?? 0),
+                        fn ($a, $b) => (RateBook::quoteFor($a->lender_product_id) !== null ? 0 : 1) <=> (RateBook::quoteFor($b->lender_product_id) !== null ? 0 : 1),
+                        fn ($a, $b) => (RateBook::quoteFor($a->lender_product_id)?->startingRate() ?? 0) <=> (RateBook::quoteFor($b->lender_product_id)?->startingRate() ?? 0),
                     ])
                     ->values(),
             ]);

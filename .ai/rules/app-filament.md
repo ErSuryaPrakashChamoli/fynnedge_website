@@ -1,6 +1,7 @@
 ---
 paths:
   - 'app/Filament/**/FileUpload*,config/filesystems.php'
+  - 'app/Filament/**'
 ---
 
 # App Filament
@@ -19,3 +20,6 @@ Corrects the earlier note in this file: with FILESYSTEM_DISK=local (the current 
 LenderForm's logo_path FileUpload had this bug (fixed 2026-08-29 by adding ->disk('public')) — Lender::logoUrl() reads via Storage::disk('public'), so the upload disk must match. CompanyPhotoForm (photo_path) and SeoFormSection (og_image_path) use the same disk-less FileUpload::make(...)->directory(...) pattern and are exposed to the same bug if/when their disk('public') isn't set — verify each against its own read path (e.g. Storage::disk('public')->url(...)) rather than assuming.
 
 Rule: any FileUpload backing a value read back with Storage::disk('public') must explicitly call ->disk('public'). Never rely on the framework/env default.
+
+## Compare enum Select state with $get->enum(), never === Enum::Case->value
+A Select with ->options(SomeEnum::class) casts its state to the enum, so `$get('group') === LandingPageGroup::ByAmount->value` is ALWAYS false — the dependent field silently never shows (LoanLandingPageForm's Amount field was invisible for this reason until 2026-10-13). Use `fn (Get $get): bool => $get->enum('group', LandingPageGroup::class, isNullable: true) === LandingPageGroup::ByAmount`, which handles both the raw string and the cast enum. Many forms still use `$get('status') === PublishStatus::Published->value` for published_at visibility and likely have the same bug. Pin with assertFormFieldVisible/assertFormFieldHidden (see tests/Feature/Filament/LoanLandingPageFormTest.php).

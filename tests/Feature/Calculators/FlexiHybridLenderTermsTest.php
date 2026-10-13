@@ -48,6 +48,11 @@ it('compares all four lenders with real figures on the calculator page, opening 
     $product = seedCalculatorProduct(LoanCategory::FlexiHybridTermLoan);
     FlexiHybridLenderTerms::sync($product);
 
+    // sync() seeds terms and structures only; a rate reaches the page once it
+    // is published in Catalog → Interest Rates.
+    $product->lenderProducts()->where('status', LenderStatus::Active)->with('loanProduct')->get()
+        ->each(fn (LenderProduct $offer) => publishRate($offer, (float) $offer->interest_rate_from));
+
     $this->get(route('calculators.emi', 'flexi-hybrid-term-loan'))
         ->assertOk()
         ->assertSee(['Compare all lenders', 'Bajaj Finance', 'Tata Capital', 'Aditya Birla Finance', 'Piramal Finance', '12.99%', '2 + 6 yrs', '2 + 5 yrs'])

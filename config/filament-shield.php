@@ -1,6 +1,8 @@
 <?php
 
 declare(strict_types=1);
+use App\Filament\Resources\LenderProductRates\LenderProductRateResource;
+use App\Filament\Widgets\RateHealthOverview;
 use BezhanSalleh\FilamentShield\Resources\Roles\RoleResource;
 use Filament\Pages\Dashboard;
 use Filament\Widgets\AccountWidget;
@@ -193,6 +195,13 @@ return [
                 'update',
                 'delete',
             ],
+            // Merged with the default methods: Submit:LenderProductRate lets an
+            // editor send a draft for approval; Publish:LenderProductRate lets a
+            // publisher approve, publish, send back or withdraw a rate.
+            LenderProductRateResource::class => [
+                'submit',
+                'publish',
+            ],
         ],
         'exclude' => [
             //
@@ -235,6 +244,8 @@ return [
         'exclude' => [
             AccountWidget::class,
             FilamentInfoWidget::class,
+            // Shown to anyone allowed to view interest rates (ViewAny:LenderProductRate).
+            RateHealthOverview::class,
         ],
     ],
 

@@ -7,9 +7,13 @@ use App\Models\LoanProduct;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
 
+/**
+ * A lender offer on the Flexi Hybrid product with, unless $rate is null, a
+ * published rate — the calculator only uses rates that are live in RateBook.
+ */
 function flexiHybridOffer(LoanProduct $product, string $lenderName, int $minTenure, int $maxTenure, ?int $initialTenure, ?float $rate = 11.0): LenderProduct
 {
-    return LenderProduct::factory()->create([
+    $offer = LenderProduct::factory()->create([
         'lender_id' => Lender::factory()->create(['name' => $lenderName, 'slug' => Str::slug($lenderName)])->id,
         'loan_product_id' => $product->id,
         'min_amount' => null,
@@ -17,8 +21,14 @@ function flexiHybridOffer(LoanProduct $product, string $lenderName, int $minTenu
         'min_tenure_months' => $minTenure,
         'max_tenure_months' => $maxTenure,
         'initial_tenure_months' => $initialTenure,
-        'interest_rate_from' => $rate,
+        'interest_rate_from' => null,
     ]);
+
+    if ($rate !== null) {
+        publishRate($offer, $rate);
+    }
+
+    return $offer;
 }
 
 it('mounts on the first lender\'s structure closest to the product\'s default tenure', function () {

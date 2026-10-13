@@ -5,8 +5,12 @@ namespace App\Filament\Imports;
 use App\Enums\EmploymentType;
 use App\Enums\LenderStatus;
 use App\Enums\LenderType;
+use App\Enums\RateStatus;
+use App\Enums\RateUnit;
+use App\Enums\RateVerificationStatus;
 use App\Models\Lender;
 use App\Models\LenderProduct;
+use App\Models\LenderProductRate;
 use App\Models\LoanProduct;
 use Filament\Actions\Imports\Exceptions\RowImportFailedException;
 use Filament\Actions\Imports\ImportColumn;
@@ -57,6 +61,14 @@ class LenderProductImporter extends Importer
      */
     private array $offersByLoanProduct = [];
 
+    /**
+     * Rate figures already on file per offer (drafts, submitted and live),
+     * loaded once per loan product, so a re-upload never duplicates a draft.
+     *
+     * @var array<int, array<int, list<array{0: float, 1: float|null}>>>
+     */
+    private array $ratesByLoanProduct = [];
+
     public function getJobConnection(): ?string
     {
         return $this->import->total_rows <= self::SYNCHRONOUS_ROW_LIMIT ? 'sync' : null;
@@ -86,8 +98,11 @@ class LenderProductImporter extends Importer
             ImportColumn::make('max_amount')->numeric()->rules(['nullable', 'numeric']),
             ImportColumn::make('min_tenure_months')->integer()->rules(['nullable', 'integer']),
             ImportColumn::make('max_tenure_months')->integer()->rules(['nullable', 'integer']),
-            ImportColumn::make('interest_rate_from')->numeric()->rules(['nullable', 'numeric']),
-            ImportColumn::make('interest_rate_to')->numeric()->rules(['nullable', 'numeric']),
+            // Rates are never written onto the offer: a rate in the file becomes
+            // an unverified draft in Catalog → Interest Rates (afterSave()), which
+            // must be evidenced and approved before the website shows it.
+            ImportColumn::make('interest_rate_from')->numeric()->rules(['nullable', 'numeric', 'gt:0', 'max:60'])->fillRecordUsing(fn () => null),
+            ImportColumn::make('interest_rate_to')->numeric()->rules(['nullable', 'numeric', 'gt:0', 'max:60'])->fillRecordUsing(fn () => null),
             ImportColumn::make('processing_fee_flat_amount_min')->numeric()->rules(['nullable', 'numeric']),
             ImportColumn::make('processing_fee_flat_amount_max')->numeric()->rules(['nullable', 'numeric']),
             ImportColumn::make('processing_fee_percent_min')->numeric()->rules(['nullable', 'numeric']),
@@ -158,6 +173,52 @@ class LenderProductImporter extends Importer
             'lender_id' => $lender->id,
             'loan_product_id' => $loanProduct->id,
         ]);
+    }
+
+    /**
+     * Turns a rate in the uploaded row into an unverified draft rate for the
+     * offer — unless the offer already has a draft or live rate with the same
+     * figures, so re-uploading a file does not pile up duplicates. Existing
+     * rates are loaded once per loan product per chunk, like the offers.
+     */
+    protected function afterSave(): void
+    {
+        $rateFrom = $this->data['interest_rate_from'] ?? null;
+
+        if (! is_numeric($rateFrom)) {
+            return;
+        }
+
+        $rateTo = is_numeric($this->data['interest_rate_to'] ?? null) ? round((float) $this->data['interest_rate_to'], 2) : null;
+        $rateFrom = round((float) $rateFrom, 2);
+
+        $loanProductId = $this->record->loan_product_id;
+
+        $this->ratesByLoanProduct[$loanProductId] ??= LenderProductRate::query()
+            ->whereIn('lender_product_id', LenderProduct::query()->select('id')->where('loan_product_id', $loanProductId))
+            ->whereIn('status', [RateStatus::Draft, RateStatus::PendingApproval, RateStatus::Published])
+            ->get(['lender_product_id', 'rate_min', 'rate_max'])
+            ->groupBy('lender_product_id')
+            ->map(fn ($rates) => $rates->map(fn (LenderProductRate $rate) => [(float) $rate->rate_min, $rate->rate_max !== null ? (float) $rate->rate_max : null])->all())
+            ->all();
+
+        $known = $this->ratesByLoanProduct[$loanProductId][$this->record->id] ?? [];
+
+        if (in_array([$rateFrom, $rateTo], $known, true)) {
+            return;
+        }
+
+        LenderProductRate::query()->create([
+            'lender_product_id' => $this->record->id,
+            'rate_min' => $rateFrom,
+            'rate_max' => $rateTo,
+            'rate_unit' => ($this->loanProductsBySlug[$this->data['loan_product_slug']] ?? null)?->category?->rateUnit() ?? RateUnit::PerAnnum,
+            'source_notes' => "Uploaded in a Lender Offers CSV import on {$this->import->created_at?->toDateString()}. Add the lender's official source and verify before submitting.",
+            'verification_status' => RateVerificationStatus::Unverified,
+            'status' => RateStatus::Draft,
+        ]);
+
+        $this->ratesByLoanProduct[$loanProductId][$this->record->id][] = [$rateFrom, $rateTo];
     }
 
     public static function getCompletedNotificationBody(Import $import): string

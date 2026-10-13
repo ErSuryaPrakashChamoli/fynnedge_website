@@ -22,7 +22,7 @@ use Illuminate\Support\Str;
  */
 class LoanLandingPageSeeder extends Seeder
 {
-    private const DISCLAIMER = 'Eligibility and final terms are set by the lender at the time of application — the figures here are indicative starting points, not a guarantee of approval or of the exact rate you\'ll be offered.';
+    protected const DISCLAIMER = 'Eligibility and final terms are set by the lender at the time of application — the figures here are indicative starting points, not a guarantee of approval or of the exact rate you\'ll be offered.';
 
     public function run(): void
     {
@@ -256,7 +256,7 @@ class LoanLandingPageSeeder extends Seeder
         }
     }
 
-    private function rangeSentence(LoanProduct $product): ?string
+    protected function rangeSentence(LoanProduct $product): ?string
     {
         if (! $product->min_amount || ! $product->max_amount) {
             return null;
@@ -266,9 +266,10 @@ class LoanLandingPageSeeder extends Seeder
             ? sprintf(' over a tenure of %d–%d months', $product->min_tenure_months, $product->max_tenure_months)
             : '';
 
-        $rate = $product->min_interest_rate && $product->max_interest_rate
-            ? sprintf(', at indicative rates of %s%%–%s%% p.a', self::trimRate($product->min_interest_rate), self::trimRate($product->max_interest_rate))
-            : '';
+        // A RateText token, not a typed figure: the page renders the lenders'
+        // live, verified range (or "at rates set by each lender"), so the copy
+        // can never drift from the published rates.
+        $rate = ", [rate-range:{$product->slug}]";
 
         return sprintf(
             '%s is typically available from ₹%s to ₹%s%s%s.',
@@ -280,7 +281,7 @@ class LoanLandingPageSeeder extends Seeder
         );
     }
 
-    private function eligibilitySentence(LoanProduct $product): ?string
+    protected function eligibilitySentence(LoanProduct $product): ?string
     {
         if (empty($product->eligibility_points)) {
             return null;
@@ -289,7 +290,7 @@ class LoanLandingPageSeeder extends Seeder
         return 'Lenders typically assess: '.implode('; ', $product->eligibility_points).'.';
     }
 
-    private function documentsSentence(LoanProduct $product): ?string
+    protected function documentsSentence(LoanProduct $product): ?string
     {
         if (empty($product->documents_required)) {
             return null;
@@ -298,15 +299,10 @@ class LoanLandingPageSeeder extends Seeder
         return 'Documents commonly required: '.implode(', ', $product->documents_required).'.';
     }
 
-    private static function trimRate(string|float $rate): string
-    {
-        return rtrim(rtrim(number_format((float) $rate, 2), '0'), '.');
-    }
-
     /**
      * @param  array<int, string|null>  $paragraphs
      */
-    private function upsertLandingPage(LoanProduct $product, LandingPageGroup $group, string $title, ?int $amount, string $excerpt, array $paragraphs, int $sortOrder): void
+    protected function upsertLandingPage(LoanProduct $product, LandingPageGroup $group, string $title, ?int $amount, string $excerpt, array $paragraphs, int $sortOrder, ?string $city = null): void
     {
         $body = collect($paragraphs)
             ->filter()
@@ -320,6 +316,7 @@ class LoanLandingPageSeeder extends Seeder
                 'group' => $group,
                 'title' => $title,
                 'amount' => $amount,
+                'city' => $city,
                 'excerpt' => $excerpt,
                 'body' => $body,
                 'sort_order' => $sortOrder,

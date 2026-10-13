@@ -5,6 +5,7 @@ namespace App\Filament\Resources\LoanProducts\RelationManagers;
 use App\Enums\LenderStatus;
 use App\Filament\Resources\LenderProducts\Schemas\LenderProductForm;
 use App\Models\LenderProduct;
+use App\Support\Rates\RateBook;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -44,8 +45,10 @@ class LenderProductsRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('min_amount')->money('INR')->sortable(),
                 TextColumn::make('max_amount')->money('INR')->sortable(),
-                TextColumn::make('interest_rate_from')->suffix('%')->label('Rate from'),
-                TextColumn::make('interest_rate_to')->suffix('%')->label('Rate to'),
+                TextColumn::make('live_rate')
+                    ->label('Live rate')
+                    ->getStateUsing(fn (LenderProduct $record): ?string => RateBook::quoteFor($record->id)?->rangeLabel())
+                    ->placeholder('No verified rate'),
                 TextColumn::make('processing_fee')
                     ->label('Fee')
                     ->getStateUsing(fn (LenderProduct $record) => $record->processingFeeDisplay())

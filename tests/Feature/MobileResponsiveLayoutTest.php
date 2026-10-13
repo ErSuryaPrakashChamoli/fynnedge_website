@@ -21,13 +21,14 @@ it('keeps the lender comparison table scroll container positioned', function () 
     $html = $this->get("/loans/{$product->slug}")->assertOk()->getContent();
 
     /*
-     * The table is min-w-[720px] inside an overflow-x-auto wrapper, and the
+     * From md up the table is md:min-w-[960px] inside an md:overflow-x-auto
+     * wrapper (below md each lender renders as a stacked card instead), and the
      * "Apply" header cell holds a position:absolute .sr-only span. Without
      * `relative` on the wrapper that span's containing block is the page, so it
      * escapes the scroll container and stretches the document to the table's
      * full width (measured: +396px at a 375px viewport).
      */
-    expect($html)->toContain('relative mt-4 overflow-x-auto');
+    expect($html)->toContain('relative mt-4 md:overflow-x-auto');
 });
 
 it('lets the journey phone input shrink beside its Send OTP button', function () {

@@ -8,6 +8,8 @@ use App\Support\Calculators\FlexiHybridLenderTerms;
 use App\Support\Calculators\FlexiHybridTenure;
 use App\Support\Calculators\LoanCalculatorPreset;
 use App\Support\Formatting\IndianNumberFormatter;
+use App\Support\Rates\RateBook;
+use App\Support\Rates\RateFormat;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -51,7 +53,7 @@ new class extends Component
     }
 
     /**
-     * @return array{label: string, min_amount: float, max_amount: float, default_amount: float, min_rate: float, max_rate: float, default_rate: float, min_years: int, max_years: int, default_years: int, rate_note: ?string, is_hybrid: bool, default_initial_tenure_months: ?int}
+     * @return array{label: string, min_amount: float, max_amount: float, default_amount: float, min_rate: float, max_rate: float, default_rate: float, min_years: int, max_years: int, default_years: int, rate_note: ?string, published_rate_range: ?string, is_hybrid: bool, default_initial_tenure_months: ?int}
      */
     #[Computed]
     public function preset(): array
@@ -61,7 +63,7 @@ new class extends Component
             'min_amount' => 100_000.0, 'max_amount' => 20_000_000.0, 'default_amount' => 1_000_000.0,
             'min_rate' => 10.0, 'max_rate' => 18.0, 'default_rate' => 10.0,
             'min_years' => 2, 'max_years' => 6, 'default_years' => 5,
-            'rate_note' => null, 'is_hybrid' => true, 'default_initial_tenure_months' => 12,
+            'rate_note' => null, 'published_rate_range' => null, 'is_hybrid' => true, 'default_initial_tenure_months' => 12,
         ];
     }
 
@@ -208,7 +210,9 @@ new class extends Component
      * without a published rate or structure is left out rather than shown
      * with borrowed or placeholder figures.
      *
-     * @return array<int, array{offer: LenderProduct, option: array{total: int, initial: int, subsequent: int}, result: array}>
+     * The rate is the lender's live, verified starting rate from RateBook.
+     *
+     * @return array<int, array{offer: LenderProduct, rate: float, option: array{total: int, initial: int, subsequent: int}, result: array}>
      */
     #[Computed]
     public function lenderComparison(): array
@@ -216,15 +220,17 @@ new class extends Component
         return $this->lenderOptions
             ->map(function (LenderProduct $offer): ?array {
                 $option = FlexiHybridTenure::nearest($offer->hybridTenureOptions(), $this->totalTenureMonths, $this->selectedTenureOption['initial'] ?? null);
+                $rate = RateBook::quoteFor($offer->id)?->startingRate();
 
-                if ($offer->interest_rate_from === null || $option === null) {
+                if ($rate === null || $option === null) {
                     return null;
                 }
 
                 return [
                     'offer' => $offer,
+                    'rate' => $rate,
                     'option' => $option,
-                    'result' => EmiCalculator::calculateHybrid($this->principal, (float) $offer->interest_rate_from, $option['initial'], $option['subsequent']),
+                    'result' => EmiCalculator::calculateHybrid($this->principal, $rate, $option['initial'], $option['subsequent']),
                 ];
             })
             ->filter()
@@ -271,8 +277,8 @@ new class extends Component
 
         $offer = $this->selectedLenderProduct;
 
-        if ($offer?->interest_rate_from !== null) {
-            $this->annualRate = (float) $offer->interest_rate_from;
+        if ($offer !== null && ($quote = RateBook::quoteFor($offer->id)) !== null) {
+            $this->annualRate = $quote->startingRate();
         }
 
         if ($offer?->max_amount !== null) {
@@ -573,7 +579,7 @@ new class extends Component
                         @foreach ($this->lenderComparison as $row)
                             <tr @class(['bg-accent-soft' => $lenderProductId === $row['offer']->id])>
                                 <td class="whitespace-nowrap px-4 py-3 font-medium text-ink">{{ $row['offer']->lender->name }}</td>
-                                <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">{{ $row['offer']->interest_rate_from }}%</td>
+                                <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">{{ RateFormat::percent($row['rate']) }}</td>
                                 <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">{{ \App\Support\Calculators\FlexiHybridTenure::label($row['option']) }}</td>
                                 <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">₹{{ $this->formatAmount($row['result']['initial_emi']) }}</td>
                                 <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">₹{{ $this->formatAmount($row['result']['subsequent_emi']) }}</td>

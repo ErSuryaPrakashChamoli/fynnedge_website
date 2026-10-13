@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\LandingPageGroup;
 use App\Enums\LenderStatus;
 use App\Models\LoanLandingPage;
 use App\Models\LoanProduct;
@@ -10,6 +11,7 @@ use App\Support\Calculators\LoanCalculatorPreset;
 use App\Support\Faqs\PageFaqs;
 use App\Support\Seo\SchemaGraph;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 class LoanLandingPageController extends Controller
@@ -42,6 +44,27 @@ class LoanLandingPageController extends Controller
             )],
             'calculatorSupported' => LoanCalculatorPreset::for($loanProduct->category) !== null,
             'testimonials' => Testimonial::query()->published()->forCategory($loanProduct->category)->orderBy('sort_order')->get(),
+            'otherLocations' => $this->otherLocations($loanProduct, $landingPage),
         ]);
+    }
+
+    /**
+     * A location page ("Personal Loan in Delhi") links to the same product's
+     * other published city pages; every other kind of landing page gets none.
+     *
+     * @return Collection<int, LoanLandingPage>
+     */
+    private function otherLocations(LoanProduct $loanProduct, LoanLandingPage $landingPage): Collection
+    {
+        if ($landingPage->group !== LandingPageGroup::ByLocation) {
+            return new Collection;
+        }
+
+        return $loanProduct->landingPages()
+            ->published()
+            ->where('group', LandingPageGroup::ByLocation)
+            ->whereKeyNot($landingPage->getKey())
+            ->orderBy('sort_order')
+            ->get();
     }
 }

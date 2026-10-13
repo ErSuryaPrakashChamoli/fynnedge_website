@@ -11,7 +11,7 @@
                 'name' => $faq->question,
                 'acceptedAnswer' => [
                     '@type' => 'Answer',
-                    'text' => $faq->answer,
+                    'text' => \App\Support\Rates\RateText::render($faq->answer),
                 ],
             ])->all(),
         ]) !!}

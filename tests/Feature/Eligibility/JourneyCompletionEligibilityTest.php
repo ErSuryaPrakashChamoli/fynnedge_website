@@ -119,6 +119,11 @@ it('ranks eligible results by lowest interest rate and flags the cheapest as Rec
             'status' => EligibilityRuleSetStatus::Active,
         ]);
 
+        // The results page shows and ranks by the published rate (RateBook).
+        if ($rate !== null) {
+            publishRate($lenderProduct, $rate);
+        }
+
         return $lender;
     };
 

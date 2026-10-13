@@ -17,10 +17,11 @@ use App\Models\MarketingSection;
  * Loan" on the home loan page.
  *
  * Deliberately NOT editable here: the form's rate-and-ceiling headline
- * ("Get up to ₹50 Lakh starting at 10.49%"), which is generated from the loan
- * product's own min_interest_rate/max_amount fields. Those numbers are a
- * financial claim — they belong to the product record, not to marketing copy
- * that could drift away from what the calculator and lender table say.
+ * ("Get up to ₹50 Lakh starting at 9.99% p.a."). The ceiling is the loan
+ * product's max_amount; the rate is the product's live, verified headline from
+ * App\Support\Rates\RateBook, managed in Catalog → Interest Rates. Those
+ * numbers are a financial claim — they must not drift away from what the
+ * calculator and lender table say.
  */
 class EnquiryFormContent
 {

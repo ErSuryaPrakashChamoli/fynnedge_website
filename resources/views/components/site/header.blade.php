@@ -65,8 +65,14 @@
                         x-transition:enter-start="opacity-0 -translate-y-1"
                         x-transition:enter-end="opacity-100 translate-y-0"
                         @click="open = false"
-                        class="absolute left-0 top-full z-10 w-max pt-3"
+                        class="absolute -left-48 top-full z-10 w-max pt-3"
                     >
+                        {{--
+                            -left-48 centres the panel under the max-w-7xl header from xl up:
+                            anchored at the Loans button (left-0), the fourth "By Location"
+                            column ran past the right edge of a 1366–1450px screen. Below xl
+                            that column wraps onto a second row instead of widening the panel.
+                        --}}
                         <div class="nav-dropdown-panel grid grid-cols-[max-content_1fr] rounded-xl border border-line bg-surface shadow-lg">
                             <div class="flex flex-col gap-1 border-r border-line p-3">
                                 @foreach ($loanCategories as $category)
@@ -95,13 +101,20 @@
                                         </div>
 
                                         @if (! empty($category['groups']))
-                                            <div class="mt-4 grid grid-cols-[repeat(3,max-content)] gap-6">
+                                            <div class="mt-4 grid grid-cols-[repeat(3,max-content)] gap-6 xl:grid-cols-[repeat(4,max-content)]">
                                                 @foreach ($category['groups'] as $groupLabel => $items)
+                                                    @php $isLocationGroup = $groupLabel === \App\Enums\LandingPageGroup::ByLocation->getLabel(); @endphp
                                                     <div>
                                                         <p class="font-mono text-[0.62rem] font-semibold uppercase tracking-wider text-ink-faint">{{ $groupLabel }}</p>
-                                                        <div class="mt-2 flex flex-col">
+                                                        <div @class(['mt-2', 'grid grid-cols-2 gap-x-2' => $isLocationGroup, 'flex flex-col' => ! $isLocationGroup])>
+                                                            {{--
+                                                                Plain links, not x-site.nav-link: every panel renders on every
+                                                                page, and with 24 cities per product the component's per-link
+                                                                cost was ~0.8s per render (288 links: 811ms vs 110ms plain). Its active state never matched
+                                                                these links anyway (the bound landingPage is a model, not a slug).
+                                                            --}}
                                                             @foreach ($items as $item)
-                                                                <x-site.nav-link :route="$item['route']" :parameters="$item['params']" :label="$item['label']" class="block max-w-[14rem] rounded-lg px-2 py-1 text-sm leading-snug hover:bg-surface-2" />
+                                                                <a href="{{ route($item['route'], $item['params']) }}" @if ($item['label'] !== $item['title']) aria-label="{{ $item['title'] }}" @endif @class(['block rounded-lg px-2 py-1 text-sm font-medium leading-snug text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink', 'whitespace-nowrap' => $isLocationGroup, 'max-w-[14rem]' => ! $isLocationGroup])>{{ $item['label'] }}</a>
                                                             @endforeach
                                                         </div>
                                                     </div>

@@ -214,12 +214,12 @@
                     >
                         @if ($banner->heading)
                             <h3 class="banner-heading line-clamp-2 max-w-2xl font-display text-xl font-semibold text-white sm:line-clamp-none sm:text-3xl">
-                                {{ $banner->heading }}
+                                {{ \App\Support\Rates\RateText::render($banner->heading) }}
                             </h3>
                         @endif
                         @if ($banner->subtitle)
                             <p class="banner-subtitle mt-1.5 line-clamp-2 max-w-xl text-sm text-white/85 sm:mt-2 sm:line-clamp-none sm:text-base">
-                                {{ $banner->subtitle }}
+                                {{ \App\Support\Rates\RateText::render($banner->subtitle) }}
                             </p>
                         @endif
                         @if ($banner->cta_label && $banner->cta_url)

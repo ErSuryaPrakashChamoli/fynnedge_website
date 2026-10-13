@@ -1,9 +1,13 @@
 <?php
 
+use App\Enums\LoanCategory;
+use App\Enums\RateStatus;
+use App\Enums\RateVerificationStatus;
 use App\Filament\Imports\LenderProductImporter;
 use App\Filament\Resources\LenderProducts\Pages\ListLenderProducts;
 use App\Models\Lender;
 use App\Models\LenderProduct;
+use App\Models\LenderProductRate;
 use App\Models\LoanProduct;
 use App\Models\User;
 use Filament\Actions\Imports\Exceptions\RowImportFailedException;
@@ -202,4 +206,26 @@ it('keeps one offer when a file lists the same lender and product twice, with th
     expect((float) $offer->min_amount)->toBe(200000.0);
     expect((float) $offer->max_amount)->toBe(9000000.0);
     expect(Lender::query()->where('slug', 'repeat-bank')->count())->toBe(1);
+});
+
+it('turns a rate in an uploaded row into one unverified draft rate, never a live one', function () {
+    LoanProduct::factory()->create(['slug' => 'rate-upload-product', 'category' => LoanCategory::PersonalLoan]);
+    $row = [
+        'lender_name' => 'Rate Upload Bank',
+        'lender_type' => 'bank',
+        'loan_product_slug' => 'rate-upload-product',
+        'interest_rate_from' => '10.75',
+        'interest_rate_to' => '19.5',
+    ];
+
+    runLenderProductImportRow($row);
+    runLenderProductImportRow($row);
+
+    $rate = LenderProductRate::query()->sole();
+    expect($rate)
+        ->status->toBe(RateStatus::Draft)
+        ->verification_status->toBe(RateVerificationStatus::Unverified)
+        ->rate_min->toBe('10.75')
+        ->rate_max->toBe('19.50')
+        ->and(LenderProduct::query()->sole()->interest_rate_from)->toBeNull();
 });

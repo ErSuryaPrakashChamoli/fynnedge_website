@@ -12,6 +12,7 @@ use App\Modules\CreditScore\Contracts\CreditScoreProvider;
 use App\Modules\MobileOtp\Contracts\SmsProvider;
 use App\Support\Analytics\TrackingScripts;
 use App\Support\Contact\OfficeMap;
+use App\Support\Rates\RateBook;
 use App\Support\Seo\Sitemap;
 use App\Support\Theme\SiteThemeStyles;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -29,6 +30,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Per request/job: RateBook memoises the published rates it read, and
+        // a long-lived worker must not carry one request's memo into the next.
+        $this->app->scoped(RateBook::class);
+
         $this->app->bind(
             CreditBureauProvider::class,
             fn () => $this->app->make(config('services.credit_bureau.provider')),

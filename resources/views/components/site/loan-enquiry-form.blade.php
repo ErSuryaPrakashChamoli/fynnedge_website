@@ -37,14 +37,17 @@
         `display:none` styles are what keep that path correct: x-show toggles
         exactly that inline style once Alpine boots.
     */
+    use App\Enums\RateUnit;
     use App\Support\Enquiries\LoanEnquiryAmount;
     use App\Support\Formatting\IndianNumberFormatter;
+    use App\Support\Rates\RateBook;
 
     $selectable = $loanProducts !== null;
 
     /*
-        Rate and ceiling come from the product row, so an admin editing the
-        product updates this headline without anyone touching Blade.
+        The ceiling comes from the product row; the rate is the product's live,
+        verified "from" figure in RateBook (null — and so not shown — when no
+        lender has one). Card products quote no "starting at" loan rate here.
     */
     $productOptions = collect($selectable ? $loanProducts : [$loanProduct])
         ->mapWithKeys(function ($product): array {
@@ -53,8 +56,8 @@
             return [$product->slug => [
                 'name' => $product->name,
                 'amount' => $product->max_amount ? '₹'.IndianNumberFormatter::compact($product->max_amount) : null,
-                'rate' => $product->min_interest_rate
-                    ? rtrim(rtrim(number_format((float) $product->min_interest_rate, 2), '0'), '.').'%'
+                'rate' => ($rateHeadline = RateBook::headlineFor($product)) && $rateHeadline->unit() === RateUnit::PerAnnum
+                    ? $rateHeadline->startingLabel().' p.a.'
                     : null,
                 'min' => $range['min'],
                 'max' => $range['max'],

@@ -8,6 +8,7 @@ use App\Enums\PublishStatus;
 use App\Models\PromoBar;
 use App\Support\Faqs\FaqPlacements;
 use App\Support\PromoBars\PromoBars;
+use App\Support\Rates\RateText;
 use Closure;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -44,13 +45,15 @@ class PromoBarForm
                         TextInput::make('headline')
                             ->required()
                             ->maxLength(90)
-                            ->helperText('Wrap words in *asterisks* to highlight them, e.g. Get up to *₹50 Lakhs* starting at *9.99%*')
+                            ->rule(fn () => RateText::rule())
+                            ->helperText('Wrap words in *asterisks* to highlight them. For a rate, write [rate:loan-slug] instead of a number, e.g. Get up to *₹50 Lakhs* *[rate:personal-loan]* — it always shows the current published, verified rate.')
                             ->columnSpanFull(),
                         TagsInput::make('rotating_messages')
                             ->label('Rotating messages')
                             ->placeholder('Type a message and press Enter')
                             ->nestedRecursiveRules(['max:90'])
-                            ->helperText('Optional. Extra lines that take turns with the headline every few seconds (paused while the visitor hovers). *Asterisks* highlight here too.')
+                            ->rule(fn () => RateText::rule())
+                            ->helperText('Optional. Extra lines that take turns with the headline every few seconds (paused while the visitor hovers). *Asterisks* highlight here too, and rates use [rate:loan-slug].')
                             ->columnSpanFull(),
                         TextInput::make('eyebrow')
                             ->label('Badge')

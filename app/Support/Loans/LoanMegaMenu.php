@@ -40,7 +40,7 @@ class LoanMegaMenu
      *     overviewParams: array<string, string>,
      *     applyRoute: string,
      *     applyParams: array<string, string>,
-     *     groups: array<string, array<int, array{label: string, route: string, params: array<string, string>}>>,
+     *     groups: array<string, array<int, array{label: string, title: string, route: string, params: array<string, string>}>>,
      * }>
      */
     public static function categories(): array
@@ -48,7 +48,7 @@ class LoanMegaMenu
         $products = LoanProduct::query()
             ->published()
             ->whereIn('category', self::CATEGORY_ORDER)
-            ->with(['landingPages' => fn ($query) => $query->published()->orderBy('sort_order')])
+            ->with(['landingPages' => fn ($query) => $query->published()->orderBy('sort_order')->select(['id', 'loan_product_id', 'group', 'title', 'slug', 'city'])])
             ->get()
             ->keyBy(fn (LoanProduct $product) => $product->category->value);
 
@@ -72,7 +72,8 @@ class LoanMegaMenu
                             $group->getLabel() => $product->landingPages
                                 ->where('group', $group)
                                 ->map(fn ($page) => [
-                                    'label' => $page->title,
+                                    'label' => $page->shortLabel(),
+                                    'title' => $page->title,
                                     'route' => 'loans.landing-pages.show',
                                     'params' => ['loanProduct' => $product->slug, 'landingPage' => $page->slug],
                                 ])
