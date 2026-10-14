@@ -14,6 +14,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/** | .ai/rules/app.md |
 | app/Support/Loans/LoanMegaMenu.php,app/Support/Calculators/CalculatorCatalog.php,app/Models/NavigationLink.php | .ai/rules/calculators-models.md |
 | app/Support/Calculators/CalculatorPagesContent.php,app/Filament/Pages/CalculatorPagesSettings.php,resources/views/calculators/** | .ai/rules/calculators.md |
+| app/Support/Rates/RateBook.php,app/Console/Commands/RatesStatusCommand.php | .ai/rules/commands.md |
 | app/Support/Seo/SeoDefaults.php,app/Support/Seo/Sitemap.php,app/Support/Seo/CrawlerPolicy.php,resources/views/components/layouts/app.blade.php | .ai/rules/components-layouts.md |
 | resources/views/components/ui/input-affix.blade.php,resources/views/components/site/loan-enquiry-form.blade.php,resources/views/components/site/quick-enquiry.blade.php | .ai/rules/components-site-views-components-site.md |
 | app/Support/Contact/**,resources/views/components/site/location-map.blade.php,resources/views/components/site/footer.blade.php,resources/views/contact.blade.php | .ai/rules/components-site-views.md |
@@ -64,6 +65,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Http/Middleware/SecurityHeaders.php,app/Providers/Filament/AdminPanelProvider.php | .ai/rules/providers-filament.md |
 | app/Filament/Resources/Pages/Schemas/PageForm.php,resources/views/components/site/footer.blade.php,app/Providers/AppServiceProvider.php | .ai/rules/providers.md |
 | database/seeders/data/**,app/Support/Rates/RateAuditImport.php,database/migrations/2026_10_13_123020_import_october_2026_lender_rate_audit.php | .ai/rules/rates-migrations.md |
+| database/seeders/data/**,app/Support/Rates/RateAuditImport.php,app/Support/Rates/RateText.php | .ai/rules/rates.md |
 | app/Models/Redirect.php,app/Http/Middleware/HandleRedirects.php,app/Filament/Resources/Redirects/** | .ai/rules/redirects.md |
 | app/Filament/Resources/LenderProductRates/**,app/Support/Rates/RateWorkflow.php,app/Filament/RelationManagers/** | .ai/rules/relation-managers.md |
 | app/Filament/Schemas/HtmlBodyEditor.php,app/Filament/Resources/**/Schemas/*Form.php | .ai/rules/resources-schemas.md |

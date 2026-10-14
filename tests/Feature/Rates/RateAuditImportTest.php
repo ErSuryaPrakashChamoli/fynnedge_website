@@ -8,6 +8,7 @@ use App\Models\LenderProduct;
 use App\Models\LenderProductRate;
 use App\Models\LoanLandingPage;
 use App\Models\LoanProduct;
+use App\Models\User;
 use App\Support\Rates\RateAuditImport;
 use App\Support\Rates\RateBook;
 
@@ -135,4 +136,32 @@ it('reads the shipped October 2026 audit dataset', function () {
     expect($dataset['researched_on'])->toBe('2026-10-13')
         ->and($dataset['records'])->not->toBeEmpty()
         ->and(collect($dataset['records'])->pluck('status')->unique()->diff(['VERIFIED', 'SNIPPET_ONLY', 'UNVERIFIED', 'NOT_OFFERED']))->toBeEmpty();
+});
+
+it('matches audit records by loan type when the product has its own slug, as production\'s "Personal Loans" does', function () {
+    $product = LoanProduct::factory()->published()->create(['category' => LoanCategory::PersonalLoan, 'slug' => 'personal-loans', 'name' => 'Personal Loans']);
+    $offer = auditOffer($product, 'Slug Bank');
+
+    RateAuditImport::run(auditDataset([auditRecord('Slug Bank')]));
+
+    expect(LenderProductRate::query()->where('lender_product_id', $offer->id)->sole())
+        ->status->toBe(RateStatus::PendingApproval)
+        ->rate_min->toBe('10.50');
+});
+
+it('replaces an untouched pre-audit placeholder with the audited rate but keeps one an editor has worked on', function () {
+    $editor = User::factory()->create();
+    $untouched = auditOffer($this->product, 'Placeholder Bank');
+    $edited = auditOffer($this->product, 'Edited Bank');
+    $placeholder = ['status' => RateStatus::Draft, 'verification_status' => RateVerificationStatus::Unverified, 'rate_min' => 12.0,
+        'source_notes' => 'Pre-audit figure from the lender offer, with no source on record. Not shown on the website until it is verified and published.'];
+    LenderProductRate::factory()->for($untouched, 'lenderProduct')->create($placeholder);
+    LenderProductRate::factory()->for($edited, 'lenderProduct')->create([...$placeholder, 'updated_by' => $editor->id]);
+
+    RateAuditImport::run(auditDataset([auditRecord('Placeholder Bank'), auditRecord('Edited Bank')]));
+
+    expect(LenderProductRate::query()->where('lender_product_id', $untouched->id)->sole())
+        ->status->toBe(RateStatus::PendingApproval)->rate_min->toBe('10.50')
+        ->and(LenderProductRate::query()->where('lender_product_id', $edited->id)->sole())
+        ->status->toBe(RateStatus::Draft)->rate_min->toBe('12.00');
 });

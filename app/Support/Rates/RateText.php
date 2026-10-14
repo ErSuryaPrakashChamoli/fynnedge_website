@@ -10,7 +10,8 @@ namespace App\Support\Rates;
  *   [rate:personal-loan]        → "from 9.99% p.a."
  *   [rate-range:personal-loan]  → "at lenders' published rates of 9.99%–30.50% p.a."
  *
- * The slug is the loan product's URL slug. When the product has no live,
+ * The key is the loan product's URL slug or its loan type (e.g.
+ * personal-loan). When the product has no live,
  * verified rate, either token reads "at rates set by each lender" instead, so
  * a sentence never shows a stale or unverified figure and never breaks.
  *

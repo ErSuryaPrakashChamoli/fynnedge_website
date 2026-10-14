@@ -11,6 +11,7 @@ use App\Models\Lender;
 use App\Models\LenderProduct;
 use App\Models\LenderProductRate;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -30,13 +31,23 @@ use Illuminate\Support\Str;
  *  - where nothing official was found, the offer's old (unsourced) figure is
  *    kept as an unverified draft so it is not lost, with what the audit found.
  *
- * An offer that already has any rate rows is skipped, so running it twice
- * changes nothing. Lenders whose product the audit found NOT offered get no
- * rate at all and are listed in the result for the team to deactivate.
+ * Audit records are matched to an offer by lender and LOAN CATEGORY (the
+ * dataset's product_slug values are LoanCategory values), never by the loan
+ * product's own URL slug: production's personal loan product is called
+ * "Personal Loans" with its own slug, and slug matching silently imported none
+ * of its rates on the first run.
+ *
+ * An offer that already has rate rows is skipped, so running it twice changes
+ * nothing — except that rows this import itself left as pre-audit
+ * placeholders (untouched since) are replaced when audited rates now match.
+ * Lenders whose product the audit found NOT offered get no rate at all and are
+ * listed in the result for the team to deactivate.
  */
 final class RateAuditImport
 {
     public const DATASET = 'database/seeders/data/rate-audit-2026-10-13.json';
+
+    private const PLACEHOLDER_NOTE = 'Pre-audit figure from the lender offer, with no source on record.';
 
     /**
      * Official, but not an advertised starting rate: an interest-rate-policy
@@ -59,8 +70,9 @@ final class RateAuditImport
         $result = ['awaiting_approval' => 0, 'verified_drafts' => 0, 'unverified_drafts' => 0, 'legacy_drafts' => 0, 'offers_without_rate' => 0, 'not_offered' => []];
 
         LenderProduct::query()
-            ->with(['lender' => fn ($query) => $query->withTrashed(), 'loanProduct'])
-            ->whereDoesntHave('rates')
+            ->with(['lender' => fn ($query) => $query->withTrashed(), 'loanProduct', 'rates'])
+            // No rates yet, or only placeholders this import left untouched.
+            ->whereDoesntHave('rates', fn (Builder $rates) => $rates->whereNot(fn (Builder $rate) => self::wherePlaceholder($rate)))
             ->get()
             ->each(function (LenderProduct $offer) use ($research, $researchedOn, &$result): void {
                 if ($offer->lender === null || $offer->loanProduct === null) {
@@ -68,7 +80,16 @@ final class RateAuditImport
                 }
 
                 /** @var Collection<int, array<string, mixed>> $records */
-                $records = $research->get(self::key($offer->lender, $offer->loanProduct->slug), collect());
+                $records = $research->get(self::key($offer->lender, $offer->loanProduct->category->value), collect());
+
+                if ($offer->rates->isNotEmpty()) {
+                    // Placeholders stay unless the audit now has a rate to put in their place.
+                    if (! $records->contains(fn (array $record) => in_array($record['status'], ['VERIFIED', 'SNIPPET_ONLY'], true) && $record['rate_min'] !== null)) {
+                        return;
+                    }
+
+                    $offer->rates->each(fn (LenderProductRate $placeholder) => $placeholder->delete());
+                }
 
                 if ($records->contains('status', 'NOT_OFFERED') && ! $records->contains(fn (array $record) => $record['status'] === 'VERIFIED' && $record['rate_min'] !== null)) {
                     $result['not_offered'][] = "{$offer->lender->name} — {$offer->loanProduct->name}";
@@ -102,9 +123,21 @@ final class RateAuditImport
         return $result;
     }
 
-    private static function key(Lender $lender, string $productSlug): string
+    private static function key(Lender $lender, string $loanCategory): string
     {
-        return Str::slug($lender->name).'|'.$productSlug;
+        return Str::slug($lender->name).'|'.$loanCategory;
+    }
+
+    /**
+     * A pre-audit placeholder this import created (importLegacy()) that nobody
+     * has edited, submitted or published since.
+     */
+    private static function wherePlaceholder(Builder $query): void
+    {
+        $query->where('status', RateStatus::Draft)
+            ->whereNull('created_by')
+            ->whereNull('updated_by')
+            ->where('source_notes', 'like', self::PLACEHOLDER_NOTE.'%');
     }
 
     /**
@@ -187,7 +220,7 @@ final class RateAuditImport
             'rate_min' => $offer->interest_rate_from,
             'rate_max' => $offer->interest_rate_to,
             'rate_unit' => RateUnit::PerAnnum,
-            'source_notes' => "Pre-audit figure from the lender offer, with no source on record. Not shown on the website until it is verified and published.\n\n"
+            'source_notes' => self::PLACEHOLDER_NOTE." Not shown on the website until it is verified and published.\n\n"
                 .($found !== '' ? "What the 13 Oct 2026 audit found on the lender's own website:\n{$found}" : 'Not covered by the 13 Oct 2026 audit.'),
             'verification_status' => RateVerificationStatus::Unverified,
             'status' => RateStatus::Draft,

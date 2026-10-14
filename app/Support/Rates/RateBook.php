@@ -14,13 +14,15 @@ use App\Models\LoanProduct;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /**
  * The single source of every interest rate shown on the public site.
  *
  * Reads published, verified LenderProductRate rows once per request (from a
- * cache that is busted whenever a rate, offer or lender is saved) and applies
- * the date rules at READ time, against the current clock: effective_from /
+ * cache invalidated whenever a rate, offer, lender or product is saved) and
+ * applies the date rules at READ time, against the current clock: effective_from /
  * effective_until in Indian calendar days, the promotion window to the
  * second. Because the cached data holds dates rather than decisions, an
  * expired offer drops off the site the moment it lapses — no cache TTL, cron
@@ -33,7 +35,14 @@ final class RateBook
 {
     public const TIMEZONE = LenderProductRate::TIMEZONE;
 
-    private const CACHE_KEY = 'rate-book:published-rates:v1';
+    private const CACHE_KEY = 'rate-book:published-rates:v2';
+
+    /**
+     * A token that changes after every committed change to rates, offers,
+     * lenders or products. The cached rows carry the token they were read
+     * under and are only used while it is still current.
+     */
+    private const VERSION_KEY = 'rate-book:version';
 
     /**
      * @var list<array<string, mixed>>|null
@@ -46,13 +55,40 @@ final class RateBook
     }
 
     /**
-     * Drops the cached rows. Called from the saved/deleted hooks of every model
-     * whose change can alter what the site shows (rates, offers, lenders).
+     * Invalidates the cached rows. Called from the saved/deleted hooks of every
+     * model whose change can alter what the site shows (rates, offers,
+     * lenders, products).
+     *
+     * The new version token is written only AFTER the surrounding transaction
+     * commits. Clearing inside the transaction let a page view that ran in that
+     * moment cache the pre-publish rows again, and that stale copy then stayed
+     * until the next change. Now such a copy is tagged with the old token and
+     * is ignored by the next reader.
      */
     public static function flush(): void
     {
-        Cache::forget(self::CACHE_KEY);
+        self::forgetMemo();
 
+        DB::afterCommit(function (): void {
+            Cache::forever(self::VERSION_KEY, (string) Str::uuid());
+            self::forgetMemo();
+        });
+    }
+
+    /**
+     * A RateBook that reads straight from the database, bypassing the cache —
+     * for diagnostics (rates:status) to compare against what the site serves.
+     */
+    public static function fresh(): self
+    {
+        $book = new self;
+        $book->rows = $book->loadRows();
+
+        return $book;
+    }
+
+    private static function forgetMemo(): void
+    {
         if (app()->resolved(self::class)) {
             self::instance()->rows = null;
         }
@@ -88,13 +124,20 @@ final class RateBook
      */
     public static function headlineFor(LoanProduct|int $loanProduct): ?RateHeadline
     {
-        $loanProductId = $loanProduct instanceof LoanProduct ? $loanProduct->id : $loanProduct;
+        return self::instance()->headline($loanProduct instanceof LoanProduct ? $loanProduct->id : $loanProduct);
+    }
 
-        $quotes = self::instance()->live()
+    /**
+     * headlineFor() against this book's rows — used directly on a fresh()
+     * book to compute the headline from the database rather than the cache.
+     */
+    public function headline(int $loanProductId): ?RateHeadline
+    {
+        $quotes = $this->live()
             ->where('loanProductId', $loanProductId)
             ->filter(fn (RateQuote $quote) => $quote->isForAllBorrowers());
 
-        $unit = self::instance()->unitFor($loanProductId);
+        $unit = $this->unitFor($loanProductId);
 
         if ($unit !== null) {
             $quotes = $quotes->filter(fn (RateQuote $quote) => $quote->unit === $unit);
@@ -113,11 +156,18 @@ final class RateBook
         );
     }
 
+    /**
+     * The headline for a [rate:…] content token: the key is a loan product's URL
+     * slug, or failing that a loan type (LoanCategory value), so
+     * [rate:personal-loan] works whatever the personal loan product's own slug
+     * is (production's is "Personal Loans").
+     */
     public static function headlineForSlug(string $loanProductSlug): ?RateHeadline
     {
-        $loanProductId = collect(self::instance()->rows())->firstWhere('loan_product_slug', $loanProductSlug)['loan_product_id'] ?? null;
+        $rows = collect(self::instance()->rows());
+        $row = $rows->firstWhere('loan_product_slug', $loanProductSlug) ?? $rows->firstWhere('loan_category', $loanProductSlug);
 
-        return $loanProductId === null ? null : self::headlineFor($loanProductId);
+        return $row === null ? null : self::headlineFor($row['loan_product_id']);
     }
 
     /**
@@ -188,7 +238,33 @@ final class RateBook
      */
     private function rows(): array
     {
-        return $this->rows ??= Cache::rememberForever(self::CACHE_KEY, fn (): array => LenderProductRate::query()
+        if ($this->rows !== null) {
+            return $this->rows;
+        }
+
+        $version = Cache::get(self::VERSION_KEY);
+        $cached = Cache::get(self::CACHE_KEY);
+
+        if (is_array($cached) && ($cached['version'] ?? null) === $version && is_array($cached['rows'] ?? null)) {
+            return $this->rows = $cached['rows'];
+        }
+
+        $rows = $this->loadRows();
+
+        // Tagged with the version read BEFORE the query: if a change commits
+        // while this request is reading, the token moves on and these rows are
+        // refreshed by the next reader instead of being trusted.
+        Cache::forever(self::CACHE_KEY, ['version' => $version, 'rows' => $rows]);
+
+        return $this->rows = $rows;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function loadRows(): array
+    {
+        return LenderProductRate::query()
             ->toBase()
             ->join('lender_products', 'lender_products.id', '=', 'lender_product_rates.lender_product_id')
             ->join('lenders', 'lenders.id', '=', 'lender_products.lender_id')
@@ -236,6 +312,6 @@ final class RateBook
                 'is_featured' => (bool) $row->is_featured,
                 'display_priority' => (int) $row->display_priority,
             ])
-            ->all());
+            ->all();
     }
 }

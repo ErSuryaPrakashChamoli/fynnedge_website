@@ -10,6 +10,7 @@ use App\Models\LoanProduct;
 use App\Models\PromoBar;
 use App\Models\User;
 use App\Support\PromoBars\PromoBars;
+use App\Support\Rates\RateText;
 use Livewire\Livewire;
 
 function tokenProduct(): LoanProduct
@@ -84,4 +85,12 @@ it('refuses a typed rate in promo bar copy and points to the token', function ()
         ->assertSee('Use [rate:loan-slug] (e.g. [rate:personal-loan]) so the figure always matches the published, verified rate.');
 
     expect(PromoBar::query()->count())->toBe(0);
+});
+
+it('resolves a [rate] token by loan type when the product has its own slug', function () {
+    $product = LoanProduct::factory()->published()->create(['category' => LoanCategory::PersonalLoan, 'slug' => 'personal-loans', 'name' => 'Personal Loans']);
+    publishRate(LenderProduct::factory()->for($product, 'loanProduct')->create(), 9.99);
+
+    expect(RateText::render('Personal loans [rate:personal-loan]'))->toBe('Personal loans from 9.99% p.a.')
+        ->and(RateText::render('Personal loans [rate:personal-loans]'))->toBe('Personal loans from 9.99% p.a.');
 });
