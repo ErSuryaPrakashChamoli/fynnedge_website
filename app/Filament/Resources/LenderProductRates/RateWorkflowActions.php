@@ -15,6 +15,7 @@ use Filament\Support\Icons\Heroicon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\HtmlString;
 
 /**
  * The Filament buttons for RateWorkflow's transitions, shared by the list
@@ -130,8 +131,19 @@ final class RateWorkflowActions
     }
 
     /**
+     * List tabs whose rows are all past publishing (live, lapsed or archived),
+     * so the bulk publish button is not offered there.
+     *
+     * @var list<string>
+     */
+    private const TABS_WITHOUT_PUBLISHABLE_RATES = ['live', 'expired', 'history'];
+
+    /**
      * Publishes every selected draft or submitted rate that passes the
-     * publication rules, and reports the ones that did not, with reasons.
+     * publication rules. Selected rates that are already live or archived are
+     * left alone and only counted — they are not failures. Rates that fail a
+     * check are grouped by reason, so a large selection still gives a short,
+     * readable summary.
      */
     public static function bulkPublish(): BulkAction
     {
@@ -139,30 +151,78 @@ final class RateWorkflowActions
             ->label('Approve & publish selected')
             ->icon(Heroicon::OutlinedCheckBadge)
             ->color('success')
-            ->visible(fn (): bool => self::user()->can('publish', LenderProductRate::class))
+            ->visible(fn ($livewire): bool => self::user()->can('publish', LenderProductRate::class)
+                && ! in_array($livewire->activeTab ?? null, self::TABS_WITHOUT_PUBLISHABLE_RATES, true))
             ->requiresConfirmation()
-            ->modalDescription('Each selected draft or submitted rate that has verified evidence goes live; anything that fails a check is skipped and listed.')
+            ->modalDescription('Each selected draft or submitted rate with verified evidence goes live. Rates that are already live are left as they are; anything that fails a check stays a draft.')
             ->deselectRecordsAfterCompletion()
             ->action(function (Collection $records): void {
-                $published = 0;
-                $skipped = [];
+                $publishable = $records->filter(fn (LenderProductRate $record) => in_array($record->status, [RateStatus::Draft, RateStatus::PendingApproval], true));
+                $alreadyLive = $records->filter(fn (LenderProductRate $record) => $record->status === RateStatus::Published)->count();
+                $archived = $records->count() - $publishable->count() - $alreadyLive;
 
-                foreach ($records as $record) {
+                $published = 0;
+                $failures = [];
+
+                foreach ($publishable as $record) {
                     try {
                         RateWorkflow::publish($record, self::user());
                         $published++;
                     } catch (RateWorkflowException|AuthorizationException $exception) {
-                        $skipped[] = $record->offerLabel().': '.($exception instanceof RateWorkflowException ? $exception->problems[0] : $exception->getMessage());
+                        $reason = $exception instanceof RateWorkflowException ? $exception->problems[0] : $exception->getMessage();
+                        $failures[$reason][] = $record->offerLabel();
                     }
                 }
 
-                Notification::make()
-                    ->title("Published {$published} ".str('rate')->plural($published))
-                    ->body($skipped === [] ? null : 'Skipped: '.implode(' · ', array_slice($skipped, 0, 8)).(count($skipped) > 8 ? ' · …and '.(count($skipped) - 8).' more' : ''))
-                    ->color($skipped === [] ? 'success' : 'warning')
-                    ->persistent()
-                    ->send();
+                $failed = array_sum(array_map('count', $failures));
+
+                $notification = Notification::make()
+                    ->title(match (true) {
+                        $published > 0 => "Published {$published} ".str('rate')->plural($published),
+                        $failed > 0 => 'No rates published',
+                        default => 'Nothing to publish',
+                    })
+                    ->body(self::bulkPublishSummary($alreadyLive, $archived, $failures))
+                    ->color(match (true) {
+                        $failed > 0 => 'warning',
+                        $published > 0 => 'success',
+                        default => 'info',
+                    });
+
+                // Failures need reading and acting on; a clean result can fade away.
+                if ($failed > 0) {
+                    $notification->persistent();
+                }
+
+                $notification->send();
             });
+    }
+
+    /**
+     * @param  array<string, list<string>>  $failures  Reason => offer labels.
+     */
+    private static function bulkPublishSummary(int $alreadyLive, int $archived, array $failures): ?HtmlString
+    {
+        $lines = [];
+
+        if ($alreadyLive > 0) {
+            $lines[] = e($alreadyLive.' selected '.str('rate')->plural($alreadyLive).' '.($alreadyLive === 1 ? 'was' : 'were').' already live and left unchanged.');
+        }
+
+        if ($archived > 0) {
+            $lines[] = e($archived.' archived '.str('version')->plural($archived).' left as history.');
+        }
+
+        foreach (array_slice($failures, 0, 3, true) as $reason => $offers) {
+            $names = implode(', ', array_slice($offers, 0, 3)).(count($offers) > 3 ? ' and '.(count($offers) - 3).' more' : '');
+            $lines[] = '<strong>'.e(count($offers).' not published:').'</strong> '.e($reason).' <span>('.e($names).')</span>';
+        }
+
+        if (count($failures) > 3) {
+            $lines[] = e('Others failed for '.(count($failures) - 3).' further reasons. Open each draft to see what is missing.');
+        }
+
+        return $lines === [] ? null : new HtmlString(implode('<br>', $lines));
     }
 
     /**

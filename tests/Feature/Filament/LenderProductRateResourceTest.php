@@ -138,6 +138,44 @@ it('publishes the selected rates that pass the checks and reports the rest', fun
         ->and($unsourced->fresh()->status)->toBe(RateStatus::Draft);
 });
 
+it('leaves selected rates that are already live alone instead of reporting them as failures', function () {
+    $this->actingAs(rateAdmin(RateRoles::PUBLISHER_ROLE));
+    $live = LenderProductRate::factory()->published()->for(rateFormOffer(), 'lenderProduct')->create(['published_at' => now()->subWeek()]);
+    $pending = LenderProductRate::factory()->pendingApproval()->for(rateFormOffer(), 'lenderProduct')->create();
+
+    Livewire::test(ListLenderProductRates::class, ['activeTab' => 'all'])
+        ->callTableBulkAction('bulkPublish', [$live, $pending])
+        ->assertNotified('Published 1 rate');
+
+    expect($pending->fresh()->status)->toBe(RateStatus::Published)
+        ->and($live->fresh())->status->toBe(RateStatus::Published)->published_at->toDateString()->toBe(now()->subWeek()->toDateString());
+});
+
+it('says there is nothing to publish when every selected rate is already live', function () {
+    $this->actingAs(rateAdmin(RateRoles::PUBLISHER_ROLE));
+    $live = LenderProductRate::factory()->published()->count(2)->for(rateFormOffer(), 'lenderProduct')->create();
+
+    Livewire::test(ListLenderProductRates::class, ['activeTab' => 'all'])
+        ->callTableBulkAction('bulkPublish', $live)
+        ->assertNotified('Nothing to publish');
+});
+
+it('offers bulk publishing only on tabs that can list drafts or submitted rates', function (string $tab, bool $offered) {
+    $this->actingAs(rateAdmin(RateRoles::PUBLISHER_ROLE));
+
+    $component = Livewire::test(ListLenderProductRates::class, ['activeTab' => $tab]);
+
+    $offered ? $component->assertTableBulkActionVisible('bulkPublish') : $component->assertTableBulkActionHidden('bulkPublish');
+})->with([
+    'needs attention' => ['attention', true],
+    'awaiting approval' => ['pending', true],
+    'drafts' => ['drafts', true],
+    'all' => ['all', true],
+    'live on site' => ['live', false],
+    'expired' => ['expired', false],
+    'archived versions' => ['history', false],
+]);
+
 it('restores an archived version from the history as a new draft', function () {
     $this->actingAs(rateAdmin(RateRoles::EDITOR_ROLE));
     $offer = rateFormOffer();
