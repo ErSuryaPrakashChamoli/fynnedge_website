@@ -3,6 +3,7 @@
 use App\Modules\CreditBureau\Enums\CreditCheckStatus;
 use App\Modules\CreditBureau\Enums\CrifErrorCode;
 use App\Modules\CreditBureau\Services\CrifSettings;
+use App\Modules\CreditBureau\Services\PanName;
 use App\Modules\CreditScore\Actions\SubmitCreditScoreCheck;
 use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
@@ -183,6 +184,12 @@ new class extends Component
         $this->step = 'details';
     }
 
+    /** "SURYA prakash chamoli" → "Surya Prakash Chamoli", whichever case it was typed in. */
+    public function updatedFullName(string $value): void
+    {
+        $this->fullName = PanName::normalize($value);
+    }
+
     public function updatedPanNumber(string $value): void
     {
         $this->panNumber = strtoupper($value);
@@ -346,6 +353,7 @@ new class extends Component
                             id="fullName"
                             type="text"
                             wire:model="fullName"
+                            x-on:input="formatPanNameInput($event)"
                             class="mt-1.5 w-full rounded-lg border border-line-strong bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
                         >
                         @error('fullName') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror

@@ -143,6 +143,39 @@ function isoToDateInputDigits(iso) {
 }
 
 /**
+ * Capitalises the first letter of each word of a name typed "as per PAN" and
+ * lower-cases the rest ("SURYA prakash" -> "Surya Prakash", "s.p. d'souza" ->
+ * "S.P. D'Souza") — the same rule PanName::normalize() applies server-side, so
+ * the box already shows what will be saved. Spaces are left for the server.
+ */
+function formatPanName(value) {
+    return value.toLowerCase().replace(/(^|[\s.'’-])(\p{Ll})/gu, (match, separator, letter) => separator + letter.toUpperCase());
+}
+
+/**
+ * x-on:input handler applying formatPanName() as the visitor types, keeping the
+ * caret where it was so editing mid-name doesn't jump to the end. Skipped while
+ * an IME is composing (e.g. Hindi input), which a value rewrite would break.
+ *
+ * The re-dispatched 'input' hands the formatted value to wire:model: its x-model
+ * listener may already have stored the raw value from this same keystroke, and
+ * would then write that lower-case value straight back into the box.
+ */
+function formatPanNameInput(event) {
+    const input = event.target;
+    const formatted = formatPanName(input.value);
+
+    if (event.isComposing || formatted === input.value) {
+        return;
+    }
+
+    const caret = input.selectionStart;
+    input.value = formatted;
+    input.setSelectionRange(caret, caret);
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+/**
  * Spells out a rupee amount using the Indian numbering system (Thousand,
  * Lakh, Crore, ...) so customers can double-check the figure they typed —
  * e.g. 800000 -> "Eight Lakh" (or "आठ लाख" while the page is in Hindi).
@@ -304,6 +337,7 @@ window.formatIndianNumber = formatIndianNumber;
 window.formatDateInput = formatDateInput;
 window.dateInputToIso = dateInputToIso;
 window.isoToDateInputDigits = isoToDateInputDigits;
+window.formatPanNameInput = formatPanNameInput;
 window.numberToIndianWords = numberToIndianWords;
 window.stripCurrencyCommas = stripCurrencyCommas;
 window.addDocumentSlot = addDocumentSlot;

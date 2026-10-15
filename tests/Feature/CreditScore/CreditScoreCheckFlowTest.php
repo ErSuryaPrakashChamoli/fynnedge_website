@@ -46,6 +46,30 @@ it('walks through mobile, OTP, details and result end to end', function () {
         ->consumed_at->not->toBeNull();
 });
 
+it('saves the name as per PAN with each word capitalised, however it was typed', function (string $typed, string $saved) {
+    fakeAreachSms();
+    $component = Livewire::test('credit-score-check', ['bureau' => 'experian'])
+        ->set('mobileNumber', '9876543210')
+        ->call('sendOtp');
+
+    $component->set('otpCode', lastTextedOtp())
+        ->call('verifyOtp')
+        ->set('fullName', $typed)
+        ->assertSet('fullName', $saved)
+        ->set('dateOfBirth', '1990-01-01')
+        ->set('panNumber', 'ABCDE1234F')
+        ->set('consent', true)
+        ->call('submitDetails')
+        ->assertSet('step', 'result');
+
+    expect(CreditScoreCheck::query()->sole()->full_name)->toBe($saved);
+})->with([
+    'all capitals' => ['SURYA PRAKASH CHAMOLI', 'Surya Prakash Chamoli'],
+    'all small' => ['surya prakash chamoli', 'Surya Prakash Chamoli'],
+    'mixed case with stray spaces' => ['  sURYA   pRAKASH chamoli ', 'Surya Prakash Chamoli'],
+    'initials and joined names' => ["s.p. d'souza-RAO", "S.P. D'Souza-Rao"],
+]);
+
 it('does not let an unverified OTP reach the details step', function () {
     fakeAreachSms();
 
