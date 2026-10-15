@@ -196,6 +196,34 @@ it('fetches the PDF once, stores it encrypted and serves later downloads from th
     Http::assertNotSent(fn ($request) => str_contains($request->url(), 'files.example.test') && $request->hasHeader('Authorization'));
 });
 
+it('serves the PDF CRIF embedded in the report without calling Surepass', function () {
+    fakeSurepassCrif();
+    Storage::fake('local');
+    $body = crifReportFixture();
+    $body['data']['credit_report']['PRINTABLE-REPORT'] = base64_encode('%PDF-1.4 embedded fixture');
+    $report = fixtureCrifReport(['raw_response' => $body]);
+
+    Livewire::test(ViewCrifReport::class, ['record' => $report->getRouteKey()])
+        ->assertActionHasLabel('downloadCrifPdf', 'Download PDF')
+        ->callAction('downloadCrifPdf')
+        ->assertFileDownloaded();
+
+    Http::assertNothingSent();
+    expect(Storage::disk('local')->exists($report->refresh()->pdf_path))->toBeTrue();
+});
+
+it('names a PDF endpoint missing from the Surepass plan as the reason', function () {
+    fakeSurepassCrif(Http::response(['success' => false, 'message_code' => 'invalid_token', 'message' => 'Your access token is not valid for this API/Scope. Please contact support for help.'], 401));
+    $report = fixtureCrifReport();
+
+    Livewire::test(ViewCrifReport::class, ['record' => $report->getRouteKey()])
+        ->assertActionHasLabel('downloadCrifPdf', 'Get PDF from Surepass')
+        ->callAction('downloadCrifPdf')
+        ->assertNotified('Not done');
+
+    expect($report->refresh()->pdf_error_code)->toBe('api_not_enabled');
+});
+
 it('reports a PDF failure without touching the report', function () {
     fakeSurepassCrif(Http::response(['success' => false, 'message_code' => 'unauthorized'], 401));
     $report = fixtureCrifReport();

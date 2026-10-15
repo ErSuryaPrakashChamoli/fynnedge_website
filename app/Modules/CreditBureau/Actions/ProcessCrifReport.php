@@ -180,7 +180,7 @@ class ProcessCrifReport
             'message_code' => $result?->messageCode,
         ]);
 
-        if (in_array($code, [CrifErrorCode::AuthenticationFailed, CrifErrorCode::InsufficientBalance, CrifErrorCode::NotConfigured], true)) {
+        if (in_array($code, [CrifErrorCode::AuthenticationFailed, CrifErrorCode::ApiNotEnabled, CrifErrorCode::InsufficientBalance, CrifErrorCode::NotConfigured], true)) {
             $this->alert($report);
         }
     }

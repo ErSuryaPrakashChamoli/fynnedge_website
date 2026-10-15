@@ -63,6 +63,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Support/Loans/LoanMegaMenu.php,resources/views/components/site/header.blade.php,app/Models/LoanLandingPage.php,database/seeders/LoanLocationPageSeeder.php | .ai/rules/models-seeders.md |
 | app/Filament/Resources/Articles/**,app/Models/Article.php,resources/views/home.blade.php | .ai/rules/models-views.md |
 | app/Modules/**/Models/*.php | .ai/rules/models.md |
+| app/Modules/CreditScore/** | .ai/rules/modules-credit-score.md |
 | app/Http/Controllers/**,app/Modules/**,resources/js/app.js | .ai/rules/modules-js.md |
 | app/Models/**,app/Modules/**/Models/*.php | .ai/rules/modules-models.md |
 | app/Http/Controllers/RobotsController.php,app/Http/Controllers/SitemapController.php,app/Support/Seo/SearchEngineIndexing.php,docker/nginx/nginx.conf | .ai/rules/nginx.md |

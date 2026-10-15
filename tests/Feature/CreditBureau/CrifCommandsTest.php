@@ -6,6 +6,8 @@ use App\Modules\CreditBureau\Enums\CrifErrorCode;
 use App\Modules\CreditBureau\Enums\CrifReportStatus;
 use App\Modules\CreditBureau\Models\CrifReport;
 use App\Modules\CreditBureau\Services\CrifSettings;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
@@ -57,3 +59,18 @@ it('never keeps reports for less than the reuse period', function () {
 
     expect(CrifSettings::retentionDays())->toBe(60);
 });
+
+it('reports which CRIF APIs the token may use and fails when the public page would be blocked', function (string $source, int $exitCode) {
+    fakeSurepassCrif(fn (Request $request) => str_ends_with($request->url(), '/fetch-report')
+        ? Http::response(['message' => 'Input payload validation failed'], 400)
+        : Http::response(['success' => false, 'message_code' => 'invalid_token', 'message' => 'Your access token is not valid for this API/Scope.'], 401));
+    config(['services.surepass.crif_public_score_source' => $source]);
+
+    expect(Artisan::call('crif:check-access'))->toBe($exitCode)
+        ->and(Artisan::output())
+        ->toContain('Allowed — your plan includes this API')
+        ->toContain('NOT ENABLED on your Surepass plan');
+})->with([
+    'public page on the full report' => ['report', 0],
+    'public page on the score endpoint' => ['score', 1],
+]);

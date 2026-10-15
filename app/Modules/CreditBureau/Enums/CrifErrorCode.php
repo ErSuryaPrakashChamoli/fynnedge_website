@@ -21,6 +21,7 @@ enum CrifErrorCode: string implements HasLabel
     case ConnectionFailed = 'connection_failed';
     case Timeout = 'timeout';
     case AuthenticationFailed = 'authentication_failed';
+    case ApiNotEnabled = 'api_not_enabled';
     case InsufficientBalance = 'insufficient_balance';
     case RateLimited = 'rate_limited';
     case InvalidRequest = 'invalid_request';
@@ -43,6 +44,7 @@ enum CrifErrorCode: string implements HasLabel
             self::ConnectionFailed => 'Could not reach Surepass',
             self::Timeout => 'Surepass timed out',
             self::AuthenticationFailed => 'Surepass rejected the API token',
+            self::ApiNotEnabled => 'API not enabled on the Surepass account',
             self::InsufficientBalance => 'Insufficient Surepass balance',
             self::RateLimited => 'Rate limited by Surepass',
             self::InvalidRequest => 'Request rejected as invalid',
@@ -86,6 +88,7 @@ enum CrifErrorCode: string implements HasLabel
             self::NotConfigured,
             self::ConnectionFailed,
             self::AuthenticationFailed,
+            self::ApiNotEnabled,
             self::InsufficientBalance,
             self::RateLimited,
             self::ProviderUnavailable,
@@ -104,6 +107,7 @@ enum CrifErrorCode: string implements HasLabel
             self::ConnectionFailed => 'Surepass could not be reached, so nothing was sent. Check that this server can reach kyc-api.surepass.app (firewall, DNS), then retry.',
             self::Timeout => 'Surepass did not answer in time. It may still have processed the request, so this needs reconciliation before another attempt.',
             self::AuthenticationFailed => 'Surepass rejected the API token (HTTP 401/403), so nothing was charged. Check that SUREPASS_BEARER_TOKEN is your PRODUCTION token (not a sandbox one) and was copied whole, that the CRIF APIs are enabled on your Surepass account, and — if your account uses IP whitelisting — that this server\'s IP is whitelisted. Then clear the config cache and retry.',
+            self::ApiNotEnabled => 'The Surepass token is valid, but your Surepass plan does not include this API (HTTP 401 "not valid for this API/Scope"), so nothing was charged. Ask Surepass support to enable it on your production token. Run `php artisan crif:check-access` to see which CRIF APIs your token can use.',
             self::InsufficientBalance => 'The Surepass wallet balance is too low (HTTP 402), so nothing was charged. Top up the balance in the Surepass console, then retry.',
             self::RateLimited => 'Surepass is limiting requests right now. Retry in a few minutes.',
             self::InvalidRequest => 'Surepass rejected the customer details as invalid. Check the name, mobile number and PAN.',

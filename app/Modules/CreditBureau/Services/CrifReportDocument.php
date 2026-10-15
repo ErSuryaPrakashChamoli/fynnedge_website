@@ -432,6 +432,36 @@ final class CrifReportDocument
     }
 
     /**
+     * The printable PDF CRIF can embed in the report itself (PRINTABLE-REPORT,
+     * as raw "%PDF…" or base64, or an object whose CONTENT holds it), so a PDF
+     * can be offered without a second, separately-licensed Surepass call.
+     * Null when the report carries none, or something that is not a PDF
+     * (e.g. HTML).
+     */
+    public function embeddedPdf(): ?string
+    {
+        $printable = $this->report()['PRINTABLE-REPORT'] ?? $this->data()['printable_report'] ?? null;
+
+        if (is_array($printable)) {
+            $printable = collect(['CONTENT', 'content', 'FILE-CONTENT', 'DATA', 'data'])
+                ->map(fn (string $key) => $printable[$key] ?? null)
+                ->first(fn ($value) => is_string($value) && $value !== '');
+        }
+
+        if (! is_string($printable) || $printable === '') {
+            return null;
+        }
+
+        if (str_starts_with($printable, '%PDF')) {
+            return $printable;
+        }
+
+        $decoded = base64_decode(preg_replace('/\s+/', '', $printable) ?? '', true);
+
+        return is_string($decoded) && str_starts_with($decoded, '%PDF') ? $decoded : null;
+    }
+
+    /**
      * CRIF's object-or-list-or-"" block as a list of arrays.
      *
      * @return list<array<string, mixed>>

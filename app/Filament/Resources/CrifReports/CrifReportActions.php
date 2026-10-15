@@ -17,6 +17,7 @@ use App\Modules\CreditBureau\Enums\CrifRequestType;
 use App\Modules\CreditBureau\Exceptions\CrifRequestRefused;
 use App\Modules\CreditBureau\Models\CreditConsent;
 use App\Modules\CreditBureau\Models\CrifReport;
+use App\Modules\CreditBureau\Services\CrifReportDocument;
 use App\Modules\CreditBureau\Services\CrifSettings;
 use App\Modules\CreditBureau\Services\PanNumber;
 use App\Modules\Customers\Models\Customer;
@@ -178,11 +179,11 @@ final class CrifReportActions
     public static function downloadPdf(): Action
     {
         return Action::make('downloadCrifPdf')
-            ->label(fn (CrifReport $record): string => $record->hasStoredPdf() ? 'Download PDF' : 'Get PDF from Surepass')
+            ->label(fn (CrifReport $record): string => self::pdfNeedsProviderCall($record) ? 'Get PDF from Surepass' : 'Download PDF')
             ->icon(Heroicon::OutlinedArrowDownTray)
             ->color('gray')
             ->visible(fn (CrifReport $record): bool => $record->hasReport() && (bool) self::user()?->can('downloadPdf', $record))
-            ->requiresConfirmation(fn (CrifReport $record): bool => ! $record->hasStoredPdf())
+            ->requiresConfirmation(fn (CrifReport $record): bool => self::pdfNeedsProviderCall($record))
             ->modalDescription('Surepass\'s PDF is fetched once with the customer\'s details (another provider call), stored encrypted on this server, and every later download is served from that copy.')
             ->action(function (CrifReport $record, Action $action): ?StreamedResponse {
                 try {
@@ -544,6 +545,16 @@ final class CrifReportActions
         return $consent->method === ConsentMethod::OnlineJourney || $consent->method === null
             ? "Website application consent, {$when} ({$consent->purpose})"
             : "{$consent->method->getLabel()}, {$when} — ref. {$consent->evidence_reference}";
+    }
+
+    /**
+     * Whether "PDF" would call Surepass's (separately licensed) PDF endpoint:
+     * not when a copy is stored, nor when CRIF embedded one in the report.
+     */
+    private static function pdfNeedsProviderCall(CrifReport $record): bool
+    {
+        return ! $record->hasStoredPdf()
+            && (new CrifReportDocument($record->raw_response ?? []))->embeddedPdf() === null;
     }
 
     private static function user(): ?User

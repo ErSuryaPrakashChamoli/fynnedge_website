@@ -7,6 +7,7 @@ use App\Modules\CreditBureau\DataTransferObjects\CrifSubject;
 use App\Modules\CreditBureau\Enums\ConsentStatus;
 use App\Modules\CreditBureau\Exceptions\CrifRequestRefused;
 use App\Modules\CreditBureau\Models\CrifReport;
+use App\Modules\CreditBureau\Services\CrifReportDocument;
 use App\Modules\CreditBureau\Services\CrifSettings;
 use App\Modules\CreditBureau\Services\SurepassCrifService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -19,11 +20,13 @@ use Illuminate\Support\Facades\Storage;
 /**
  * The provider PDF of a successful CRIF report, for authorised download.
  *
- * Surepass's PDF endpoint takes the customer's details again (not a report id)
- * and answers with a temporary link, so asking for it is another provider call.
- * It is therefore made at most once per report: the PDF is downloaded server
- * side, stored ENCRYPTED on the private disk, and every later download is
- * served from that copy. The temporary link itself is never shown to anyone.
+ * First choice is the printable PDF CRIF embeds in the stored report itself
+ * (PRINTABLE-REPORT) — no provider call at all. Otherwise Surepass's PDF
+ * endpoint, which takes the customer's details again (not a report id), is
+ * licensed separately (FynnEdge's plan answered it with "not valid for this
+ * API/Scope") and returns a temporary link: that call is made at most once per
+ * report. Either way the PDF is stored ENCRYPTED on the private disk and every
+ * later download is served from that copy. The temporary link is never shown.
  */
 class FetchCrifReportPdf
 {
@@ -61,6 +64,12 @@ class FetchCrifReportPdf
 
     private function fetch(CrifReport $report, User $actor): string
     {
+        $embedded = (new CrifReportDocument($report->raw_response ?? []))->embeddedPdf();
+
+        if ($embedded !== null) {
+            return $this->store($report, $actor, $embedded, 'report');
+        }
+
         if (! CrifSettings::isAvailable()) {
             throw new CrifRequestRefused('The Surepass integration is switched off or not configured, so the PDF cannot be fetched.');
         }
@@ -96,20 +105,25 @@ class FetchCrifReportPdf
             throw new CrifRequestRefused($result->errorCode?->safeMessage() ?? 'Surepass returned no usable PDF. Try again later; the report itself is unaffected.');
         }
 
+        return $this->store($report, $actor, $bytes, 'surepass');
+    }
+
+    private function store(CrifReport $report, User $actor, string $bytes, string $source): string
+    {
         $path = 'crif-reports/'.$report->public_id.'.pdf.enc';
 
         if (! Storage::disk(self::DISK)->put($path, Crypt::encryptString($bytes))) {
             // The employee still gets the PDF they asked for, but the next download
             // would be another provider call — make that visible.
             $report->update(['pdf_error_code' => 'storage_failed']);
-            $report->recordEvent('pdf_fetched', ['stored' => 'no'], $actor->id);
+            $report->recordEvent('pdf_fetched', ['stored' => 'no', 'source' => $source], $actor->id);
             Log::error('CRIF report PDF could not be stored', ['report' => $report->public_id]);
 
             return $bytes;
         }
 
         $report->update(['pdf_path' => $path, 'pdf_fetched_at' => now(), 'pdf_error_code' => null]);
-        $report->recordEvent('pdf_fetched', [], $actor->id);
+        $report->recordEvent('pdf_fetched', ['source' => $source], $actor->id);
 
         return $bytes;
     }

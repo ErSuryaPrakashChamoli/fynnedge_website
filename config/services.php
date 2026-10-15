@@ -84,6 +84,12 @@ return [
         'token' => env('SUREPASS_BEARER_TOKEN'),
         'timeout' => (int) env('SUREPASS_TIMEOUT', 60),
         'connect_timeout' => (int) env('SUREPASS_CONNECT_TIMEOUT', 10),
+        // Which endpoint the public Free CRIF Score page reads the score from:
+        // "report" (credit-report-crif/fetch-report — the score is taken from the
+        // full report and the rest discarded) or "score" (credit-report-crif/score,
+        // cheaper, but only if your Surepass plan includes it). `php artisan
+        // crif:check-access` shows which ones your token may use.
+        'crif_public_score_source' => env('SUREPASS_CRIF_PUBLIC_SCORE_SOURCE', 'report'),
     ],
 
 ];

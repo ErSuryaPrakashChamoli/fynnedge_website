@@ -97,7 +97,8 @@ it('classifies each provider answer and keeps failed bodies out of the result', 
         ->and($result->isUncertain())->toBe($uncertain)
         ->and($result->body)->toBeNull();
 })->with([
-    'invalid token' => [fn () => Http::response(['success' => false, 'message_code' => 'unauthorized'], 401), CrifErrorCode::AuthenticationFailed, false],
+    'invalid token' => [fn () => Http::response(['success' => false, 'message_code' => 'invalid_token', 'message' => 'Your token(signature) is invalid.'], 401), CrifErrorCode::AuthenticationFailed, false],
+    'plan lacks the API' => [fn () => Http::response(['success' => false, 'message_code' => 'invalid_token', 'message' => 'Your access token is not valid for this API/Scope. Please contact support for help.'], 401), CrifErrorCode::ApiNotEnabled, false],
     'insufficient balance (402)' => [fn () => Http::response(['success' => false], 402), CrifErrorCode::InsufficientBalance, false],
     'insufficient balance (message code)' => [fn () => Http::response(['success' => false, 'message_code' => 'insufficient_balance'], 200), CrifErrorCode::InsufficientBalance, false],
     'rate limited' => [fn () => Http::response(['success' => false], 429), CrifErrorCode::RateLimited, false],
@@ -143,4 +144,22 @@ it('accepts only https PDF links and only real PDF bytes', function () {
     expect($service->pdfLink(['credit_report_link' => 'http://files.example.test/r.pdf']))->toBeNull()
         ->and($service->pdfLink(['pdf_link' => 'https://files.example.test/r.pdf']))->toBe('https://files.example.test/r.pdf')
         ->and($service->downloadPdf('https://files.example.test/r.pdf'))->toBeNull();
+});
+
+it('checks which CRIF APIs the token may use without sending any customer data', function () {
+    // Answers as FynnEdge's real plan did: full report yes, score no; plus a bad-token answer.
+    fakeSurepassCrif(fn (Request $request) => match (true) {
+        str_ends_with($request->url(), '/fetch-report') => Http::response(['errors' => ['first_name' => 'Missing'], 'message' => 'Input payload validation failed'], 400),
+        str_ends_with($request->url(), '/score') => Http::response(['success' => false, 'message_code' => 'invalid_token', 'message' => 'Your access token is not valid for this API/Scope.'], 401),
+        default => Http::response(['success' => false, 'message_code' => 'invalid_token', 'message' => 'Your token(signature) is invalid.'], 401),
+    });
+
+    expect(app(SurepassCrifService::class)->checkAccess())->toBe([
+        SurepassCrifService::REPORT_PATH => ['access' => 'allowed', 'http_status' => 400],
+        SurepassCrifService::SCORE_PATH => ['access' => 'not_enabled', 'http_status' => 401],
+        SurepassCrifService::PDF_PATH => ['access' => 'token_rejected', 'http_status' => 401],
+    ]);
+
+    Http::assertSentCount(3);
+    Http::assertNotSent(fn (Request $request) => $request->data() !== []);
 });

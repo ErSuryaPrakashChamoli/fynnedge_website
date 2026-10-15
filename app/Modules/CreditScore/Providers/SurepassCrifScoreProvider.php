@@ -14,13 +14,20 @@ use App\Modules\CreditScore\Models\CreditScoreCheck;
 use Illuminate\Support\Facades\Log;
 
 /**
- * A real CRIF score for the public "Free CRIF Score" page, through Surepass's
- * score endpoint. Used only for the CRIF bureau and only while CRIF Settings →
+ * A real CRIF score for the public "Free CRIF Score" page. Used only for the
+ * CRIF bureau and only while CRIF Settings →
  * "Free CRIF Score page uses real scores" is on (see SubmitCreditScoreCheck,
  * which also keeps a repeat check by the same person from paying again).
  *
+ * The score comes from Surepass's full-report endpoint by default
+ * (services.surepass.crif_public_score_source = "report"): the score-only
+ * endpoint is not part of every Surepass plan — FynnEdge's token answered it
+ * with 401 "not valid for this API/Scope" — while fetch-report is. Set it to
+ * "score" once Surepass enables the cheaper endpoint.
+ *
  * Only the score, Surepass's client id and message code are kept — never the
- * response body, which echoes the visitor's PAN, name and mobile. An outcome
+ * response body (with "report", the whole credit report), which also echoes
+ * the visitor's PAN, name and mobile. An outcome
  * that may have been charged but gave no answer (timeout, gateway error) is
  * returned as Pending so it is not re-sent straight away.
  */
@@ -46,13 +53,16 @@ class SurepassCrifScoreProvider implements CreditScoreProvider
             'purpose' => 'Free CRIF score check',
         ]);
 
-        $result = $this->surepass->fetchScore(new CrifSubject($firstName, $lastName, $check->mobile_number, $check->pan_number, $consent));
+        $subject = new CrifSubject($firstName, $lastName, $check->mobile_number, $check->pan_number, $consent);
+        $source = config('services.surepass.crif_public_score_source') === 'score' ? 'score' : 'report';
+        $result = $source === 'score' ? $this->surepass->fetchScore($subject) : $this->surepass->fetchReport($subject);
 
         if (! $result->isSuccessful()) {
             // The visitor only sees a generic message; this (and the admin's
             // Credit Score Checks screen) is where the actual reason shows.
             Log::warning('Public CRIF score check failed', [
                 'check' => $check->public_id,
+                'source' => $source,
                 'error' => $result->errorCode?->value,
                 'http_status' => $result->httpStatus,
                 'message_code' => $result->messageCode,
@@ -60,7 +70,7 @@ class SurepassCrifScoreProvider implements CreditScoreProvider
 
             return new CreditCheckResult(
                 status: $result->isUncertain() ? CreditCheckStatus::Pending : CreditCheckStatus::Failed,
-                rawResponse: ['error' => $result->errorCode?->value, 'http_status' => $result->httpStatus, 'message_code' => $result->messageCode],
+                rawResponse: ['error' => $result->errorCode?->value, 'http_status' => $result->httpStatus, 'message_code' => $result->messageCode, 'source' => $source],
                 failureReason: $result->errorCode?->safeMessage(),
             );
         }
@@ -69,6 +79,7 @@ class SurepassCrifScoreProvider implements CreditScoreProvider
 
         Log::info('Public CRIF score check answered', [
             'check' => $check->public_id,
+            'source' => $source,
             'score_available' => $document->score() !== null,
             'http_status' => $result->httpStatus,
         ]);
@@ -77,7 +88,7 @@ class SurepassCrifScoreProvider implements CreditScoreProvider
             status: CreditCheckStatus::Completed,
             score: $document->score(),
             reference: $document->clientId(),
-            rawResponse: ['client_id' => $document->clientId(), 'message_code' => $result->messageCode],
+            rawResponse: ['client_id' => $document->clientId(), 'message_code' => $result->messageCode, 'source' => $source],
         );
     }
 

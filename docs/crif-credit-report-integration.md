@@ -40,7 +40,7 @@ Everything sits in the existing `app/Modules/CreditBureau/` module, next to the 
 ```
 POST {SUREPASS_BASE_URL}/api/v1/credit-report-crif/fetch-report        (full report)
 POST {SUREPASS_BASE_URL}/api/v1/credit-report-crif/fetch-report-pdf    (PDF link; body adds "raw": false)
-POST {SUREPASS_BASE_URL}/api/v1/credit-report-crif/score               (score only — the public Free CRIF Score page, §14)
+POST {SUREPASS_BASE_URL}/api/v1/credit-report-crif/score               (score only — optional source for the public page, §14)
 Authorization: Bearer {SUREPASS_BEARER_TOKEN}
 Content-Type: application/json
 
@@ -60,7 +60,8 @@ Content-Type: application/json
 | 2xx, `success: true`, no report | `missing_report_payload` | reconciliation required | **no** | no |
 | 2xx, not JSON, or no `success` flag | `malformed_response` | reconciliation required | **no** | no |
 | 2xx, `success: false` | `provider_rejected` / `no_record_found` / `insufficient_balance` (by `message_code`) | failed | yes | only for balance |
-| 401 / 403 | `authentication_failed` | failed + alert | yes | yes, once the token is fixed |
+| 401 / 403 with "not valid for this API/Scope" | `api_not_enabled` | failed + alert | yes | yes, once Surepass enables the API |
+| 401 / 403 (other) | `authentication_failed` | failed + alert | yes | yes, once the token is fixed |
 | 402 | `insufficient_balance` | failed + alert | yes | yes |
 | 429 | `rate_limited` | failed | yes | yes |
 | 400 / 422 | `invalid_request` or `no_record_found` | failed | yes | no (correct the details) |
@@ -172,12 +173,18 @@ In both cases the consent must be *Given* and no older than **Consent validity (
 
 ## 12. Operations
 
+- **First check when anything CRIF fails:** `php artisan crif:check-access`. It shows whether the token is loaded and lists, for each CRIF endpoint, whether your Surepass plan includes it. It sends empty requests that Surepass rejects at validation, so it is **free and pulls no report**. FynnEdge's plan (checked 15 Oct 2026) includes `fetch-report` but **not** `score` or `fetch-report-pdf`.
+
 - **Reconciliation required.** Open the request, look up the call in the Surepass dashboard usage log around the request time, and choose **Reconcile**:
   - *Not processed (no charge):* the attempt becomes retryable.
   - *Processed and charged, no report:* the attempt stays failed. Request again only if a report is genuinely needed.
 - **Stuck in pending or processing.** `crif:flag-stale` (every 5 minutes) fails pending rows older than 15 minutes, since they were never sent and are retryable. It moves processing rows older than 15 minutes to reconciliation. Run it by hand with `php artisan crif:flag-stale`.
 - **Every request fails with "token rejected" or "insufficient balance".** Fix the token or top up the balance, then use **Retry** on the affected attempts.
 - **The dashboard** shows totals, reuse and blocked duplicates, fresh overrides, errors by code, per-employee counts, 14 days of volume and recent activity.
+
+### PDF
+
+The PDF button first uses the printable PDF CRIF embeds in the report itself (`PRINTABLE-REPORT`), with no provider call. Only if the report has none does it call `fetch-report-pdf`, which is **not in FynnEdge's current plan**. That call then fails with "API not enabled on the Surepass account" and charges nothing. Until Surepass enables it, the report screen (and the browser's *Print → Save as PDF*) is the way to keep a copy.
 
 ## 13. Tests
 
@@ -191,7 +198,10 @@ php artisan test --compact tests/Feature/CreditBureau tests/Feature/Filament/Cri
 
 With **CRIF Settings → Free CRIF Score page uses real scores** switched on (and the token set), `/credit-score/crif` shows a real score instead of the demo one. It uses `SurepassCrifScoreProvider`, routed by `SubmitCreditScoreCheck` for the CRIF bureau only.
 
-- **Flow is unchanged:** the visitor verifies their mobile by OTP, then gives their name, date of birth, PAN and the consent tick. Each OTP pays for at most one check. A real check also needs a first **and** last name, since Surepass requires both.
+- **Where the score comes from:** `SUREPASS_CRIF_PUBLIC_SCORE_SOURCE` (default `report`). With `report` the score is read from the full-report endpoint and the rest of the report is discarded. That's needed because FynnEdge's Surepass plan answers the score-only endpoint with 401 "not valid for this API/Scope" (this was the cause of every "Score not available" on 15 Oct 2026). If Surepass later enables the cheaper score endpoint, set `score` and clear the config cache. Each check then costs a score pull rather than a full-report pull.
+
+- **Flow is unchanged:** the visitor verifies their mobile by OTP, then gives their name, date of birth, PAN and the consent tick. Each OTP pays for at most one check.
+- **Name:** entered as on the PAN card in three boxes on every bureau page: first and last name are required, the middle name is optional. Surepass needs `first_name` and `last_name` apart, and splitting one "full name" box guessed wrong on two-word surnames ("Sen Gupta"). As in the admin form, the middle name is sent inside `first_name` ("Surya Prakash" + "Sen Gupta"). Each word is saved with a capital first letter and the rest small, however it was typed (`PanName`). `credit_score_checks` keeps `first_name`, `middle_name` and `last_name`, plus `full_name` (the three joined) for the admin list.
 - **Cost control:** the same person (same PAN **and** same verified mobile) checking again inside the reuse period sees their stored score, with no call. The reused row records `reused_from`. Matching on the mobile too means typing someone else's PAN never shows their stored score. A per-person lock stops two tabs paying twice.
 - **Uncertain outcomes** (timeout, gateway error) are stored as *Pending*. The same person is told to try again later, and nothing is re-sent for an hour.
 - **What the visitor sees:**

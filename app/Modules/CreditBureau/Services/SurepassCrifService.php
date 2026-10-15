@@ -56,6 +56,49 @@ class SurepassCrifService
     }
 
     /**
+     * Whether the configured token may call each CRIF endpoint, WITHOUT pulling
+     * a report: the request body is empty, so Surepass rejects it at input
+     * validation (HTTP 400/422 = the token may use this API) or at the token
+     * check (HTTP 401) — no PAN is sent and no bureau lookup can happen.
+     *
+     * @return array<string, array{access: string, http_status: ?int}> path => result
+     */
+    public function checkAccess(): array
+    {
+        $config = config('services.surepass');
+        $results = [];
+
+        foreach ([self::REPORT_PATH, self::SCORE_PATH, self::PDF_PATH] as $path) {
+            if (blank($config['token'] ?? null) || blank($config['base_url'] ?? null)) {
+                $results[$path] = ['access' => 'not_configured', 'http_status' => null];
+
+                continue;
+            }
+
+            try {
+                $response = $this->client($config['base_url'], (string) $config['token'])->post($path, (object) []);
+            } catch (Throwable) {
+                $results[$path] = ['access' => 'unreachable', 'http_status' => null];
+
+                continue;
+            }
+
+            $status = $response->status();
+            $message = (string) ($response->json('message') ?? '');
+
+            $results[$path] = ['access' => match (true) {
+                in_array($status, [400, 422], true) => 'allowed',
+                in_array($status, [401, 403], true) && stripos($message, 'scope') !== false => 'not_enabled',
+                in_array($status, [401, 403], true) => 'token_rejected',
+                $status === 404 => 'not_found',
+                default => 'unexpected',
+            }, 'http_status' => $status];
+        }
+
+        return $results;
+    }
+
+    /**
      * The temporary PDF link out of a fetch-report-pdf response. Surepass has
      * used several key names across products, so the known ones are tried in
      * order; only an https URL is accepted.
@@ -145,7 +188,9 @@ class SurepassCrifService
         $messageCode = is_array($body) && is_string($body['message_code'] ?? null) ? $body['message_code'] : null;
 
         if (! $response->successful()) {
-            return SurepassCrifResult::failed($this->httpFailure($status, is_array($body), $messageCode), $status, $messageCode);
+            $message = is_array($body) && is_string($body['message'] ?? null) ? $body['message'] : '';
+
+            return SurepassCrifResult::failed($this->httpFailure($status, is_array($body), $messageCode, $message), $status, $messageCode);
         }
 
         if (! is_array($body)) {
@@ -178,9 +223,15 @@ class SurepassCrifService
         return is_array($data['credit_report'] ?? null) && $data['credit_report'] !== [];
     }
 
-    private function httpFailure(int $status, bool $isJson, ?string $messageCode): CrifErrorCode
+    /**
+     * Surepass answers 401 `invalid_token` both for a bad token and for a good
+     * token whose plan lacks the API ("…not valid for this API/Scope…"). The
+     * message is read only to tell the two apart — it is never stored or shown.
+     */
+    private function httpFailure(int $status, bool $isJson, ?string $messageCode, string $message = ''): CrifErrorCode
     {
         return match (true) {
+            ($status === 401 || $status === 403) && stripos($message, 'scope') !== false => CrifErrorCode::ApiNotEnabled,
             $status === 401, $status === 403 => CrifErrorCode::AuthenticationFailed,
             $status === 402 => CrifErrorCode::InsufficientBalance,
             $status === 429 => CrifErrorCode::RateLimited,

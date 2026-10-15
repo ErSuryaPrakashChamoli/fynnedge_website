@@ -15,19 +15,30 @@ use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
 /**
- * Turns on real scores for the public CRIF page with Surepass's score endpoint
- * faked (and the SMS gateway, for the OTP step).
+ * Turns on real scores for the public CRIF page with Surepass faked (and the
+ * SMS gateway, for the OTP step). By default the page reads the score from the
+ * full-report endpoint, so the default answer is the full report fixture.
  */
-function liveCrifScorePage(mixed $scoreResponse = null): void
+function liveCrifScorePage(mixed $response = null): void
 {
     fakeAreachSms();
-    fakeSurepassCrif($scoreResponse ?? Http::response([
-        'success' => true,
-        'status_code' => 200,
-        'message_code' => 'success',
-        'data' => ['client_id' => 'credit_report_crif_score_TEST', 'credit_score' => '742', 'pan' => 'AAAPZ9999Z', 'mobile' => '9000000001'],
-    ]));
+    fakeSurepassCrif($response ?? Http::response(crifReportFixture()));
     Setting::set(CrifSettings::PUBLIC_SCORE_ENABLED, true);
+}
+
+/**
+ * The full report fixture with a different score — CRIF sends it both as
+ * data.credit_score and as the SCORES block.
+ *
+ * @return array<string, mixed>
+ */
+function crifReportWithScore(string $score): array
+{
+    $body = crifReportFixture();
+    $body['data']['credit_score'] = $score;
+    $body['data']['credit_report']['SCORES']['SCORE']['SCORE-VALUE'] = $score;
+
+    return $body;
 }
 
 function checkScoreOnPage(string $bureau = 'crif', string $mobile = '9000000001', string $pan = 'aaapz9999z', string $name = 'Test Fixture'): Testable
@@ -46,10 +57,13 @@ function checkScoreOnPage(string $bureau = 'crif', string $mobile = '9000000001'
         ->call('submitDetails');
 }
 
+/**
+ * Paid Surepass CRIF calls made so far, on any CRIF endpoint.
+ */
 function surepassScoreCalls(): int
 {
     return collect(Http::recorded())
-        ->filter(fn (array $pair) => str_ends_with($pair[0]->url(), '/credit-report-crif/score'))
+        ->filter(fn (array $pair) => str_contains($pair[0]->url(), '/credit-report-crif/'))
         ->count();
 }
 
@@ -63,14 +77,33 @@ it('shows a real CRIF score from Surepass when switched on', function () {
         ->assertSee('Live score from CRIF High Mark')
         ->assertDontSee('Demo score');
 
-    Http::assertSent(fn (Request $request) => str_ends_with($request->url(), '/credit-report-crif/score')
+    // The score-only endpoint is not in every Surepass plan; fetch-report is.
+    Http::assertSent(fn (Request $request) => str_ends_with($request->url(), '/credit-report-crif/fetch-report')
         && $request->data() === ['first_name' => 'Test', 'last_name' => 'Fixture', 'mobile' => '9000000001', 'pan' => 'AAAPZ9999Z', 'consent' => 'Y']);
 
     expect(CreditScoreCheck::query()->sole())
         ->provider->toBe('surepass')
         ->status->toBe(CreditCheckStatus::Completed)
         ->score->toBe(742)
-        ->raw_response->toBe(['client_id' => 'credit_report_crif_score_TEST', 'message_code' => 'success']);
+        ->raw_response->toBe(['client_id' => 'credit_report_crif_TESTFIXTURE0001', 'message_code' => 'success', 'source' => 'report']);
+});
+
+it('reads the score from the score-only endpoint when configured to', function () {
+    liveCrifScorePage(Http::response(['success' => true, 'data' => ['client_id' => 'credit_report_crif_score_TEST', 'credit_score' => '781']]));
+    config(['services.surepass.crif_public_score_source' => 'score']);
+
+    checkScoreOnPage()->assertSet('resultKind', 'live')->assertSet('resultScore', 781);
+
+    Http::assertSent(fn (Request $request) => str_ends_with($request->url(), '/credit-report-crif/score'));
+    Http::assertNotSent(fn (Request $request) => str_ends_with($request->url(), '/credit-report-crif/fetch-report'));
+});
+
+it('names a missing Surepass plan as the reason, not a bad token', function () {
+    liveCrifScorePage(Http::response(['success' => false, 'message_code' => 'invalid_token', 'message' => 'Your access token is not valid for this API/Scope. Please contact support for help.'], 401));
+
+    checkScoreOnPage()->assertSet('resultKind', 'failed');
+
+    expect(CreditScoreCheck::query()->sole()->liveFailure())->toBe(CrifErrorCode::ApiNotEnabled);
 });
 
 it('tells the visitor up front that the CRIF score is real', function () {
@@ -113,7 +146,7 @@ it('pays for a new check once the reuse period has passed', function () {
 });
 
 it('explains when CRIF holds no score instead of inventing one', function () {
-    liveCrifScorePage(Http::response(['success' => true, 'data' => ['credit_score' => '-1']]));
+    liveCrifScorePage(Http::response(crifReportWithScore('-1')));
 
     checkScoreOnPage()
         ->assertSet('resultKind', 'no_score')
