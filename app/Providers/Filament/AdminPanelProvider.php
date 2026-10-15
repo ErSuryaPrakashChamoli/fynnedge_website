@@ -55,6 +55,7 @@ class AdminPanelProvider extends PanelProvider
             ->favicon(asset('favicon.ico'))
             ->navigationGroups([
                 NavigationGroup::make('Catalog'),
+                NavigationGroup::make('Credit Bureau'),
                 NavigationGroup::make('Content'),
                 NavigationGroup::make('Access Control'),
                 NavigationGroup::make('Marketing'),

@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use App\Filament\Resources\CrifReports\CrifReportResource;
 use App\Filament\Resources\LenderProductRates\LenderProductRateResource;
 use App\Filament\Widgets\RateHealthOverview;
 use BezhanSalleh\FilamentShield\Resources\Roles\RoleResource;
@@ -201,6 +202,16 @@ return [
             LenderProductRateResource::class => [
                 'submit',
                 'publish',
+            ],
+            // Merged with the default methods (see App\Modules\CreditBureau\Services\CrifRoles):
+            // FetchFresh pays for a new report over a reusable one, Reconcile closes
+            // uncertain attempts, ViewRaw shows the full provider JSON, DownloadPdf
+            // serves the stored PDF.
+            CrifReportResource::class => [
+                'fetchFresh',
+                'reconcile',
+                'viewRaw',
+                'downloadPdf',
             ],
         ],
         'exclude' => [

@@ -5,6 +5,7 @@ namespace App\Modules\Journey\Models;
 use App\Models\Concerns\HasPublicId;
 use App\Models\LoanProduct;
 use App\Modules\CreditBureau\Models\CreditConsent;
+use App\Modules\CreditBureau\Models\CrifReport;
 use App\Modules\Customers\Models\Customer;
 use App\Modules\Eligibility\Models\EligibilityResult;
 use App\Modules\Journey\Enums\JourneySessionStatus;
@@ -74,6 +75,11 @@ class JourneySession extends Model
     public function creditConsent(): HasOne
     {
         return $this->hasOne(CreditConsent::class);
+    }
+
+    public function crifReports(): HasMany
+    {
+        return $this->hasMany(CrifReport::class);
     }
 
     /**

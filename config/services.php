@@ -73,4 +73,17 @@ return [
         'provider' => env('CREDIT_SCORE_PROVIDER', DemoCreditScoreProvider::class),
     ],
 
+    'surepass' => [
+        // Surepass KYC API — the CRIF credit report integration
+        // (App\Modules\CreditBureau\Services\SurepassCrifService, docs/crif-credit-report-integration.md).
+        // The bearer token is a server-side secret: set it in the server's environment
+        // only — never in .env.example, Git, Blade, JavaScript, a Setting or a log line.
+        // Every report fetch is a PAID call, so there is deliberately no retry setting:
+        // a timed-out request goes to reconciliation instead of being sent again.
+        'base_url' => env('SUREPASS_BASE_URL', 'https://kyc-api.surepass.app'),
+        'token' => env('SUREPASS_BEARER_TOKEN'),
+        'timeout' => (int) env('SUREPASS_TIMEOUT', 60),
+        'connect_timeout' => (int) env('SUREPASS_CONNECT_TIMEOUT', 10),
+    ],
+
 ];

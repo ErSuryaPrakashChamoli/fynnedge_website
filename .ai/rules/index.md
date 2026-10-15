@@ -27,6 +27,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Support/Contact/** | .ai/rules/contact.md |
 | app/Http/Controllers/QuickEnquiryController.php,resources/views/components/site/quick-enquiry.blade.php | .ai/rules/controllers-views-components-site.md |
 | app/Filament/RelationManagers/FaqsRelationManager.php,app/Models/Page.php,app/Http/Controllers/PageController.php | .ai/rules/controllers.md |
+| app/Modules/CreditBureau/** | .ai/rules/credit-bureau.md |
 | app/Support/Pages/CreditScorePageContent.php,app/Filament/Pages/CreditScorePageSettings.php,resources/views/credit-score/show.blade.php | .ai/rules/credit-score.md |
 | resources/views/components/site/promo-bar.blade.php,resources/js/app.js,resources/css/app.css | .ai/rules/css.md |
 | resources/views/emails/**,resources/views/components/emails/** | .ai/rules/emails.md |
@@ -77,6 +78,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | database/seeders/data/**,app/Support/Rates/RateAuditImport.php,app/Support/Rates/RateText.php | .ai/rules/rates.md |
 | app/Models/Redirect.php,app/Http/Middleware/HandleRedirects.php,app/Filament/Resources/Redirects/** | .ai/rules/redirects.md |
 | app/Filament/Resources/LenderProductRates/**,app/Support/Rates/RateWorkflow.php,app/Filament/RelationManagers/** | .ai/rules/relation-managers.md |
+| app/Filament/Resources/**/Pages/List*.php | .ai/rules/resources-pages.md |
 | app/Filament/Schemas/HtmlBodyEditor.php,app/Filament/Resources/**/Schemas/*Form.php | .ai/rules/resources-schemas.md |
 | resources/views/components/layouts/app.blade.php | .ai/rules/resources-views-components-layouts.md |
 | resources/views/components/⚡credit-score-check.blade.php | .ai/rules/resources-views-components.md |

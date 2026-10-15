@@ -1,0 +1,153 @@
+{
+    "data": {
+        "client_id": "credit_report_crif_TESTFIXTURE0001",
+        "first_name": "TEST",
+        "last_name": "FIXTURE",
+        "mobile": "9000000001",
+        "pan": "AAAPZ9999Z",
+        "credit_score": "742",
+        "credit_report": {
+            "HEADER": {
+                "DATE-OF-REQUEST": "14-10-2026",
+                "DATE-OF-ISSUE": "15-10-2026",
+                "REPORT-ID": "FIXTURE-REPORT-0001",
+                "BATCH-ID": "FIXTURE-BATCH-1",
+                "inquiryId_": "FIXTURE-INQ-77",
+                "STATUS": "SUCCESS"
+            },
+            "PERSONAL-INFO-VARIATION": {
+                "NAME-VARIATIONS": {
+                    "VARIATION": [
+                        { "VALUE": "TEST FIXTURE", "REPORTED-DATE": "30-09-2026" },
+                        { "VALUE": "T FIXTURE", "REPORTED-DATE": "31-08-2024" }
+                    ]
+                },
+                "ADDRESS-VARIATIONS": {
+                    "VARIATION": { "VALUE": "1 FIXTURE ROAD TESTNAGAR 000000", "REPORTED-DATE": "30-09-2026" }
+                },
+                "PAN-VARIATIONS": {
+                    "VARIATION": { "VALUE": "AAAPZ9999Z", "REPORTED-DATE": "30-09-2026" }
+                },
+                "UID-VARIATIONS": {
+                    "VARIATION": { "VALUE": "XXXXXXXX0000", "REPORTED-DATE": "30-09-2026" }
+                },
+                "DRIVING-LICENSE-VARIATIONS": "",
+                "DATE-OF-BIRTH-VARIATIONS": {
+                    "VARIATION": { "VALUE": "01-01-1990", "REPORTED-DATE": "30-09-2026" }
+                },
+                "PHONE-NUMBER-VARIATIONS": {
+                    "VARIATION": { "VALUE": "9000000001", "REPORTED-DATE": "30-09-2026" }
+                },
+                "EMAIL-VARIATIONS": {
+                    "VARIATION": { "VALUE": "fixture@example.test", "REPORTED-DATE": "30-09-2026" }
+                }
+            },
+            "SECONDARY-MATCHES": "",
+            "ACCOUNTS-SUMMARY": {
+                "DERIVED-ATTRIBUTES": {
+                    "INQURIES-IN-LAST-SIX-MONTHS": "2",
+                    "LENGTH-OF-CREDIT-HISTORY-YEAR": "6",
+                    "LENGTH-OF-CREDIT-HISTORY-MONTH": "4",
+                    "AVERAGE-ACCOUNT-AGE-YEAR": "3",
+                    "AVERAGE-ACCOUNT-AGE-MONTH": "1",
+                    "NEW-ACCOUNTS-IN-LAST-SIX-MONTHS": "1",
+                    "NEW-DELINQ-ACCOUNT-IN-LAST-SIX-MONTHS": "0"
+                },
+                "PRIMARY-ACCOUNTS-SUMMARY": {
+                    "PRIMARY-NUMBER-OF-ACCOUNTS": "3",
+                    "PRIMARY-ACTIVE-NUMBER-OF-ACCOUNTS": "2",
+                    "PRIMARY-OVERDUE-NUMBER-OF-ACCOUNTS": "1",
+                    "PRIMARY-SECURED-NUMBER-OF-ACCOUNTS": "1",
+                    "PRIMARY-UNSECURED-NUMBER-OF-ACCOUNTS": "2",
+                    "PRIMARY-UNTAGGED-NUMBER-OF-ACCOUNTS": "0",
+                    "PRIMARY-CURRENT-BALANCE": "2,68,889",
+                    "PRIMARY-SANCTIONED-AMOUNT": "5,00,000",
+                    "PRIMARY-DISBURSED-AMOUNT": "3,72,000"
+                },
+                "SECONDARY-ACCOUNTS-SUMMARY": {
+                    "SECONDARY-NUMBER-OF-ACCOUNTS": "0",
+                    "SECONDARY-ACTIVE-NUMBER-OF-ACCOUNTS": "0",
+                    "SECONDARY-OVERDUE-NUMBER-OF-ACCOUNTS": "0",
+                    "SECONDARY-CURRENT-BALANCE": "0",
+                    "SECONDARY-SANCTIONED-AMOUNT": "0",
+                    "SECONDARY-DISBURSED-AMOUNT": "0"
+                }
+            },
+            "EMPLOYMENT-DETAILS": {
+                "EMPLOYMENT-DETAIL": { "EMPLOYER-NAME": "FIXTURE EMPLOYER LTD", "OCCUPATION": "SALARIED" }
+            },
+            "RESPONSES": {
+                "RESPONSE": [
+                    {
+                        "LOAN-DETAILS": {
+                            "ACCT-NUMBER": "FIXLOAN00012345",
+                            "CREDIT-GUARANTOR": "FIXTURE BANK",
+                            "ACCT-TYPE": "Personal Loan",
+                            "DATE-REPORTED": "30-09-2026",
+                            "OWNERSHIP-IND": "Individual",
+                            "ACCOUNT-STATUS": "Active",
+                            "DISBURSED-AMT": "3,72,000",
+                            "DISBURSED-DT": "26-11-2023",
+                            "INSTALLMENT-AMT": "4,554/Monthly",
+                            "OVERDUE-AMT": "9,108",
+                            "WRITE-OFF-AMT": "0",
+                            "CURRENT-BAL": "2,68,889",
+                            "COMBINED-PAYMENT-HISTORY": "Sep:2026,030/SMA|Aug:2026,000/STD|Jul:2026,XXX/STD|",
+                            "MATCHED-TYPE": "PRIMARY",
+                            "LINKED-ACCOUNTS": "",
+                            "SECURITY-DETAILS": "",
+                            "REPAYMENT-TENURE": "120",
+                            "INTEREST-RATE": "10.2",
+                            "FIXTURE-UNMAPPED-FIELD": "kept as sent"
+                        }
+                    },
+                    {
+                        "LOAN-DETAILS": {
+                            "ACCT-NUMBER": "FIXCARD00098765",
+                            "CREDIT-GUARANTOR": "FIXTURE CARDS",
+                            "ACCT-TYPE": "Credit Card",
+                            "ACCOUNT-STATUS": "Closed",
+                            "CREDIT-LIMIT": "1,00,000",
+                            "CURRENT-BAL": "0",
+                            "CLOSED-DATE": "15-06-2025",
+                            "COMBINED-PAYMENT-HISTORY": "Jun:2025,000/STD|"
+                        }
+                    },
+                    {
+                        "LOAN-DETAILS": {
+                            "ACCT-NUMBER": "FIXAUTO00055555",
+                            "CREDIT-GUARANTOR": "FIXTURE MOTORS FINANCE",
+                            "ACCT-TYPE": "Auto Loan (Personal)",
+                            "ACCOUNT-STATUS": "Active",
+                            "DISBURSED-AMT": "1,28,000",
+                            "CURRENT-BAL": "0"
+                        }
+                    }
+                ]
+            },
+            "INQUIRY-HISTORY": {
+                "HISTORY": [
+                    { "MEMBER-NAME": "FIXTURE NBFC", "INQUIRY-DATE": "01-09-2026", "PURPOSE": "Personal Loan", "OWNERSHIP-TYPE": "Individual", "AMOUNT": "2,00,000", "REMARK": "" },
+                    { "MEMBER-NAME": "FIXTURE BANK", "INQUIRY-DATE": "15-05-2026", "PURPOSE": "Credit Card", "AMOUNT": "" }
+                ]
+            },
+            "SCORES": {
+                "SCORE": {
+                    "SCORE-TYPE": "PERFORM CONSUMER 2.2",
+                    "SCORE-VALUE": "742",
+                    "SCORE-COMMENTS": "",
+                    "SCORE-FACTORS": "SF05|SF11|SF33||"
+                }
+            },
+            "FIXTURE-FUTURE-SECTION": {
+                "NEW-FLAG": "Y"
+            },
+            "PRINTABLE-REPORT": "",
+            "ccirFlag": "N"
+        }
+    },
+    "status_code": 200,
+    "success": true,
+    "message": null,
+    "message_code": "success"
+}

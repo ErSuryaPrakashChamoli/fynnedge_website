@@ -4,6 +4,13 @@ use App\Enums\LoanCategory;
 use App\Models\LenderProduct;
 use App\Models\LenderProductRate;
 use App\Models\LoanProduct;
+use App\Models\Setting;
+use App\Modules\CreditBureau\DataTransferObjects\CrifConsentInput;
+use App\Modules\CreditBureau\DataTransferObjects\CrifReportRequest;
+use App\Modules\CreditBureau\Enums\ConsentMethod;
+use App\Modules\CreditBureau\Enums\CrifRequestType;
+use App\Modules\CreditBureau\Services\CrifSettings;
+use App\Modules\Customers\Models\Customer;
 use App\Modules\MobileOtp\Models\MobileOtpChallenge;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
@@ -128,4 +135,57 @@ function lastTextedOtp(): ?string
     $length = MobileOtpChallenge::codeLength();
 
     return $request && preg_match('/\b(\d{'.$length.'})\b/', (string) $request['text'], $match) ? $match[1] : null;
+}
+
+/**
+ * Switches CRIF reports on with a fake Surepass token and puts Surepass behind
+ * Http::fake(). Stray requests are refused, so no test can ever reach the real
+ * — billable — API, even if a fake is mistyped.
+ *
+ * @param  mixed  $response  Any Http::fake() stub for the CRIF endpoints; defaults to the success fixture.
+ */
+function fakeSurepassCrif(mixed $response = null): void
+{
+    config([
+        'services.surepass.base_url' => 'https://kyc-api.surepass.app',
+        'services.surepass.token' => 'test-surepass-token',
+        'services.surepass.timeout' => 60,
+        'services.surepass.connect_timeout' => 10,
+    ]);
+    Setting::set(CrifSettings::ENABLED, true);
+
+    Http::preventStrayRequests();
+    Http::fake([
+        'kyc-api.surepass.app/api/v1/credit-report-crif/*' => $response ?? Http::response(crifReportFixture()),
+    ]);
+}
+
+/**
+ * The fabricated Surepass CRIF success response (tests/Fixtures/Surepass) — never real customer data.
+ *
+ * @return array<string, mixed>
+ */
+function crifReportFixture(): array
+{
+    return json_decode((string) file_get_contents(__DIR__.'/Fixtures/Surepass/crif-report-success.json'), true, flags: JSON_THROW_ON_ERROR);
+}
+
+/**
+ * A valid employee-initiated CRIF request for the customer, with consent
+ * recorded now by phone call. Override any constructor argument by name.
+ *
+ * @param  array<string, mixed>  $overrides
+ */
+function crifRequestFor(Customer $customer, array $overrides = []): CrifReportRequest
+{
+    return new CrifReportRequest(...[
+        'customer' => $customer,
+        'firstName' => 'Test',
+        'lastName' => 'Fixture',
+        'mobile' => '9000000001',
+        'pan' => 'AAAPZ9999Z',
+        'consent' => CrifConsentInput::recordedByEmployee(ConsentMethod::RecordedCall, 'CALL-REF-001', now()->subHour(), true),
+        'type' => CrifRequestType::Standard,
+        ...$overrides,
+    ]);
 }

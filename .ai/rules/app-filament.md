@@ -23,3 +23,6 @@ Rule: any FileUpload backing a value read back with Storage::disk('public') must
 
 ## Compare enum Select state with $get->enum(), never === Enum::Case->value
 A Select with ->options(SomeEnum::class) casts its state to the enum, so `$get('group') === LandingPageGroup::ByAmount->value` is ALWAYS false — the dependent field silently never shows (LoanLandingPageForm's Amount field was invisible for this reason until 2026-10-13). Use `fn (Get $get): bool => $get->enum('group', LandingPageGroup::class, isNullable: true) === LandingPageGroup::ByAmount`, which handles both the raw string and the cast enum. Many forms still use `$get('status') === PublishStatus::Published->value` for published_at visibility and likely have the same bug. Pin with assertFormFieldVisible/assertFormFieldHidden (see tests/Feature/Filament/LoanLandingPageFormTest.php).
+
+## Never spread an id-keyed array into Select options
+`[...$collection->all(), 'record' => 'Record new']` re-numbers integer keys (0, 1, …), so a Select built that way submits the wrong record id with no error. Use `$options + ['record' => '…']` or Collection::put(). Hit in CrifReportActions::consentOptions() (consent id 1 became 0); pinned by CrifReportAdminTest "prefills a request from an application".

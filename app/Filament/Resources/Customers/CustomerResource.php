@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Customers;
 
+use App\Filament\RelationManagers\CrifReportsRelationManager;
 use App\Filament\Resources\Customers\Pages\EditCustomer;
 use App\Filament\Resources\Customers\Pages\ListCustomers;
 use App\Filament\Resources\Customers\RelationManagers\JourneySessionsRelationManager;
@@ -36,6 +37,7 @@ class CustomerResource extends Resource
     {
         return [
             JourneySessionsRelationManager::class,
+            CrifReportsRelationManager::class,
         ];
     }
 

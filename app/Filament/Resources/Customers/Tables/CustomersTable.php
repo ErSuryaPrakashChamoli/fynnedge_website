@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Customers\Tables;
 
+use App\Modules\CreditBureau\Models\CrifReport;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -23,6 +24,11 @@ class CustomersTable
                     ->label('Applications')
                     ->counts('journeySessions')
                     ->alignCenter(),
+                TextColumn::make('latestCrifReport.status')
+                    ->label('CRIF')
+                    ->badge()
+                    ->placeholder('Not requested')
+                    ->visible(fn (): bool => (bool) auth()->user()?->can('viewAny', CrifReport::class)),
                 TextColumn::make('created_at')
                     ->label('First seen')
                     ->dateTime()

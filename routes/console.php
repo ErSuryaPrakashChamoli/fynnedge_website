@@ -36,3 +36,12 @@ Schedule::call(function (): void {
  * it only logs that nothing could be done.
  */
 Schedule::command('translations:fill-hindi')->dailyAt('03:30')->withoutOverlapping();
+
+/*
+ * CRIF credit reports. flag-stale frees a PAN that a dead queue worker left
+ * pending (never sent → retryable) or processing (maybe sent → reconciliation);
+ * it never calls Surepass. enforce-retention erases report contents and
+ * customer details older than the retention period set in CRIF Settings.
+ */
+Schedule::command('crif:flag-stale')->everyFiveMinutes()->withoutOverlapping();
+Schedule::command('crif:enforce-retention')->dailyAt('02:30')->withoutOverlapping();
