@@ -385,11 +385,12 @@ it('saves the reuse, consent and retention settings without ever showing the tok
         ->assertDontSee('test-surepass-token');
 
     Livewire::test(CrifSettings::class)
-        ->fillForm(['crif_enabled' => true, 'crif_reuse_days' => 14, 'crif_consent_validity_days' => 7, 'crif_retention_days' => 180, 'crif_alert_email' => 'ops@example.test'])
+        ->fillForm(['crif_enabled' => true, 'crif_public_score_enabled' => true, 'crif_reuse_days' => 14, 'crif_consent_validity_days' => 7, 'crif_retention_days' => 180, 'crif_alert_email' => 'ops@example.test'])
         ->call('save')
         ->assertHasNoFormErrors();
 
     expect(CrifSettingsStore::enabled())->toBeTrue()
+        ->and(CrifSettingsStore::publicScoreEnabled())->toBeTrue()
         ->and(CrifSettingsStore::reuseDays())->toBe(14)
         ->and(CrifSettingsStore::consentValidityDays())->toBe(7)
         ->and(CrifSettingsStore::retentionDays())->toBe(180)

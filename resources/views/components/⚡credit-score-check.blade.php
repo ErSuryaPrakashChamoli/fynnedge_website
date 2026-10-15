@@ -1,5 +1,8 @@
 <?php
 
+use App\Modules\CreditBureau\Enums\CreditCheckStatus;
+use App\Modules\CreditBureau\Enums\CrifErrorCode;
+use App\Modules\CreditBureau\Services\CrifSettings;
 use App\Modules\CreditScore\Actions\SubmitCreditScoreCheck;
 use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
@@ -59,6 +62,19 @@ new class extends Component
     public ?int $resultScore = null;
 
     /**
+     * What the result step shows: 'demo' (sample score), 'live' (a real CRIF
+     * score), 'no_score' (CRIF answered but holds no score), 'pending' (outcome
+     * not confirmed yet) or 'failed'. Locked: the browser must never be able to
+     * dress a demo score up as a real one.
+     */
+    #[Locked]
+    public ?string $resultKind = null;
+
+    /** The CrifErrorCode value behind a failed live check, for the visitor's message. */
+    #[Locked]
+    public ?string $resultError = null;
+
+    /**
      * Accepts a plain string (from the `:bureau="$bureau->value"` the controller
      * passes in) rather than requiring a typed BureauName — Livewire's test
      * harness assigns initial params to typed public properties directly, before
@@ -74,6 +90,17 @@ new class extends Component
     public function bureauLabel(): string
     {
         return BureauName::from($this->bureau)->getLabel();
+    }
+
+    /**
+     * The CRIF page shows real scores (a paid Surepass call per new check)
+     * only while CRIF Settings → "Free CRIF Score page uses real scores" is on
+     * and the server has a Surepass token. Every other bureau stays a demo.
+     */
+    #[Computed]
+    public function isLiveCrif(): bool
+    {
+        return $this->bureau === BureauName::Crif->value && CrifSettings::publicScoreLive();
     }
 
     #[Computed]
@@ -180,6 +207,13 @@ new class extends Component
             'consent.accepted' => __('Please provide consent to continue.'),
         ]);
 
+        // CRIF matches on first AND last name; a single word cannot be sent.
+        if ($this->isLiveCrif && count(preg_split('/\s+/', trim($validated['fullName'])) ?: []) < 2) {
+            $this->addError('fullName', __('Enter your first and last name as on your PAN card.'));
+
+            return;
+        }
+
         // The verification is spent on exactly one check — re-submitting, or a
         // second tab replaying the same component state, has nothing left to spend.
         $challenge = MobileOtpChallenge::findForVerification($this->otpChallengeId, $this->verifiedMobileNumber, MobileOtpPurpose::CreditScoreCheck);
@@ -203,6 +237,14 @@ new class extends Component
         );
 
         $this->resultScore = $check->score;
+        $this->resultError = is_array($check->raw_response) ? ($check->raw_response['error'] ?? null) : null;
+        $this->resultKind = match (true) {
+            $check->provider !== 'surepass' => 'demo',
+            $check->status === CreditCheckStatus::Completed && $check->score !== null => 'live',
+            $check->status === CreditCheckStatus::Completed => 'no_score',
+            $check->status === CreditCheckStatus::Pending => 'pending',
+            default => 'failed',
+        };
         $this->step = 'result';
     }
 
@@ -210,7 +252,7 @@ new class extends Component
     {
         $this->reset([
             'step', 'mobileNumber', 'otpCode', 'otpChallengeId', 'verifiedMobileNumber', 'resendAfterSeconds',
-            'fullName', 'dateOfBirth', 'panNumber', 'consent', 'resultScore',
+            'fullName', 'dateOfBirth', 'panNumber', 'consent', 'resultScore', 'resultKind', 'resultError',
         ]);
     }
 };
@@ -257,7 +299,11 @@ new class extends Component
                     </x-ui.button>
                     <p class="flex items-center justify-center gap-1.5 text-xs text-ink-faint">
                         <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 text-pass" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4L8 11.6l6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd" /></svg>
-                        {{ __('Demo mode — see a sample score instantly, no real bureau pull') }}
+                        @if ($this->isLiveCrif)
+                            {{ __('Your real CRIF score, free — checking your own score does not lower it') }}
+                        @else
+                            {{ __('Demo mode — see a sample score instantly, no real bureau pull') }}
+                        @endif
                     </p>
                 </div>
             @elseif ($step === 'otp')
@@ -365,14 +411,44 @@ new class extends Component
                 </div>
             @else
                 <div class="flex flex-col items-center gap-5 py-2 text-center">
-                    <x-ui.badge tone="warn">{{ __('Demo score — not your real credit report') }}</x-ui.badge>
-                    <div>
-                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Your :bureau score', ['bureau' => $this->bureauLabel]) }}</p>
-                        <p class="mt-1 font-display text-5xl font-semibold text-accent">{{ $resultScore }}</p>
-                    </div>
-                    <p class="max-w-sm text-sm text-ink-muted">
-                        {{ __('This is a sample score for demonstration purposes — :bureau isn\'t connected yet, so this figure isn\'t pulled from a real credit bureau and shouldn\'t be relied on.', ['bureau' => $this->bureauLabel]) }}
-                    </p>
+                    @if ($resultKind === 'live')
+                        <x-ui.badge tone="pass">{{ __('Live score from CRIF High Mark') }}</x-ui.badge>
+                        <div>
+                            <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Your :bureau score', ['bureau' => $this->bureauLabel]) }}</p>
+                            <p class="mt-1 font-display text-5xl font-semibold text-accent">{{ $resultScore }}</p>
+                        </div>
+                        <p class="max-w-sm text-sm text-ink-muted">
+                            {{ __('CRIF scores range from 300 to 900 — the higher, the better your chances of a loan approval at a good rate. Checking your own score does not lower it.') }}
+                        </p>
+                    @elseif ($resultKind === 'no_score')
+                        <x-ui.badge tone="muted">{{ __('No score yet') }}</x-ui.badge>
+                        <p class="max-w-sm text-sm text-ink-muted">
+                            {{ __('CRIF found your record but has no score for you yet. This usually means there is not enough credit history — a score appears a few months after your first loan or credit card.') }}
+                        </p>
+                    @elseif ($resultKind === 'pending')
+                        <x-ui.badge tone="warn">{{ __('Still checking') }}</x-ui.badge>
+                        <p class="max-w-sm text-sm text-ink-muted">
+                            {{ __('We could not confirm your score with CRIF just now. Please try again in an hour.') }}
+                        </p>
+                    @elseif ($resultKind === 'failed')
+                        <x-ui.badge tone="warn">{{ __('Score not available') }}</x-ui.badge>
+                        <p class="max-w-sm text-sm text-ink-muted">
+                            @if (in_array($resultError, [CrifErrorCode::NoRecordFound->value, CrifErrorCode::InvalidRequest->value, CrifErrorCode::ProviderRejected->value], true))
+                                {{ __('CRIF could not find a credit record matching these details. Check that your name and PAN are exactly as on your PAN card, and that this mobile number is the one your bank or lender has.') }}
+                            @else
+                                {{ __('We could not fetch your CRIF score right now. Please try again a little later.') }}
+                            @endif
+                        </p>
+                    @else
+                        <x-ui.badge tone="warn">{{ __('Demo score — not your real credit report') }}</x-ui.badge>
+                        <div>
+                            <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Your :bureau score', ['bureau' => $this->bureauLabel]) }}</p>
+                            <p class="mt-1 font-display text-5xl font-semibold text-accent">{{ $resultScore }}</p>
+                        </div>
+                        <p class="max-w-sm text-sm text-ink-muted">
+                            {{ __('This is a sample score for demonstration purposes — :bureau isn\'t connected yet, so this figure isn\'t pulled from a real credit bureau and shouldn\'t be relied on.', ['bureau' => $this->bureauLabel]) }}
+                        </p>
+                    @endif
                     <x-ui.button wire:click="restart" variant="secondary" size="sm">{{ __('Check another number') }}</x-ui.button>
                 </div>
             @endif

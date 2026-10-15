@@ -25,6 +25,11 @@ class CreditScoreChecksTable
                     ->label('PAN')
                     ->searchable(),
                 TextColumn::make('score'),
+                TextColumn::make('provider')
+                    ->label('Source')
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => $state === 'surepass' ? 'Live (Surepass)' : 'Demo')
+                    ->color(fn (string $state): string => $state === 'surepass' ? 'success' : 'gray'),
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn (CreditCheckStatus $state) => match ($state) {

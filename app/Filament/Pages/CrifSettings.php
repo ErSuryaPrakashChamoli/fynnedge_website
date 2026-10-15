@@ -50,6 +50,7 @@ class CrifSettings extends Page
     {
         $this->form->fill([
             Settings::ENABLED => Settings::enabled(),
+            Settings::PUBLIC_SCORE_ENABLED => Settings::publicScoreEnabled(),
             Settings::REUSE_DAYS => Settings::reuseDays(),
             Settings::CONSENT_VALIDITY_DAYS => Settings::consentValidityDays(),
             Settings::RETENTION_DAYS => Settings::retentionDays(),
@@ -72,6 +73,9 @@ class CrifSettings extends Page
                         Toggle::make(Settings::ENABLED)
                             ->label('CRIF report requests enabled')
                             ->helperText('Off stops every new paid request (existing reports stay viewable). Requests already queued are failed as "not configured" without calling Surepass.'),
+                        Toggle::make(Settings::PUBLIC_SCORE_ENABLED)
+                            ->label('Free CRIF Score page uses real scores')
+                            ->helperText('The public /credit-score/crif page then shows a real CRIF score from Surepass instead of a demo one. Each NEW visitor check is a paid call (after OTP and consent); the same PAN and mobile checking again within the reuse period sees the stored score at no cost. Off keeps the demo score. The other bureau pages stay demo either way.'),
                     ]),
                 Section::make('Duplicate prevention and consent')
                     ->columns(2)

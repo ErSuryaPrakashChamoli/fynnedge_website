@@ -9,7 +9,8 @@ How authorised FynnEdge staff fetch and read a customer's full CRIF High Mark cr
 ## 1. Scope
 
 - **Covered:** employee-initiated CRIF reports in the admin panel, linked to an existing **Customer** and optionally to the **Application** (journey session) it came from.
-- **Not changed:** the public "Free CRIF Score" page (`/credit-score/crif`) still runs on `DemoCreditScoreProvider`, and the loan journey's bureau check still runs on `NullCreditBureauProvider`. There was no live CIBIL integration in the codebase to change; the existing CIBIL/Experian/Equifax/CRIF score pages behave exactly as before.
+- **Also covered (opt-in):** the public "Free CRIF Score" page (`/credit-score/crif`) can show a **real** CRIF score through Surepass's score endpoint (§14). It is off by default and shows the demo score until switched on.
+- **Not changed:** the CIBIL, Experian and Equifax score pages stay on `DemoCreditScoreProvider`, and the loan journey's bureau check still runs on `NullCreditBureauProvider`. There was no live CIBIL integration in the codebase to change.
 - CIBIL and CRIF are never interchangeable. Reuse only ever matches a previous **CRIF** report for the same PAN.
 
 ## 2. Architecture
@@ -39,7 +40,7 @@ Everything sits in the existing `app/Modules/CreditBureau/` module, next to the 
 ```
 POST {SUREPASS_BASE_URL}/api/v1/credit-report-crif/fetch-report        (full report)
 POST {SUREPASS_BASE_URL}/api/v1/credit-report-crif/fetch-report-pdf    (PDF link; body adds "raw": false)
-POST {SUREPASS_BASE_URL}/api/v1/credit-report-crif/score               (score only — implemented, not used by any screen)
+POST {SUREPASS_BASE_URL}/api/v1/credit-report-crif/score               (score only — the public Free CRIF Score page, §14)
 Authorization: Bearer {SUREPASS_BEARER_TOKEN}
 Content-Type: application/json
 
@@ -151,6 +152,7 @@ In both cases the consent must be *Given* and no older than **Consent validity (
 | Setting | Default |
 | --- | --- |
 | CRIF report requests enabled | **off** |
+| Free CRIF Score page uses real scores | **off** (§14) |
 | Reuse period (days) | 30 |
 | Consent validity (days) | 30 |
 | Retention period (days) | 365 (never shorter than the reuse period) |
@@ -183,3 +185,20 @@ Every Surepass call in the suite goes through `Http::fake()` with `Http::prevent
 ```
 php artisan test --compact tests/Feature/CreditBureau tests/Feature/Filament/CrifReportAdminTest.php
 ```
+
+## 14. Public Free CRIF Score page
+
+With **CRIF Settings → Free CRIF Score page uses real scores** switched on (and the token set), `/credit-score/crif` shows a real score instead of the demo one. It uses `SurepassCrifScoreProvider`, routed by `SubmitCreditScoreCheck` for the CRIF bureau only.
+
+- **Flow is unchanged:** the visitor verifies their mobile by OTP, then gives their name, date of birth, PAN and the consent tick. Each OTP pays for at most one check. A real check also needs a first **and** last name, since Surepass requires both.
+- **Cost control:** the same person (same PAN **and** same verified mobile) checking again inside the reuse period sees their stored score, with no call. The reused row records `reused_from`. Matching on the mobile too means typing someone else's PAN never shows their stored score. A per-person lock stops two tabs paying twice.
+- **Uncertain outcomes** (timeout, gateway error) are stored as *Pending*. The same person is told to try again later, and nothing is re-sent for an hour.
+- **What the visitor sees:**
+  - a live score (300–900);
+  - "No score yet" when CRIF returns no valid score (e.g. `-1` for no credit history);
+  - a no-match message when Surepass rejects the details;
+  - a generic "try later" for anything else.
+  Provider text is never shown.
+- **Stored** in `credit_score_checks` (provider `surepass`): the score, Surepass's client id and message code. Never the response body, which echoes the PAN, name and mobile.
+- **Admin:** Credit Score Checks has a *Source* column (Live / Demo).
+- **Before switching on**, budget for it: every new visitor check is a paid call. Watch the Surepass usage dashboard for the first days.

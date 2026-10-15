@@ -14,6 +14,8 @@ final class CrifSettings
 {
     public const ENABLED = 'crif_enabled';
 
+    public const PUBLIC_SCORE_ENABLED = 'crif_public_score_enabled';
+
     public const REUSE_DAYS = 'crif_reuse_days';
 
     public const CONSENT_VALIDITY_DAYS = 'crif_consent_validity_days';
@@ -35,6 +37,21 @@ final class CrifSettings
     public static function enabled(): bool
     {
         return (bool) Setting::get(self::ENABLED, false);
+    }
+
+    /**
+     * Whether the public "Free CRIF Score" page shows real scores. Off by
+     * default and separate from enabled(): every new check there is a paid
+     * Surepass call triggered by a website visitor, not by an employee.
+     */
+    public static function publicScoreEnabled(): bool
+    {
+        return (bool) Setting::get(self::PUBLIC_SCORE_ENABLED, false);
+    }
+
+    public static function publicScoreLive(): bool
+    {
+        return self::publicScoreEnabled() && self::isConfigured();
     }
 
     public static function isConfigured(): bool
