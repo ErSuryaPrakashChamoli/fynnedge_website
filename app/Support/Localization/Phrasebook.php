@@ -42,6 +42,18 @@ final class Phrasebook
     }
 
     /**
+     * The Hindi lang/hi.json holds for exactly this English, or null. Used by
+     * the machine translator so a label the site already translates keeps its
+     * established wording.
+     */
+    public static function known(string $english): ?string
+    {
+        $hindi = __($english, [], 'hi');
+
+        return is_string($hindi) && $hindi !== $english ? $hindi : null;
+    }
+
+    /**
      * A resolved content array (one Setting holding a whole page's copy) in
      * the visitor's language. A field the admin translated wins; a list is
      * taken whole from the Hindi copy when it has any items, since its items

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Localization\AutoTranslation;
 use App\Support\Localization\Phrasebook;
 use App\Support\Localization\SiteLocale;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -43,6 +44,8 @@ class Setting extends Model
 
     public static function set(string $key, mixed $value): void
     {
+        AutoTranslation::settingSaving($key);
+
         static::query()->updateOrCreate(['key' => $key], ['value' => $value]);
         Cache::forget("setting:{$key}");
     }

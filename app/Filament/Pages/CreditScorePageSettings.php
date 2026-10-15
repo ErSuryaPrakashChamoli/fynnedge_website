@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\Setting;
 use App\Modules\CreditScore\Enums\BureauName;
 use App\Support\Pages\CreditScoreIndexing;
@@ -99,7 +100,7 @@ class CreditScorePageSettings extends Page
                             ->statePath('hi')
                             ->components([
                                 Callout::make('What Hindi visitors read')
-                                    ->description('Leave a field blank to use the built-in Hindi shown in grey. {bureau} works here too. A list left empty shows the Hindi of the English list, and a list removed on the English tab stays hidden in Hindi too.')
+                                    ->description('Leave a field blank to use the built-in Hindi shown in grey. {bureau} works here too. A list left empty shows the Hindi of the English list, and a list removed on the English tab stays hidden in Hindi too.'.HindiTranslationSection::settingsNote())
                                     ->info(),
                                 ...$this->wordingSections(hindi: true),
                             ]),

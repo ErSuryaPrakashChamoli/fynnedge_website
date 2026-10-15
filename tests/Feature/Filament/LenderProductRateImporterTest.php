@@ -214,3 +214,15 @@ it('finds the right rate by lender and loan type when the sheet came from anothe
         ->variant->toBe('Personal Loan (Unsecured) – fixed')
         ->rate_min->toBe('10.75');
 });
+
+it('finds the lender\'s offer when another loan product or lender record matches the same names', function () {
+    $this->actingAs(tap(User::factory()->create(['is_admin' => true]))->syncRoles([RateRoles::PUBLISHER_ROLE]));
+    LoanProduct::factory()->published()->create(['id' => 0, 'category' => LoanCategory::PersonalLoan, 'slug' => 'instant-personal-loan', 'name' => 'Instant Personal Loan']);
+    Lender::factory()->create(['name' => 'Upload Bank', 'slug' => 'upload-bank-duplicate']);
+
+    uploadVerifiedRates([evidenceRow(['reference' => (string) Str::uuid()])]);
+
+    expect(LenderProductRate::query()->sole())
+        ->lender_product_id->toBe($this->offer->id)
+        ->status->toBe(RateStatus::Published);
+});

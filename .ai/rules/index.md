@@ -31,6 +31,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | resources/views/components/site/promo-bar.blade.php,resources/js/app.js,resources/css/app.css | .ai/rules/css.md |
 | resources/views/emails/**,resources/views/components/emails/** | .ai/rules/emails.md |
 | resources/views/**,app/Http/Controllers/**,app/Support/**,app/Enums/**,lang/** | .ai/rules/enums.md |
+| app/Filament/Imports/** | .ai/rules/filament-imports.md |
 | app/Filament/**,database/migrations/** | .ai/rules/filament-migrations.md |
 | app/Support/Pages/AboutPageContent.php,app/Filament/Pages/AboutPageSettings.php,resources/views/about.blade.php | .ai/rules/filament-pages-views.md |
 | app/Support/Media/**,app/Filament/Pages/MediaGovernance.php | .ai/rules/filament-pages.md |
@@ -39,6 +40,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Filament/Schemas/HtmlBodyEditor.php | .ai/rules/filament-schemas.md |
 | app/Models/User.php,app/Filament/**,config/filament-shield.php,config/permission.php,database/seeders/RoleSeeder.php | .ai/rules/filament-seeders.md |
 | app/Enums/**,app/Filament/** | .ai/rules/filament.md |
+| app/Filament/Forms/Components/CoverFramePicker.php,app/Filament/Resources/SocialVideos/**,resources/views/filament/forms/components/cover-frame-picker.blade.php | .ai/rules/forms-components.md |
 | app/Modules/Newsletter/**,app/Mail/Newsletter/**,app/Http/Controllers/NewsletterController.php | .ai/rules/http-controllers.md |
 | app/Support/Analytics/**,app/Filament/Pages/SeoAnalytics.php,app/Http/Middleware/SecurityHeaders.php | .ai/rules/http-middleware.md |
 | config/queue.php,app/Filament/Imports/** | .ai/rules/imports.md |
@@ -49,6 +51,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Filament/Imports/**,app/Filament/Resources/LenderProductRates/** | .ai/rules/lender-product-rates.md |
 | app/Filament/Resources/Faqs/**,app/Filament/Resources/LoanProducts/** | .ai/rules/loan-products.md |
 | app/Support/Seo/**,app/Filament/Pages/Settings.php,resources/views/loans/** | .ai/rules/loans.md |
+| app/Models/**,app/Modules/**/Models/*.php,app/Models/Setting.php,app/Support/Localization/**,app/Filament/** | .ai/rules/localization-filament.md |
 | database/seeders/**,app/Support/Localization/**,app/Models/Setting.php | .ai/rules/localization-models.md |
 | app/Http/Middleware/SecurityHeaders.php | .ai/rules/middleware.md |
 | app/Models/**,app/Modules/**/Models/*.php,database/migrations/**,app/Filament/** | .ai/rules/migrations-filament.md |

@@ -108,3 +108,11 @@ it('highlights the Credit Score header menu as a champagne pill with a Free badg
 
     expect(preg_match_all('/<button[^>]*class="[^"]*nav-champagne[^"]*"[^>]*>\s*<span class="nav-champagne-badge[^"]*">Free<\/span>\s*(<span[^>]*>)?Credit Score/', $html))->toBe(2);
 });
+
+it('keeps the desktop header buttons on one line and level, dropping the duplicates below xl', function () {
+    $html = $this->get('/')->getContent();
+
+    expect($html)
+        ->toMatch('/<div class="[^"]*\bshrink-0\b[^"]*" data-header-cta>\s*<a class="[^"]*border-line-strong[^"]* whitespace-nowrap max-xl:hidden" href="[^"]*\/contact">Talk to us<\/a>\s*<a class="[^"]* whitespace-nowrap border border-transparent" href="[^"]*\/eligibility">Check Eligibility<\/a>/')
+        ->toMatch('/<nav[^>]*aria-label="Primary">.*class="[^"]*whitespace-nowrap max-xl:hidden"\s*>\s*Eligibility\s*<\/a>/s');
+});

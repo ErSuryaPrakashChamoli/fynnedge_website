@@ -3373,5 +3373,25 @@
   "field": "variant",
   "en": "Flexi Loan (personal)",
   "hi": "फ्लेक्सी लोन (पर्सनल)"
+ },
+ {
+  "field": "disclaimer",
+  "en": "Priced at a margin over the RBI repo rate, which South Indian Bank says changed on 08 Oct 2026. Confirm the current rate with the bank before you apply.",
+  "hi": "यह दर RBI रेपो रेट पर एक मार्जिन जोड़कर तय होती है, जो South Indian Bank के अनुसार 08 अक्टूबर 2026 को बदली। आवेदन से पहले बैंक से मौजूदा दर की पुष्टि करें।"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan (Unsecured) – fixed",
+  "hi": "पर्सनल लोन (अनसिक्योर्ड) – फिक्स्ड"
+ },
+ {
+  "field": "eligibility_notes",
+  "en": "Charged on the unpaid balance when at least 10% of the bill is paid by the due date.",
+  "hi": "जब नियत तारीख तक बिल का कम से कम 10% चुका दिया जाता है, तब बची हुई बकाया राशि पर लगता है।"
+ },
+ {
+  "field": "disclaimer",
+  "en": "Read on BankBazaar because Bank of India's own website could not be reached. The bank's card terms may state a different charge, so confirm with Bank of India before you apply.",
+  "hi": "यह जानकारी BankBazaar से ली गई है, क्योंकि Bank of India की अपनी वेबसाइट उपलब्ध नहीं हो सकी। बैंक की कार्ड शर्तों में शुल्क अलग हो सकता है, इसलिए आवेदन से पहले Bank of India से पुष्टि कर लें।"
  }
 ]

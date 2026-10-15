@@ -391,7 +391,7 @@
                         type="text"
                         inputmode="numeric"
                         autocomplete="off"
-                        placeholder="DD/MM/YYYY"
+                        placeholder="{{ __('DD/MM/YYYY') }}"
                         maxlength="10"
                         id="{{ $field->key }}"
                         x-ref="input"

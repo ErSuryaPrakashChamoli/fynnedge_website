@@ -2,6 +2,8 @@
 
 namespace App\Filament\Imports;
 
+use App\Enums\LenderStatus;
+use App\Enums\PublishStatus;
 use App\Enums\RateSourceType;
 use App\Enums\RateStatus;
 use App\Enums\RateType;
@@ -22,6 +24,7 @@ use Filament\Actions\Imports\Models\Import;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Component;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
@@ -55,12 +58,17 @@ class LenderProductRateImporter extends Importer
     public const SYNCHRONOUS_ROW_LIMIT = 1000;
 
     /**
-     * @var array<string, Lender>|null
+     * Lender ids by lower-cased name and by slug — a list, because a database
+     * can hold more than one lender record under the same name.
+     *
+     * @var array<string, list<int>>|null
      */
-    private ?array $lenders = null;
+    private ?array $lenderIds = null;
 
     /**
-     * @var array<string, LoanProduct|null>
+     * The loan products each "loan_type" cell can mean, best match first.
+     *
+     * @var array<string, Collection<int, LoanProduct>>
      */
     private array $loanProducts = [];
 
@@ -291,34 +299,80 @@ class LenderProductRateImporter extends Importer
         return $draft;
     }
 
+    /**
+     * The lender offer a row is about. The names in a sheet can match more
+     * than one record — a second lender record with the same name, or several
+     * loan products of one loan type (a sheet's "personal-loan" is the live
+     * site's "Personal Loans" product) — so this looks for the offer that
+     * exists among all of them: on the named product before others of its
+     * type, active before inactive.
+     */
     private function resolveOffer(): LenderProduct
     {
-        $this->lenders ??= Lender::query()->get()
-            ->flatMap(fn (Lender $lender) => [Str::lower($lender->name) => $lender, $lender->slug => $lender])
-            ->all();
+        $this->lenderIds ??= Lender::query()->get(['id', 'name', 'slug'])
+            ->reduce(function (array $ids, Lender $lender): array {
+                $ids[Str::lower($lender->name)][] = $lender->id;
+                $ids[$lender->slug][] = $lender->id;
 
-        $lender = $this->lenders[Str::lower(trim($this->data['lender']))] ?? $this->lenders[Str::slug($this->data['lender'])] ?? null
-            ?? throw new RowImportFailedException("No lender called \"{$this->data['lender']}\".");
+                return $ids;
+            }, []);
+
+        $lenderIds = array_values(array_unique([
+            ...($this->lenderIds[Str::lower(trim($this->data['lender']))] ?? []),
+            ...($this->lenderIds[Str::slug($this->data['lender'])] ?? []),
+        ]));
+
+        if ($lenderIds === []) {
+            throw new RowImportFailedException("No lender called \"{$this->data['lender']}\".");
+        }
 
         $key = Str::lower(trim($this->data['loan_type']));
+        $loanProducts = $this->loanProducts[$key] ??= self::loanProductsFor($key);
 
-        // A loan product's slug or name, or else a loan type (category).
-        $loanProduct = array_key_exists($key, $this->loanProducts)
-            ? $this->loanProducts[$key]
-            : $this->loanProducts[$key] = LoanProduct::query()->where(fn ($query) => $query->where('slug', $key)->orWhereRaw('lower(name) = ?', [$key]))->first()
-                ?? LoanProduct::query()->where('category', $key)->orderByRaw('status != ?', ['published'])->orderBy('id')->first();
-
-        if ($loanProduct === null) {
+        if ($loanProducts->isEmpty()) {
             throw new RowImportFailedException("No loan type \"{$this->data['loan_type']}\".");
         }
 
         $offer = LenderProduct::query()
-            ->where('lender_id', $lender->id)
-            ->where('loan_product_id', $loanProduct->id)
-            ->first()
-            ?? throw new RowImportFailedException("{$lender->name} has no {$loanProduct->name} offer. Add it in Catalog → Lender Offers first.");
+            ->with('lender')
+            ->whereIn('lender_id', $lenderIds)
+            ->whereIn('loan_product_id', $loanProducts->modelKeys())
+            ->get()
+            ->sortBy(fn (LenderProduct $offer): array => [
+                $loanProducts->search(fn (LoanProduct $product): bool => $product->id === $offer->loan_product_id),
+                $offer->status === LenderStatus::Active ? 0 : 1,
+                $offer->id,
+            ])
+            ->first();
 
-        return $offer->setRelation('lender', $lender)->setRelation('loanProduct', $loanProduct);
+        if ($offer === null) {
+            throw new RowImportFailedException(trim($this->data['lender']).' has no offer for '.$loanProducts->pluck('name')->implode(' or ').'. Add it in Catalog → Lender Offers first.');
+        }
+
+        return $offer->setRelation('loanProduct', $loanProducts->firstWhere('id', $offer->loan_product_id));
+    }
+
+    /**
+     * Every loan product a "loan_type" cell can mean, best match first: the
+     * products whose slug or name it is, then every product of their loan type
+     * (or of the loan type it names), published before unpublished.
+     *
+     * @return Collection<int, LoanProduct>
+     */
+    private static function loanProductsFor(string $key): Collection
+    {
+        $named = LoanProduct::query()->where(fn ($query) => $query->where('slug', $key)->orWhereRaw('lower(name) = ?', [$key]))->get();
+        $categories = $named->toBase()->map(fn (LoanProduct $product): string => $product->category->value)->push($key)->unique()->values()->all();
+
+        return LoanProduct::query()
+            ->where(fn ($query) => $query->whereKey($named->modelKeys())->orWhereIn('category', $categories))
+            ->get()
+            ->sortBy(fn (LoanProduct $product): array => [
+                $named->contains($product) ? 0 : 1,
+                $product->status === PublishStatus::Published ? 0 : 1,
+                $product->id,
+            ])
+            ->values();
     }
 
     private static function same(?string $stored, ?string $given): bool

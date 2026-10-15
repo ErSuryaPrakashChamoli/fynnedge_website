@@ -183,10 +183,10 @@
                                 class="group relative block aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-accent to-accent-strong focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white"
                             >
                                 @if ($videoUrl)
-                                    {{-- Without a cover image, the #t fragment makes the browser paint an early frame as the thumbnail. --}}
+                                    {{-- Without a cover image, the #t fragment makes the browser paint the frame the admin picked (or an early one) as the thumbnail. --}}
                                     <video
                                         x-ref="preview"
-                                        src="{{ $videoUrl }}#t=0.1"
+                                        src="{{ $videoUrl }}#t={{ $video->coverFrameTime() }}"
                                         muted
                                         loop
                                         playsinline

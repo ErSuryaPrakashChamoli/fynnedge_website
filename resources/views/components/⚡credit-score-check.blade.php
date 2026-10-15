@@ -320,7 +320,7 @@ new class extends Component
                             type="text"
                             inputmode="numeric"
                             autocomplete="off"
-                            placeholder="DD/MM/YYYY"
+                            placeholder="{{ __('DD/MM/YYYY') }}"
                             maxlength="10"
                             id="dateOfBirth"
                             x-ref="dateOfBirthDisplay"

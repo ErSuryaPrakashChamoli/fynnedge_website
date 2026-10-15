@@ -56,6 +56,16 @@ return [
         'timeout' => (int) env('AREACH_SMS_TIMEOUT', 10),
     ],
 
+    'google_translate' => [
+        // Google Cloud Translation (v2, API key) — fills the Hindi version of
+        // content saved in the admin (App\Support\Localization\AutoTranslation).
+        // Server-side secret: set it in the server's environment only. Without
+        // it nothing is sent anywhere and untranslated content shows in English.
+        'key' => env('GOOGLE_TRANSLATE_API_KEY'),
+        'endpoint' => env('GOOGLE_TRANSLATE_ENDPOINT', 'https://translation.googleapis.com/language/translate/v2'),
+        'timeout' => (int) env('GOOGLE_TRANSLATE_TIMEOUT', 30),
+    ],
+
     'credit_score' => [
         // Backs the public "check your free credit score" page. Demo-by-default —
         // unlike credit_bureau above — because that page's whole purpose today is

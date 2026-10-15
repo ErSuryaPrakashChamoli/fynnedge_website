@@ -56,7 +56,7 @@
 
         @php $loanCategories = \App\Support\Loans\LoanMegaMenu::categories(); @endphp
 
-        <nav class="hidden items-center gap-3.5 lg:flex xl:gap-8" aria-label="{{ __('Primary') }}">
+        <nav class="hidden items-center gap-3.5 lg:flex xl:gap-6" aria-label="{{ __('Primary') }}">
             @if (count($loanCategories))
                 <div x-data="{ open: false, active: '{{ $loanCategories[0]['overviewParams']['loanProduct'] }}' }" @click.outside="open = false" @keydown.escape="open = false" @mouseenter="open = true" @mouseleave="open = false" class="relative">
                     <button
@@ -197,18 +197,27 @@
                 </div>
             </div>
 
-            {{-- nowrap: a two-word Hindi label (हमारे बारे में) otherwise breaks onto two lines at 1024px. --}}
-            <x-site.nav-link route="eligibility.index" :label="__('Eligibility')" class="whitespace-nowrap" />
+            {{--
+                nowrap: a two-word Hindi label (हमारे बारे में) otherwise breaks onto two lines at 1024px.
+                Below xl the row has no room for every item, so the Eligibility link (same page as the
+                Check Eligibility button) is dropped there rather than letting the buttons wrap.
+            --}}
+            <x-site.nav-link route="eligibility.index" :label="__('Eligibility')" class="whitespace-nowrap max-xl:hidden" />
             <x-site.nav-link route="resources.index" :label="__('Resources')" class="whitespace-nowrap" />
             <x-site.nav-link route="faqs.index" :label="__('FAQs')" class="whitespace-nowrap" />
             <x-site.nav-link route="about" :label="__('About')" class="whitespace-nowrap" />
         </nav>
 
-        <div class="hidden items-center gap-3 lg:flex">
-            <x-ui.button tag="a" :href="route('contact')" variant="secondary" size="sm">
+        {{--
+            The buttons never wrap: a wrapped label made each button a tall, lopsided pill. Below xl
+            only Check Eligibility fits (Talk to us stays in the mobile menu and the footer). The
+            transparent border matches the outlined button's height so the two line up.
+        --}}
+        <div class="hidden shrink-0 items-center gap-3 lg:flex" data-header-cta>
+            <x-ui.button tag="a" :href="route('contact')" variant="secondary" size="sm" class="whitespace-nowrap max-xl:hidden">
                 {{ __('Talk to us') }}
             </x-ui.button>
-            <x-ui.button tag="a" :href="route('eligibility.index')" size="sm">
+            <x-ui.button tag="a" :href="route('eligibility.index')" size="sm" class="whitespace-nowrap border border-transparent">
                 {{ __('Check Eligibility') }}
             </x-ui.button>
         </div>

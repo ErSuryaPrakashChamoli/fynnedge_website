@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\Setting;
 use App\Support\Calculators\CalculatorIndexing;
 use App\Support\Calculators\CalculatorPagesContent;
@@ -95,7 +96,7 @@ class CalculatorPagesSettings extends Page
                             ->statePath('hi')
                             ->components([
                                 Callout::make('What Hindi visitors read')
-                                    ->description('Leave a field blank to use the built-in Hindi shown in grey. {loan} works here too and becomes the Hindi loan name.')
+                                    ->description('Leave a field blank to use the built-in Hindi shown in grey. {loan} works here too and becomes the Hindi loan name.'.HindiTranslationSection::settingsNote())
                                     ->info(),
                                 ...$this->wordingSections(hindi: true),
                             ]),

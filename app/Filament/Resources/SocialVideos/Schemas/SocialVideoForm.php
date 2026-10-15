@@ -6,6 +6,7 @@ use App\Enums\FaqPlacement;
 use App\Enums\PublishStatus;
 use App\Enums\SocialPlatform;
 use App\Enums\VideoTestimonialSource;
+use App\Filament\Forms\Components\CoverFramePicker;
 use App\Filament\Resources\VideoTestimonials\Schemas\VideoTestimonialForm;
 use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\SocialVideo;
@@ -46,6 +47,7 @@ class SocialVideoForm
                             ->directory('social-videos')
                             ->acceptedFileTypes(['video/mp4', 'video/webm'])
                             ->maxSize(VideoTestimonialForm::MAX_VIDEO_SIZE)
+                            ->live()
                             ->helperText('MP4 or WebM, up to 20MB. iPhone .mov files need converting to MP4 first. For longer videos, upload to YouTube and use a YouTube link instead.')
                             ->visible(fn (Get $get): bool => self::isSource($get, VideoTestimonialSource::Upload))
                             ->required(fn (Get $get): bool => self::isSource($get, VideoTestimonialSource::Upload))
@@ -62,14 +64,26 @@ class SocialVideoForm
                             ->visible(fn (Get $get): bool => self::isSource($get, VideoTestimonialSource::YouTube))
                             ->required(fn (Get $get): bool => self::isSource($get, VideoTestimonialSource::YouTube))
                             ->columnSpanFull(),
+                    ]),
+                Section::make('Cover')
+                    ->description('What visitors see on the card before the video plays. Pick a moment from the video, or upload your own cover image.')
+                    ->columns(2)
+                    ->columnSpanFull()
+                    ->components([
+                        CoverFramePicker::make('cover_time')
+                            ->label('Pick a moment from the video')
+                            ->helperText('Play or drag the video to the moment you want, pause, then press "Use this frame". The preview is cropped exactly like the card on the website.')
+                            ->rules(['nullable', 'numeric', 'min:0', 'max:3600'])
+                            ->visible(fn (Get $get): bool => self::isSource($get, VideoTestimonialSource::Upload))
+                            ->columnSpanFull(),
                         FileUpload::make('poster_path')
-                            ->label('Cover image')
+                            ->label('Or upload a cover image')
                             ->image()
                             ->disk('public')
                             ->directory('social-video-covers')
                             ->acceptedFileTypes(['image/png', 'image/jpeg', 'image/webp'])
                             ->maxSize(2048)
-                            ->helperText('Optional. Use the post\'s own cover/thumbnail, landscape 1280 × 800px (16:10) — upright frames are cropped to the middle. Without one, uploaded videos show their first frame and YouTube videos use YouTube\'s thumbnail.'),
+                            ->helperText('Optional, e.g. a designed thumbnail or the post\'s own cover. Landscape 1280 × 800px (16:10); upright images are cropped to the middle. When set, it is shown instead of the frame picked above. Without either, uploaded videos show their first frame and YouTube videos use YouTube\'s thumbnail.'),
                         TextInput::make('poster_alt')
                             ->label('Cover image alt text')
                             ->maxLength(255),

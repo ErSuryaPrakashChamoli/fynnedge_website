@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\Setting;
 use App\Support\Contact\OfficeMap;
 use App\Support\Theme\SiteThemeStyles;
@@ -277,7 +278,7 @@ class Settings extends Page
                     ]),
 
                 Section::make('Hindi wording (हिन्दी)')
-                    ->description('What visitors who switch the site to Hindi read for the text above (saved as {key}_hi). Leave a field blank to use the built-in Hindi of the English, shown in grey — or the English itself where there is none.')
+                    ->description('What visitors who switch the site to Hindi read for the text above (saved as {key}_hi). Leave a field blank to use the built-in Hindi of the English, shown in grey — or the English itself where there is none.'.HindiTranslationSection::settingsNote())
                     ->collapsible()
                     ->collapsed()
                     ->columns(2)

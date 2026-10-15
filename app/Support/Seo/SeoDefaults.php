@@ -29,9 +29,15 @@ class SeoDefaults
         'summary' => 'Summary (small square image)',
     ];
 
+    /**
+     * In the visitor's language: a Hindi visitor gets the admin's Hindi
+     * wording, or the built-in Hindi of the default.
+     */
     public static function metaDescription(): string
     {
-        return self::string('seo_meta_description') ?? self::DEFAULT_DESCRIPTION;
+        $value = Setting::localized('seo_meta_description');
+
+        return is_string($value) && trim($value) !== '' ? trim($value) : __(self::DEFAULT_DESCRIPTION);
     }
 
     /**

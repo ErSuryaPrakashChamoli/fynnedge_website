@@ -153,6 +153,15 @@ it('shows the platform name beside the icon when the short info is blank', funct
     $this->get('/contact')->assertSee('>LinkedIn</p>', false);
 });
 
+it('shows the frame an admin picked as the card cover, or an early frame by default', function () {
+    SocialVideo::factory()->onEveryPage()->create(['video_path' => 'social-videos/picked.mp4', 'cover_time' => 3.5]);
+    SocialVideo::factory()->onEveryPage()->create(['video_path' => 'social-videos/default.mp4', 'cover_time' => null]);
+
+    $this->get('/contact')
+        ->assertSee('social-videos/picked.mp4#t=3.5', false)
+        ->assertSee('social-videos/default.mp4#t=0.1', false);
+});
+
 it('links each card to its original post on that platform', function () {
     SocialVideo::factory()->onEveryPage()->create([
         'platform' => SocialPlatform::LinkedIn,

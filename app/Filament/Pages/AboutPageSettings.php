@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\Setting;
 use App\Support\Pages\AboutPageContent;
 use BackedEnum;
@@ -72,7 +73,7 @@ class AboutPageSettings extends Page
                             ->statePath('hi')
                             ->components([
                                 Callout::make('What Hindi visitors read')
-                                    ->description('Leave a field blank to use the built-in Hindi shown in grey. A list left empty shows the Hindi of the English list, and a list removed on the English tab stays hidden in Hindi too.')
+                                    ->description('Leave a field blank to use the built-in Hindi shown in grey. A list left empty shows the Hindi of the English list, and a list removed on the English tab stays hidden in Hindi too.'.HindiTranslationSection::settingsNote())
                                     ->info(),
                                 ...$this->wordingSections(hindi: true),
                             ]),

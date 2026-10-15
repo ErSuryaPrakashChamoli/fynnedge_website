@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 #[Fillable([
     'platform', 'title', 'tagline', 'caption', 'post_url',
-    'video_source', 'video_path', 'youtube_url', 'poster_path', 'poster_alt',
+    'video_source', 'video_path', 'youtube_url', 'poster_path', 'cover_time', 'poster_alt',
     'placements', 'sort_order', 'status', 'published_at', 'expires_at',
     'title_hi',
     'tagline_hi',
@@ -45,6 +45,7 @@ class SocialVideo extends Model
             'video_source' => VideoTestimonialSource::class,
             'status' => PublishStatus::class,
             'placements' => 'array',
+            'cover_time' => 'float',
             'published_at' => 'datetime',
             'expires_at' => 'datetime',
         ];
@@ -53,6 +54,16 @@ class SocialVideo extends Model
     public function playerTitle(): string
     {
         return $this->title;
+    }
+
+    /**
+     * The moment of an uploaded video the card shows as its cover when no
+     * cover image is uploaded: the second an admin picked, else 0.1s (just
+     * past a first frame that is often black).
+     */
+    public function coverFrameTime(): float
+    {
+        return $this->cover_time > 0 ? $this->cover_time : 0.1;
     }
 
     /**

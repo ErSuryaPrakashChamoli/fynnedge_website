@@ -2,7 +2,9 @@
 
 namespace App\Models\Concerns;
 
+use App\Support\Localization\AutoTranslation;
 use App\Support\Localization\SiteLocale;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Serves a model's visitor-facing text in the visitor's language.
@@ -14,7 +16,7 @@ use App\Support\Localization\SiteLocale;
  * renders instead of going blank. Views therefore never change: they keep
  * reading `$page->body`.
  *
- * Only reads are affected. Saving writes the raw attributes, and the admin
+ * Reads are what this trait changes. Saving writes the raw attributes, and the admin
  * panel always runs in English (SiteLocale::appliesTo()), so editors always
  * see and edit the English columns as English, and the Hindi ones by name.
  *
@@ -23,6 +25,15 @@ use App\Support\Localization\SiteLocale;
  */
 trait HasTranslations
 {
+    /**
+     * New or changed English is translated into Hindi in the background
+     * (AutoTranslation) whenever a Google Translate key is configured.
+     */
+    public static function bootHasTranslations(): void
+    {
+        static::saved(fn (Model $model) => AutoTranslation::modelSaved($model));
+    }
+
     /**
      * The attributes that have a translated sibling column.
      *
