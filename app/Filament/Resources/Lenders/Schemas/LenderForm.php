@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Lenders\Schemas;
 
 use App\Enums\LenderStatus;
 use App\Enums\LenderType;
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\Lender;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -44,6 +45,11 @@ class LenderForm
                     ->native(false),
                 TagsInput::make('serviceable_locations')
                     ->helperText('Cities or regions this lender services. Leave empty if nationwide.'),
+                HindiTranslationSection::make([
+                    Textarea::make('description_hi')
+                        ->label('Description (Hindi)')
+                        ->columnSpanFull(),
+                ]),
             ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Modules\Eligibility\Models;
 
 use App\Modules\Eligibility\Enums\RulePriority;
+use App\Support\Localization\SiteLocale;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,5 +27,19 @@ class EligibilityResultReason extends Model
     public function rule(): BelongsTo
     {
         return $this->belongsTo(EligibilityRule::class, 'eligibility_rule_id');
+    }
+
+    /**
+     * The stored message is the English one (admins read it). While the site runs in
+     * Hindi, the rule's translated message is shown instead when the rule still exists
+     * and has one; otherwise the stored English.
+     */
+    public function visitorMessage(): ?string
+    {
+        if (SiteLocale::isTranslating() && filled($this->customer_message) && filled($this->rule?->customer_message)) {
+            return $this->rule->customer_message;
+        }
+
+        return $this->customer_message;
     }
 }

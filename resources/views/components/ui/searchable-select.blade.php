@@ -1,4 +1,4 @@
-@props(['label' => null, 'name', 'options' => [], 'placeholder' => 'Start typing to search…', 'hint' => null])
+@props(['label' => null, 'name', 'options' => [], 'placeholder' => null, 'hint' => null])
 
 @php $errorBag = $errors->has($name); @endphp
 
@@ -19,8 +19,9 @@
         },
         get filtered() {
             const q = this.query.trim().toLowerCase();
+            {{-- The value too: a Hindi label (दिल्ली) keeps its English value (Delhi), so Latin typing still finds it. --}}
             return q
-                ? this.options.filter((o) => o.label.toLowerCase().includes(q)).slice(0, 8)
+                ? this.options.filter((o) => o.label.toLowerCase().includes(q) || String(o.value).toLowerCase().includes(q)).slice(0, 8)
                 : this.options.slice(0, 8);
         },
         choose(option) {
@@ -55,7 +56,7 @@
                 x-model="query"
                 @focus="open = true"
                 @input="open = true"
-                placeholder="{{ $placeholder }}"
+                placeholder="{{ $placeholder ?? __('Start typing to search…') }}"
                 autocomplete="off"
                 class="w-full rounded-lg border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 {{ $errorBag ? 'border-warn' : 'border-line-strong' }}"
             >
@@ -65,9 +66,9 @@
                     <button type="button" @click="choose(option)" class="block w-full px-3.5 py-2 text-left text-sm text-ink hover:bg-surface-2" x-text="option.label"></button>
                 </template>
                 <template x-if="filtered.length === 0">
-                    <p class="px-3.5 py-2 text-sm text-ink-faint">No matches — choose "Other" below</p>
+                    <p class="px-3.5 py-2 text-sm text-ink-faint">{{ __('No matches — choose "Other" below') }}</p>
                 </template>
-                <button type="button" @click="chooseOther()" class="block w-full border-t border-line px-3.5 py-2 text-left text-sm font-medium text-accent hover:bg-surface-2">Other — enter manually</button>
+                <button type="button" @click="chooseOther()" class="block w-full border-t border-line px-3.5 py-2 text-left text-sm font-medium text-accent hover:bg-surface-2">{{ __('Other — enter manually') }}</button>
             </div>
         </div>
     </template>
@@ -79,10 +80,10 @@
                 id="{{ $name }}"
                 wire:model="{{ $name }}"
                 x-ref="customInput"
-                placeholder="Enter {{ $label ? Str::lower(Str::before($label, ' (')) : 'a value' }}"
+                placeholder="{{ $label ? __('Enter :field', ['field' => Str::lower(Str::before($label, ' ('))]) : __('Enter a value') }}"
                 class="w-full rounded-lg border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 {{ $errorBag ? 'border-warn' : 'border-line-strong' }}"
             >
-            <button type="button" @click="backToSearch()" class="mt-1.5 text-xs font-medium text-accent hover:underline">← Search from list instead</button>
+            <button type="button" @click="backToSearch()" class="mt-1.5 text-xs font-medium text-accent hover:underline">{{ __('← Search from list instead') }}</button>
         </div>
     </template>
 

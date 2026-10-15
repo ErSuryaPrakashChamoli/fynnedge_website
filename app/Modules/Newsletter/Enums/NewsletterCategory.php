@@ -21,18 +21,18 @@ enum NewsletterCategory: string implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::PersonalFinance => 'Personal finance',
-            self::CreditAndCibil => 'Credit & CIBIL',
-            self::Loans => 'Loans',
+            self::PersonalFinance => __('Personal finance'),
+            self::CreditAndCibil => __('Credit & CIBIL'),
+            self::Loans => __('Loans'),
         };
     }
 
     public function getDescription(): string
     {
         return match ($this) {
-            self::PersonalFinance => 'Budgeting, saving and everyday money guidance.',
-            self::CreditAndCibil => 'Credit scores, credit reports and how to improve them.',
-            self::Loans => 'Loan products, eligibility and borrowing tips.',
+            self::PersonalFinance => __('Budgeting, saving and everyday money guidance.'),
+            self::CreditAndCibil => __('Credit scores, credit reports and how to improve them.'),
+            self::Loans => __('Loan products, eligibility and borrowing tips.'),
         };
     }
 

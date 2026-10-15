@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\RateSourceType;
 use App\Enums\RateStatus;
 use App\Enums\RateType;
 use App\Enums\RateUnit;
@@ -9,6 +10,7 @@ use App\Enums\RateVerificationStatus;
 use App\Enums\RepaymentMethod;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use App\Support\Rates\RateBook;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
@@ -41,14 +43,19 @@ use LogicException;
     'rate_min', 'rate_max', 'rate_unit', 'rate_type', 'repayment_method', 'benchmark',
     'promo_rate', 'promo_label', 'promo_starts_at', 'promo_ends_at',
     'effective_from', 'effective_until', 'eligibility_notes', 'disclaimer',
-    'source_url', 'source_notes', 'last_verified_at', 'verification_status',
+    'source_url', 'source_type', 'source_name', 'source_notes', 'last_verified_at', 'verification_status',
     'is_featured', 'display_priority', 'status', 'review_note',
     'submitted_by', 'submitted_at', 'published_by', 'published_at', 'archived_at',
+    'variant_hi',
+    'borrower_segment_hi',
+    'promo_label_hi',
+    'eligibility_notes_hi',
+    'disclaimer_hi',
 ])]
 class LenderProductRate extends Model
 {
     /** @use HasFactory<LenderProductRateFactory> */
-    use Auditable, HasFactory, HasPublicId;
+    use Auditable, HasFactory, HasPublicId, HasTranslations;
 
     /**
      * Rate dates (effective_from/until) are Indian calendar dates as printed on
@@ -89,6 +96,7 @@ class LenderProductRate extends Model
             'rate_type' => RateType::class,
             'repayment_method' => RepaymentMethod::class,
             'verification_status' => RateVerificationStatus::class,
+            'source_type' => RateSourceType::class,
             'status' => RateStatus::class,
             'promo_starts_at' => 'datetime',
             'promo_ends_at' => 'datetime',
@@ -225,14 +233,16 @@ class LenderProductRate extends Model
     }
 
     /**
-     * Unverified, or verified so long ago that it must be re-checked. Archived
-     * versions are history, not work, so they never count.
+     * Unverified, taken from a third-party site, or verified so long ago that
+     * it must be re-checked. Archived versions are history, not work, so they
+     * never count.
      */
     public function scopeNeedsVerification(Builder $query): void
     {
         $query->where('status', '!=', RateStatus::Archived)
             ->where(fn (Builder $query) => $query
                 ->where('verification_status', RateVerificationStatus::Unverified)
+                ->orWhere('source_type', RateSourceType::ThirdParty)
                 ->orWhereNull('last_verified_at')
                 ->orWhereDate('last_verified_at', '<', self::today()->subDays(self::REVERIFY_AFTER_DAYS)->toDateString()));
     }
@@ -268,6 +278,7 @@ class LenderProductRate extends Model
     public function needsReverification(): bool
     {
         return $this->verification_status !== RateVerificationStatus::Verified
+            || $this->source_type === RateSourceType::ThirdParty
             || $this->last_verified_at === null
             || $this->last_verified_at->lt(self::today()->subDays(self::REVERIFY_AFTER_DAYS));
     }
@@ -309,5 +320,19 @@ class LenderProductRate extends Model
         $offer = $this->lenderProduct;
 
         return $offer ? "{$offer->lender?->name} — {$offer->loanProduct?->name}" : 'Unknown offer';
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'variant',
+            'borrower_segment',
+            'promo_label',
+            'eligibility_notes',
+            'disclaimer',
+        ];
     }
 }

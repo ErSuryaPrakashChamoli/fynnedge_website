@@ -2,10 +2,10 @@
     'source' => 'website',
     'sourceUrl' => null,
     'variant' => 'card',
-    'heading' => 'Stay ahead of your finances',
-    'description' => 'Get practical financial insights, loan tips and useful updates from FynnEdge directly in your inbox.',
+    'heading' => __('Stay ahead of your finances'),
+    'description' => __('Get practical financial insights, loan tips and useful updates from FynnEdge directly in your inbox.'),
     'note' => null,
-    'ctaLabel' => 'Subscribe',
+    'ctaLabel' => __('Subscribe'),
     'showName' => false,
 ])
 
@@ -51,7 +51,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-3.5 w-3.5" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                         </svg>
-                        Newsletter
+                        {{ __('Newsletter') }}
                     </span>
                 @endif
 
@@ -107,11 +107,11 @@
                     </div>
 
                     @if ($showName)
-                        <x-ui.input name="newsletter_name" type="text" placeholder="Name (optional)" class="w-full sm:w-44" aria-label="Name" />
+                        <x-ui.input name="newsletter_name" type="text" :placeholder="__('Name (optional)')" class="w-full sm:w-44" :aria-label="__('Name')" />
                     @endif
 
                     <div class="relative flex-1">
-                        <label for="newsletter-email-{{ $source }}" class="sr-only">Email address</label>
+                        <label for="newsletter-email-{{ $source }}" class="sr-only">{{ __('Email address') }}</label>
 
                         @if ($isBanner)
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-accent" aria-hidden="true">
@@ -126,7 +126,7 @@
                             value="{{ old('email') }}"
                             required
                             autocomplete="email"
-                            placeholder="{{ $isBanner ? 'you@example.com' : 'Email address' }}"
+                            placeholder="{{ $isBanner ? 'you@example.com' : __('Email address') }}"
                             @class([
                                 'w-full border bg-surface text-ink placeholder:text-ink-faint transition-colors' => true,
                                 'rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/30' => ! $isBanner,
@@ -156,10 +156,10 @@
                 </form>
 
                 <p @class(['mt-3 text-xs text-ink-faint' => true, 'sm:pl-5' => $isBanner])>
-                    By subscribing, you agree to receive emails from {{ \App\Models\Setting::get('site_name', 'FynnEdge') }}.
-                    You can unsubscribe at any time.
+                    {{ __('By subscribing, you agree to receive emails from :site.', ['site' => \App\Models\Setting::get('site_name', 'FynnEdge')]) }}
+                    {{ __('You can unsubscribe at any time.') }}
                     @if ($privacyUrl)
-                        <a href="{{ $privacyUrl }}" class="underline transition-colors hover:text-ink">Privacy Policy</a>.
+                        <a href="{{ $privacyUrl }}" class="underline transition-colors hover:text-ink">{{ __('Privacy Policy') }}</a>.
                     @endif
                 </p>
             </div>

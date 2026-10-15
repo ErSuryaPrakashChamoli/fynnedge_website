@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use App\Modules\CreditScore\Enums\BureauName;
 use Database\Factories\CreditScorePageFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -15,11 +16,11 @@ use Illuminate\Database\Eloquent\Model;
  * is independent — the same shape as CalculatorPage. The heading, intro and
  * meta tags above the check form stay in CreditScorePageContent.
  */
-#[Fillable(['bureau', 'title', 'body'])]
+#[Fillable(['bureau', 'title', 'body', 'title_hi', 'body_hi'])]
 class CreditScorePage extends Model
 {
     /** @use HasFactory<CreditScorePageFactory> */
-    use HasFactory, HasPublicId;
+    use HasFactory, HasPublicId, HasTranslations;
 
     protected function casts(): array
     {
@@ -52,5 +53,16 @@ class CreditScorePage extends Model
     public static function defaultHeading(BureauName $bureau): string
     {
         return 'About the '.$bureau->getLabel().' score';
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'title',
+            'body',
+        ];
     }
 }

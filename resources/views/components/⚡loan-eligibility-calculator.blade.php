@@ -56,7 +56,8 @@ new class extends Component
         $loanProduct = LoanProduct::query()->published()->where('category', $this->category)->first();
         $this->loanProductId = $loanProduct?->id;
         $this->loanProductSlug = $loanProduct?->slug ?? '';
-        $this->loanProductName = $loanProduct?->name ?? '';
+        // English on purpose: it only goes into the "talk to an expert" message, which the contact form saves for admins.
+        $this->loanProductName = $loanProduct?->getRawOriginal('name') ?? '';
     }
 
     /**
@@ -92,6 +93,47 @@ new class extends Component
             'loanAmountRequested' => ['required', 'numeric', 'min:1'],
             'preferredTenureMonths' => ['required', 'integer', 'min:1'],
             'creditConsent' => ['accepted'],
+        ];
+    }
+
+    /**
+     * The field names validation messages use, in the visitor's language.
+     * The English ones are exactly the names Laravel derives on its own.
+     *
+     * @return array<string, string>
+     */
+    protected function validationAttributes(): array
+    {
+        return [
+            'age' => __('age'),
+            'city' => __('city'),
+            'employmentType' => __('employment type'),
+            'monthlyIncome' => __('monthly income'),
+            'otherMonthlyIncome' => __('other monthly income'),
+            'existingEmiAmount' => __('existing emi amount'),
+            'loanAmountRequested' => __('loan amount requested'),
+            'preferredTenureMonths' => __('preferred tenure months'),
+            'creditConsent' => __('credit consent'),
+        ];
+    }
+
+    /**
+     * Laravel's own English wording for the rules above, routed through the
+     * translator so a Hindi visitor gets Hindi errors.
+     *
+     * @return array<string, string>
+     */
+    protected function messages(): array
+    {
+        return [
+            'required' => __('The :attribute field is required.'),
+            'integer' => __('The :attribute field must be an integer.'),
+            'numeric' => __('The :attribute field must be a number.'),
+            'string' => __('The :attribute field must be a string.'),
+            'min' => __('The :attribute field must be at least :min.'),
+            'max' => __('The :attribute field must not be greater than :max.'),
+            'in' => __('The selected :attribute is invalid.'),
+            'accepted' => __('The :attribute field must be accepted.'),
         ];
     }
 
@@ -137,91 +179,90 @@ new class extends Component
 
 <div>
     @if (! $loanProductId)
-        <x-ui.alert tone="warn" title="Not available yet">
-            This quick eligibility check isn't configured for this loan type yet. Try the full
-            <a href="{{ route('eligibility.index') }}" class="font-medium underline">eligibility check</a> instead.
+        <x-ui.alert tone="warn" :title="__('Not available yet')">
+            {!! __('This quick eligibility check isn\'t configured for this loan type yet. Try the full <a href=":url" class="font-medium underline">eligibility check</a> instead.', ['url' => e(route('eligibility.index'))]) !!}
         </x-ui.alert>
     @else
         <form wire:submit="evaluate" class="grid gap-6 sm:grid-cols-2">
             <div>
-                <label for="age" class="text-sm font-medium text-ink">Age</label>
+                <label for="age" class="text-sm font-medium text-ink">{{ __('Age') }}</label>
                 <input id="age" type="number" inputmode="numeric" wire:model="age"
                     class="mt-2 w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40">
                 @error('age') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
 
-            <x-ui.searchable-select name="city" label="City" :options="$this->cityOptions" />
+            <x-ui.searchable-select name="city" :label="__('City')" :options="$this->cityOptions" />
 
             <div>
-                <label for="employmentType" class="text-sm font-medium text-ink">Employment type</label>
+                <label for="employmentType" class="text-sm font-medium text-ink">{{ __('Employment type') }}</label>
                 <select id="employmentType" wire:model="employmentType"
                     class="mt-2 w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40">
-                    <option value="salaried">Salaried</option>
-                    <option value="self-employed">Self-employed</option>
+                    <option value="salaried">{{ __('Salaried') }}</option>
+                    <option value="self-employed">{{ __('Self-employed') }}</option>
                 </select>
             </div>
 
-            <x-ui.searchable-select name="employerName" label="Employer name (optional)" :options="$this->employerOptions" />
+            <x-ui.searchable-select name="employerName" :label="__('Employer name (optional)')" :options="$this->employerOptions" />
 
             <div>
-                <label for="monthlyIncome" class="text-sm font-medium text-ink">Monthly income (₹)</label>
+                <label for="monthlyIncome" class="text-sm font-medium text-ink">{{ __('Monthly income (₹)') }}</label>
                 <input id="monthlyIncome" type="text" inputmode="numeric" autocomplete="off" wire:model="monthlyIncome"
                     wire:ignore.self
                     x-effect="const v = $wire.monthlyIncome; if (document.activeElement !== $el) $el.value = formatIndianNumber(String(v ?? ''))"
                     x-on:focus="$el.value = $el.value.replace(/[^0-9]/g, '')"
                     x-on:blur="$el.value = formatIndianNumber($el.value.replace(/[^0-9]/g, ''))"
                     class="mt-2 w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40">
-                <p class="mt-1 text-xs text-ink-faint" x-show="$wire.monthlyIncome > 0" x-text="numberToIndianWords(String($wire.monthlyIncome)) + ' Rupees only'"></p>
+                <p class="mt-1 text-xs text-ink-faint" x-show="$wire.monthlyIncome > 0" x-text="numberToIndianWords(String($wire.monthlyIncome)) + @js(' '.__('Rupees only'))"></p>
                 @error('monthlyIncome') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
 
             <div>
-                <label for="otherMonthlyIncome" class="text-sm font-medium text-ink">Other monthly income (₹)</label>
+                <label for="otherMonthlyIncome" class="text-sm font-medium text-ink">{{ __('Other monthly income (₹)') }}</label>
                 <input id="otherMonthlyIncome" type="text" inputmode="numeric" autocomplete="off" wire:model="otherMonthlyIncome"
                     wire:ignore.self
                     x-effect="const v = $wire.otherMonthlyIncome; if (document.activeElement !== $el) $el.value = formatIndianNumber(String(v ?? ''))"
                     x-on:focus="$el.value = $el.value.replace(/[^0-9]/g, '')"
                     x-on:blur="$el.value = formatIndianNumber($el.value.replace(/[^0-9]/g, ''))"
                     class="mt-2 w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40">
-                <p class="mt-1 text-xs text-ink-faint" x-show="$wire.otherMonthlyIncome > 0" x-text="numberToIndianWords(String($wire.otherMonthlyIncome)) + ' Rupees only'"></p>
+                <p class="mt-1 text-xs text-ink-faint" x-show="$wire.otherMonthlyIncome > 0" x-text="numberToIndianWords(String($wire.otherMonthlyIncome)) + @js(' '.__('Rupees only'))"></p>
             </div>
 
             <div>
-                <label for="hasExistingEmis" class="text-sm font-medium text-ink">Existing loan EMIs?</label>
+                <label for="hasExistingEmis" class="text-sm font-medium text-ink">{{ __('Existing loan EMIs?') }}</label>
                 <select id="hasExistingEmis" wire:model.live="hasExistingEmis"
                     class="mt-2 w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40">
-                    <option value="no">No</option>
-                    <option value="yes">Yes</option>
+                    <option value="no">{{ __('No') }}</option>
+                    <option value="yes">{{ __('Yes') }}</option>
                 </select>
             </div>
 
             @if ($hasExistingEmis === 'yes')
                 <div>
-                    <label for="existingEmiAmount" class="text-sm font-medium text-ink">Existing EMI amount (₹)</label>
+                    <label for="existingEmiAmount" class="text-sm font-medium text-ink">{{ __('Existing EMI amount (₹)') }}</label>
                     <input id="existingEmiAmount" type="text" inputmode="numeric" autocomplete="off" wire:model="existingEmiAmount"
                         wire:ignore.self
                         x-effect="const v = $wire.existingEmiAmount; if (document.activeElement !== $el) $el.value = formatIndianNumber(String(v ?? ''))"
                         x-on:focus="$el.value = $el.value.replace(/[^0-9]/g, '')"
                         x-on:blur="$el.value = formatIndianNumber($el.value.replace(/[^0-9]/g, ''))"
                         class="mt-2 w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40">
-                    <p class="mt-1 text-xs text-ink-faint" x-show="$wire.existingEmiAmount > 0" x-text="numberToIndianWords(String($wire.existingEmiAmount)) + ' Rupees only'"></p>
+                    <p class="mt-1 text-xs text-ink-faint" x-show="$wire.existingEmiAmount > 0" x-text="numberToIndianWords(String($wire.existingEmiAmount)) + @js(' '.__('Rupees only'))"></p>
                 </div>
             @endif
 
             <div>
-                <label for="loanAmountRequested" class="text-sm font-medium text-ink">Loan amount required (₹)</label>
+                <label for="loanAmountRequested" class="text-sm font-medium text-ink">{{ __('Loan amount required (₹)') }}</label>
                 <input id="loanAmountRequested" type="text" inputmode="numeric" autocomplete="off" wire:model="loanAmountRequested"
                     wire:ignore.self
                     x-effect="const v = $wire.loanAmountRequested; if (document.activeElement !== $el) $el.value = formatIndianNumber(String(v ?? ''))"
                     x-on:focus="$el.value = $el.value.replace(/[^0-9]/g, '')"
                     x-on:blur="$el.value = formatIndianNumber($el.value.replace(/[^0-9]/g, ''))"
                     class="mt-2 w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40">
-                <p class="mt-1 text-xs text-ink-faint" x-show="$wire.loanAmountRequested > 0" x-text="numberToIndianWords(String($wire.loanAmountRequested)) + ' Rupees only'"></p>
+                <p class="mt-1 text-xs text-ink-faint" x-show="$wire.loanAmountRequested > 0" x-text="numberToIndianWords(String($wire.loanAmountRequested)) + @js(' '.__('Rupees only'))"></p>
                 @error('loanAmountRequested') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
 
             <div>
-                <label for="preferredTenureMonths" class="text-sm font-medium text-ink">Preferred tenure (months)</label>
+                <label for="preferredTenureMonths" class="text-sm font-medium text-ink">{{ __('Preferred tenure (months)') }}</label>
                 <input id="preferredTenureMonths" type="number" inputmode="numeric" wire:model="preferredTenureMonths"
                     class="mt-2 w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40">
                 @error('preferredTenureMonths') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
@@ -231,27 +272,23 @@ new class extends Component
                 <label class="flex items-start gap-2.5 text-sm text-ink-muted">
                     <input type="checkbox" wire:model="creditConsent" class="mt-0.5 rounded border-line-strong text-accent focus:ring-accent/30">
                     <span>
-                        By submitting this form, you have read and agree to the
-                        <a href="{{ route('credit-report-terms') }}" target="_blank" rel="noopener" class="text-accent underline">Credit Report Terms of Use</a>,
-                        <a href="{{ route('terms') }}" target="_blank" rel="noopener" class="text-accent underline">Terms of Use</a>
-                        &amp;
-                        <a href="{{ route('privacy-policy') }}" target="_blank" rel="noopener" class="text-accent underline">Privacy Policy</a>.
+                        {!! __('By submitting this form, you have read and agree to the <a href=":credit_terms_url" target="_blank" rel="noopener" class="text-accent underline">Credit Report Terms of Use</a>, <a href=":terms_url" target="_blank" rel="noopener" class="text-accent underline">Terms of Use</a> &amp; <a href=":privacy_url" target="_blank" rel="noopener" class="text-accent underline">Privacy Policy</a>.', ['credit_terms_url' => e(route('credit-report-terms')), 'terms_url' => e(route('terms')), 'privacy_url' => e(route('privacy-policy'))]) !!}
                     </span>
                 </label>
                 @error('creditConsent') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
 
             <div class="sm:col-span-2">
-                <x-ui.button type="submit">Check eligibility</x-ui.button>
+                <x-ui.button type="submit">{{ __('Check eligibility') }}</x-ui.button>
             </div>
         </form>
 
         @if ($results !== null)
             <div class="mt-10 flex flex-col gap-4">
-                <h2 class="font-display text-lg font-semibold text-ink">Results</h2>
+                <h2 class="font-display text-lg font-semibold text-ink">{{ __('Results') }}</h2>
 
                 @if ($results === [])
-                    <x-ui.alert tone="warn">No lenders are currently available for this loan type.</x-ui.alert>
+                    <x-ui.alert tone="warn">{{ __('No lenders are currently available for this loan type.') }}</x-ui.alert>
                 @endif
 
                 @foreach ($results as $row)
@@ -263,7 +300,7 @@ new class extends Component
                             </x-ui.badge>
                         </div>
                         @if ($row['foir'] !== null)
-                            <p class="mt-2 text-sm text-ink-muted">FOIR: <span class="font-mono text-ink">{{ $row['foir'] }}%</span></p>
+                            <p class="mt-2 text-sm text-ink-muted">{{ __('FOIR:') }} <span class="font-mono text-ink">{{ $row['foir'] }}%</span></p>
                         @endif
                         <ul class="mt-3 flex flex-col gap-1.5">
                             @foreach ($row['reasons'] as $reason)
@@ -282,19 +319,18 @@ new class extends Component
                         <div class="mt-4 flex flex-wrap gap-3">
                             @if ($row['status'] === 'eligible' && $loanProductSlug)
                                 <x-ui.button tag="a" :href="route('loans.apply', $loanProductSlug)" size="sm">
-                                    Apply Now
+                                    {{ __('Apply Now') }}
                                 </x-ui.button>
                             @endif
                             <x-ui.button tag="a" :href="route('contact', ['message' => $expertMessage])" size="sm" variant="secondary">
-                                Talk to a FynnEdge Expert
+                                {{ __('Talk to a FynnEdge Expert') }}
                             </x-ui.button>
                         </div>
                     </div>
                 @endforeach
 
                 <x-ui.alert tone="accent">
-                    This is an indicative, self-reported estimate. For a precise result and to proceed with an application,
-                    <a href="{{ route('eligibility.index') }}" class="font-medium underline">check your full eligibility</a>.
+                    {!! __('This is an indicative, self-reported estimate. For a precise result and to proceed with an application, <a href=":url" class="font-medium underline">check your full eligibility</a>.', ['url' => e(route('eligibility.index'))]) !!}
                 </x-ui.alert>
             </div>
         @endif

@@ -3,6 +3,8 @@
 use App\Http\Middleware\HandleRedirects;
 use App\Http\Middleware\SearchEngineIndexingHeader;
 use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\SetSiteLocale;
+use App\Support\Localization\SiteLocale;
 use App\Support\Privacy\CookieConsent;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -31,7 +33,17 @@ return Application::configure(basePath: dirname(__DIR__))
         // The consent banner writes this cookie from JavaScript — the only place the
         // visitor's answer exists — so Laravel must not expect it to be encrypted.
         // It holds only the accepted category names, never personal data.
-        $middleware->encryptCookies(except: [CookieConsent::COOKIE]);
+        // The language switch's cookie holds only "en" or "hi" and is checked
+        // against SiteLocale::SUPPORTED on every read, so it needs no encryption.
+        $middleware->encryptCookies(except: [CookieConsent::COOKIE, SiteLocale::COOKIE]);
+
+        // Every request a visitor makes runs in their chosen language: pages,
+        // the Livewire updates of public components, the public JSON API the
+        // forms call, and the 404 for a URL (or route-bound slug) that matches
+        // nothing. GLOBAL for that last reason, like HandleRedirects above: group
+        // middleware never runs for an unmatched URL. SiteLocale::appliesTo()
+        // keeps /admin and the Livewire requests its pages send in English.
+        $middleware->append(SetSiteLocale::class);
 
         // Public routes only. The admin panel builds its own middleware array
         // (AdminPanelProvider) and is deliberately excluded — /admin is kept out of

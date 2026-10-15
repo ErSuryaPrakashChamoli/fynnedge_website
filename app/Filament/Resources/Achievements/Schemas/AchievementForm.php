@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Achievements\Schemas;
 
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HindiTranslationSection;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -47,6 +48,18 @@ class AchievementForm
                     ->options(PublishStatus::class)
                     ->default(PublishStatus::Draft)
                     ->required(),
+                HindiTranslationSection::make([
+                    TextInput::make('label_hi')
+                        ->label('Metric name (Hindi)')
+                        ->maxLength(90)
+                        ->columnSpanFull(),
+                    TextInput::make('prefix_hi')
+                        ->label('Prefix (Hindi)')
+                        ->maxLength(15),
+                    TextInput::make('suffix_hi')
+                        ->label('Suffix (Hindi)')
+                        ->maxLength(15),
+                ]),
             ]);
     }
 }

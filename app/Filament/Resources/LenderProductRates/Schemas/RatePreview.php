@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\LenderProductRates\Schemas;
 
+use App\Enums\RateSourceType;
 use App\Enums\RateUnit;
 use App\Models\LenderProduct;
 use App\Models\LenderProductRate;
@@ -31,6 +32,11 @@ final class RatePreview
             return new HtmlString('<p>Choose the loan product, lender and starting rate to see how this rate will appear.</p>');
         }
 
+        $state['source_type'] = $state['source_type'] instanceof RateSourceType
+            ? $state['source_type']
+            : (RateSourceType::tryFrom((string) ($state['source_type'] ?? '')) ?? RateSourceType::Official);
+        $isThirdParty = $state['source_type'] === RateSourceType::ThirdParty;
+
         $rate = new LenderProductRate(Arr::only($state, (new LenderProductRate)->getFillable()));
         $rate->rate_unit ??= RateUnit::PerAnnum;
         $rate->setRelation('lenderProduct', $offer);
@@ -47,12 +53,17 @@ final class RatePreview
                 .' — shown only between the promotion dates, and never after they end.';
         }
 
-        $lines[] = blank($state['borrower_segment'] ?? null)
-            ? 'Open to all borrowers: can set the "'.e($offer->loanProduct?->name).' from X%" headline if it is the lowest live rate.'
-            : 'Only for: <strong>'.e($state['borrower_segment']).'</strong> — shown with this condition in the lender\'s row; never used for the product headline.';
+        $lines[] = match (true) {
+            filled($state['borrower_segment'] ?? null) => 'Only for: <strong>'.e($state['borrower_segment']).'</strong> — shown with this condition in the lender\'s row; never used for the product headline.',
+            $isThirdParty => 'Third-party figure: shown only in the lender\'s row; never used for the "'.e($offer->loanProduct?->name).' from X%" headline, the "Lowest rate" badge or calculators.',
+            default => 'Open to all borrowers: can set the "'.e($offer->loanProduct?->name).' from X%" headline if it is the lowest live rate.',
+        };
 
         if (filled($state['last_verified_at'] ?? null)) {
-            $lines[] = 'Small print: Rate verified '.e(CarbonImmutable::parse($state['last_verified_at'])->format('j M Y')).', with a link to the lender\'s page.';
+            $date = e(CarbonImmutable::parse($state['last_verified_at'])->format('j M Y'));
+            $lines[] = $isThirdParty
+                ? 'Small print: As listed on '.e($state['source_name'] ?: '…').", {$date} · confirm with ".e($offer->lender?->name).' — linked to that page.'
+                : "Small print: Rate verified {$date}, with a link to the lender's page.";
         }
 
         $problems = RatePublicationRules::problems($rate);

@@ -220,7 +220,7 @@ new class extends Component
         return $this->lenderOptions
             ->map(function (LenderProduct $offer): ?array {
                 $option = FlexiHybridTenure::nearest($offer->hybridTenureOptions(), $this->totalTenureMonths, $this->selectedTenureOption['initial'] ?? null);
-                $rate = RateBook::quoteFor($offer->id)?->startingRate();
+                $rate = RateBook::officialQuoteFor($offer->id)?->startingRate();
 
                 if ($rate === null || $option === null) {
                     return null;
@@ -268,7 +268,7 @@ new class extends Component
         $first = $this->monthDate($monthsInYear[0]['month']);
         $last = $this->monthDate(end($monthsInYear)['month']);
 
-        return $first->isSameMonth($last) ? $first->format('M Y') : "{$first->format('M Y')} – {$last->format('M Y')}";
+        return $first->isSameMonth($last) ? $first->translatedFormat('M Y') : "{$first->translatedFormat('M Y')} – {$last->translatedFormat('M Y')}";
     }
 
     public function selectLender(?int $lenderProductId): void
@@ -277,7 +277,7 @@ new class extends Component
 
         $offer = $this->selectedLenderProduct;
 
-        if ($offer !== null && ($quote = RateBook::quoteFor($offer->id)) !== null) {
+        if ($offer !== null && ($quote = RateBook::officialQuoteFor($offer->id)) !== null) {
             $this->annualRate = $quote->startingRate();
         }
 
@@ -351,21 +351,21 @@ new class extends Component
             if ($this->snapTenureToOptions()) {
                 $this->resetErrorBag($property);
             } else {
-                $this->addError($property, 'Adjusted the total tenure to the closest repayment structure on offer.');
+                $this->addError($property, __('Adjusted the total tenure to the closest repayment structure on offer.'));
             }
 
             return;
         }
 
-        [$min, $max, $label] = match ($property) {
-            'principal' => [$preset['min_amount'], $preset['max_amount'], 'loan amount'],
-            'annualRate' => [$preset['min_rate'], $preset['max_rate'], 'interest rate'],
+        [$min, $max, $message] = match ($property) {
+            'principal' => [$preset['min_amount'], $preset['max_amount'], __("Adjusted the loan amount to stay within :loan's allowed range.", ['loan' => $preset['label']])],
+            'annualRate' => [$preset['min_rate'], $preset['max_rate'], __("Adjusted the interest rate to stay within :loan's allowed range.", ['loan' => $preset['label']])],
         };
 
         if ($value === null || $value < $min || $value > $max) {
             $clamped = max($min, min($max, $value ?? $min));
             $this->{$property} = (float) $clamped;
-            $this->addError($property, "Adjusted the {$label} to stay within {$preset['label']}'s allowed range.");
+            $this->addError($property, $message);
 
             return;
         }
@@ -382,7 +382,7 @@ new class extends Component
 
 <div>
     @if ($this->lenderOptions->isNotEmpty())
-        <div class="flex flex-wrap gap-2" role="tablist" aria-label="Lender">
+        <div class="flex flex-wrap gap-2" role="tablist" aria-label="{{ __('Lender') }}">
             <button
                 type="button"
                 role="tab"
@@ -394,7 +394,7 @@ new class extends Component
                     'bg-surface-2 text-ink-muted hover:text-ink' => $lenderProductId !== null,
                 ])
             >
-                Generic estimate
+                {{ __('Generic estimate') }}
             </button>
             @foreach ($this->lenderOptions as $offer)
                 <button
@@ -418,7 +418,7 @@ new class extends Component
         <div class="flex flex-col gap-6">
             <div>
                 <div class="flex items-baseline justify-between gap-3">
-                    <label for="fh-principal" class="text-sm font-medium text-ink">Loan amount</label>
+                    <label for="fh-principal" class="text-sm font-medium text-ink">{{ __('Loan amount') }}</label>
                     <div class="flex items-center gap-1 font-mono text-sm text-ink-muted">
                         ₹
                         <input
@@ -439,7 +439,7 @@ new class extends Component
                 </div>
                 <input
                     type="range"
-                    aria-label="Loan amount"
+                    aria-label="{{ __('Loan amount') }}"
                     min="{{ $this->preset['min_amount'] }}"
                     max="{{ $this->preset['max_amount'] }}"
                     step="{{ max((int) (($this->preset['max_amount'] - $this->preset['min_amount']) / 200), 1000) }}"
@@ -451,7 +451,7 @@ new class extends Component
 
             <div>
                 <div class="flex items-baseline justify-between gap-3">
-                    <label for="fh-rate" class="text-sm font-medium text-ink">Interest rate (p.a.)</label>
+                    <label for="fh-rate" class="text-sm font-medium text-ink">{{ __('Interest rate (p.a.)') }}</label>
                     <div class="flex items-center gap-1 font-mono text-sm text-ink-muted">
                         <input
                             id="fh-rate"
@@ -473,7 +473,7 @@ new class extends Component
                 </div>
                 <input
                     type="range"
-                    aria-label="Interest rate"
+                    aria-label="{{ __('Interest rate') }}"
                     min="{{ $this->preset['min_rate'] }}"
                     max="{{ $this->preset['max_rate'] }}"
                     step="0.1"
@@ -484,7 +484,7 @@ new class extends Component
             </div>
 
             <div>
-                <p id="fh-tenure-label" class="text-sm font-medium text-ink">Total tenure</p>
+                <p id="fh-tenure-label" class="text-sm font-medium text-ink">{{ __('Total tenure') }}</p>
                 <div class="mt-2 grid grid-cols-2 gap-2" role="radiogroup" aria-labelledby="fh-tenure-label">
                     @forelse ($this->tenureOptions as $tenureOption)
                         @php $isSelectedStructure = $this->selectedTenureOption === $tenureOption; @endphp
@@ -499,15 +499,15 @@ new class extends Component
                                 'border-line-strong bg-surface hover:border-accent' => ! $isSelectedStructure,
                             ])
                         >
-                            <span class="block text-sm font-semibold text-ink">{{ \App\Support\Calculators\FlexiHybridTenure::years($tenureOption['total']) }} years</span>
-                            <span class="mt-0.5 block text-xs text-ink-muted">{{ \App\Support\Calculators\FlexiHybridTenure::label($tenureOption) }} (initial + subsequent)</span>
+                            <span class="block text-sm font-semibold text-ink">{{ __(':years years', ['years' => \App\Support\Calculators\FlexiHybridTenure::years($tenureOption['total'])]) }}</span>
+                            <span class="mt-0.5 block text-xs text-ink-muted">{{ __(':structure (initial + subsequent)', ['structure' => \App\Support\Calculators\FlexiHybridTenure::label($tenureOption)]) }}</span>
                         </button>
                     @empty
-                        <p class="col-span-2 text-sm text-ink-muted">Tenure structure available on request.</p>
+                        <p class="col-span-2 text-sm text-ink-muted">{{ __('Tenure structure available on request.') }}</p>
                     @endforelse
                 </div>
                 @if ($lenderProductId === null && $this->defaultLenderProduct)
-                    <p class="mt-2 text-xs text-ink-faint">Generic estimate follows {{ $this->defaultLenderProduct->lender->name }}'s initial + subsequent tenure policy.</p>
+                    <p class="mt-2 text-xs text-ink-faint">{!! __("Generic estimate follows :lender's initial + subsequent tenure policy.", ['lender' => e($this->defaultLenderProduct->lender->name)]) !!}</p>
                 @endif
                 @error('totalTenureMonths') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
@@ -518,36 +518,36 @@ new class extends Component
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">
-                            Initial EMI
+                            {{ __('Initial EMI') }}
                         </p>
-                        <p class="mt-1 font-display text-2xl font-semibold text-accent">₹{{ $this->formatAmount($this->result['initial_emi']) }}<span class="ml-0.5 font-sans text-xs font-medium text-ink-faint">/month</span></p>
-                        <p class="mt-0.5 text-[0.65rem] text-ink-faint">Interest-only · for first {{ $this->result['initial_tenure_months'] }} months</p>
+                        <p class="mt-1 font-display text-2xl font-semibold text-accent">₹{{ $this->formatAmount($this->result['initial_emi']) }}<span class="ml-0.5 font-sans text-xs font-medium text-ink-faint">{{ __('/month') }}</span></p>
+                        <p class="mt-0.5 text-[0.65rem] text-ink-faint">{{ __('Interest-only · for first :months months', ['months' => $this->result['initial_tenure_months']]) }}</p>
                     </div>
                     <div>
                         <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">
-                            Subsequent EMI
+                            {{ __('Subsequent EMI') }}
                         </p>
-                        <p class="mt-1 font-display text-2xl font-semibold text-ink">₹{{ $this->formatAmount($this->result['subsequent_emi']) }}<span class="ml-0.5 font-sans text-xs font-medium text-ink-faint">/month</span></p>
-                        <p class="mt-0.5 text-[0.65rem] text-ink-faint">Principal + interest · for next {{ $this->result['subsequent_tenure_months'] }} months</p>
+                        <p class="mt-1 font-display text-2xl font-semibold text-ink">₹{{ $this->formatAmount($this->result['subsequent_emi']) }}<span class="ml-0.5 font-sans text-xs font-medium text-ink-faint">{{ __('/month') }}</span></p>
+                        <p class="mt-0.5 text-[0.65rem] text-ink-faint">{{ __('Principal + interest · for next :months months', ['months' => $this->result['subsequent_tenure_months']]) }}</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4 border-t border-line pt-5">
                     <div>
-                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Total interest</p>
+                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Total interest') }}</p>
                         <p class="mt-1 text-lg font-medium text-ink">₹{{ $this->formatAmount($this->result['total_interest']) }}</p>
                     </div>
                     <div>
-                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Total repayment</p>
+                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Total repayment') }}</p>
                         <p class="mt-1 text-lg font-medium text-ink">₹{{ $this->formatAmount($this->result['total_repayment']) }}</p>
                     </div>
                 </div>
-                <p class="text-xs text-ink-faint">Indicative only — {{ \App\Support\Calculators\FlexiHybridTenure::label($this->selectedTenureOption) }} (interest-only initial + principal &amp; interest subsequent). Your actual EMI depends on the lender's exact terms at sanction.</p>
+                <p class="text-xs text-ink-faint">{!! __("Indicative only — :structure (interest-only initial + principal &amp; interest subsequent). Your actual EMI depends on the lender's exact terms at sanction.", ['structure' => e(\App\Support\Calculators\FlexiHybridTenure::label($this->selectedTenureOption))]) !!}</p>
             @else
                 <p class="text-sm text-ink-muted">
                     @if ($this->lenderProductId !== null)
-                        {{ $this->selectedLenderProduct?->lender?->name }} hasn't published its tenure structure for this product yet — available on request.
+                        {!! __(":lender hasn't published its tenure structure for this product yet — available on request.", ['lender' => e($this->selectedLenderProduct?->lender?->name)]) !!}
                     @else
-                        Select a lender above to see an estimate.
+                        {{ __('Select a lender above to see an estimate.') }}
                     @endif
                 </p>
             @endif
@@ -557,8 +557,8 @@ new class extends Component
     {{-- Compare all lenders live, at the amount/tenure entered above --}}
     @if ($this->lenderComparison !== [])
         <div class="mt-10">
-            <p class="font-display text-lg font-semibold text-ink">Compare all lenders at this amount &amp; tenure</p>
-            <p class="mt-1 text-xs text-ink-faint">Each row uses that lender's own rate and repayment structure (the one closest to the {{ $totalTenureMonths }}-month tenure entered above), for the ₹{{ $this->formatAmount($principal) }} amount.</p>
+            <p class="font-display text-lg font-semibold text-ink">{{ __('Compare all lenders at this amount & tenure') }}</p>
+            <p class="mt-1 text-xs text-ink-faint">{!! __("Each row uses that lender's own rate and repayment structure (the one closest to the :months-month tenure entered above), for the ₹:amount amount.", ['months' => e($totalTenureMonths), 'amount' => e($this->formatAmount($principal))]) !!}</p>
             {{-- `relative` keeps the "Select" <th>'s position:absolute .sr-only
                  span inside this scroll container instead of letting it widen
                  the whole page. --}}
@@ -566,13 +566,13 @@ new class extends Component
                 <table class="w-full min-w-[720px] text-left text-sm">
                     <thead>
                         <tr class="border-b border-line bg-surface-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
-                            <th scope="col" class="px-4 py-3">Lender</th>
-                            <th scope="col" class="px-4 py-3">Rate</th>
-                            <th scope="col" class="px-4 py-3">Structure</th>
-                            <th scope="col" class="px-4 py-3">Initial EMI</th>
-                            <th scope="col" class="px-4 py-3">Subsequent EMI</th>
-                            <th scope="col" class="px-4 py-3">Total interest</th>
-                            <th scope="col" class="px-4 py-3"><span class="sr-only">Select</span></th>
+                            <th scope="col" class="px-4 py-3">{{ __('Lender') }}</th>
+                            <th scope="col" class="px-4 py-3">{{ __('Rate') }}</th>
+                            <th scope="col" class="px-4 py-3">{{ __('Structure') }}</th>
+                            <th scope="col" class="px-4 py-3">{{ __('Initial EMI') }}</th>
+                            <th scope="col" class="px-4 py-3">{{ __('Subsequent EMI') }}</th>
+                            <th scope="col" class="px-4 py-3">{{ __('Total interest') }}</th>
+                            <th scope="col" class="px-4 py-3"><span class="sr-only">{{ __('Select') }}</span></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-line">
@@ -586,7 +586,7 @@ new class extends Component
                                 <td class="whitespace-nowrap px-4 py-3 font-mono text-ink-muted">₹{{ $this->formatAmount($row['result']['total_interest']) }}</td>
                                 <td class="whitespace-nowrap px-4 py-3">
                                     <button type="button" wire:click="selectLender({{ $row['offer']->id }})" class="text-sm font-medium text-accent hover:underline">
-                                        {{ $lenderProductId === $row['offer']->id ? 'Selected' : 'Select' }}
+                                        {{ $lenderProductId === $row['offer']->id ? __('Selected') : __('Select') }}
                                     </button>
                                 </td>
                             </tr>
@@ -599,8 +599,8 @@ new class extends Component
 
     {{-- Flexi Hybrid vs a conventional (single-tenure) loan, at the same amount/rate/tenure --}}
     <div class="mt-10">
-        <p class="font-display text-lg font-semibold text-ink">Flexi Hybrid vs a conventional loan</p>
-        <p class="mt-1 text-xs text-ink-faint">Same ₹{{ $this->formatAmount($principal) }} amount, {{ $annualRate }}% rate and {{ $totalTenureMonths }}-month tenure — a conventional loan charges one flat EMI throughout; Flexi Hybrid starts lower, then rises.</p>
+        <p class="font-display text-lg font-semibold text-ink">{{ __('Flexi Hybrid vs a conventional loan') }}</p>
+        <p class="mt-1 text-xs text-ink-faint">{{ __('Same ₹:amount amount, :rate% rate and :months-month tenure — a conventional loan charges one flat EMI throughout; Flexi Hybrid starts lower, then rises.', ['amount' => $this->formatAmount($principal), 'rate' => $annualRate, 'months' => $totalTenureMonths]) }}</p>
 
         @php
             $conventional = $this->conventionalLoanComparison;
@@ -609,45 +609,45 @@ new class extends Component
 
         <div class="mt-4 flex flex-col gap-4 rounded-2xl border border-line p-5">
             <div class="grid grid-cols-[7rem_1fr_auto] items-center gap-3 sm:grid-cols-[9rem_1fr_auto]">
-                <span class="text-xs font-medium text-ink-muted">Conventional EMI</span>
+                <span class="text-xs font-medium text-ink-muted">{{ __('Conventional EMI') }}</span>
                 <div class="h-5 rounded bg-surface-2">
                     <div class="h-5 rounded bg-ink-faint" style="width: {{ $conventional['emi'] / $maxMonthly * 100 }}%"></div>
                 </div>
-                <span class="font-mono text-xs text-ink">₹{{ $this->formatAmount($conventional['emi']) }}/mo</span>
+                <span class="font-mono text-xs text-ink">₹{{ $this->formatAmount($conventional['emi']) }}{{ __('/mo') }}</span>
             </div>
 
             @if ($this->result)
                 <div class="grid grid-cols-[7rem_1fr_auto] items-center gap-3 sm:grid-cols-[9rem_1fr_auto]">
-                    <span class="text-xs font-medium text-ink-muted">Flexi Hybrid — initial</span>
+                    <span class="text-xs font-medium text-ink-muted">{{ __('Flexi Hybrid — initial') }}</span>
                     <div class="h-5 rounded bg-surface-2">
                         <div class="h-5 rounded bg-accent" style="width: {{ $this->result['initial_emi'] / $maxMonthly * 100 }}%"></div>
                     </div>
-                    <span class="font-mono text-xs text-ink">₹{{ $this->formatAmount($this->result['initial_emi']) }}/mo</span>
+                    <span class="font-mono text-xs text-ink">₹{{ $this->formatAmount($this->result['initial_emi']) }}{{ __('/mo') }}</span>
                 </div>
                 <div class="grid grid-cols-[7rem_1fr_auto] items-center gap-3 sm:grid-cols-[9rem_1fr_auto]">
-                    <span class="text-xs font-medium text-ink-muted">Flexi Hybrid — subsequent</span>
+                    <span class="text-xs font-medium text-ink-muted">{{ __('Flexi Hybrid — subsequent') }}</span>
                     <div class="h-5 rounded bg-surface-2">
                         <div class="h-5 rounded bg-accent-strong" style="width: {{ $this->result['subsequent_emi'] / $maxMonthly * 100 }}%"></div>
                     </div>
-                    <span class="font-mono text-xs text-ink">₹{{ $this->formatAmount($this->result['subsequent_emi']) }}/mo</span>
+                    <span class="font-mono text-xs text-ink">₹{{ $this->formatAmount($this->result['subsequent_emi']) }}{{ __('/mo') }}</span>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 border-t border-line pt-4 text-sm">
                     <div>
-                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Total interest — conventional</p>
+                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Total interest — conventional') }}</p>
                         <p class="mt-1 font-medium text-ink">₹{{ $this->formatAmount($conventional['total_interest']) }}</p>
                     </div>
                     <div>
-                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Total interest — Flexi Hybrid</p>
+                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Total interest — Flexi Hybrid') }}</p>
                         <p class="mt-1 font-medium text-ink">₹{{ $this->formatAmount($this->result['total_interest']) }}</p>
                     </div>
                 </div>
                 <p class="text-xs text-ink-faint">
-                    Flexi Hybrid keeps your outflow lower for the first {{ $this->result['initial_tenure_months'] }} months, then it rises above a conventional EMI for the rest of the tenure.
+                    {{ __('Flexi Hybrid keeps your outflow lower for the first :months months, then it rises above a conventional EMI for the rest of the tenure.', ['months' => $this->result['initial_tenure_months']]) }}
                     @if ($this->result['total_interest'] > $conventional['total_interest'])
-                        Because less principal is repaid early on, total interest over the full tenure is higher than a conventional loan of the same amount, rate and tenure — the trade-off for lower initial outflow.
+                        {{ __('Because less principal is repaid early on, total interest over the full tenure is higher than a conventional loan of the same amount, rate and tenure — the trade-off for lower initial outflow.') }}
                     @else
-                        Total interest over the full tenure is not higher than a conventional loan of the same amount, rate and tenure.
+                        {{ __('Total interest over the full tenure is not higher than a conventional loan of the same amount, rate and tenure.') }}
                     @endif
                 </p>
             @endif
@@ -657,21 +657,21 @@ new class extends Component
     {{-- Full month-by-month breakdown across the entire tenure --}}
     @if ($this->result)
         <div class="mt-10">
-            <p class="font-display text-lg font-semibold text-ink">Full breakdown, starting this month</p>
-            <p class="mt-1 text-xs text-ink-faint">Assumes your first payment falls this month — click a period to see every month within it. The initial (interest-only) period is marked separately from the subsequent (principal + interest) period.</p>
+            <p class="font-display text-lg font-semibold text-ink">{{ __('Full breakdown, starting this month') }}</p>
+            <p class="mt-1 text-xs text-ink-faint">{{ __('Assumes your first payment falls this month — click a period to see every month within it. The initial (interest-only) period is marked separately from the subsequent (principal + interest) period.') }}</p>
             <div class="mt-4 rounded-xl border border-line">
                 <div class="hidden border-b border-line bg-surface-2 px-4 py-2.5 text-left text-xs font-medium text-ink-muted sm:grid sm:grid-cols-[2rem_1fr_1fr_1fr_1fr_1fr]">
                     <span></span>
-                    <span>Period</span>
-                    <span>Stage</span>
-                    <span class="text-right">Principal paid</span>
-                    <span class="text-right">Interest paid</span>
-                    <span class="text-right">Total paid</span>
+                    <span>{{ __('Period') }}</span>
+                    <span>{{ __('Stage') }}</span>
+                    <span class="text-right">{{ __('Principal paid') }}</span>
+                    <span class="text-right">{{ __('Interest paid') }}</span>
+                    <span class="text-right">{{ __('Total paid') }}</span>
                 </div>
                 @foreach ($this->yearlySchedule as $row)
                     @php
                         $yearStages = collect($this->monthsByYear[$row['year']])->pluck('stage')->unique();
-                        $yearStageLabel = $yearStages->count() > 1 ? 'Initial → Subsequent' : ($yearStages->first() === 'initial' ? 'Initial' : 'Subsequent');
+                        $yearStageLabel = $yearStages->count() > 1 ? __('Initial → Subsequent') : ($yearStages->first() === 'initial' ? __('Initial') : __('Subsequent'));
                     @endphp
                     <details class="group border-b border-line last:border-0 odd:bg-surface even:bg-surface-2/50">
                         {{-- The header row above is hidden below sm, so on a phone each
@@ -682,16 +682,16 @@ new class extends Component
                             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5 text-ink-faint transition-transform group-open:rotate-90"><path stroke-linecap="round" stroke-linejoin="round" d="M7 4l6 6-6 6" /></svg>
                             <span class="font-medium text-ink">{{ $this->yearLabel($this->monthsByYear[$row['year']]) }}</span>
                             <span class="col-start-2 flex items-baseline justify-between gap-3 text-xs text-ink-faint sm:col-start-auto sm:block">
-                                <span class="sm:hidden">Stage</span><span class="font-medium text-ink-muted sm:font-normal sm:text-ink-faint">{{ $yearStageLabel }}</span>
+                                <span class="sm:hidden">{{ __('Stage') }}</span><span class="font-medium text-ink-muted sm:font-normal sm:text-ink-faint">{{ $yearStageLabel }}</span>
                             </span>
                             <span class="col-start-2 flex items-baseline justify-between gap-3 font-mono text-ink sm:col-start-auto sm:block sm:text-right">
-                                <span class="font-sans text-xs font-normal text-ink-faint sm:hidden">Principal paid</span>₹{{ $this->formatAmount($row['principal_paid']) }}
+                                <span class="font-sans text-xs font-normal text-ink-faint sm:hidden">{{ __('Principal paid') }}</span>₹{{ $this->formatAmount($row['principal_paid']) }}
                             </span>
                             <span class="col-start-2 flex items-baseline justify-between gap-3 font-mono text-ink sm:col-start-auto sm:block sm:text-right">
-                                <span class="font-sans text-xs font-normal text-ink-faint sm:hidden">Interest paid</span>₹{{ $this->formatAmount($row['interest_paid']) }}
+                                <span class="font-sans text-xs font-normal text-ink-faint sm:hidden">{{ __('Interest paid') }}</span>₹{{ $this->formatAmount($row['interest_paid']) }}
                             </span>
                             <span class="col-start-2 flex items-baseline justify-between gap-3 font-mono text-ink-muted sm:col-start-auto sm:block sm:text-right">
-                                <span class="font-sans text-xs font-normal text-ink-faint sm:hidden">Total paid</span>₹{{ $this->formatAmount($row['total_paid']) }}
+                                <span class="font-sans text-xs font-normal text-ink-faint sm:hidden">{{ __('Total paid') }}</span>₹{{ $this->formatAmount($row['total_paid']) }}
                             </span>
                         </summary>
 
@@ -703,20 +703,20 @@ new class extends Component
                             <table class="w-full whitespace-nowrap text-xs">
                                 <thead>
                                     <tr class="text-left text-ink-faint">
-                                        <th class="py-1.5 pr-3 font-medium">Month</th>
-                                        <th class="py-1.5 pr-3 font-medium">Stage</th>
-                                        <th class="py-1.5 pr-3 text-right font-medium">Principal paid</th>
-                                        <th class="py-1.5 pr-3 text-right font-medium">Interest paid</th>
-                                        <th class="py-1.5 pr-3 text-right font-medium">Total paid</th>
-                                        <th class="py-1.5 text-right font-medium">Balance remaining</th>
+                                        <th class="py-1.5 pr-3 font-medium">{{ __('Month') }}</th>
+                                        <th class="py-1.5 pr-3 font-medium">{{ __('Stage') }}</th>
+                                        <th class="py-1.5 pr-3 text-right font-medium">{{ __('Principal paid') }}</th>
+                                        <th class="py-1.5 pr-3 text-right font-medium">{{ __('Interest paid') }}</th>
+                                        <th class="py-1.5 pr-3 text-right font-medium">{{ __('Total paid') }}</th>
+                                        <th class="py-1.5 text-right font-medium">{{ __('Balance remaining') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($this->monthsByYear[$row['year']] as $monthRow)
                                         <tr class="border-t border-line/60">
-                                            <td class="py-1.5 pr-3 text-ink-muted">{{ $this->monthDate($monthRow['month'])->format('M Y') }}</td>
+                                            <td class="py-1.5 pr-3 text-ink-muted">{{ $this->monthDate($monthRow['month'])->translatedFormat('M Y') }}</td>
                                             <td class="py-1.5 pr-3">
-                                                <x-ui.badge :tone="$monthRow['stage'] === 'initial' ? 'accent' : 'muted'">{{ ucfirst($monthRow['stage']) }}</x-ui.badge>
+                                                <x-ui.badge :tone="$monthRow['stage'] === 'initial' ? 'accent' : 'muted'">{{ $monthRow['stage'] === 'initial' ? __('Initial') : __('Subsequent') }}</x-ui.badge>
                                             </td>
                                             <td class="py-1.5 pr-3 text-right font-mono text-ink">₹{{ $this->formatAmount($monthRow['principal_paid']) }}</td>
                                             <td class="py-1.5 pr-3 text-right font-mono text-ink">₹{{ $this->formatAmount($monthRow['interest_paid']) }}</td>
@@ -731,7 +731,7 @@ new class extends Component
                 @endforeach
 
                 <div class="border-t border-line bg-surface-2 px-4 py-2.5 text-xs text-ink-faint">
-                    Balance remaining after the last month of each period shown above.
+                    {{ __('Balance remaining after the last month of each period shown above.') }}
                 </div>
             </div>
         </div>

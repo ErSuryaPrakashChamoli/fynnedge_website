@@ -8,7 +8,7 @@
     still expects one per item, so it uses the current request URL.
 --}}
 @php
-    $breadcrumbList = collect([['label' => 'Home', 'url' => route('home')]])
+    $breadcrumbList = collect([['label' => __('Home'), 'url' => route('home')]])
         ->merge(collect($trail)->map(fn ($url, $label) => ['label' => $label, 'url' => $url])->values())
         ->values()
         ->map(fn (array $crumb, int $index) => [
@@ -19,9 +19,9 @@
         ]);
 @endphp
 
-<nav aria-label="Breadcrumb" {{ $attributes }}>
+<nav aria-label="{{ __('Breadcrumb') }}" {{ $attributes }}>
     <ol class="flex flex-wrap items-center gap-2 font-mono text-xs text-ink-faint">
-        <li><a href="{{ route('home') }}" class="hover:text-ink">Home</a></li>
+        <li><a href="{{ route('home') }}" class="hover:text-ink">{{ __('Home') }}</a></li>
         @foreach ($trail as $label => $url)
             <li aria-hidden="true">/</li>
             <li>

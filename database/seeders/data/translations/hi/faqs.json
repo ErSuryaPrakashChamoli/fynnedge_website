@@ -1,0 +1,262 @@
+[
+ {
+  "field": "answer",
+  "en": "No — checking eligibility on FynnEdge uses your self-reported profile and does not perform a hard credit bureau check until you explicitly consent during the application step.",
+  "hi": "नहीं — FynnEdge पर पात्रता जांचने के लिए आपकी खुद बताई गई प्रोफ़ाइल का इस्तेमाल होता है, और जब तक आप आवेदन के चरण में साफ़ तौर पर सहमति नहीं देते, तब तक क्रेडिट ब्यूरो से कोई हार्ड जांच नहीं की जाती।"
+ },
+ {
+  "field": "answer",
+  "en": "No. Eligibility results are indicative and subject to the lender's final verification, documentation and underwriting.",
+  "hi": "नहीं। पात्रता के नतीजे सांकेतिक होते हैं और लेंडर के अंतिम सत्यापन, दस्तावेज़ों और अंडरराइटिंग पर निर्भर करते हैं।"
+ },
+ {
+  "field": "answer",
+  "en": "FynnEdge is a loan advisory business — we help you compare suitable banks and NBFCs for your loan, based on your profile, rather than you applying to each one separately.",
+  "hi": "FynnEdge एक लोन एडवाइज़री बिज़नेस है — हर बैंक या एनबीएफसी में अलग-अलग आवेदन करने के बजाय, हम आपकी प्रोफ़ाइल के आधार पर आपके लोन के लिए सही बैंक और एनबीएफसी की तुलना करने में आपकी मदद करते हैं।"
+ },
+ {
+  "field": "answer",
+  "en": "Checking your eligibility on FynnEdge is free. Any lender fees (processing fees, etc.) are disclosed by the lender before you proceed with an application.",
+  "hi": "FynnEdge पर अपनी पात्रता जांचना मुफ़्त है। लेंडर की कोई भी फीस (प्रोसेसिंग फीस आदि) आवेदन में आगे बढ़ने से पहले लेंडर खुद बताता है।"
+ },
+ {
+  "field": "answer",
+  "en": "No — checking eligibility on FynnEdge uses your self-reported profile and does not perform a hard credit bureau check until you explicitly consent, later in the application process.",
+  "hi": "नहीं — FynnEdge पर पात्रता जांचने के लिए आपकी खुद बताई गई प्रोफ़ाइल का इस्तेमाल होता है, और जब तक आप आवेदन प्रक्रिया में आगे चलकर साफ़ तौर पर सहमति नहीं देते, तब तक क्रेडिट ब्यूरो से कोई हार्ड जांच नहीं की जाती।"
+ },
+ {
+  "field": "answer",
+  "en": "No. Eligibility results are indicative and based on the profile you share — the lender still verifies your details, documents and credit history before giving a final approval.",
+  "hi": "नहीं। पात्रता के नतीजे सांकेतिक होते हैं और आपकी दी गई प्रोफ़ाइल पर आधारित होते हैं — अंतिम मंज़ूरी देने से पहले लेंडर आपकी जानकारी, दस्तावेज़ और क्रेडिट हिस्ट्री का सत्यापन करता है।"
+ },
+ {
+  "field": "answer",
+  "en": "Checking your eligibility takes a few minutes. Once you choose a lender and submit your application with documents, sanction timelines depend on that lender — typically a few hours to a few business days.",
+  "hi": "अपनी पात्रता जांचने में कुछ मिनट लगते हैं। लेंडर चुनकर दस्तावेज़ों के साथ आवेदन सबमिट करने के बाद, मंज़ूरी का समय उस लेंडर पर निर्भर करता है — आम तौर पर कुछ घंटों से लेकर कुछ कामकाजी दिनों तक।"
+ },
+ {
+  "field": "answer",
+  "en": "Most lenders ask for a PAN card, address proof, income proof (salary slips or ITR) and recent bank statements. The exact list depends on the loan type and lender, and is shown to you during the application.",
+  "hi": "ज़्यादातर लेंडर पैन कार्ड, पते का प्रमाण, आय का प्रमाण (सैलरी स्लिप या आईटीआर) और हाल के बैंक स्टेटमेंट मांगते हैं। सटीक सूची लोन के प्रकार और लेंडर पर निर्भर करती है, और आवेदन के दौरान आपको दिखाई जाती है।"
+ },
+ {
+  "field": "answer",
+  "en": "Yes. Many lenders on FynnEdge accept self-employed applicants, though the income proof required (ITR, GST returns, business bank statements) differs from that of salaried applicants.",
+  "hi": "हां। FynnEdge पर कई लेंडर स्व-रोज़गार आवेदकों को स्वीकार करते हैं, हालांकि उनसे मांगा जाने वाला आय का प्रमाण (आईटीआर, जीएसटी रिटर्न, बिज़नेस बैंक स्टेटमेंट) वेतनभोगी आवेदकों से अलग होता है।"
+ },
+ {
+  "field": "answer",
+  "en": "There is no single cut-off — each lender sets its own criteria, and some weigh income, employment stability and existing obligations alongside credit score. A higher score generally improves your options and the interest rate offered.",
+  "hi": "कोई एक तय कट-ऑफ़ नहीं है — हर लेंडर अपने मानदंड खुद तय करता है, और कुछ लेंडर क्रेडिट स्कोर के साथ-साथ आय, रोज़गार की स्थिरता और मौजूदा देनदारियों को भी देखते हैं। ज़्यादा स्कोर से आम तौर पर आपके विकल्प और ऑफ़र होने वाली ब्याज दर बेहतर होती है।"
+ },
+ {
+  "field": "answer",
+  "en": "Yes. Existing loans and credit cards do not disqualify you, but the EMIs you are already paying are factored into how much a lender is willing to offer, since it affects your repayment capacity.",
+  "hi": "हां। मौजूदा लोन और क्रेडिट कार्ड होने से आप अपात्र नहीं हो जाते, लेकिन आप जो ईएमआई पहले से चुका रहे हैं, उन्हें यह तय करने में गिना जाता है कि लेंडर आपको कितनी राशि ऑफ़र करेगा, क्योंकि इससे आपकी भुगतान क्षमता पर असर पड़ता है।"
+ },
+ {
+  "field": "answer",
+  "en": "Your EMI depends on the loan amount, interest rate and tenure you choose. Use our EMI calculators to see the exact monthly instalment and a full year-by-year breakdown before you apply.",
+  "hi": "आपकी ईएमआई आपके चुने गए लोन राशि, ब्याज दर और अवधि पर निर्भर करती है। आवेदन करने से पहले सटीक मासिक किस्त और साल-दर-साल पूरा ब्योरा देखने के लिए हमारे ईएमआई कैलकुलेटर का इस्तेमाल करें।"
+ },
+ {
+  "field": "answer",
+  "en": "A fixed rate stays the same for the loan tenure, so your EMI does not change. A floating rate moves with the lender's benchmark rate, so your EMI can go up or down over time. Each lender's offer specifies which applies.",
+  "hi": "फिक्स्ड रेट लोन की पूरी अवधि में एक जैसी रहती है, इसलिए आपकी ईएमआई नहीं बदलती। फ्लोटिंग रेट लेंडर के बेंचमार्क रेट के साथ बदलती है, इसलिए समय के साथ आपकी ईएमआई बढ़ या घट सकती है। हर लेंडर के ऑफ़र में बताया जाता है कि कौन-सी दर लागू है।"
+ },
+ {
+  "field": "answer",
+  "en": "Most lenders allow part-prepayment or full foreclosure, though some charge a prepayment fee, especially on fixed-rate loans. Check the specific lender's terms, or use our prepayment calculators to see the potential savings.",
+  "hi": "ज़्यादातर लेंडर आंशिक प्रीपेमेंट या पूरे फोरक्लोज़र की अनुमति देते हैं, हालांकि कुछ लेंडर प्रीपेमेंट फीस लेते हैं, ख़ासकर फिक्स्ड-रेट लोन पर। संबंधित लेंडर की शर्तें देखें, या संभावित बचत देखने के लिए हमारे प्रीपेमेंट कैलकुलेटर का इस्तेमाल करें।"
+ },
+ {
+  "field": "answer",
+  "en": "A rejection from one lender does not mean you are ineligible everywhere — different lenders have different criteria. You can review the reasons shown and consider other matched lenders, or reapply later once your profile improves.",
+  "hi": "एक लेंडर से आवेदन रिजेक्ट होने का मतलब यह नहीं है कि आप हर जगह अपात्र हैं — अलग-अलग लेंडर के मानदंड अलग होते हैं। आप दिखाए गए कारणों को देख सकते हैं और मैच हुए दूसरे लेंडर पर विचार कर सकते हैं, या अपनी प्रोफ़ाइल बेहतर होने पर बाद में दोबारा आवेदन कर सकते हैं।"
+ },
+ {
+  "field": "answer",
+  "en": "We match the details you share (income, employment, existing obligations, loan requirement) against each participating lender's own published eligibility criteria, and show you the ones you are likely eligible for.",
+  "hi": "हम आपकी दी गई जानकारी (आय, रोज़गार, मौजूदा देनदारियां, लोन की ज़रूरत) का हर भाग लेने वाले लेंडर के अपने प्रकाशित पात्रता मानदंडों से मिलान करते हैं, और आपको वे लेंडर दिखाते हैं जिनके लिए आप संभवतः पात्र हैं।"
+ },
+ {
+  "field": "answer",
+  "en": "Yes. Your information is used only to check eligibility and share your application with the lenders you choose to proceed with — see our Privacy Policy for full details on how your data is handled.",
+  "hi": "हां। आपकी जानकारी का इस्तेमाल सिर्फ़ पात्रता जांचने और आपका आवेदन उन लेंडर के साथ शेयर करने के लिए होता है जिनके साथ आप आगे बढ़ना चुनते हैं — आपके डेटा को कैसे संभाला जाता है, इसकी पूरी जानकारी के लिए हमारी गोपनीयता नीति देखें।"
+ },
+ {
+  "field": "answer",
+  "en": "Many lenders support joint applications with a co-applicant (such as a spouse or parent), which can improve eligibility for a higher loan amount. This option, where available, is offered during the application step.",
+  "hi": "कई लेंडर को-एप्लिकेंट (जैसे पति/पत्नी या माता-पिता) के साथ संयुक्त आवेदन स्वीकार करते हैं, जिससे ज़्यादा लोन राशि के लिए पात्रता बेहतर हो सकती है। जहां यह विकल्प उपलब्ध है, वहां यह आवेदन के चरण में दिया जाता है।"
+ },
+ {
+  "field": "answer",
+  "en": "Disbursal timelines vary by lender and loan type — unsecured loans like personal loans are often disbursed within a day or two of final approval, while secured loans (like home loans) can take longer due to property and document verification.",
+  "hi": "वितरण का समय लेंडर और लोन के प्रकार पर निर्भर करता है — पर्सनल लोन जैसे बिना गिरवी वाले लोन अक्सर अंतिम मंज़ूरी के एक-दो दिन में वितरित हो जाते हैं, जबकि गिरवी वाले लोन (जैसे होम लोन) में प्रॉपर्टी और दस्तावेज़ों के सत्यापन की वजह से ज़्यादा समय लग सकता है।"
+ },
+ {
+  "field": "answer",
+  "en": "Yes — once you submit an application, you can revisit it anytime using the link provided to track its status and upload any additional documents a lender requests.",
+  "hi": "हां — आवेदन सबमिट करने के बाद आप दिए गए लिंक से कभी भी उस पर वापस आकर उसका स्टेटस देख सकते हैं और लेंडर के मांगे गए कोई भी अतिरिक्त दस्तावेज़ अपलोड कर सकते हैं।"
+ },
+ {
+  "field": "answer",
+  "en": "You can choose not to proceed with an application at any stage before final disbursal. Contact us or the lender directly if you have already submitted documents and wish to withdraw.",
+  "hi": "अंतिम वितरण से पहले किसी भी चरण पर आप आवेदन में आगे न बढ़ने का फ़ैसला कर सकते हैं। अगर आप दस्तावेज़ पहले ही सबमिट कर चुके हैं और आवेदन वापस लेना चाहते हैं, तो हमसे या सीधे लेंडर से संपर्क करें।"
+ },
+ {
+  "field": "answer",
+  "en": "No, you do not pay FynnEdge anything. Any fees you pay (processing fees, etc.) go directly to the lender and are disclosed upfront by them, not charged by FynnEdge.",
+  "hi": "नहीं, आपको FynnEdge को कुछ भी भुगतान नहीं करना होता। आप जो भी फीस देते हैं (प्रोसेसिंग फीस आदि), वह सीधे लेंडर को जाती है और लेंडर उसे पहले ही बता देता है — यह FynnEdge नहीं लेता।"
+ },
+ {
+  "field": "answer",
+  "en": "The rates and ranges shown are indicative, based on what lenders publish for their products. Your final rate is confirmed by the lender after reviewing your complete profile and documents.",
+  "hi": "दिखाई गई दरें और रेंज सांकेतिक हैं, जो लेंडर के अपने प्रोडक्ट के लिए प्रकाशित जानकारी पर आधारित हैं। आपकी पूरी प्रोफ़ाइल और दस्तावेज़ देखने के बाद लेंडर आपकी अंतिम दर की पुष्टि करता है।"
+ },
+ {
+  "field": "answer",
+  "en": "The amount you are eligible for depends on your income, existing obligations, credit profile and the specific loan type. Use the eligibility calculators for a quick indicative estimate, or check your full eligibility for a precise range.",
+  "hi": "आप कितनी राशि के लिए पात्र हैं, यह आपकी आय, मौजूदा देनदारियों, क्रेडिट प्रोफ़ाइल और लोन के प्रकार पर निर्भर करता है। जल्दी सांकेतिक अनुमान के लिए पात्रता कैलकुलेटर का इस्तेमाल करें, या सटीक रेंज के लिए अपनी पूरी पात्रता जांचें।"
+ },
+ {
+  "field": "answer",
+  "en": "During the initial tenure, your monthly payment covers only the interest on the loan — the outstanding principal doesn't reduce during this period. Once the initial tenure ends, the loan converts to a standard EMI covering both principal and interest for the subsequent tenure.",
+  "hi": "शुरुआती अवधि के दौरान आपके मासिक भुगतान से सिर्फ़ लोन का ब्याज चुकता है — इस अवधि में बकाया मूलधन कम नहीं होता। शुरुआती अवधि खत्म होने के बाद लोन बाद की अवधि के लिए सामान्य ईएमआई में बदल जाता है, जिसमें मूलधन और ब्याज दोनों शामिल होते हैं।"
+ },
+ {
+  "field": "answer",
+  "en": "No. Each lender has its own structure of interest-only initial tenure + principal-and-interest subsequent tenure: Bajaj Finance offers 2 + 6 or 3 + 6 years, Tata Capital, Piramal Finance and Aditya Birla Finance offer 2 + 5 years, and Kotak Mahindra Bank offers 1 + 5 years. Compare them in the lender comparison table and calculator above before choosing.",
+  "hi": "नहीं। हर लेंडर की सिर्फ़-ब्याज वाली शुरुआती अवधि + मूलधन-और-ब्याज वाली बाद की अवधि की अपनी संरचना है: Bajaj Finance 2 + 6 या 3 + 6 साल ऑफ़र करता है, Tata Capital, Piramal Finance और Aditya Birla Finance 2 + 5 साल ऑफ़र करते हैं, और Kotak Mahindra Bank 1 + 5 साल ऑफ़र करता है। चुनने से पहले ऊपर दी गई लेंडर तुलना टेबल और कैलकुलेटर में इनकी तुलना करें।"
+ },
+ {
+  "field": "answer",
+  "en": "Prepayment and foreclosure terms are set by each lender individually. Check the specific lender's terms during your application, or ask a FynnEdge expert before you apply.",
+  "hi": "प्रीपेमेंट और फोरक्लोज़र की शर्तें हर लेंडर अलग से तय करता है। आवेदन के दौरान संबंधित लेंडर की शर्तें देखें, या आवेदन करने से पहले FynnEdge के किसी एक्सपर्ट से पूछें।"
+ },
+ {
+  "field": "question",
+  "en": "Does checking my eligibility affect my credit score?",
+  "hi": "क्या पात्रता जांचने से मेरे क्रेडिट स्कोर पर असर पड़ता है?"
+ },
+ {
+  "field": "question",
+  "en": "Does an eligibility result guarantee loan approval?",
+  "hi": "क्या पात्रता का नतीजा लोन मंज़ूरी की गारंटी है?"
+ },
+ {
+  "field": "question",
+  "en": "What does FynnEdge do?",
+  "hi": "FynnEdge क्या करता है?"
+ },
+ {
+  "field": "question",
+  "en": "Is there a fee to use FynnEdge?",
+  "hi": "क्या FynnEdge इस्तेमाल करने की कोई फीस है?"
+ },
+ {
+  "field": "question",
+  "en": "How long does the loan application process take?",
+  "hi": "लोन आवेदन की प्रक्रिया में कितना समय लगता है?"
+ },
+ {
+  "field": "question",
+  "en": "What documents do I need to apply for a loan?",
+  "hi": "लोन के लिए आवेदन करने के लिए मुझे किन दस्तावेज़ों की ज़रूरत है?"
+ },
+ {
+  "field": "question",
+  "en": "Can I apply for a loan if I am self-employed?",
+  "hi": "क्या मैं स्व-रोज़गार होने पर भी लोन के लिए आवेदन कर सकता/सकती हूं?"
+ },
+ {
+  "field": "question",
+  "en": "What credit score do I need to get a loan?",
+  "hi": "लोन पाने के लिए कितना क्रेडिट स्कोर चाहिए?"
+ },
+ {
+  "field": "question",
+  "en": "Can I apply if I already have an existing loan or credit card?",
+  "hi": "अगर मेरा पहले से कोई लोन या क्रेडिट कार्ड है, तो क्या मैं आवेदन कर सकता/सकती हूं?"
+ },
+ {
+  "field": "question",
+  "en": "How is my monthly EMI calculated?",
+  "hi": "मेरी मासिक ईएमआई की गणना कैसे होती है?"
+ },
+ {
+  "field": "question",
+  "en": "What is the difference between fixed and floating interest rates?",
+  "hi": "फिक्स्ड और फ्लोटिंग ब्याज दर में क्या अंतर है?"
+ },
+ {
+  "field": "question",
+  "en": "Can I prepay or foreclose my loan early?",
+  "hi": "क्या मैं अपने लोन का प्रीपेमेंट या जल्दी फोरक्लोज़र कर सकता/सकती हूं?"
+ },
+ {
+  "field": "question",
+  "en": "What happens if my loan application is rejected?",
+  "hi": "अगर मेरा लोन आवेदन रिजेक्ट हो जाए तो क्या होगा?"
+ },
+ {
+  "field": "question",
+  "en": "How does FynnEdge choose which lenders to show me?",
+  "hi": "FynnEdge कैसे तय करता है कि मुझे कौन-से लेंडर दिखाए जाएं?"
+ },
+ {
+  "field": "question",
+  "en": "Is my personal information safe with FynnEdge?",
+  "hi": "क्या FynnEdge के पास मेरी निजी जानकारी सुरक्षित है?"
+ },
+ {
+  "field": "question",
+  "en": "Can I apply for a loan with a co-applicant?",
+  "hi": "क्या मैं को-एप्लिकेंट के साथ लोन के लिए आवेदन कर सकता/सकती हूं?"
+ },
+ {
+  "field": "question",
+  "en": "How quickly is the loan amount disbursed after approval?",
+  "hi": "मंज़ूरी के बाद लोन राशि कितनी जल्दी वितरित होती है?"
+ },
+ {
+  "field": "question",
+  "en": "Can I check the status of my application after submitting it?",
+  "hi": "क्या आवेदन सबमिट करने के बाद मैं उसका स्टेटस देख सकता/सकती हूं?"
+ },
+ {
+  "field": "question",
+  "en": "What if I want to cancel my application?",
+  "hi": "अगर मैं अपना आवेदन रद्द करना चाहूं तो क्या करूं?"
+ },
+ {
+  "field": "question",
+  "en": "Do I pay FynnEdge if I get a loan through a lender you matched me with?",
+  "hi": "अगर मुझे आपके मिलाए गए लेंडर से लोन मिलता है, तो क्या मुझे FynnEdge को भुगतान करना होगा?"
+ },
+ {
+  "field": "question",
+  "en": "Are the interest rates shown on FynnEdge final?",
+  "hi": "क्या FynnEdge पर दिखाई गई ब्याज दरें अंतिम हैं?"
+ },
+ {
+  "field": "question",
+  "en": "How much loan amount can I get?",
+  "hi": "मुझे कितनी लोन राशि मिल सकती है?"
+ },
+ {
+  "field": "question",
+  "en": "What does \"interest-only\" mean during the initial tenure?",
+  "hi": "शुरुआती अवधि के दौरान \"सिर्फ़ ब्याज\" का क्या मतलब है?"
+ },
+ {
+  "field": "question",
+  "en": "Is the initial tenure the same for every lender?",
+  "hi": "क्या शुरुआती अवधि हर लेंडर के लिए एक जैसी होती है?"
+ },
+ {
+  "field": "question",
+  "en": "Can I prepay or foreclose a Flexi Hybrid Term Loan?",
+  "hi": "क्या मैं फ्लेक्सी हाइब्रिड टर्म लोन का प्रीपेमेंट या फोरक्लोज़र कर सकता/सकती हूं?"
+ }
+]

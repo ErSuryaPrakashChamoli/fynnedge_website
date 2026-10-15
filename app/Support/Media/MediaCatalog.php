@@ -12,6 +12,7 @@ use App\Filament\Resources\LoanLandingPages\LoanLandingPageResource;
 use App\Filament\Resources\LoanProducts\LoanProductResource;
 use App\Filament\Resources\MarketingSections\MarketingSectionResource;
 use App\Filament\Resources\Pages\PageResource;
+use App\Filament\Resources\SocialVideos\SocialVideoResource;
 use App\Filament\Resources\Testimonials\TestimonialResource;
 use App\Filament\Resources\VideoTestimonials\VideoTestimonialResource;
 use App\Models\Article;
@@ -25,6 +26,7 @@ use App\Models\MarketingSection;
 use App\Models\Page;
 use App\Models\SeoMeta;
 use App\Models\Setting;
+use App\Models\SocialVideo;
 use App\Models\Testimonial;
 use App\Models\VideoTestimonial;
 use Illuminate\Database\Eloquent\Model;
@@ -49,6 +51,7 @@ class MediaCatalog
         CompanyPhoto::class => CompanyPhotoResource::class,
         Testimonial::class => TestimonialResource::class,
         VideoTestimonial::class => VideoTestimonialResource::class,
+        SocialVideo::class => SocialVideoResource::class,
         LoanProduct::class => LoanProductResource::class,
         MarketingSection::class => MarketingSectionResource::class,
         HowItWorksStep::class => HowItWorksStepResource::class,

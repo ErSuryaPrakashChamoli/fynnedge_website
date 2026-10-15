@@ -4,9 +4,15 @@
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-display: 'Fraunces', ui-serif, Georgia, 'Times New Roman', serif;
-    --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-    --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    /*
+     * The Devanagari families come after the Latin ones, so English keeps its
+     * typefaces and only Hindi glyphs fall through to a font that has them
+     * (Noto on Android/Linux, Nirmala UI or Mangal on Windows, Kohinoor on
+     * Apple devices), instead of whatever the browser's last resort is.
+     */
+    --font-display: 'Fraunces', ui-serif, Georgia, 'Times New Roman', 'Noto Serif Devanagari', 'Noto Sans Devanagari', 'Nirmala UI', 'Kohinoor Devanagari', Mangal, serif;
+    --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'Noto Sans Devanagari', 'Nirmala UI', 'Kohinoor Devanagari', Mangal, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, 'Noto Sans Devanagari', 'Nirmala UI', Mangal, monospace;
 
     /*
      * Body copy across the site is built almost entirely on text-xs/text-sm
@@ -34,6 +40,10 @@
     --color-warn-soft: #f7ecd4;
     --color-line: #e2e5ec;
     --color-line-strong: #c7cdd9;
+    --color-champagne: #8f6b2a;
+    --color-champagne-strong: #6f521d;
+    --color-champagne-soft: #faf1df;
+    --color-champagne-shine: rgb(255 255 255 / 0.75);
 
     --animate-marquee: marquee 80s linear infinite;
     --animate-marquee-reverse: marquee-reverse 40s linear infinite;
@@ -101,6 +111,10 @@
         --color-warn-soft: #2c2214;
         --color-line: #212836;
         --color-line-strong: #333d4d;
+        --color-champagne: #e6c98f;
+        --color-champagne-strong: #f3dfb4;
+        --color-champagne-soft: #2b2214;
+        --color-champagne-shine: rgb(255 236 200 / 0.22);
     }
 }
 
@@ -120,6 +134,10 @@
     --color-warn-soft: #2c2214;
     --color-line: #212836;
     --color-line-strong: #333d4d;
+    --color-champagne: #e6c98f;
+    --color-champagne-strong: #f3dfb4;
+    --color-champagne-soft: #2b2214;
+    --color-champagne-shine: rgb(255 236 200 / 0.22);
 }
 
 body {
@@ -191,6 +209,70 @@ footer {
 .nav-dropdown-panel {
     --text-sm: 0.8125rem;
     --text-sm--line-height: 1.25rem;
+}
+
+/*
+ * The Credit Score header menu (x-site.nav-dropdown `featured`, and its twin
+ * in the mobile menu): a champagne pill with a gold hairline, a soft gold
+ * glow and a light sweep every few seconds, so it stands apart from the
+ * plain-text menu items. It reads only --color-champagne* tokens, which the
+ * dark-mode blocks above redefine. The sweep sits at z-index -1 inside the
+ * pill's own stacking context: over its background, under its text.
+ */
+.nav-champagne {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--color-champagne-soft), color-mix(in srgb, var(--color-champagne-soft) 78%, var(--color-champagne)));
+    color: var(--color-champagne-strong);
+    box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--color-champagne) 45%, transparent),
+        inset 0 1px 0 var(--color-champagne-shine),
+        0 6px 16px -8px color-mix(in srgb, var(--color-champagne) 75%, transparent);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.nav-champagne:hover,
+.nav-champagne[aria-expanded='true'] {
+    transform: translateY(-1px);
+    box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--color-champagne) 70%, transparent),
+        inset 0 1px 0 var(--color-champagne-shine),
+        0 10px 22px -8px color-mix(in srgb, var(--color-champagne) 90%, transparent);
+}
+
+/* Same sweep keyframe as the promo bar's CTA shimmer. */
+.nav-champagne::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 40%;
+    background: linear-gradient(100deg, transparent, var(--color-champagne-shine), transparent);
+    transform: translateX(-160%) skewX(-15deg);
+    animation: promo-bar-sweep 4.5s ease-in-out 1.5s infinite;
+    pointer-events: none;
+}
+
+/*
+ * The "Free" tag inside the pill. Fixed gold-on-navy in both themes, like
+ * .promo-bar-badge, so it reads as a badge rather than more pill text.
+ */
+.nav-champagne-badge {
+    background: linear-gradient(135deg, #f3dca6, #d9ac55);
+    color: #0d2340;
+    box-shadow: 0 2px 6px -2px rgb(185 137 47 / 0.7), inset 0 1px 0 rgb(255 255 255 / 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nav-champagne::after {
+        display: none;
+    }
+
+    .nav-champagne:hover,
+    .nav-champagne[aria-expanded='true'] {
+        transform: none;
+    }
 }
 
 /*
@@ -661,4 +743,14 @@ footer {
     .promo-bar-medallion::after {
         animation: none;
     }
+}
+
+/*
+ * Hindi pages. Devanagari has no letter case, so `uppercase` is a no-op there,
+ * but letter-spacing pulls its conjuncts and vowel signs apart. Every tracking
+ * utility is therefore reset to normal while the page is in Hindi. This rule
+ * stays unlayered on purpose: unlayered CSS outranks Tailwind's utilities layer.
+ */
+html:lang(hi) [class*='tracking-'] {
+    letter-spacing: normal;
 }

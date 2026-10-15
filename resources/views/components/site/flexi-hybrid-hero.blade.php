@@ -38,39 +38,41 @@
 
     <div class="mx-auto grid max-w-7xl gap-x-12 gap-y-8 px-6 py-12 lg:grid-cols-[1.4fr_26rem] lg:items-center lg:px-8 lg:py-14">
         <p data-reveal="up" class="order-1 col-start-1 inline-flex w-fit items-center gap-2 rounded-full border border-line-strong bg-surface-2 px-4 py-1.5 font-mono text-xs font-semibold uppercase tracking-[0.16em] text-accent shadow-sm">
-            Flexi Hybrid Term Loan
+            {{ __('Flexi Hybrid Term Loan') }}
         </p>
 
         <h1 data-reveal="up delay-1" class="order-2 col-start-1 mt-4 text-balance font-display text-4xl font-semibold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl">
-            Lower Initial EMI. Flexible Access. <span class="text-accent">Smarter Repayment.</span>
+            {{ __('Lower Initial EMI. Flexible Access.') }} <span class="text-accent">{{ __('Smarter Repayment.') }}</span>
         </h1>
 
         <p data-reveal="up delay-2" class="order-3 col-start-1 max-w-xl text-lg text-ink-muted sm:text-xl">
-            Compare Flexi Hybrid Term Loan options from {{ $lenderOffers->pluck('lender.name')->join(', ', ' and ') ?: 'FynnEdge\'s lending partners' }}, understand your initial and subsequent repayment structure, and apply through FynnEdge.
+            {{ __('Compare Flexi Hybrid Term Loan options from :lenders, understand your initial and subsequent repayment structure, and apply through FynnEdge.', [
+                'lenders' => $lenderOffers->pluck('lender.name')->join(', ', ' '.__('and').' ') ?: __('FynnEdge\'s lending partners'),
+            ]) }}
         </p>
 
         <div data-reveal="zoom delay-2" class="order-4 col-start-1 grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div class="rounded-2xl border border-line bg-surface-2 p-4">
                 <p class="font-display text-2xl font-semibold text-ink">{{ $lenderOffers->count() }}</p>
-                <p class="mt-0.5 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Lenders</p>
+                <p class="mt-0.5 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Lenders') }}</p>
             </div>
             <div class="rounded-2xl border border-line bg-surface-2 p-4">
-                <p class="font-display text-2xl font-semibold text-ink">{{ $initialTenureMonths ?? '—' }} mo</p>
-                <p class="mt-0.5 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Initial tenure</p>
+                <p class="font-display text-2xl font-semibold text-ink">{{ __(':count mo', ['count' => $initialTenureMonths ?? '—']) }}</p>
+                <p class="mt-0.5 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Initial tenure') }}</p>
             </div>
             <div class="rounded-2xl border border-line bg-surface-2 p-4">
-                <p class="font-display text-2xl font-semibold text-ink">{{ $subsequentTenureMonths ?? '—' }} mo</p>
-                <p class="mt-0.5 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Subsequent tenure</p>
+                <p class="font-display text-2xl font-semibold text-ink">{{ __(':count mo', ['count' => $subsequentTenureMonths ?? '—']) }}</p>
+                <p class="mt-0.5 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Subsequent tenure') }}</p>
             </div>
             <div class="rounded-2xl border border-line bg-surface-2 p-4">
-                <p class="font-display text-lg font-semibold text-ink">Flexible</p>
-                <p class="mt-0.5 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Repayment*</p>
+                <p class="font-display text-lg font-semibold text-ink">{{ __('Flexible') }}</p>
+                <p class="mt-0.5 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Repayment*') }}</p>
             </div>
         </div>
 
         @if ($lenderOffers->isNotEmpty())
             <div data-reveal="fade" class="order-5 col-start-1">
-                <p class="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-ink-faint">Available through</p>
+                <p class="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-ink-faint">{{ __('Available through') }}</p>
                 <div class="mt-3 flex flex-wrap items-center gap-5">
                     @foreach ($lenderOffers as $offer)
                         <div class="flex items-center gap-2">
@@ -84,10 +86,10 @@
 
         <div data-reveal="up delay-3" class="order-7 col-start-1 flex flex-col gap-3 sm:flex-row">
             <x-ui.button tag="a" :href="route('loans.apply', $loanProduct)" size="lg" class="w-full justify-center text-base sm:w-auto">
-                {{ $loanProduct->cta_label ?: 'Apply Now' }}
+                {{ $loanProduct->cta_label ?: __('Apply Now') }}
             </x-ui.button>
             <x-ui.button tag="a" href="#flexi-hybrid-details" variant="secondary" size="lg" class="w-full justify-center text-base sm:w-auto">
-                View Details
+                {{ __('View Details') }}
             </x-ui.button>
         </div>
 
@@ -104,5 +106,5 @@
         </div>
     </div>
 
-    <p class="mx-auto max-w-7xl px-6 pb-8 text-xs text-ink-faint lg:px-8">*Subject to applicable lender/product terms — see the comparison and calculator below for lender-specific figures.</p>
+    <p class="mx-auto max-w-7xl px-6 pb-8 text-xs text-ink-faint lg:px-8">{{ __('*Subject to applicable lender/product terms — see the comparison and calculator below for lender-specific figures.') }}</p>
 </section>

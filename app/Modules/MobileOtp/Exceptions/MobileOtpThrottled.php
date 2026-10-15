@@ -20,16 +20,16 @@ class MobileOtpThrottled extends RuntimeException
     {
         $seconds = max(1, $retryAfterSeconds);
 
-        return new self("Please wait {$seconds} seconds before requesting another code.", $seconds, 'resend_cooldown');
+        return new self(__('Please wait :seconds seconds before requesting another code.', ['seconds' => $seconds]), $seconds, 'resend_cooldown');
     }
 
     public static function tooManyForNumber(int $retryAfterSeconds): self
     {
-        return new self('Too many OTP requests for this number. Please try again in a while.', max(1, $retryAfterSeconds), 'too_many_requests');
+        return new self(__('Too many OTP requests for this number. Please try again in a while.'), max(1, $retryAfterSeconds), 'too_many_requests');
     }
 
     public static function tooManyFromAddress(int $retryAfterSeconds): self
     {
-        return new self('Too many OTP requests. Please try again in a while.', max(1, $retryAfterSeconds), 'too_many_requests');
+        return new self(__('Too many OTP requests. Please try again in a while.'), max(1, $retryAfterSeconds), 'too_many_requests');
     }
 }

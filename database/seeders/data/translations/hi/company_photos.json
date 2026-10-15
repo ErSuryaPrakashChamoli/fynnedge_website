@@ -1,0 +1,32 @@
+[
+ {
+  "field": "caption",
+  "en": "Team Meeting",
+  "hi": "टीम मीटिंग"
+ },
+ {
+  "field": "caption",
+  "en": "Office Space",
+  "hi": "ऑफ़िस स्पेस"
+ },
+ {
+  "field": "caption",
+  "en": "Product Sprint",
+  "hi": "प्रोडक्ट स्प्रिंट"
+ },
+ {
+  "field": "caption",
+  "en": "Team Outing",
+  "hi": "टीम आउटिंग"
+ },
+ {
+  "field": "caption",
+  "en": "Weekly Standup",
+  "hi": "साप्ताहिक स्टैंडअप"
+ },
+ {
+  "field": "caption",
+  "en": "Coffee Break",
+  "hi": "कॉफ़ी ब्रेक"
+ }
+]

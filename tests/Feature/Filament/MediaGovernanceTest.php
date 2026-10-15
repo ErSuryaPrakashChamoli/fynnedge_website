@@ -8,6 +8,7 @@ use App\Models\CompanyPhoto;
 use App\Models\Lender;
 use App\Models\LoanProduct;
 use App\Models\Setting;
+use App\Models\SocialVideo;
 use App\Models\User;
 use App\Models\VideoTestimonial;
 use App\Support\Media\MediaCatalog;
@@ -61,6 +62,16 @@ it('counts an uploaded video testimonial as used, so it is never offered for del
 
     expect($entry->status())->toBe('used');
     expect($entry->references->first()->modelLabel)->toBe('Video Testimonial');
+});
+
+it('counts an uploaded social media video as used, so it is never offered for deletion', function () {
+    Storage::disk('public')->put('social-videos/reel.mp4', 'fake-video-bytes');
+    SocialVideo::factory()->create(['video_path' => 'social-videos/reel.mp4']);
+
+    $entry = app(MediaCatalog::class)->all()->firstWhere('path', 'social-videos/reel.mp4');
+
+    expect($entry->status())->toBe('used');
+    expect($entry->references->first()->modelLabel)->toBe('Social Media Video');
 });
 
 it('counts multiple records referencing the same physical file', function () {

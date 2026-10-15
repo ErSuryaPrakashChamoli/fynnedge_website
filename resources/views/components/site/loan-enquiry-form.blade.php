@@ -2,10 +2,10 @@
     'loanProduct' => null,
     'loanProducts' => null,
     'selected' => null,
-    'ctaLabel' => 'Submit Enquiry',
+    'ctaLabel' => __('Submit Enquiry'),
     'eyebrow' => null,
     // Shown when there is no loan ceiling to quote, e.g. before a loan type is picked.
-    'headline' => 'Get the funds you need',
+    'headline' => __('Get the funds you need'),
 ])
 
 @php
@@ -55,9 +55,11 @@
 
             return [$product->slug => [
                 'name' => $product->name,
+                // Analytics reports group by product, so they always get the English name.
+                'analyticsName' => $product->getRawOriginal('name'),
                 'amount' => $product->max_amount ? '₹'.IndianNumberFormatter::compact($product->max_amount) : null,
                 'rate' => ($rateHeadline = RateBook::headlineFor($product)) && $rateHeadline->unit() === RateUnit::PerAnnum
-                    ? $rateHeadline->startingLabel().' p.a.'
+                    ? $rateHeadline->startingLabel().' '.RateUnit::PerAnnum->suffix()
                     : null,
                 'min' => $range['min'],
                 'max' => $range['max'],
@@ -72,8 +74,8 @@
     $selectedSlug = is_string($requestedSlug) && array_key_exists($requestedSlug, $productOptions) ? $requestedSlug : null;
     $current = $selectedSlug ? $productOptions[$selectedSlug] : null;
 
-    $noProductHint = 'Select a loan type to see the amount range';
-    $eyebrow = $eyebrow ?: 'Instant '.$loanProduct?->name;
+    $noProductHint = __('Select a loan type to see the amount range');
+    $eyebrow = $eyebrow ?: __('Instant :product', ['product' => $loanProduct?->name]);
     $fieldId = $selectable ? 'quick-enquiry-page' : 'loan-enquiry-'.$loanProduct->slug;
     $action = $selectable ? route('quick-enquiry.apply') : route('loans.enquiry.store', $loanProduct);
     $status = session('quickEnquiryStatus');
@@ -103,10 +105,10 @@
         <p class="mt-3 text-center font-display text-lg font-semibold leading-snug text-ink sm:text-xl" aria-live="polite">
             <span x-show="!selected?.amount" @style(['display:none' => $current['amount'] ?? null])>{{ $headline }}</span>
             <span x-show="selected?.amount" @style(['display:none' => ! ($current['amount'] ?? null)])>
-                Get up to <span class="text-accent" x-text="selected?.amount">{{ $current['amount'] ?? '' }}</span>
+                {!! __('Get up to :amount', ['amount' => '<span class="text-accent" x-text="selected?.amount">'.e($current['amount'] ?? '').'</span>']) !!}
             </span>
             <span x-show="selected?.rate" @style(['display:none' => ! ($current['rate'] ?? null)])>
-                <br class="hidden sm:block">starting at <span class="text-accent" x-text="selected?.rate">{{ $current['rate'] ?? '' }}</span>
+                <br class="hidden sm:block">{!! __('starting at :rate', ['rate' => '<span class="text-accent" x-text="selected?.rate">'.e($current['rate'] ?? '').'</span>']) !!}
             </span>
         </p>
 
@@ -131,7 +133,7 @@
 
             @if ($selectable)
                 <div>
-                    <label for="{{ $fieldId }}-product" class="sr-only">Loan type</label>
+                    <label for="{{ $fieldId }}-product" class="sr-only">{{ __('Loan type') }}</label>
                     <div
                         class="relative {{ $groupClasses }} {{ $errors->has('loan_product') ? $inputToneError : $inputTone }}"
                         :class="errors.loan_product ? @js($inputToneError) : @js($inputTone)"
@@ -154,10 +156,10 @@
                             @change="onProductChange"
                             :aria-invalid="errors.loan_product ? 'true' : 'false'"
                         >
-                            <option value="" @selected(! $selectedSlug) disabled>Select Loan Type</option>
+                            <option value="" @selected(! $selectedSlug) disabled>{{ __('Select Loan Type') }}</option>
                             @foreach ($productOptions as $slug => $option)
                                 <option value="{{ $slug }}" @selected($slug === $selectedSlug) class="text-ink">
-                                    {{ $option['name'] }}{{ $option['rate'] ? ' · from '.$option['rate'] : '' }}
+                                    {{ $option['name'] }}{{ $option['rate'] ? ' · '.__('from :rate', ['rate' => $option['rate']]) : '' }}
                                 </option>
                             @endforeach
                         </select>
@@ -170,7 +172,7 @@
             @endif
 
             <div>
-                <label for="{{ $fieldId }}-name" class="sr-only">Full name</label>
+                <label for="{{ $fieldId }}-name" class="sr-only">{{ __('Full name') }}</label>
                 <div
                     class="{{ $groupClasses }} {{ $errors->has('name') ? $inputToneError : $inputTone }}"
                     :class="errors.name ? @js($inputToneError) : @js($inputTone)"
@@ -186,7 +188,7 @@
                         name="name"
                         autocomplete="name"
                         maxlength="120"
-                        placeholder="Full Name"
+                        placeholder="{{ __('Full Name') }}"
                         required
                         value="{{ old('name') }}"
                         aria-describedby="{{ $fieldId }}-name-error"
@@ -200,7 +202,7 @@
             </div>
 
             <div>
-                <label for="{{ $fieldId }}-phone" class="sr-only">Mobile number</label>
+                <label for="{{ $fieldId }}-phone" class="sr-only">{{ __('Mobile number') }}</label>
                 <div
                     class="{{ $groupClasses }} {{ $errors->has('phone') ? $inputToneError : $inputTone }}"
                     :class="errors.phone ? @js($inputToneError) : @js($inputTone)"
@@ -213,7 +215,7 @@
                         inputmode="numeric"
                         autocomplete="tel-national"
                         maxlength="10"
-                        placeholder="Mobile Number"
+                        placeholder="{{ __('Mobile Number') }}"
                         required
                         value="{{ old('phone') }}"
                         aria-describedby="{{ $fieldId }}-phone-error"
@@ -227,7 +229,7 @@
             </div>
 
             <div>
-                <label for="{{ $fieldId }}-email" class="sr-only">Email address</label>
+                <label for="{{ $fieldId }}-email" class="sr-only">{{ __('Email address') }}</label>
                 <div
                     class="{{ $groupClasses }} {{ $errors->has('email') ? $inputToneError : $inputTone }}"
                     :class="errors.email ? @js($inputToneError) : @js($inputTone)"
@@ -239,7 +241,7 @@
                         name="email"
                         autocomplete="email"
                         maxlength="190"
-                        placeholder="Email Address (optional)"
+                        placeholder="{{ __('Email Address (optional)') }}"
                         value="{{ old('email') }}"
                         aria-describedby="{{ $fieldId }}-email-error"
                         class="{{ $inputClasses }}"
@@ -252,7 +254,7 @@
             </div>
 
             <div>
-                <label for="{{ $fieldId }}-amount" class="sr-only">Loan amount required</label>
+                <label for="{{ $fieldId }}-amount" class="sr-only">{{ __('Loan amount required') }}</label>
                 <div
                     class="{{ $groupClasses }} {{ $errors->has('loan_amount') ? $inputToneError : $inputTone }}"
                     :class="errors.loan_amount ? @js($inputToneError) : @js($inputTone)"
@@ -263,7 +265,7 @@
                         id="{{ $fieldId }}-amount"
                         name="loan_amount"
                         inputmode="numeric"
-                        placeholder="Loan Amount Required"
+                        placeholder="{{ __('Loan Amount Required') }}"
                         required
                         value="{{ old('loan_amount') }}"
                         aria-describedby="{{ $fieldId }}-amount-error {{ $fieldId }}-amount-hint"
@@ -282,16 +284,18 @@
             </div>
 
             <x-ui.button type="submit" class="mt-1 w-full py-3" ::disabled="loading">
-                <span x-text="loading ? 'Submitting...' : @js($ctaLabel)">{{ $ctaLabel }}</span>
+                <span x-text="loading ? @js(__('Submitting...')) : @js($ctaLabel)">{{ $ctaLabel }}</span>
                 <span aria-hidden="true" x-show="!loading">&rarr;</span>
             </x-ui.button>
         </form>
 
         <p class="mt-2.5 text-[0.7rem] leading-relaxed text-ink-faint">
-            By submitting this form you agree to be contacted by {{ \App\Models\Setting::get('site_name', 'FynnEdge') }}
-            about your <span x-text="selected ? selected.name : 'loan'">{{ $current['name'] ?? 'loan' }}</span> enquiry.
+            {!! __('By submitting this form you agree to be contacted by :site about your :product enquiry.', [
+                'site' => e(\App\Models\Setting::get('site_name', 'FynnEdge')),
+                'product' => '<span x-text="selected ? selected.name : '.\Illuminate\Support\Js::from(__('loan')).'">'.e($current['name'] ?? __('loan')).'</span>',
+            ]) !!}
             @if ($privacyUrl)
-                <a href="{{ $privacyUrl }}" class="underline transition-colors hover:text-ink">Privacy Policy</a>.
+                <a href="{{ $privacyUrl }}" class="underline transition-colors hover:text-ink">{{ __('Privacy Policy') }}</a>.
             @endif
         </p>
     </div>

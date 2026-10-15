@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\NavigationLinks\Schemas;
 
+use App\Filament\Schemas\HindiTranslationSection;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -49,6 +50,11 @@ class NavigationLinkForm
                     ->default(0),
                 Toggle::make('is_active')
                     ->default(true),
+                HindiTranslationSection::make([
+                    TextInput::make('label_hi')
+                        ->label('Label (Hindi)')
+                        ->maxLength(90),
+                ]),
             ]);
     }
 }

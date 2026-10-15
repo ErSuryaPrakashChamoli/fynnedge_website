@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\PublishStatus;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use App\Models\Concerns\Publishable;
 use Database\Factories\MarketingSectionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -20,11 +21,11 @@ use Illuminate\Support\Facades\Storage;
  * Each call site is expected to fall back to its own hardcoded default copy
  * when no row exists for that placement, so an empty table never breaks a page.
  */
-#[Fillable(['placement', 'heading', 'subheading', 'description', 'image_path', 'image_alt', 'cta_label', 'cta_url', 'sort_order', 'status', 'published_at', 'expires_at'])]
+#[Fillable(['placement', 'heading', 'subheading', 'description', 'image_path', 'image_alt', 'cta_label', 'cta_url', 'sort_order', 'status', 'published_at', 'expires_at', 'heading_hi', 'subheading_hi', 'description_hi', 'image_alt_hi', 'cta_label_hi'])]
 class MarketingSection extends Model
 {
     /** @use HasFactory<MarketingSectionFactory> */
-    use Auditable, HasFactory, HasPublicId, Publishable, SoftDeletes;
+    use Auditable, HasFactory, HasPublicId, HasTranslations, Publishable, SoftDeletes;
 
     protected function casts(): array
     {
@@ -43,5 +44,19 @@ class MarketingSection extends Model
     public function imageUrl(): ?string
     {
         return $this->image_path ? Storage::disk('public')->url($this->image_path) : null;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'heading',
+            'subheading',
+            'description',
+            'image_alt',
+            'cta_label',
+        ];
     }
 }

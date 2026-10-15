@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CreditScorePages\Schemas;
 
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\CreditScorePage;
 use App\Modules\CreditScore\Enums\BureauName;
 use Filament\Forms\Components\RichEditor;
@@ -30,6 +31,11 @@ class CreditScorePageForm
                     ->label('About')
                     ->helperText('Shown below the credit score check. Leave empty to hide the section. The headline, introduction, meta tags and search engine indexing are under Website Settings → Credit Score Page. Changes go live immediately.')
                     ->columnSpanFull(),
+                HindiTranslationSection::make([
+                    TextInput::make('title_hi')
+                        ->label('Heading (Hindi)'),
+                    HindiTranslationSection::richEditor('body_hi', 'About (Hindi)'),
+                ]),
             ]);
     }
 }

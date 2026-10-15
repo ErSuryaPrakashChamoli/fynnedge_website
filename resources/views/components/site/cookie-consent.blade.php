@@ -32,21 +32,21 @@
         x-cloak
         role="dialog"
         aria-live="polite"
-        aria-label="Cookie preferences"
+        aria-label="{{ __('Cookie preferences') }}"
         class="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-surface/95 p-4 backdrop-blur sm:p-6"
     >
         <div class="mx-auto flex max-w-5xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div class="text-sm text-ink-muted">
+                {{-- One whole sentence per case, so the Hindi can order its clauses naturally. --}}
                 <p>
-                    We use essential cookies to run this site
                     @if ($analyticsRequired && $marketingRequired)
-                        and, with your permission, analytics and marketing cookies to understand usage and measure our campaigns.
+                        {{ __('We use essential cookies to run this site and, with your permission, analytics and marketing cookies to understand usage and measure our campaigns.') }}
                     @elseif ($analyticsRequired)
-                        and, with your permission, analytics cookies to understand how it is used.
+                        {{ __('We use essential cookies to run this site and, with your permission, analytics cookies to understand how it is used.') }}
                     @elseif ($marketingRequired)
-                        and, with your permission, marketing cookies to measure our campaigns.
+                        {{ __('We use essential cookies to run this site and, with your permission, marketing cookies to measure our campaigns.') }}
                     @else
-                        .
+                        {{ __('We use essential cookies to run this site.') }}
                     @endif
                 </p>
                 @if ($policyLinks !== [])
@@ -64,14 +64,14 @@
                     x-on:click="save('none')"
                     class="rounded-lg border border-line px-4 py-2 text-sm font-medium text-ink transition hover:bg-bg"
                 >
-                    Essential only
+                    {{ __('Essential only') }}
                 </button>
                 <button
                     type="button"
                     x-on:click="save('analytics,marketing')"
                     class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
                 >
-                    Accept all
+                    {{ __('Accept all') }}
                 </button>
             </div>
         </div>

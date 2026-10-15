@@ -29,14 +29,18 @@ class HtmlBodyEditor
      * Filament's default the upload would follow FILESYSTEM_DISK, which is the
      * private disk here, and every inline image would 404 on the site.
      *
+     * A $label names the editor when its field name alone would not, such as
+     * the Hindi `body_hi`; without one the field keeps its default label.
+     *
      * @return array<int, Toggle|CodeEditor|RichEditor>
      */
-    public static function make(string $field = 'body', string $attachmentsDirectory = 'rich-content'): array
+    public static function make(string $field = 'body', string $attachmentsDirectory = 'rich-content', ?string $label = null): array
     {
         $modeField = "{$field}_html_mode";
         $sourceField = "{$field}_html";
 
         $richEditor = RichEditor::make($field)
+            ->when($label !== null, fn (RichEditor $editor): RichEditor => $editor->label($label))
             ->fileAttachmentsDisk('public')
             ->fileAttachmentsDirectory($attachmentsDirectory)
             ->fileAttachmentsVisibility('public')

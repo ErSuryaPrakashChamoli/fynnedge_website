@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslations;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-#[Fillable(['title', 'description', 'canonical_url', 'og_image_path', 'og_title', 'og_description', 'twitter_title', 'twitter_description', 'twitter_image_path', 'robots', 'page_type', 'schema_template_id', 'structured_data'])]
+#[Fillable(['title', 'description', 'canonical_url', 'og_image_path', 'og_title', 'og_description', 'twitter_title', 'twitter_description', 'twitter_image_path', 'robots', 'page_type', 'schema_template_id', 'structured_data', 'title_hi', 'description_hi'])]
 class SeoMeta extends Model
 {
+    use HasTranslations;
+
     protected function casts(): array
     {
         return [
@@ -25,5 +28,16 @@ class SeoMeta extends Model
     public function schemaTemplate(): BelongsTo
     {
         return $this->belongsTo(SchemaTemplate::class);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'title',
+            'description',
+        ];
     }
 }

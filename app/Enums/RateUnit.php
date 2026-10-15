@@ -26,8 +26,8 @@ enum RateUnit: string implements HasLabel
     public function suffix(): string
     {
         return match ($this) {
-            self::PerAnnum => 'p.a.',
-            self::PerMonth => 'per month',
+            self::PerAnnum => __('p.a.'),
+            self::PerMonth => __('per month'),
         };
     }
 

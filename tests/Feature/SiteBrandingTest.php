@@ -102,3 +102,9 @@ it('wraps a long hero eyebrow instead of widening the hero column', function () 
         ->toContain('inline-flex max-w-full self-start items-center')
         ->not->toContain('inline-flex w-max items-center');
 });
+
+it('highlights the Credit Score header menu as a champagne pill with a Free badge on desktop and mobile', function () {
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect(preg_match_all('/<button[^>]*class="[^"]*nav-champagne[^"]*"[^>]*>\s*<span class="nav-champagne-badge[^"]*">Free<\/span>\s*(<span[^>]*>)?Credit Score/', $html))->toBe(2);
+});

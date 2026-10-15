@@ -25,14 +25,14 @@
 
         <x-site.loan-enquiry :loan-product="$loanProduct" :eyebrow="$loanProduct->marketing_headline">
             <x-slot:breadcrumbs>
-                <x-ui.breadcrumbs :trail="['Loans' => route('loans.index'), $loanProduct->name => null]" />
+                <x-ui.breadcrumbs :trail="[__('Loans') => route('loans.index'), $loanProduct->name => null]" />
             </x-slot:breadcrumbs>
 
             <x-ui.button tag="a" :href="route('loans.apply', $loanProduct)">
-                {{ $loanProduct->cta_label ?: 'Check Your Eligibility' }}
+                {{ $loanProduct->cta_label ?: __('Check Your Eligibility') }}
             </x-ui.button>
             <x-ui.button tag="a" :href="$calculatorSupported ? route('calculators.emi', $loanProduct->category->value) : route('calculators.index')" variant="secondary">
-                Calculate EMI
+                {{ __('Calculate EMI') }}
             </x-ui.button>
         </x-site.loan-enquiry>
 
@@ -47,7 +47,7 @@
 
         @if (! empty($loanProduct->benefits))
             <div class="mt-12" data-ai-context="Product Benefits">
-                <h2 data-reveal="zoom" class="font-display text-xl font-semibold text-ink">Benefits</h2>
+                <h2 data-reveal="zoom" class="font-display text-xl font-semibold text-ink">{{ __('Benefits') }}</h2>
                 <ul class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($loanProduct->benefits as $benefit)
                         <li data-reveal="up stagger" class="flex items-start gap-2.5 text-sm text-ink-muted">
@@ -67,7 +67,7 @@
 
         @if (! empty($loanProduct->features))
             <div class="mt-12" data-ai-context="Product Features">
-                <h2 data-reveal="right" class="font-display text-xl font-semibold text-ink">Key features</h2>
+                <h2 data-reveal="right" class="font-display text-xl font-semibold text-ink">{{ __('Key features') }}</h2>
                 <ul class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($loanProduct->features as $feature)
                         <li data-reveal="right stagger" class="flex items-start gap-2.5 text-sm text-ink-muted">
@@ -81,8 +81,8 @@
 
         @if (! empty($loanProduct->eligibility_points))
             <div class="mt-12" data-ai-context="Product Eligibility">
-                <h2 data-reveal="up" class="font-display text-xl font-semibold text-ink">Eligibility at a glance</h2>
-                <p class="mt-2 text-sm text-ink-faint">A general guide — the exact criteria vary by lender and are checked precisely when you apply.</p>
+                <h2 data-reveal="up" class="font-display text-xl font-semibold text-ink">{{ __('Eligibility at a glance') }}</h2>
+                <p class="mt-2 text-sm text-ink-faint">{{ __('A general guide — the exact criteria vary by lender and are checked precisely when you apply.') }}</p>
                 <ul class="mt-4 flex max-w-3xl flex-col gap-2">
                     @foreach ($loanProduct->eligibility_points as $point)
                         <li data-reveal="left stagger" class="text-sm text-ink-muted">— {{ $point }}</li>
@@ -93,7 +93,7 @@
 
         @if (! empty($loanProduct->documents_required))
             <div class="mt-12" data-ai-context="Required Documents">
-                <h2 data-reveal="zoom" class="font-display text-xl font-semibold text-ink">Documents you'll need</h2>
+                <h2 data-reveal="zoom" class="font-display text-xl font-semibold text-ink">{{ __("Documents you'll need") }}</h2>
                 <div class="mt-4 flex flex-wrap gap-2">
                     @foreach ($loanProduct->documents_required as $document)
                         <x-ui.badge data-reveal="zoom stagger" tone="muted">{{ $document }}</x-ui.badge>
@@ -104,7 +104,7 @@
 
         @if (! empty($loanProduct->process_steps))
             <div class="mt-12" data-ai-context="Application Process">
-                <h2 data-reveal="left" class="font-display text-xl font-semibold text-ink">How it works</h2>
+                <h2 data-reveal="left" class="font-display text-xl font-semibold text-ink">{{ __('How it works') }}</h2>
                 <ol class="mt-4 grid gap-3">
                     @foreach ($loanProduct->process_steps as $index => $step)
                         <li data-reveal="left stagger" class="flex items-center gap-3 text-sm text-ink-muted">
@@ -118,8 +118,8 @@
 
         @if ($calculatorSupported)
             <div data-reveal="down" class="mt-12" data-ai-context="EMI Calculator">
-                <h2 class="font-display text-xl font-semibold text-ink">{{ $loanProduct->name }} EMI calculator</h2>
-                <p class="mt-2 text-sm text-ink-faint">Estimate your monthly instalment and see the full year-by-year principal and interest breakdown.</p>
+                <h2 class="font-display text-xl font-semibold text-ink">{{ __(':product EMI calculator', ['product' => $loanProduct->name]) }}</h2>
+                <p class="mt-2 text-sm text-ink-faint">{{ __('Estimate your monthly instalment and see the full year-by-year principal and interest breakdown.') }}</p>
                 <div class="mt-6">
                     <livewire:emi-calculator :category="$loanProduct->category->value" :show-loan-details="false" :key="'calc-'.$loanProduct->id" />
                 </div>
@@ -131,7 +131,7 @@
 
         @if ($loanProduct->landingPages->isNotEmpty())
             <div class="mt-12">
-                <h2 data-reveal="fade" class="font-display text-xl font-semibold text-ink">Explore {{ $loanProduct->name }} by amount, type, need &amp; location</h2>
+                <h2 data-reveal="fade" class="font-display text-xl font-semibold text-ink">{{ __('Explore :product by amount, type, need & location', ['product' => $loanProduct->name]) }}</h2>
                 <div class="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                     @foreach (collect(\App\Enums\LandingPageGroup::cases())->mapWithKeys(fn ($group) => [$group->getLabel() => $loanProduct->landingPages->where('group', $group)])->filter->isNotEmpty() as $groupLabel => $pages)
                         <div data-reveal="up stagger">
@@ -155,7 +155,7 @@
             </div>
         @endif
 
-        <x-site.why-fynnedge class="mt-12" :heading="'You could go directly to a bank. But why apply for a '.$loanProduct->name.' through us?'" />
+        <x-site.why-fynnedge class="mt-12" :heading="__('You could go directly to a bank. But why apply for a :product through us?', ['product' => $loanProduct->name])" />
 
         <x-site.testimonials :testimonials="$testimonials" />
 

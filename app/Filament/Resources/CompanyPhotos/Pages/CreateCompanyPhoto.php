@@ -22,7 +22,7 @@ class CreateCompanyPhoto extends CreateRecord
      * The create form collects an array of up to 8 uploaded photo paths
      * (photo_paths) rather than the single photo_path column the model
      * actually has — one CompanyPhoto row is created per uploaded photo,
-     * sharing the caption/status entered and incrementing sort_order from
+     * sharing the caption (and its Hindi version)/status entered and incrementing sort_order from
      * the given starting value.
      */
     protected function handleRecordCreation(array $data): Model
@@ -33,6 +33,7 @@ class CreateCompanyPhoto extends CreateRecord
         $records = collect($paths)->values()->map(fn (string $path, int $index) => CompanyPhoto::create([
             'photo_path' => $path,
             'caption' => $data['caption'] ?? null,
+            'caption_hi' => $data['caption_hi'] ?? null,
             'sort_order' => $baseSortOrder + $index,
             'status' => $data['status'],
         ]));

@@ -1,3 +1,19 @@
+{{--
+    The language strip sits ABOVE the sticky header, in the page's top-right
+    corner, so it is the first thing a visitor meets and they can choose a
+    language before exploring. It scrolls away with the page instead of
+    sticking, which keeps the header no taller than it was. The 1024–1279px
+    header row has no spare width for another control (see .ai/rules/site.md).
+    The mobile menu repeats the switch for a phone visitor who has scrolled
+    down.
+--}}
+<div class="border-b border-line bg-surface" data-language-strip>
+    <div class="mx-auto flex max-w-7xl items-center justify-end gap-3 px-6 py-1.5 lg:px-8">
+        <span class="text-xs text-ink-faint" aria-hidden="true">Language · <span lang="hi">भाषा</span></span>
+        <x-site.language-switch />
+    </div>
+</div>
+
 <header class="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur">
     {{--
         The mobile menu is taller than a phone screen once a section is
@@ -40,7 +56,7 @@
 
         @php $loanCategories = \App\Support\Loans\LoanMegaMenu::categories(); @endphp
 
-        <nav class="hidden items-center gap-8 lg:flex" aria-label="Primary">
+        <nav class="hidden items-center gap-3.5 lg:flex xl:gap-8" aria-label="{{ __('Primary') }}">
             @if (count($loanCategories))
                 <div x-data="{ open: false, active: '{{ $loanCategories[0]['overviewParams']['loanProduct'] }}' }" @click.outside="open = false" @keydown.escape="open = false" @mouseenter="open = true" @mouseleave="open = false" class="relative">
                     <button
@@ -54,7 +70,7 @@
                             'text-ink-muted hover:text-ink' => ! request()->routeIs('loans.*'),
                         ])
                     >
-                        Loans
+                        {{ __('Loans') }}
                         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5 transition-transform" :class="{ 'rotate-180': open }"><path stroke-linecap="round" stroke-linejoin="round" d="m5 7.5 5 5 5-5" /></svg>
                     </button>
 
@@ -93,10 +109,10 @@
                                         <div class="flex items-center justify-between gap-4 border-b border-line pb-4">
                                             <div>
                                                 <p class="font-display text-base font-semibold text-ink">{{ $category['label'] }}</p>
-                                                <a href="{{ route($category['overviewRoute'], $category['overviewParams']) }}" class="text-xs font-medium text-ink-faint hover:text-ink">View overview →</a>
+                                                <a href="{{ route($category['overviewRoute'], $category['overviewParams']) }}" class="text-xs font-medium text-ink-faint hover:text-ink">{{ __('View overview →') }}</a>
                                             </div>
                                             <x-ui.button tag="a" :href="route($category['applyRoute'], $category['applyParams'])" size="sm">
-                                                Check Eligibility
+                                                {{ __('Check Eligibility') }}
                                             </x-ui.button>
                                         </div>
 
@@ -128,13 +144,13 @@
                     </div>
                 </div>
             @else
-                <x-site.nav-link route="loans.index" label="Loans" />
+                <x-site.nav-link route="loans.index" :label="__('Loans')" />
             @endif
-            <x-site.nav-dropdown label="Credit Score" activeWhen="credit-score.*">
-                <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'cibil']" label="Free CIBIL Score" class="block whitespace-nowrap rounded-lg px-3 py-1 hover:bg-surface-2" />
-                <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'experian']" label="Free Experian Score" class="block whitespace-nowrap rounded-lg px-3 py-1 hover:bg-surface-2" />
-                <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'equifax']" label="Free Equifax Score" class="block whitespace-nowrap rounded-lg px-3 py-1 hover:bg-surface-2" />
-                <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'crif']" label="Free CRIF Score" class="block whitespace-nowrap rounded-lg px-3 py-1 hover:bg-surface-2" />
+            <x-site.nav-dropdown :label="__('Credit Score')" activeWhen="credit-score.*" featured :badge="__('Free')">
+                <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'cibil']" :label="__('Free :bureau Score', ['bureau' => 'CIBIL'])" class="block whitespace-nowrap rounded-lg px-3 py-1 hover:bg-surface-2" />
+                <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'experian']" :label="__('Free :bureau Score', ['bureau' => 'Experian'])" class="block whitespace-nowrap rounded-lg px-3 py-1 hover:bg-surface-2" />
+                <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'equifax']" :label="__('Free :bureau Score', ['bureau' => 'Equifax'])" class="block whitespace-nowrap rounded-lg px-3 py-1 hover:bg-surface-2" />
+                <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'crif']" :label="__('Free :bureau Score', ['bureau' => 'CRIF'])" class="block whitespace-nowrap rounded-lg px-3 py-1 hover:bg-surface-2" />
             </x-site.nav-dropdown>
             <div x-data="{ open: false }" @click.outside="open = false" @keydown.escape="open = false" @mouseenter="open = true" @mouseleave="open = false" class="relative">
                 <button
@@ -148,7 +164,7 @@
                         'text-ink-muted hover:text-ink' => ! request()->routeIs('calculators.*'),
                     ])
                 >
-                    Calculators
+                    {{ __('Calculators') }}
                     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5 transition-transform" :class="{ 'rotate-180': open }"><path stroke-linecap="round" stroke-linejoin="round" d="m5 7.5 5 5 5-5" /></svg>
                 </button>
 
@@ -175,24 +191,25 @@
                             @endforeach
                         </div>
                         <div class="mt-4 border-t border-line pt-4">
-                            <x-site.nav-link route="calculators.index" label="View all calculators →" class="block px-3 text-sm font-medium !text-accent hover:underline" />
+                            <x-site.nav-link route="calculators.index" :label="__('View all calculators →')" class="block px-3 text-sm font-medium !text-accent hover:underline" />
                         </div>
                     </div>
                 </div>
             </div>
 
-            <x-site.nav-link route="eligibility.index" label="Eligibility" />
-            <x-site.nav-link route="resources.index" label="Resources" />
-            <x-site.nav-link route="faqs.index" label="FAQs" />
-            <x-site.nav-link route="about" label="About" />
+            {{-- nowrap: a two-word Hindi label (हमारे बारे में) otherwise breaks onto two lines at 1024px. --}}
+            <x-site.nav-link route="eligibility.index" :label="__('Eligibility')" class="whitespace-nowrap" />
+            <x-site.nav-link route="resources.index" :label="__('Resources')" class="whitespace-nowrap" />
+            <x-site.nav-link route="faqs.index" :label="__('FAQs')" class="whitespace-nowrap" />
+            <x-site.nav-link route="about" :label="__('About')" class="whitespace-nowrap" />
         </nav>
 
         <div class="hidden items-center gap-3 lg:flex">
             <x-ui.button tag="a" :href="route('contact')" variant="secondary" size="sm">
-                Talk to us
+                {{ __('Talk to us') }}
             </x-ui.button>
             <x-ui.button tag="a" :href="route('eligibility.index')" size="sm">
-                Check Eligibility
+                {{ __('Check Eligibility') }}
             </x-ui.button>
         </div>
 
@@ -202,7 +219,7 @@
             @click="toggle()"
             :aria-expanded="open"
             aria-controls="mobile-nav"
-            aria-label="Toggle navigation menu"
+            aria-label="{{ __('Toggle navigation menu') }}"
         >
             <svg x-show="!open" class="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" d="M3 5.5h14M3 10h14M3 14.5h14" /></svg>
             <svg x-show="open" x-cloak class="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" d="m4 4 12 12M16 4 4 16" /></svg>
@@ -215,7 +232,7 @@
             :style="menuHeight !== null ? `max-height: ${menuHeight}px` : ''"
             class="absolute inset-x-0 top-full max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain border-b border-line bg-bg px-6 py-5 shadow-lg lg:hidden"
         >
-            <nav class="flex flex-col gap-4" aria-label="Primary">
+            <nav class="flex flex-col gap-4" aria-label="{{ __('Primary') }}">
                 @if (count($loanCategories))
                     <div x-data="{ loansOpen: false }">
                         <button
@@ -224,21 +241,21 @@
                             :aria-expanded="loansOpen"
                             class="flex w-full cursor-pointer items-center justify-between text-sm font-medium text-ink-muted hover:text-ink"
                         >
-                            Loans
+                            {{ __('Loans') }}
                             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5 transition-transform" :class="{ 'rotate-180': loansOpen }"><path stroke-linecap="round" stroke-linejoin="round" d="m5 7.5 5 5 5-5" /></svg>
                         </button>
                         <div x-show="loansOpen" x-cloak class="mt-3 flex flex-col gap-2 border-l border-line pl-4">
                             @foreach ($loanCategories as $category)
                                 <div class="flex items-center justify-between gap-3">
                                     <x-site.nav-link :route="$category['overviewRoute']" :parameters="$category['overviewParams']" :label="$category['label']" />
-                                    <x-site.nav-link :route="$category['applyRoute']" :parameters="$category['applyParams']" label="Apply →" class="shrink-0 text-xs font-medium !text-accent" />
+                                    <x-site.nav-link :route="$category['applyRoute']" :parameters="$category['applyParams']" :label="__('Apply →')" class="shrink-0 text-xs font-medium !text-accent" />
                                 </div>
                             @endforeach
-                            <x-site.nav-link route="loans.index" label="View all loans →" class="font-medium !text-accent" />
+                            <x-site.nav-link route="loans.index" :label="__('View all loans →')" class="font-medium !text-accent" />
                         </div>
                     </div>
                 @else
-                    <x-site.nav-link route="loans.index" label="Loans" />
+                    <x-site.nav-link route="loans.index" :label="__('Loans')" />
                 @endif
 
                 <div x-data="{ creditScoreOpen: false }">
@@ -246,16 +263,17 @@
                         type="button"
                         @click="creditScoreOpen = !creditScoreOpen"
                         :aria-expanded="creditScoreOpen"
-                        class="flex w-full cursor-pointer items-center justify-between text-sm font-medium text-ink-muted hover:text-ink"
+                        class="nav-champagne -mx-3 flex w-[calc(100%+1.5rem)] cursor-pointer items-center gap-1 rounded-xl px-3 py-2 text-sm font-bold"
                     >
-                        Credit Score
+                        <span class="nav-champagne-badge mr-0.5 rounded-full px-1.5 font-mono text-[0.6rem] font-semibold uppercase leading-4 tracking-wider">{{ __('Free') }}</span>
+                        <span class="flex-1 text-left">{{ __('Credit Score') }}</span>
                         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5 transition-transform" :class="{ 'rotate-180': creditScoreOpen }"><path stroke-linecap="round" stroke-linejoin="round" d="m5 7.5 5 5 5-5" /></svg>
                     </button>
                     <div x-show="creditScoreOpen" x-cloak class="mt-3 flex flex-col gap-2 border-l border-line pl-4">
-                        <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'cibil']" label="Free CIBIL Score" />
-                        <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'experian']" label="Free Experian Score" />
-                        <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'equifax']" label="Free Equifax Score" />
-                        <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'crif']" label="Free CRIF Score" />
+                        <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'cibil']" :label="__('Free :bureau Score', ['bureau' => 'CIBIL'])" />
+                        <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'experian']" :label="__('Free :bureau Score', ['bureau' => 'Experian'])" />
+                        <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'equifax']" :label="__('Free :bureau Score', ['bureau' => 'Equifax'])" />
+                        <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'crif']" :label="__('Free :bureau Score', ['bureau' => 'CRIF'])" />
                     </div>
                 </div>
 
@@ -266,7 +284,7 @@
                         :aria-expanded="calculatorsOpen"
                         class="flex w-full cursor-pointer items-center justify-between text-sm font-medium text-ink-muted hover:text-ink"
                     >
-                        Calculators
+                        {{ __('Calculators') }}
                         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5 transition-transform" :class="{ 'rotate-180': calculatorsOpen }"><path stroke-linecap="round" stroke-linejoin="round" d="m5 7.5 5 5 5-5" /></svg>
                     </button>
                     <div x-show="calculatorsOpen" x-cloak class="mt-3 flex flex-col gap-4 border-l border-line pl-4">
@@ -280,22 +298,26 @@
                                 </div>
                             </div>
                         @endforeach
-                        <x-site.nav-link route="calculators.index" label="View all calculators →" class="font-medium !text-accent" />
+                        <x-site.nav-link route="calculators.index" :label="__('View all calculators →')" class="font-medium !text-accent" />
                     </div>
                 </div>
 
-                <x-site.nav-link route="eligibility.index" label="Eligibility" />
-                <x-site.nav-link route="resources.index" label="Resources" />
-                <x-site.nav-link route="faqs.index" label="FAQs" />
-                <x-site.nav-link route="about" label="About" />
+                <x-site.nav-link route="eligibility.index" :label="__('Eligibility')" />
+                <x-site.nav-link route="resources.index" :label="__('Resources')" />
+                <x-site.nav-link route="faqs.index" :label="__('FAQs')" />
+                <x-site.nav-link route="about" :label="__('About')" />
             </nav>
             <div class="mt-5 flex flex-col gap-3">
                 <x-ui.button tag="a" :href="route('contact')" variant="secondary">
-                    Talk to us
+                    {{ __('Talk to us') }}
                 </x-ui.button>
                 <x-ui.button tag="a" :href="route('eligibility.index')">
-                    Check Eligibility
+                    {{ __('Check Eligibility') }}
                 </x-ui.button>
+            </div>
+            <div class="mt-5 flex items-center justify-between gap-3 border-t border-line pt-4">
+                <span class="text-sm font-medium text-ink-muted" aria-hidden="true">Language · <span lang="hi">भाषा</span></span>
+                <x-site.language-switch />
             </div>
         </div>
     </div>

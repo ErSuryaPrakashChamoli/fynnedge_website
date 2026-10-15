@@ -76,8 +76,14 @@ class LenderProductRateInfolist
                     ->columns(2)
                     ->columnSpanFull()
                     ->components([
+                        TextEntry::make('source_type')
+                            ->label('Source type')
+                            ->badge(),
+                        TextEntry::make('source_name')
+                            ->label('Source name')
+                            ->placeholder('—'),
                         TextEntry::make('source_url')
-                            ->label('Official source')
+                            ->label('Source link')
                             ->url(fn (?string $state): ?string => $state)
                             ->openUrlInNewTab()
                             ->placeholder('No source recorded')

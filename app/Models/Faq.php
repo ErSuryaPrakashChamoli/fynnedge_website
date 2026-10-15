@@ -6,6 +6,7 @@ use App\Enums\FaqPlacement;
 use App\Enums\PublishStatus;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use App\Models\Concerns\Publishable;
 use Database\Factories\FaqFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -14,11 +15,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-#[Fillable(['question', 'answer', 'sort_order', 'status', 'faqable_type', 'faqable_id', 'placements', 'published_at', 'expires_at'])]
+#[Fillable(['question', 'answer', 'sort_order', 'status', 'faqable_type', 'faqable_id', 'placements', 'published_at', 'expires_at', 'question_hi', 'answer_hi'])]
 class Faq extends Model
 {
     /** @use HasFactory<FaqFactory> */
-    use Auditable, HasFactory, HasPublicId, Publishable;
+    use Auditable, HasFactory, HasPublicId, HasTranslations, Publishable;
 
     protected function casts(): array
     {
@@ -68,5 +69,16 @@ class Faq extends Model
     public function faqable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'question',
+            'answer',
+        ];
     }
 }

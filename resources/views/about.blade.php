@@ -41,7 +41,7 @@
                 <p class="mt-6 font-display text-xl italic text-accent">{{ $content['founder_quote'] }}</p>
 
                 <div class="mt-8">
-                    <p class="font-display text-base font-semibold text-ink">{{ $founderName ?? '[Founder name]' }}</p>
+                    <p class="font-display text-base font-semibold text-ink">{{ $founderName ?? __('[Founder name]') }}</p>
                     <p class="mt-1 text-sm text-ink-faint">{{ $content['founder_role'] }}</p>
                 </div>
             </div>
@@ -57,7 +57,7 @@
                     <span class="flex h-20 w-20 items-center justify-center rounded-full bg-accent-soft text-accent" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="currentColor" class="h-10 w-10"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.4 0-9 2.2-9 5v3h18v-3c0-2.8-4.6-5-9-5Z" /></svg>
                     </span>
-                    <p class="px-6 text-xs text-ink-faint">Founder photo coming soon</p>
+                    <p class="px-6 text-xs text-ink-faint">{{ __('Founder photo coming soon') }}</p>
                 </div>
             @endif
         </div>
@@ -103,7 +103,7 @@
                                 @foreach ($companyPhotos as $photo)
                                     <img
                                         src="{{ $photo->photoUrl() }}"
-                                        alt="{{ $photo->photo_alt ?: ($photo->caption ?: 'Life at FynnEdge') }}"
+                                        alt="{{ $photo->photo_alt ?: ($photo->caption ?: __('Life at FynnEdge')) }}"
                                         class="h-48 w-64 shrink-0 rounded-xl object-cover"
                                         loading="lazy"
                                     >

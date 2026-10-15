@@ -3,31 +3,31 @@
 
     [$heading, $message, $tone] = match ($result) {
         \App\Modules\Newsletter\Actions\ConfirmSubscription::RESULT_CONFIRMED => [
-            'You are subscribed',
-            "Thanks for confirming. You'll now receive practical financial insights, loan tips and useful updates from {$siteName}.",
+            __('You are subscribed'),
+            __('Thanks for confirming. You\'ll now receive practical financial insights, loan tips and useful updates from :site.', ['site' => $siteName]),
             'pass',
         ],
         \App\Modules\Newsletter\Actions\ConfirmSubscription::RESULT_ALREADY_CONFIRMED => [
-            'Already confirmed',
-            'This email address is already subscribed — there is nothing more to do.',
+            __('Already confirmed'),
+            __('This email address is already subscribed — there is nothing more to do.'),
             'accent',
         ],
         \App\Modules\Newsletter\Actions\ConfirmSubscription::RESULT_EXPIRED => [
-            'This link has expired',
-            'Confirmation links are valid for '.\App\Modules\Newsletter\Models\NewsletterSubscriber::CONFIRMATION_TTL_DAYS.' days. Subscribe again below and we will send you a fresh one.',
+            __('This link has expired'),
+            __('Confirmation links are valid for :days days. Subscribe again below and we will send you a fresh one.', ['days' => \App\Modules\Newsletter\Models\NewsletterSubscriber::CONFIRMATION_TTL_DAYS]),
             'warn',
         ],
         default => [
-            'This link is not valid',
-            'It may have already been used, or the address may have been copied incompletely. You can subscribe again below.',
+            __('This link is not valid'),
+            __('It may have already been used, or the address may have been copied incompletely. You can subscribe again below.'),
             'warn',
         ],
     };
 @endphp
 
-<x-layouts.app title="Newsletter" robots="noindex, nofollow">
+<x-layouts.app :title="__('Newsletter')" robots="noindex, nofollow">
     <section class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-        <x-ui.breadcrumbs :trail="['Newsletter' => null]" />
+        <x-ui.breadcrumbs :trail="[__('Newsletter') => null]" />
 
         <h1 class="mt-6 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">{{ $heading }}</h1>
 
@@ -35,15 +35,15 @@
 
         @if ($result === \App\Modules\Newsletter\Actions\ConfirmSubscription::RESULT_CONFIRMED)
             <div class="mt-8 flex flex-wrap gap-3">
-                <x-ui.button tag="a" :href="route('resources.index')">Read the latest articles</x-ui.button>
-                <x-ui.button tag="a" variant="secondary" :href="route('home')">Back to the homepage</x-ui.button>
+                <x-ui.button tag="a" :href="route('resources.index')">{{ __('Read the latest articles') }}</x-ui.button>
+                <x-ui.button tag="a" variant="secondary" :href="route('home')">{{ __('Back to the homepage') }}</x-ui.button>
             </div>
         @else
             <x-site.newsletter-form
                 class="mt-8"
                 source="website"
-                heading="Subscribe to FynnEdge Insights"
-                description="Practical financial insights, loan tips and useful money guidance — straight to your inbox."
+                :heading="__('Subscribe to FynnEdge Insights')"
+                :description="__('Practical financial insights, loan tips and useful money guidance — straight to your inbox.')"
             />
         @endif
     </section>

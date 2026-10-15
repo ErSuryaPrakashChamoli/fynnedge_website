@@ -37,7 +37,7 @@
         x-transition:leave-start="translate-y-0 opacity-100"
         x-transition:leave-end="translate-y-full opacity-0"
         role="region"
-        aria-label="Offer"
+        aria-label="{{ __('Offer') }}"
         style="{{ $promoBar->barStyle() }}"
         class="fixed inset-x-0 bottom-0 z-40"
         data-promo-bar
@@ -80,13 +80,13 @@
 
                         @if ($promoBar->countdownEndsAt())
                             <span x-show="countdown" x-cloak class="inline-flex items-center gap-1" data-promo-bar-countdown>
-                                <span class="mr-0.5 hidden text-[0.6875rem] font-medium uppercase tracking-wider opacity-75 sm:inline">Ends in</span>
+                                <span class="mr-0.5 hidden text-[0.6875rem] font-medium uppercase tracking-wider opacity-75 sm:inline">{{ __('Ends in') }}</span>
                                 <template x-for="unit in countdownUnits" :key="unit.label">
                                     <span class="promo-bar-tile inline-flex items-baseline rounded-md px-1.5 py-0.5 font-mono text-[0.6875rem] font-semibold tabular-nums sm:text-xs" aria-hidden="true">
                                         <span x-text="unit.value"></span><span class="ml-px text-[0.5625rem] opacity-70" x-text="unit.label"></span>
                                     </span>
                                 </template>
-                                <span class="sr-only" x-text="'Ends in ' + countdown"></span>
+                                <span class="sr-only" x-text="@js(__('Ends in :time')).replace(':time', countdown)"></span>
                             </span>
                         @endif
                     </div>

@@ -54,9 +54,9 @@ it('labels each figure in the calculator year rows for mobile', function (string
         ->toContain('grid-cols-[1.25rem_minmax(0,1fr)]')
         ->toContain('col-start-2')
         ->toContain('sm:col-start-auto')
-        ->toContain('>Principal paid</span>')
-        ->toContain('>Interest paid</span>')
-        ->toContain('>Total paid</span>');
+        ->toContain(">{{ __('Principal paid') }}</span>")
+        ->toContain(">{{ __('Interest paid') }}</span>")
+        ->toContain(">{{ __('Total paid') }}</span>");
 })->with(['⚡emi-calculator', '⚡flexi-hybrid-calculator']);
 
 it('keeps amortisation cells on one line so the table scrolls instead of squeezing', function (string $component) {

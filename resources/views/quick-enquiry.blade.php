@@ -37,9 +37,8 @@
         <div class="relative mx-auto grid max-w-7xl gap-10 px-6 pb-8 pt-4 lg:grid-cols-[minmax(0,1fr)_28rem] lg:items-start lg:gap-14 lg:px-8 lg:pb-12 lg:pt-6">
             <div id="enquiry-form" data-reveal="zoom" class="scroll-mt-24 lg:sticky lg:top-6 lg:order-last">
                 @if ($loanProducts->isEmpty())
-                    <x-ui.alert tone="accent" title="Online enquiries are paused">
-                        We aren't taking online enquiries right now.
-                        <a href="{{ route('contact') }}" class="font-medium underline">Contact us</a> and we'll help you directly.
+                    <x-ui.alert tone="accent" :title="__('Online enquiries are paused')">
+                        {!! __('We aren\'t taking online enquiries right now. <a href=":url" class="font-medium underline">Contact us</a> and we\'ll help you directly.', ['url' => e(route('contact'))]) !!}
                     </x-ui.alert>
                 @else
                     <x-site.loan-enquiry-form
@@ -109,9 +108,9 @@
                                 <a
                                     href="{{ route('partners.index') }}"
                                     class="flex h-11 items-center gap-1 rounded-full border border-line bg-surface px-3 text-xs font-medium text-ink-muted transition-colors hover:border-accent hover:bg-accent-soft hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                                    aria-label="See all {{ $lenders->count() }} partner banks and NBFCs"
+                                    aria-label="{{ __('See all :count partner banks and NBFCs', ['count' => $lenders->count()]) }}"
                                 >
-                                    +{{ $lenders->count() - $visibleLenders->count() }} more
+                                    {{ __('+:count more', ['count' => $lenders->count() - $visibleLenders->count()]) }}
                                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3 w-3" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8h10m0 0-4-4m4 4-4 4" /></svg>
                                 </a>
                             @endif
@@ -137,7 +136,7 @@
                                     <p class="mt-2 text-sm text-ink-muted">{{ $link['body'] }}</p>
                                 @endif
                                 <span class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-accent">
-                                    {{ filled($link['link_text'] ?? null) ? $link['link_text'] : 'Go' }}
+                                    {{ filled($link['link_text'] ?? null) ? $link['link_text'] : __('Go') }}
                                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8h10m0 0-4-4m4 4-4 4" /></svg>
                                 </span>
                             </x-ui.card>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\LoanCategory;
+use App\Enums\RateSourceType;
 use App\Enums\RateStatus;
 use App\Enums\RateUnit;
 use App\Enums\RateVerificationStatus;
@@ -54,6 +55,7 @@ it('refuses to submit a rate without verified, current, official evidence', func
     'plain http source' => [['source_url' => 'http://lender.example/rates'], 'Add the https:// link'],
     'never checked' => [['last_verified_at' => null], 'Enter the date you last checked'],
     'checked too long ago' => [['last_verified_at' => now()->subDays(LenderProductRate::REVERIFY_AFTER_DAYS + 2)->toDateString()], 'last verified more than 90 days ago'],
+    'third-party site not named' => [['source_type' => RateSourceType::ThirdParty, 'source_name' => null], 'Name the third-party site'],
 ]);
 
 it('refuses impossible rate figures', function (array $state, string $problem) {

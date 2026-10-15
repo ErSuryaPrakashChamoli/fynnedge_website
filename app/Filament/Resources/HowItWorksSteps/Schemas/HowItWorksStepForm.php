@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\HowItWorksSteps\Schemas;
 
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HindiTranslationSection;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -37,6 +38,16 @@ class HowItWorksStepForm
                     ->options(PublishStatus::class)
                     ->default(PublishStatus::Draft)
                     ->required(),
+                HindiTranslationSection::make([
+                    TextInput::make('title_hi')
+                        ->label('Title (Hindi)')
+                        ->maxLength(120)
+                        ->columnSpanFull(),
+                    Textarea::make('description_hi')
+                        ->label('Description (Hindi)')
+                        ->rows(2)
+                        ->columnSpanFull(),
+                ]),
             ]);
     }
 }

@@ -2,6 +2,10 @@
 
 use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
+use Tests\TestCase;
+
+// The labels go through __() (the site is bilingual), which needs the translator.
+pest()->extend(TestCase::class);
 
 it('labels every publish status', function () {
     expect(PublishStatus::Draft->getLabel())->toBe('Draft');

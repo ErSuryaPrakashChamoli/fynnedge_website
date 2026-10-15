@@ -7,7 +7,7 @@
                 </p>
                 <x-ui.stepper
                     class="mt-4"
-                    :steps="$steps->pluck('title')->all()"
+                    :steps="$steps->map(fn ($s) => $s->title)->all()"
                     :current="$steps->search(fn ($s) => $s->id === $step->id)"
                 />
             </aside>
@@ -27,7 +27,7 @@
             >
                 <div class="mb-6 lg:hidden">
                     <p class="font-mono text-xs text-ink-faint">
-                        Step {{ $progress['completed'] + 1 }} of {{ $progress['total'] }}
+                        {{ __('Step :current of :total', ['current' => $progress['completed'] + 1, 'total' => $progress['total']]) }}
                     </p>
                     <div class="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
                         <div class="h-full rounded-full bg-accent transition-all" style="width: {{ $progress['percent'] }}%"></div>
@@ -57,16 +57,16 @@
                     @if ($progress['completed'] > 0)
                         <form method="POST" action="{{ route('journey.back', $session) }}">
                             @csrf
-                            <x-ui.button type="submit" variant="ghost">Back</x-ui.button>
+                            <x-ui.button type="submit" variant="ghost">{{ __('Back') }}</x-ui.button>
                         </form>
                     @else
                         <span></span>
                     @endif
-                    <x-ui.button type="submit" form="journey-step-form" x-bind:disabled="phoneRequiresVerification && ! phoneVerified">Continue</x-ui.button>
+                    <x-ui.button type="submit" form="journey-step-form" x-bind:disabled="phoneRequiresVerification && ! phoneVerified">{{ __('Continue') }}</x-ui.button>
                 </div>
 
                 <p class="mt-8 text-xs text-ink-faint">
-                    You can leave and come back to this page any time to continue where you left off.
+                    {{ __('You can leave and come back to this page any time to continue where you left off.') }}
                 </p>
             </div>
         </div>

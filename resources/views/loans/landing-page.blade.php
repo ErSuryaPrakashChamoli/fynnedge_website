@@ -22,17 +22,17 @@
         >
             <x-slot:breadcrumbs>
                 <x-ui.breadcrumbs :trail="[
-                    'Loans' => route('loans.index'),
+                    __('Loans') => route('loans.index'),
                     $loanProduct->name => route('loans.show', $loanProduct),
                     $landingPage->title => null,
                 ]" />
             </x-slot:breadcrumbs>
 
             <x-ui.button tag="a" :href="route('loans.apply', $loanProduct)">
-                {{ $landingPage->cta_label ?: 'Check Your Eligibility' }}
+                {{ $landingPage->cta_label ?: __('Check Your Eligibility') }}
             </x-ui.button>
             <x-ui.button tag="a" :href="route('loans.show', $loanProduct)" variant="secondary">
-                {{ $loanProduct->name }} overview
+                {{ __(':product overview', ['product' => $loanProduct->name]) }}
             </x-ui.button>
         </x-site.loan-enquiry>
 
@@ -44,9 +44,9 @@
         @endif
 
         @if ($otherLocations->isNotEmpty())
-            <nav data-reveal="fade" class="mt-12" aria-label="{{ $loanProduct->name }} in other cities" data-ai-context="Other cities">
-                <h2 class="font-display text-xl font-semibold text-ink">{{ $loanProduct->name }} in other cities</h2>
-                <p class="mt-2 text-sm text-ink-faint">The same partner lenders and eligibility check are available across these metro and prime cities.</p>
+            <nav data-reveal="fade" class="mt-12" aria-label="{{ __(':product in other cities', ['product' => $loanProduct->name]) }}" data-ai-context="Other cities">
+                <h2 class="font-display text-xl font-semibold text-ink">{{ __(':product in other cities', ['product' => $loanProduct->name]) }}</h2>
+                <p class="mt-2 text-sm text-ink-faint">{{ __('The same partner lenders and eligibility check are available across these metro and prime cities.') }}</p>
                 <ul class="mt-6 flex flex-wrap gap-2">
                     @foreach ($otherLocations as $location)
                         <li>
@@ -62,8 +62,8 @@
 
         @if ($calculatorSupported)
             <div data-reveal="down" class="mt-12" data-ai-context="EMI Calculator">
-                <h2 class="font-display text-xl font-semibold text-ink">{{ $landingPage->title }} EMI calculator</h2>
-                <p class="mt-2 text-sm text-ink-faint">Estimate your monthly instalment and see the full year-by-year principal and interest breakdown.</p>
+                <h2 class="font-display text-xl font-semibold text-ink">{{ __(':product EMI calculator', ['product' => $landingPage->title]) }}</h2>
+                <p class="mt-2 text-sm text-ink-faint">{{ __('Estimate your monthly instalment and see the full year-by-year principal and interest breakdown.') }}</p>
                 <div class="mt-6">
                     {{--
                         show-loan-details is false for the same reason it is on
@@ -82,7 +82,7 @@
 
         <x-site.lender-comparison-table :offers="$loanProduct->lenderProducts" :loan-product="$loanProduct" />
 
-        <x-site.why-fynnedge class="mt-12" :heading="'You could go directly to a bank. But why apply for a '.$landingPage->title.' through us?'" />
+        <x-site.why-fynnedge class="mt-12" :heading="__('You could go directly to a bank. But why apply for a :product through us?', ['product' => $landingPage->title])" />
 
         <x-site.testimonials :testimonials="$testimonials" />
 

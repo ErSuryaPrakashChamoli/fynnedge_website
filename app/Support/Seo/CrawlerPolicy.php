@@ -85,6 +85,8 @@ class CrawlerPolicy
         return [
             '/admin', '/login', '/register', '/password', '/api',
             '/journey/', '/applications/', '/credit-score/',
+            // The header's language switch: a redirect back to the page, not content.
+            '/language/',
             '/storage/private', '/up',
             '/*?signature=', '/*&signature=',
         ];

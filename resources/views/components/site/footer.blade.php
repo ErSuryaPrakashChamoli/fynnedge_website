@@ -41,7 +41,7 @@
 
                 @if (collect($grievanceContact ?? [])->filter()->isNotEmpty())
                     <div class="mt-4">
-                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent">Grievance redressal</p>
+                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent">{{ __('Grievance redressal') }}</p>
                         <ul class="mt-2 flex flex-col gap-2 text-sm text-ink-muted">
                             @if ($grievanceContact['phone'])
                                 <li class="flex items-center gap-2">
@@ -81,7 +81,7 @@
                                     href="{{ $url }}"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    aria-label="FynnEdge on {{ $platform }}"
+                                    aria-label="{{ __('FynnEdge on :platform', ['platform' => $platform]) }}"
                                     class="flex h-8 w-8 items-center justify-center rounded-full bg-surface-2 text-ink-muted transition-colors hover:bg-accent-soft hover:text-accent"
                                 >
                                     <svg viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4" aria-hidden="true"><path d="{{ $socialIcons[$platform] }}" /></svg>
@@ -93,28 +93,28 @@
             </div>
 
             <div>
-                <p class="border-b border-line pb-2 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent">Loans</p>
+                <p class="border-b border-line pb-2 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent">{{ __('Loans') }}</p>
                 <ul class="mt-3 flex flex-col gap-2">
                     @forelse ($loanProducts ?? [] as $product)
                         <li><a href="{{ route('loans.show', $product) }}" class="text-sm font-medium text-ink-muted transition-colors hover:text-ink">{{ $product->name }}</a></li>
                     @empty
-                        <li><x-site.nav-link route="loans.index" label="Browse loans" /></li>
+                        <li><x-site.nav-link route="loans.index" :label="__('Browse loans')" /></li>
                     @endforelse
                 </ul>
             </div>
 
             <div>
-                <p class="border-b border-line pb-2 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent">Company</p>
+                <p class="border-b border-line pb-2 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent">{{ __('Company') }}</p>
                 <ul class="mt-3 flex flex-col gap-2">
                     @if (in_array('about', $livePageSlugs, true))
-                        <li><x-site.nav-link route="about" label="About" /></li>
+                        <li><x-site.nav-link route="about" :label="__('About')" /></li>
                     @endif
                     @if (in_array('careers', $livePageSlugs, true))
-                        <li><x-site.nav-link route="careers" label="Careers" /></li>
+                        <li><x-site.nav-link route="careers" :label="__('Careers')" /></li>
                     @endif
-                    <li><x-site.nav-link route="contact" label="Contact" /></li>
+                    <li><x-site.nav-link route="contact" :label="__('Contact')" /></li>
                     @if (in_array('grievance', $livePageSlugs, true))
-                        <li><x-site.nav-link route="grievance" label="Grievance" /></li>
+                        <li><x-site.nav-link route="grievance" :label="__('Grievance')" /></li>
                     @endif
                 </ul>
             </div>
@@ -123,15 +123,15 @@
                  live ones render ($livePageSlugs, from AppServiceProvider). --}}
             @php
                 $legalLinks = collect([
-                    'privacy-policy' => 'Privacy Policy',
-                    'terms' => 'Terms',
-                    'disclaimer' => 'Disclaimer',
-                    'credit-report-terms' => 'Credit Report Terms of Use',
+                    'privacy-policy' => __('Privacy Policy'),
+                    'terms' => __('Terms'),
+                    'disclaimer' => __('Disclaimer'),
+                    'credit-report-terms' => __('Credit Report Terms of Use'),
                 ])->only($livePageSlugs);
             @endphp
             <div>
                 @if ($legalLinks->isNotEmpty())
-                    <p class="border-b border-line pb-2 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent">Legal</p>
+                    <p class="border-b border-line pb-2 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent">{{ __('Legal') }}</p>
                     <ul class="mt-3 flex flex-col gap-2">
                         @foreach ($legalLinks as $route => $label)
                             <li><x-site.nav-link :route="$route" :label="$label" /></li>
@@ -142,7 +142,7 @@
 
             @if (($navigationLinks ?? collect())->isNotEmpty())
                 <div>
-                    <p class="border-b border-line pb-2 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent">Quick Links</p>
+                    <p class="border-b border-line pb-2 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent">{{ __('Quick Links') }}</p>
                     <ul class="mt-3 flex flex-col gap-2">
                         @foreach ($navigationLinks as $link)
                             @continue (! $link->resolvedUrl())
@@ -167,7 +167,7 @@
                     <div aria-hidden="true" class="pointer-events-none absolute -bottom-24 -left-20 -z-10 h-56 w-56 rounded-full bg-accent/15 blur-3xl"></div>
 
                     <div>
-                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent">Visit our office</p>
+                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent">{{ __('Visit our office') }}</p>
                         <p class="mt-2 font-display text-xl font-semibold text-ink sm:text-2xl">{{ $footerLegal['name'] }}</p>
                     </div>
 
@@ -186,13 +186,13 @@
                     <div class="flex flex-wrap gap-3">
                         @if ($footerMap['directionsUrl'])
                             <x-ui.button tag="a" size="sm" variant="contrast" href="{{ $footerMap['directionsUrl'] }}" target="_blank" rel="noopener noreferrer">
-                                Get directions
+                                {{ __('Get directions') }}
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" class="h-4 w-4" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                                 </svg>
                             </x-ui.button>
                         @endif
-                        <x-ui.button tag="a" size="sm" variant="secondary" href="{{ route('contact') }}">Contact us</x-ui.button>
+                        <x-ui.button tag="a" size="sm" variant="secondary" href="{{ route('contact') }}">{{ __('Contact us') }}</x-ui.button>
                     </div>
                 </div>
 
@@ -201,7 +201,7 @@
                     :src="$footerMap['embedUrl']"
                     :view-url="$footerMap['viewUrl']"
                     :label="$siteBranding['name']"
-                    title="{{ $siteBranding['name'] }} office location"
+                    :title="__(':name office location', ['name' => $siteBranding['name']])"
                 />
             </div>
         @endif
@@ -212,12 +212,12 @@
                 source="footer"
                 :heading="\App\Modules\Newsletter\Services\NewsletterSettings::footerHeading()"
                 :description="\App\Modules\Newsletter\Services\NewsletterSettings::footerDescription()"
-                note="One email, no noise."
+                :note="__('One email, no noise.')"
             />
         </div>
 
         <div class="mt-8 flex flex-col gap-3 border-t border-line pt-5 text-xs text-ink-faint sm:flex-row sm:items-center sm:justify-between">
-            <p>&copy; {{ now()->year }} {{ $footerLegal['name'] }}. All rights reserved.</p>
+            <p>&copy; {{ now()->year }} {{ $footerLegal['name'] }}. {{ __('All rights reserved.') }}</p>
             <p class="max-w-2xl">{{ $footerLegal['disclaimer'] }}</p>
         </div>
     </div>

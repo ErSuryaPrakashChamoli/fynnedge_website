@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\DocumentTypes\Schemas;
 
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Modules\Applications\Models\DocumentType;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -34,6 +35,13 @@ class DocumentTypeForm
                     ->label('Ask customer to name each upload')
                     ->helperText('Shows a text field per upload so the customer can label it, e.g. for "Other".')
                     ->default(false),
+                HindiTranslationSection::make([
+                    TextInput::make('label_hi')
+                        ->label('Label (Hindi)'),
+                    Textarea::make('description_hi')
+                        ->label('Description (Hindi)')
+                        ->columnSpanFull(),
+                ])->columns(2),
             ]);
     }
 }

@@ -12,8 +12,8 @@ enum LenderType: string implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::Bank => 'Bank',
-            self::Nbfc => 'NBFC / HFC',
+            self::Bank => __('Bank'),
+            self::Nbfc => __('NBFC / HFC'),
         };
     }
 }

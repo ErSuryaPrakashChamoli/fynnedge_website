@@ -43,9 +43,11 @@ final readonly class RateHeadline
      */
     public function fromLabel(): string
     {
-        $phrase = "from {$this->startingLabel()} {$this->unit()->suffix()}";
+        $replace = ['rate' => $this->startingLabel(), 'unit' => $this->unit()->suffix()];
 
-        return $this->unit() === RateUnit::PerMonth ? "finance charges {$phrase}" : $phrase;
+        return $this->unit() === RateUnit::PerMonth
+            ? __('finance charges from :rate :unit', $replace)
+            : __('from :rate :unit', $replace);
     }
 
     /**
@@ -69,6 +71,6 @@ final readonly class RateHeadline
             $offer .= " ({$promotion})";
         }
 
-        return "Lowest published rate: {$offer}. The rate you are offered depends on the lender's assessment of your profile.";
+        return __("Lowest published rate: :offer. The rate you are offered depends on the lender's assessment of your profile.", ['offer' => $offer]);
     }
 }

@@ -85,11 +85,13 @@ class AppServiceProvider extends ServiceProvider
         // Shared across header, footer and the base layout (browser tab title) so the
         // name/logo/tagline/favicon an admin sets on the Settings page stays in sync
         // everywhere it appears, instead of three independently hard-coded copies.
+        // Visitor text (tagline, disclaimer, address) is read in the visitor's
+        // language via Setting::localized(); the brand and legal names stay as set.
         View::composer(
             ['components.site.header', 'components.site.footer', 'components.layouts.app'],
             fn ($view) => $view->with('siteBranding', [
                 'name' => Setting::get('site_name', 'FynnEdge'),
-                'tagline' => Setting::get('site_tagline', 'Simplifying Loan, Amplifying Trust'),
+                'tagline' => Setting::localized('site_tagline', 'Simplifying Loan, Amplifying Trust'),
                 'logoUrl' => static::settingFileUrl('site_logo') ?? asset('fynnedge-icon.png'),
                 'faviconUrl' => static::settingFileUrl('site_favicon') ?? asset('favicon.ico'),
                 'faviconIsCustom' => (bool) Setting::get('site_favicon'),
@@ -112,7 +114,7 @@ class AppServiceProvider extends ServiceProvider
         View::composer(
             'components.site.footer',
             fn ($view) => $view->with('contactDetails', [
-                'address' => Setting::get('contact_address'),
+                'address' => Setting::localized('contact_address'),
                 'phone' => Setting::get('contact_phone'),
                 'email' => Setting::get('contact_email'),
             ]),
@@ -130,7 +132,7 @@ class AppServiceProvider extends ServiceProvider
             'components.site.footer',
             fn ($view) => $view->with('footerLegal', [
                 'name' => Setting::get('footer_legal_name', 'FynnEdge Advisory (OPC) Pvt Ltd'),
-                'disclaimer' => Setting::get('footer_disclaimer', 'Loan approval is subject to lender policies, documentation and underwriting. Eligibility results shown on this site are indicative, not a guarantee of approval.'),
+                'disclaimer' => Setting::localized('footer_disclaimer', 'Loan approval is subject to lender policies, documentation and underwriting. Eligibility results shown on this site are indicative, not a guarantee of approval.'),
             ]),
         );
 

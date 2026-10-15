@@ -94,3 +94,16 @@ it('resolves a [rate] token by loan type when the product has its own slug', fun
     expect(RateText::render('Personal loans [rate:personal-loan]'))->toBe('Personal loans from 9.99% p.a.')
         ->and(RateText::render('Personal loans [rate:personal-loans]'))->toBe('Personal loans from 9.99% p.a.');
 });
+
+it('treats a rate typed in Hindi as a rate claim', function (string $text, array $claims) {
+    expect(RateText::literalClaims($text))->toBe($claims);
+})->with([
+    'per annum after the figure' => ['पर्सनल लोन 10.49% प्रति वर्ष से', ['10.49% प्रति वर्ष']],
+    'starting from' => ['पर्सनल लोन 9.99% से शुरू', ['9.99% से शुरू']],
+    'interest rate before the figure' => ['ब्याज दर: 8.5% (फ्लोटिंग)', ['ब्याज दर: 8.5%']],
+    'a fee, not a rate' => ['प्रोसेसिंग फीस 2% तक + जीएसटी', []],
+]);
+
+it('drops a Hindi rate claim from a public fee note but keeps the fee', function () {
+    expect(RateText::withoutRateClaims('2% तक; ब्याज 10.5% प्रति वर्ष; न्यूनतम ₹999'))->toBe('2% तक; न्यूनतम ₹999');
+});

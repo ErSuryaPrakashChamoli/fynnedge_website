@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\CompanyPhotos\Schemas;
 
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HindiTranslationSection;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -39,6 +40,14 @@ class CompanyPhotoForm
                     ->options(PublishStatus::class)
                     ->default(PublishStatus::Draft)
                     ->required(),
+                HindiTranslationSection::make([
+                    TextInput::make('photo_alt_hi')
+                        ->label('Image alt text (Hindi)')
+                        ->columnSpanFull(),
+                    TextInput::make('caption_hi')
+                        ->label('Caption (Hindi)')
+                        ->columnSpanFull(),
+                ]),
             ]);
     }
 
@@ -77,6 +86,12 @@ class CompanyPhotoForm
                     ->options(PublishStatus::class)
                     ->default(PublishStatus::Draft)
                     ->required(),
+                HindiTranslationSection::make([
+                    TextInput::make('caption_hi')
+                        ->label('Caption (Hindi)')
+                        ->helperText('Applied to every photo in this batch, like the English caption.')
+                        ->columnSpanFull(),
+                ]),
             ]);
     }
 }

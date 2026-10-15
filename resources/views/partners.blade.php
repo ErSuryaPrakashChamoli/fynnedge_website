@@ -8,13 +8,13 @@
             nothing.
         */
         $groupHeadings = [
-            \App\Enums\LenderType::Bank->value => 'Banks',
-            \App\Enums\LenderType::Nbfc->value => 'NBFCs & HFCs',
+            \App\Enums\LenderType::Bank->value => __('Banks'),
+            \App\Enums\LenderType::Nbfc->value => __('NBFCs & HFCs'),
         ];
 
         $groups = collect(\App\Enums\LenderType::cases())
             ->mapWithKeys(fn (\App\Enums\LenderType $type): array => [$groupHeadings[$type->value] => $lenders->filter(fn ($lender): bool => $lender->type === $type)])
-            ->put('Other lenders', $lenders->filter(fn ($lender): bool => $lender->type === null))
+            ->put(__('Other lenders'), $lenders->filter(fn ($lender): bool => $lender->type === null))
             ->filter(fn ($group): bool => $group->isNotEmpty());
     @endphp
 
@@ -31,7 +31,7 @@
 
             <div data-reveal="up delay-1" class="mt-6 flex flex-wrap items-center gap-3">
                 <x-ui.button tag="a" href="{{ route('quick-enquiry.show') }}">{{ $content['home_button_label'] }}</x-ui.button>
-                <x-ui.button tag="a" variant="secondary" href="{{ route('eligibility.index') }}">Check Your Eligibility</x-ui.button>
+                <x-ui.button tag="a" variant="secondary" href="{{ route('eligibility.index') }}">{{ __('Check Your Eligibility') }}</x-ui.button>
             </div>
         </div>
     </section>
@@ -40,7 +40,7 @@
         <div class="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-14">
             @if ($lenders->isEmpty())
                 <x-ui.alert tone="accent">
-                    Our partner list is being updated. Check back shortly.
+                    {{ __('Our partner list is being updated. Check back shortly.') }}
                 </x-ui.alert>
             @else
                 @foreach ($groups as $heading => $group)
@@ -57,7 +57,7 @@
                                 <li data-reveal="zoom stagger" class="flex flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-sm transition-shadow hover:shadow-md">
                                     <div class="flex h-28 items-center justify-center bg-white p-5 sm:h-32">
                                         @if ($lender->logoUrl())
-                                            <img src="{{ $lender->logoUrl() }}" alt="{{ $lender->name }} logo" loading="lazy" class="max-h-full max-w-full object-contain">
+                                            <img src="{{ $lender->logoUrl() }}" alt="{{ __(':name logo', ['name' => $lender->name]) }}" loading="lazy" class="max-h-full max-w-full object-contain">
                                         @else
                                             <x-ui.lender-logo :lender="$lender" size="lg" />
                                         @endif

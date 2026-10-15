@@ -2,6 +2,7 @@
 
 use App\Enums\LenderStatus;
 use App\Enums\LoanCategory;
+use App\Enums\RateSourceType;
 use App\Enums\RateVerificationStatus;
 use App\Models\Lender;
 use App\Models\LenderProduct;
@@ -93,6 +94,29 @@ it('shows a segment-only rate with its condition but never uses it for the produ
     $this->get("/loans/{$product->slug}")->assertSee('Only for: Women borrowers');
 
     expect(RateBook::headlineFor($product)->startingLabel())->toBe('10.10%');
+});
+
+it('labels a third-party rate with its source and never lets it set the headline or win "Lowest rate"', function () {
+    $product = displayProduct();
+    publishRate(displayOffer($product, 'Own Site Bank'), 11.0);
+    publishRate(displayOffer($product, 'Second Own Bank'), 11.5);
+    $listed = displayOffer($product, 'Listed Bank');
+    publishRate($listed, 9.1, null, [
+        'source_type' => RateSourceType::ThirdParty,
+        'source_name' => 'Paisabazaar',
+        'source_url' => 'https://www.paisabazaar.com/listed-bank/',
+    ]);
+
+    $page = $this->get("/loans/{$product->slug}");
+
+    $page->assertSee('9.10%')
+        ->assertSee('As listed on <a href="https://www.paisabazaar.com/listed-bank/"', false)
+        ->assertSee('confirm with Listed Bank');
+    expect(substr_count($page->getContent(), 'Lowest rate'))->toBe(1)
+        ->and(RateBook::headlineFor($product)->startingLabel())->toBe('11.00%')
+        ->and(RateBook::quoteFor($listed->id)->verifiedLabel())->toBe('As listed on Paisabazaar, '.now('Asia/Kolkata')->format('j M Y'))
+        ->and(RateBook::officialQuoteFor($listed->id))->toBeNull()
+        ->and(LenderProductRate::query()->needsVerification()->pluck('lender_product_id')->all())->toBe([$listed->id]);
 });
 
 it('leaves out rates of an inactive offer or an inactive lender', function () {

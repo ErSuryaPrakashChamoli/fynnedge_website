@@ -40,7 +40,9 @@ class LoanEnquiryAmount
      */
     public static function rangeMessage(array $range): string
     {
-        return 'Enter an amount between ₹'.IndianNumberFormatter::format($range['min'])
-            .' and ₹'.IndianNumberFormatter::format($range['max']).'.';
+        return __('Enter an amount between ₹:min and ₹:max.', [
+            'min' => IndianNumberFormatter::format($range['min']),
+            'max' => IndianNumberFormatter::format($range['max']),
+        ]);
     }
 }

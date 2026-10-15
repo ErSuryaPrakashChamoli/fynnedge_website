@@ -44,8 +44,8 @@
 
     $tenure = $loanProduct->max_tenure_months
         ? ($loanProduct->max_tenure_months >= 24
-            ? round($loanProduct->max_tenure_months / 12).' years'
-            : $loanProduct->max_tenure_months.' months')
+            ? __(':count years', ['count' => round($loanProduct->max_tenure_months / 12)])
+            : __(':count months', ['count' => $loanProduct->max_tenure_months]))
         : null;
 
     /*
@@ -57,11 +57,13 @@
 
     $stats = array_filter([
         $rateHeadline ? [
-            'label' => $rateHeadline->unit() === RateUnit::PerMonth ? 'Finance charge from' : 'Interest from',
-            'value' => $rateHeadline->startingLabel().($rateHeadline->unit() === RateUnit::PerMonth ? ' /mo' : ''),
+            'label' => $rateHeadline->unit() === RateUnit::PerMonth ? __('Finance charge from') : __('Interest from'),
+            'value' => $rateHeadline->unit() === RateUnit::PerMonth
+                ? __(':rate /mo', ['rate' => $rateHeadline->startingLabel()])
+                : $rateHeadline->startingLabel(),
         ] : null,
-        $loanProduct->max_amount ? ['label' => 'Loan up to', 'value' => '₹'.IndianNumberFormatter::compact($loanProduct->max_amount)] : null,
-        $tenure ? ['label' => 'Tenure up to', 'value' => $tenure] : null,
+        $loanProduct->max_amount ? ['label' => __('Loan up to'), 'value' => '₹'.IndianNumberFormatter::compact($loanProduct->max_amount)] : null,
+        $tenure ? ['label' => __('Tenure up to'), 'value' => $tenure] : null,
     ]);
 @endphp
 

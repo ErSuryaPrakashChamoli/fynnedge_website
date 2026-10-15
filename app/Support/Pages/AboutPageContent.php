@@ -3,6 +3,8 @@
 namespace App\Support\Pages;
 
 use App\Models\Setting;
+use App\Support\Localization\Phrasebook;
+use App\Support\Localization\SiteLocale;
 
 /**
  * Everything on the /about page an admin can reword (Admin → Website
@@ -15,6 +17,11 @@ use App\Models\Setting;
  * was never saved shows the defaults, but a saved empty list means the admin
  * removed every item, so that block is hidden.
  *
+ * Hindi visitors get the admin's Hindi wording (a second Setting,
+ * `about_page_hi`, same shape), and every field left blank there is the
+ * English translated through lang/hi.json — so a page nobody has touched is
+ * fully Hindi. See Phrasebook::localize().
+ *
  * Not here by design: the page title, intro and rich-text body (Content →
  * Pages → "about"), the founder's name and photo (Settings → Founder message),
  * the "Life at FynnEdge" photos (CompanyPhoto) and the shared "Why FynnEdge"
@@ -23,6 +30,8 @@ use App\Models\Setting;
 class AboutPageContent
 {
     public const SETTING_KEY = 'about_page';
+
+    public const HINDI_SETTING_KEY = self::SETTING_KEY.'_hi';
 
     /**
      * A list item missing any of these is dropped rather than rendered half-empty.
@@ -87,7 +96,8 @@ class AboutPageContent
     }
 
     /**
-     * The saved content laid over the defaults, field by field.
+     * The saved content laid over the defaults, field by field, in the
+     * visitor's language (always English in the admin panel).
      *
      * @return array{
      *     founder_heading: string,
@@ -125,7 +135,43 @@ class AboutPageContent
             };
         }
 
-        return $content;
+        if (! SiteLocale::isTranslating()) {
+            return $content;
+        }
+
+        // A list the English copy hides stays hidden in Hindi too.
+        $hindi = array_filter(
+            self::hindi(),
+            fn (mixed $value, string $key): bool => ! is_array($value) || $content[$key] !== [],
+            ARRAY_FILTER_USE_BOTH,
+        );
+
+        return Phrasebook::localize($content, $hindi);
+    }
+
+    /**
+     * The admin's own Hindi wording: only the fields filled in, cleaned the
+     * same way as the English. What the admin form's Hindi tab edits.
+     *
+     * @return array<string, string|array<int, array<string, string>>>
+     */
+    public static function hindi(): array
+    {
+        $saved = Setting::get(self::HINDI_SETTING_KEY);
+        $saved = is_array($saved) ? $saved : [];
+        $hindi = [];
+
+        foreach (self::defaults() as $key => $default) {
+            $value = $saved[$key] ?? null;
+
+            if (is_array($default) && is_array($value)) {
+                $hindi[$key] = self::cleanItems($value, self::REQUIRED_ITEM_KEYS[$key] ?? []);
+            } elseif (is_string($default) && is_scalar($value) && filled($value)) {
+                $hindi[$key] = trim((string) $value);
+            }
+        }
+
+        return array_filter($hindi, fn (mixed $value): bool => $value !== []);
     }
 
     /**

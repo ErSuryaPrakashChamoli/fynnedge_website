@@ -29,6 +29,9 @@ class EditLoanProductContent extends EditRecord
             'eligibility_points', 'documents_required', 'process_steps',
             'image_path', 'image_alt', 'cta_label',
             'status', 'published_at', 'expires_at',
+            'marketing_headline_hi', 'summary_hi', 'body_hi', 'benefits_hi', 'features_hi',
+            'eligibility_points_hi', 'documents_required_hi', 'process_steps_hi',
+            'image_alt_hi', 'cta_label_hi',
         ];
     }
 

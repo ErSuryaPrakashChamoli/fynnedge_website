@@ -7,6 +7,7 @@ use App\Enums\BannerVerticalAlignment;
 use App\Enums\PublishStatus;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use App\Models\Concerns\Publishable;
 use App\Support\Theme\SiteThemeStyles;
 use Database\Factories\BannerFactory;
@@ -15,11 +16,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['image_path', 'image_alt', 'heading', 'subtitle', 'cta_label', 'cta_url', 'cta_bg_color', 'cta_hover_color', 'cta_text_color', 'content_vertical_align', 'content_horizontal_align', 'content_padding_left', 'content_padding_right', 'sort_order', 'status', 'published_at', 'expires_at'])]
+#[Fillable(['image_path', 'image_alt', 'heading', 'subtitle', 'cta_label', 'cta_url', 'cta_bg_color', 'cta_hover_color', 'cta_text_color', 'content_vertical_align', 'content_horizontal_align', 'content_padding_left', 'content_padding_right', 'sort_order', 'status', 'published_at', 'expires_at', 'image_alt_hi', 'heading_hi', 'subtitle_hi', 'cta_label_hi'])]
 class Banner extends Model
 {
     /** @use HasFactory<BannerFactory> */
-    use Auditable, HasFactory, HasPublicId, Publishable;
+    use Auditable, HasFactory, HasPublicId, HasTranslations, Publishable;
 
     /**
      * Upper bound for each side's spacing, as a percentage of the banner's
@@ -82,5 +83,18 @@ class Banner extends Model
         }
 
         return implode('', $declarations);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'image_alt',
+            'heading',
+            'subtitle',
+            'cta_label',
+        ];
     }
 }

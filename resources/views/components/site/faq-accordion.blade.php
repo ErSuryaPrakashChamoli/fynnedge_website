@@ -1,8 +1,8 @@
-@props(['faqs', 'heading' => 'Frequently asked questions'])
+@props(['faqs', 'heading' => null])
 
 @if ($faqs->isNotEmpty())
     <div {{ $attributes->class('mt-12') }} data-reveal="fade">
-        <h2 class="font-display text-xl font-semibold text-ink">{{ $heading }}</h2>
+        <h2 class="font-display text-xl font-semibold text-ink">{{ $heading ?? __('Frequently asked questions') }}</h2>
         <div class="mt-4 flex flex-col divide-y divide-line border-y border-line">
             @foreach ($faqs as $faq)
                 <details data-reveal="up stagger" class="group py-4">

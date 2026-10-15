@@ -1,0 +1,27 @@
+[
+ {
+  "field": "contact_name",
+  "en": "Swati Choudhary",
+  "hi": "स्वाति चौधरी"
+ },
+ {
+  "field": "contact_name",
+  "en": "Sajid Alam",
+  "hi": "साजिद आलम"
+ },
+ {
+  "field": "designation",
+  "en": "Grievance Desk",
+  "hi": "शिकायत डेस्क"
+ },
+ {
+  "field": "designation",
+  "en": "Grievance Redressal Officer (GRO)",
+  "hi": "शिकायत निवारण अधिकारी (जीआरओ)"
+ },
+ {
+  "field": "turnaround_time",
+  "en": "7 Working Days",
+  "hi": "7 कार्य दिवस"
+ }
+]

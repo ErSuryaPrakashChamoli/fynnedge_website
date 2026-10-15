@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\GrievanceLevels\Schemas;
 
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HindiTranslationSection;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -37,6 +38,19 @@ class GrievanceLevelForm
                     ->options(PublishStatus::class)
                     ->default(PublishStatus::Draft)
                     ->required(),
+                HindiTranslationSection::make([
+                    TextInput::make('level_hi')
+                        ->label('Level (Hindi)'),
+                    TextInput::make('turnaround_time_hi')
+                        ->label('Turnaround time (Hindi)'),
+                    TextInput::make('contact_name_hi')
+                        ->label('Name (Hindi)'),
+                    TextInput::make('designation_hi')
+                        ->label('Designation (Hindi)'),
+                    TextInput::make('address_hi')
+                        ->label('Address (Hindi)')
+                        ->columnSpanFull(),
+                ])->columns(2),
             ]);
     }
 }

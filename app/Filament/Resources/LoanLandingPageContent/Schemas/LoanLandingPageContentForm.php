@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\LoanLandingPageContent\Schemas;
 
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Filament\Schemas\HtmlBodyEditor;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Placeholder;
@@ -79,6 +80,19 @@ class LoanLandingPageContentForm
                     ->components([
                         ...HtmlBodyEditor::make(),
                     ]),
+
+                HindiTranslationSection::make([
+                    TextInput::make('title_hi')
+                        ->label('Headline (Hindi)')
+                        ->maxLength(500),
+                    TextInput::make('excerpt_hi')
+                        ->label('Summary (Hindi)')
+                        ->maxLength(240),
+                    TextInput::make('cta_label_hi')
+                        ->label('Primary button label (Hindi)')
+                        ->maxLength(500),
+                    ...HtmlBodyEditor::make('body_hi', label: 'Body (Hindi)'),
+                ]),
             ]);
     }
 }

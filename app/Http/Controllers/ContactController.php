@@ -24,7 +24,7 @@ class ContactController extends Controller
             'contactPhone' => Setting::get('contact_phone'),
             'contactEmail' => Setting::get('contact_email'),
             'contactWhatsapp' => Setting::get('contact_whatsapp'),
-            'contactAddress' => Setting::get('contact_address'),
+            'contactAddress' => Setting::localized('contact_address'),
             'contactMapUrl' => $contactMapUrl,
             'contactMapViewUrl' => OfficeMap::viewUrl($contactMapUrl),
             'prefillMessage' => $request->string('message')->limit(2000)->toString(),
@@ -52,7 +52,7 @@ class ContactController extends Controller
             'otp_challenge_id' => ['nullable', 'string', 'max:64'],
             'message' => ['required', 'string', 'max:2000'],
         ], [
-            'phone.regex' => 'Please enter a valid 10-digit mobile number, or leave the phone blank.',
+            'phone.regex' => __('Please enter a valid 10-digit mobile number, or leave the phone blank.'),
         ]);
 
         $challenge = $data['phone']
@@ -61,7 +61,7 @@ class ContactController extends Controller
 
         if ($data['phone'] && ! $challenge?->isVerified()) {
             throw ValidationException::withMessages([
-                'phone' => 'Please verify this number with the code we text you, or leave the phone blank.',
+                'phone' => __('Please verify this number with the code we text you, or leave the phone blank.'),
             ]);
         }
 
@@ -69,7 +69,7 @@ class ContactController extends Controller
             // One verification, one enquiry: a replayed challenge id finds nothing left to spend.
             if ($challenge && ! $challenge->consumeFor($data['phone'], MobileOtpPurpose::ContactEnquiry)) {
                 throw ValidationException::withMessages([
-                    'phone' => 'That verification has already been used or has expired. Please verify the number again.',
+                    'phone' => __('That verification has already been used or has expired. Please verify the number again.'),
                 ]);
             }
 
@@ -88,8 +88,8 @@ class ContactController extends Controller
         });
 
         return back()->with([
-            'statusTitle' => 'Your Loan Query Has Been Submitted Successfully! 🎉',
-            'status' => 'Thank you for choosing FynnEdge. Our loan expert will connect with you shortly to understand your requirement and guide you through the next steps.',
+            'statusTitle' => __('Your Loan Query Has Been Submitted Successfully! 🎉'),
+            'status' => __('Thank you for choosing FynnEdge. Our loan expert will connect with you shortly to understand your requirement and guide you through the next steps.'),
         ]);
     }
 }

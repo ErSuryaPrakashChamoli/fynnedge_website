@@ -3,6 +3,8 @@
 namespace App\Support\Enquiries;
 
 use App\Models\Setting;
+use App\Support\Localization\Phrasebook;
+use App\Support\Localization\SiteLocale;
 
 /**
  * Everything on the /quick-enquiry page an admin can reword (Admin → Website
@@ -16,12 +18,19 @@ use App\Models\Setting;
  * every item, so that block is hidden. The one exception is
  * `featured_lender_ids`: empty means "pick automatically", not "show none".
  *
+ * Hindi visitors get the admin's Hindi wording (a second Setting,
+ * `quick_enquiry_page_hi`, holding the same text fields and lists), and every
+ * field left blank there is the English translated through lang/hi.json — so
+ * a page nobody has touched is fully Hindi. See Phrasebook::localize().
+ *
  * Deliberately NOT editable here: the form's "Get up to ₹X starting at Y%"
  * headline and the amount range, which come from each loan product's own fields.
  */
 class QuickEnquiryPageContent
 {
     public const SETTING_KEY = 'quick_enquiry_page';
+
+    public const HINDI_SETTING_KEY = self::SETTING_KEY.'_hi';
 
     /**
      * Admin-entered links must be http(s) or site-relative, the same guard
@@ -107,7 +116,8 @@ class QuickEnquiryPageContent
     }
 
     /**
-     * The saved content laid over the defaults, field by field.
+     * The saved content laid over the defaults, field by field, in the
+     * visitor's language (always English in the admin panel).
      *
      * @return array{
      *     meta_title: string,
@@ -150,7 +160,45 @@ class QuickEnquiryPageContent
             };
         }
 
-        return $content;
+        if (! SiteLocale::isTranslating()) {
+            return $content;
+        }
+
+        // A list the English copy hides stays hidden in Hindi too.
+        $hindi = array_filter(
+            self::hindi(),
+            fn (mixed $value, string $key): bool => ! is_array($value) || $content[$key] !== [],
+            ARRAY_FILTER_USE_BOTH,
+        );
+
+        return Phrasebook::localize($content, $hindi);
+    }
+
+    /**
+     * The admin's own Hindi wording: only the text fields and lists filled
+     * in, cleaned the same way as the English (card links included). The
+     * lender strip settings are shared by both languages, so they are never
+     * read from here. What the admin form's Hindi tab edits.
+     *
+     * @return array<string, string|array<int, array<string, string>>>
+     */
+    public static function hindi(): array
+    {
+        $saved = Setting::get(self::HINDI_SETTING_KEY);
+        $saved = is_array($saved) ? $saved : [];
+        $hindi = [];
+
+        foreach (self::defaults() as $key => $default) {
+            $value = $saved[$key] ?? null;
+
+            if (is_array($default) && $key !== 'featured_lender_ids' && is_array($value)) {
+                $hindi[$key] = self::cleanItems($value, self::REQUIRED_ITEM_KEYS[$key] ?? []);
+            } elseif (is_string($default) && is_scalar($value) && filled($value)) {
+                $hindi[$key] = trim((string) $value);
+            }
+        }
+
+        return array_filter($hindi, fn (mixed $value): bool => $value !== []);
     }
 
     /**

@@ -61,8 +61,8 @@ class QuickEnquiryPageController extends Controller
         $validated = $this->validateLoanEnquiry($request, $loanProduct, [
             'loan_product' => ['required', 'string', Rule::in($loanProducts->pluck('slug'))],
         ], [
-            'loan_product.required' => 'Please select a loan type.',
-            'loan_product.in' => 'Please select a loan type.',
+            'loan_product.required' => __('Please select a loan type.'),
+            'loan_product.in' => __('Please select a loan type.'),
         ]);
 
         $outcome = $record->handle(new EnquiryDraft(

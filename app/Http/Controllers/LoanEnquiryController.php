@@ -37,7 +37,9 @@ class LoanEnquiryController extends Controller
             phone: $validated['phone'],
             type: EnquiryType::LoanEnquiry,
             // Derived here, never submitted: this is the column marketing counts on.
-            enquirySource: "{$loanProduct->name} Page",
+            // The raw English name, so a lead from a Hindi visitor reports under
+            // the same label the admins read.
+            enquirySource: "{$loanProduct->getRawOriginal('name')} Page",
             loanProductId: $loanProduct->id,
             name: $validated['name'],
             email: $validated['email'] ?? null,

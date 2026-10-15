@@ -51,7 +51,7 @@ class NewsletterController extends Controller
             // and stops the bulk of drive-by bot submissions before rate limits.
             'website' => ['prohibited'],
         ], [
-            'email.email' => 'Enter a valid email address.',
+            'email.email' => __('Enter a valid email address.'),
         ]);
 
         $subscribe->handle(
@@ -64,8 +64,8 @@ class NewsletterController extends Controller
 
         return back()->with([
             'newsletterStatus' => NewsletterSettings::doubleOptInEnabled()
-                ? 'Almost there — check your inbox and confirm your email address to finish subscribing.'
-                : 'You are subscribed. Look out for practical financial insights in your inbox.',
+                ? __('Almost there — check your inbox and confirm your email address to finish subscribing.')
+                : __('You are subscribed. Look out for practical financial insights in your inbox.'),
         ])->withFragment('newsletter');
     }
 
@@ -154,7 +154,7 @@ class NewsletterController extends Controller
 
         return redirect()
             ->route('newsletter.preferences', ['token' => $token])
-            ->with('newsletterStatus', 'Your email preferences have been saved.');
+            ->with('newsletterStatus', __('Your email preferences have been saved.'));
     }
 
     /**
@@ -178,7 +178,7 @@ class NewsletterController extends Controller
             Mail::to($subscriber->email)->send(new ConfirmationMail($subscriber, $token));
         }
 
-        return back()->with('newsletterStatus', 'If that address is awaiting confirmation, we have sent the link again.');
+        return back()->with('newsletterStatus', __('If that address is awaiting confirmation, we have sent the link again.'));
     }
 
     /**

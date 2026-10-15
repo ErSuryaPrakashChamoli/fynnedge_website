@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use App\Support\Calculators\CalculatorCatalog;
 use Database\Factories\CalculatorPageFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -21,11 +22,11 @@ use Illuminate\Database\Eloquent\Model;
  * title/description; blank fields keep the shared wording from
  * CalculatorPagesContent (Website Settings → Calculators Page).
  */
-#[Fillable(['calculator_key', 'heading', 'description', 'meta_title', 'meta_description', 'title', 'body'])]
+#[Fillable(['calculator_key', 'heading', 'description', 'meta_title', 'meta_description', 'title', 'body', 'heading_hi', 'description_hi', 'meta_title_hi', 'meta_description_hi', 'title_hi', 'body_hi'])]
 class CalculatorPage extends Model
 {
     /** @use HasFactory<CalculatorPageFactory> */
-    use HasFactory, HasPublicId;
+    use HasFactory, HasPublicId, HasTranslations;
 
     public const CONTENT_FIELDS = ['heading', 'description', 'meta_title', 'meta_description'];
 
@@ -81,6 +82,21 @@ class CalculatorPage extends Model
         return [
             'heading' => filled($page?->title) ? $page->title : $defaultHeading,
             'body' => $body,
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'heading',
+            'description',
+            'meta_title',
+            'meta_description',
+            'title',
+            'body',
         ];
     }
 }

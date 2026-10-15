@@ -1,0 +1,87 @@
+[
+ {
+  "field": "body",
+  "en": "<p>A fixed deposit (FD) is a lump sum you place with a bank or NBFC for a fixed period, at a fixed interest rate agreed upfront. In exchange for locking in your money, you typically earn a higher rate than a regular savings account — and you know exactly what you'll get back on the day you invest.</p>\n<h3>How this calculator works</h3>\n<p>Enter the amount you're depositing, the interest rate on offer, and the tenure. The calculator applies compounding to show you the maturity value — what your deposit grows to by the end of the term — and the total interest earned along the way.</p>\n<h3>A few things worth knowing</h3>\n<p>Interest rates vary by bank, tenure and deposit amount, and senior citizens are often offered a higher rate. Breaking an FD before maturity usually involves a penalty, so it's worth choosing a tenure you're comfortable committing to. This calculator gives you an estimate to plan with — always confirm the exact rate and terms with the bank or NBFC before investing.</p>",
+  "hi": "<p>फिक्स्ड डिपॉज़िट (एफडी) एक एकमुश्त रकम है, जिसे आप किसी बैंक या एनबीएफसी में तय अवधि के लिए, पहले से तय ब्याज दर पर जमा करते हैं। अपना पैसा लॉक करने के बदले आपको आम तौर पर सामान्य सेविंग्स अकाउंट से ज़्यादा ब्याज दर मिलती है — और निवेश के दिन ही आपको ठीक-ठीक पता होता है कि आपको कितना वापस मिलेगा।</p>\n<h3>यह कैलकुलेटर कैसे काम करता है</h3>\n<p>जमा की जाने वाली राशि, ऑफ़र की जा रही ब्याज दर और अवधि दर्ज करें। कैलकुलेटर कंपाउंडिंग लगाकर आपको मैच्योरिटी वैल्यू दिखाता है — यानी अवधि के अंत तक आपकी जमा राशि बढ़कर कितनी हो जाएगी — और साथ ही इस दौरान कमाया गया कुल ब्याज भी।</p>\n<h3>कुछ ज़रूरी बातें</h3>\n<p>ब्याज दरें बैंक, अवधि और जमा राशि के हिसाब से अलग-अलग होती हैं, और वरिष्ठ नागरिकों को अक्सर ज़्यादा ब्याज दर ऑफ़र की जाती है। मैच्योरिटी से पहले एफडी तोड़ने पर आम तौर पर पेनल्टी लगती है, इसलिए ऐसी अवधि चुनना बेहतर है जिसके लिए आप आराम से पैसा जमा रख सकें। यह कैलकुलेटर आपको योजना बनाने के लिए एक अनुमान देता है — निवेश करने से पहले हमेशा बैंक या एनबीएफसी से सटीक ब्याज दर और शर्तों की पुष्टि करें।</p>"
+ },
+ {
+  "field": "body",
+  "en": "<p>A Systematic Investment Plan (SIP) lets you invest a fixed amount in a mutual fund every month, rather than putting in a lump sum all at once. Over time, this smooths out the effect of market ups and downs — you buy more units when prices are low and fewer when they're high, an effect commonly called rupee-cost averaging.</p>\n<h3>How this calculator works</h3>\n<p>Enter your monthly investment amount, the return you expect, and how long you plan to stay invested. The calculator projects the maturity value using monthly compounding, and shows how much of that value came from your own contributions versus growth.</p>\n<h3>A few things worth knowing</h3>\n<p>The expected return you enter is an assumption, not a guarantee — actual mutual fund returns vary with market performance and are never fixed the way a fixed deposit's rate is. Mutual fund investments are subject to market risks; please read the scheme-related documents carefully before investing. This calculator is meant to help you plan, not as investment advice.</p>",
+  "hi": "<p>सिस्टमैटिक इन्वेस्टमेंट प्लान (एसआईपी) से आप एक साथ एकमुश्त रकम लगाने के बजाय हर महीने म्यूचुअल फंड में एक तय रकम निवेश कर सकते हैं। समय के साथ इससे बाज़ार के उतार-चढ़ाव का असर संतुलित हो जाता है — कीमतें कम होने पर आप ज़्यादा यूनिट खरीदते हैं और ज़्यादा होने पर कम, जिसे आम तौर पर रुपी-कॉस्ट एवरेजिंग कहा जाता है।</p>\n<h3>यह कैलकुलेटर कैसे काम करता है</h3>\n<p>अपनी मासिक निवेश राशि, अनुमानित रिटर्न और आप कितने समय तक निवेश बनाए रखना चाहते हैं, यह दर्ज करें। कैलकुलेटर मासिक कंपाउंडिंग के आधार पर मैच्योरिटी वैल्यू का अनुमान लगाता है, और दिखाता है कि उसमें से कितना हिस्सा आपके अपने योगदान से आया और कितना ग्रोथ से।</p>\n<h3>कुछ ज़रूरी बातें</h3>\n<p>आप जो अनुमानित रिटर्न दर्ज करते हैं, वह एक अनुमान है, गारंटी नहीं — म्यूचुअल फंड का असल रिटर्न बाज़ार के प्रदर्शन के साथ बदलता है और कभी भी फिक्स्ड डिपॉज़िट की ब्याज दर की तरह तय नहीं होता। म्यूचुअल फंड निवेश बाज़ार जोखिमों के अधीन हैं; निवेश करने से पहले योजना से जुड़े सभी दस्तावेज़ ध्यान से पढ़ें। यह कैलकुलेटर योजना बनाने में आपकी मदद के लिए है, इसे निवेश सलाह न मानें।</p>"
+ },
+ {
+  "field": "body",
+  "en": "<p>A daily SIP works the same way as a monthly SIP, except your contribution is invested every day instead of once a month. Smaller, more frequent instalments mean your money starts working sooner and spreads market timing risk across even more entry points.</p>\n<h3>How this calculator works</h3>\n<p>Enter the amount you'd invest each day, your expected annual return, and your investment horizon. The calculator compounds your contributions daily to estimate the maturity value at the end of the term, alongside the total amount you'd have actually invested.</p>\n<h3>A few things worth knowing</h3>\n<p>Not every mutual fund or platform supports daily SIPs — availability depends on the fund house and how your SIP is set up. As with any SIP, the return you enter here is an assumption for planning purposes; mutual fund investments are subject to market risks, and actual outcomes will depend on how the fund actually performs over your investment period.</p>",
+  "hi": "<p>डेली एसआईपी बिल्कुल मासिक एसआईपी की तरह काम करता है, बस आपका योगदान महीने में एक बार के बजाय हर दिन निवेश होता है। छोटी और बार-बार की किस्तों का मतलब है कि आपका पैसा जल्दी काम करना शुरू कर देता है और बाज़ार की टाइमिंग का जोखिम और भी ज़्यादा एंट्री पॉइंट्स में बंट जाता है।</p>\n<h3>यह कैलकुलेटर कैसे काम करता है</h3>\n<p>आप हर दिन जितनी रकम निवेश करेंगे, अपना अनुमानित सालाना रिटर्न और निवेश की अवधि दर्ज करें। कैलकुलेटर आपके योगदान को रोज़ाना कंपाउंड करके अवधि के अंत में मैच्योरिटी वैल्यू का अनुमान लगाता है, साथ ही यह भी दिखाता है कि आपने असल में कुल कितनी रकम निवेश की होगी।</p>\n<h3>कुछ ज़रूरी बातें</h3>\n<p>हर म्यूचुअल फंड या प्लैटफ़ॉर्म डेली एसआईपी की सुविधा नहीं देता — यह फंड हाउस और आपके एसआईपी के सेटअप पर निर्भर करता है। किसी भी एसआईपी की तरह, यहां दर्ज किया गया रिटर्न सिर्फ़ योजना बनाने के लिए एक अनुमान है; म्यूचुअल फंड निवेश बाज़ार जोखिमों के अधीन हैं, और असल नतीजे इस पर निर्भर करेंगे कि आपकी निवेश अवधि के दौरान फंड ने असल में कैसा प्रदर्शन किया।</p>"
+ },
+ {
+  "field": "body",
+  "en": "<p>Goods and Services Tax (GST) is applied to most goods and services sold in India, at rates set by the government for each category. This calculator helps you move quickly between a base amount and a GST-inclusive amount, without doing the maths by hand.</p>\n<h3>How this calculator works</h3>\n<p>Choose whether you're adding GST to a base amount or extracting it from a total that already includes tax, enter the applicable GST rate, and the calculator shows the tax amount, the resulting total, and the CGST/SGST split for an intra-state supply.</p>\n<h3>A few things worth knowing</h3>\n<p>The applicable GST rate depends on the specific goods or service — always confirm the correct rate for your transaction with your accountant or the relevant GST notification, especially for anything filed with the tax department. This tool is a quick reckoner, not a substitute for professional tax advice.</p>",
+  "hi": "<p>वस्तु एवं सेवा कर (जीएसटी) भारत में बिकने वाली ज़्यादातर वस्तुओं और सेवाओं पर लगता है, जिसकी दरें सरकार हर श्रेणी के लिए तय करती है। यह कैलकुलेटर हाथ से हिसाब लगाए बिना, बेस राशि और जीएसटी सहित राशि के बीच जल्दी हिसाब निकालने में आपकी मदद करता है।</p>\n<h3>यह कैलकुलेटर कैसे काम करता है</h3>\n<p>चुनें कि आप बेस राशि में जीएसटी जोड़ रहे हैं या ऐसी कुल राशि से जीएसटी निकाल रहे हैं जिसमें टैक्स पहले से शामिल है, लागू जीएसटी दर दर्ज करें, और कैलकुलेटर टैक्स की राशि, कुल राशि और राज्य के भीतर की सप्लाई के लिए सीजीएसटी/एसजीएसटी का बंटवारा दिखा देगा।</p>\n<h3>कुछ ज़रूरी बातें</h3>\n<p>लागू जीएसटी दर संबंधित वस्तु या सेवा पर निर्भर करती है — अपने लेन-देन के लिए सही दर की पुष्टि हमेशा अपने अकाउंटेंट या संबंधित जीएसटी अधिसूचना से करें, ख़ासकर टैक्स विभाग में फ़ाइल की जाने वाली किसी भी चीज़ के लिए। यह टूल एक क्विक रेकनर है, पेशेवर टैक्स सलाह का विकल्प नहीं।</p>"
+ },
+ {
+  "field": "body",
+  "en": "<p>ablut calculator</p><p></p>",
+  "hi": "<p>कैलकुलेटर के बारे में</p><p></p>"
+ },
+ {
+  "field": "body",
+  "en": "<p>personal loan page heading about calutator</p>",
+  "hi": "<p>पर्सनल लोन पेज हेडिंग, कैलकुलेटर के बारे में</p>"
+ },
+ {
+  "field": "body",
+  "en": "<p>section body</p>",
+  "hi": "<p>सेक्शन बॉडी</p>"
+ },
+ {
+  "field": "description",
+  "en": "home loan emi calcualtor introdatation",
+  "hi": "होम लोन ईएमआई कैलकुलेटर परिचय"
+ },
+ {
+  "field": "description",
+  "en": "personal loan page introudation",
+  "hi": "पर्सनल लोन पेज परिचय"
+ },
+ {
+  "field": "description",
+  "en": "calcuatlro introducation",
+  "hi": "कैलकुलेटर परिचय"
+ },
+ {
+  "field": "heading",
+  "en": "home loan emi calcualtor heading",
+  "hi": "होम लोन ईएमआई कैलकुलेटर हेडिंग"
+ },
+ {
+  "field": "heading",
+  "en": "personal loan page heading",
+  "hi": "पर्सनल लोन पेज हेडिंग"
+ },
+ {
+  "field": "heading",
+  "en": "calculator heading",
+  "hi": "कैलकुलेटर हेडिंग"
+ },
+ {
+  "field": "meta_title",
+  "en": "home loan emi calcualtor title",
+  "hi": "होम लोन ईएमआई कैलकुलेटर टाइटल"
+ },
+ {
+  "field": "meta_title",
+  "en": "personal loan page title",
+  "hi": "पर्सनल लोन पेज टाइटल"
+ },
+ {
+  "field": "title",
+  "en": "about section ",
+  "hi": "जानकारी सेक्शन"
+ },
+ {
+  "field": "title",
+  "en": "personal loan page about heading",
+  "hi": "पर्सनल लोन पेज जानकारी हेडिंग"
+ }
+]

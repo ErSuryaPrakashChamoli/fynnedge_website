@@ -6,6 +6,7 @@ use App\Enums\LenderStatus;
 use App\Enums\LenderType;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use App\Modules\Eligibility\Models\EmployerCategory;
 use App\Modules\Eligibility\Models\EmployerRating;
 use App\Support\Rates\RateBook;
@@ -17,11 +18,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['name', 'slug', 'logo_path', 'description', 'status', 'type', 'serviceable_locations'])]
+#[Fillable(['name', 'slug', 'logo_path', 'description', 'status', 'type', 'serviceable_locations', 'description_hi'])]
 class Lender extends Model
 {
     /** @use HasFactory<LenderFactory> */
-    use Auditable, HasFactory, HasPublicId, SoftDeletes;
+    use Auditable, HasFactory, HasPublicId, HasTranslations, SoftDeletes;
 
     /**
      * A lender's status (and soft delete) decides whether its rates may show,
@@ -61,5 +62,15 @@ class Lender extends Model
     public function employerRatings(): HasMany
     {
         return $this->hasMany(EmployerRating::class);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'description',
+        ];
     }
 }

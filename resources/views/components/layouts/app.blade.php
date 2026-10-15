@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="{{ \App\Support\Localization\SiteLocale::current() }}" class="scroll-smooth">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -101,7 +101,7 @@
         <meta property="og:description" content="{{ $resolvedOgDescription }}">
     @endif
     <meta property="og:url" content="{{ $resolvedCanonical }}">
-    <meta property="og:locale" content="en_IN">
+    <meta property="og:locale" content="{{ \App\Support\Localization\SiteLocale::ogLocale() }}">
     @if ($resolvedOgImage)
         <meta property="og:image" content="{{ $resolvedOgImage }}">
     @endif
@@ -170,6 +170,17 @@
     --}}
     {!! $trackingHead !!}
 
+    {{--
+        The interface text resources/js/app.js writes into the page itself
+        (form errors, the promo bar countdown), in the visitor's language.
+        Data, not script: application/json is never executed, so the CSP is
+        unaffected. Printed only while the site runs in a translated language;
+        see App\Support\Localization\ScriptTranslations.
+    --}}
+    @if ($scriptTranslations = \App\Support\Localization\ScriptTranslations::forCurrentLocale())
+        <script type="application/json" id="site-translations">{!! \App\Support\Localization\ScriptTranslations::toJson($scriptTranslations) !!}</script>
+    @endif
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     {!! $siteThemeStyles !!}
     @livewireStyles
@@ -179,13 +190,19 @@
     {!! $trackingBodyStart !!}
 
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-surface focus:px-4 focus:py-2 focus:shadow-lg">
-        Skip to content
+        {{ __('Skip to content') }}
     </a>
 
     <x-site.header />
 
     <main id="main-content" class="flex-1">
         {{ $slot }}
+
+        {{-- Views that place the social media videos themselves pass --}}
+        {{-- handles-social-videos; see x-site.social-videos. --}}
+        @unless ($handlesSocialVideos ?? false)
+            <x-site.social-videos />
+        @endunless
 
         {{-- Views that place the video testimonials themselves pass --}}
         {{-- handles-video-testimonials; see x-site.video-testimonials. --}}
@@ -202,7 +219,8 @@
 
     <x-site.footer />
 
-    {{-- Both render nothing unless a published video testimonial is pinned to this page. --}}
+    {{-- The bubble renders nothing unless a published video testimonial is pinned to this page; --}}
+    {{-- the player also renders for a social media video. --}}
     <x-site.video-testimonial-bubble />
     <x-site.video-testimonial-player />
 

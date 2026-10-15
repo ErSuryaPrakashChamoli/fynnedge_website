@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CalculatorPages\Schemas;
 
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\CalculatorPage;
 use App\Support\Calculators\CalculatorCatalog;
 use Filament\Forms\Components\RichEditor;
@@ -54,6 +55,25 @@ class CalculatorPageForm
                     ->label('About Calculator')
                     ->helperText('Shown below the calculator. Leave empty to hide the section — loan calculators then fall back to the Loan Product\'s "EMI calculation explanation". Changes go live immediately.')
                     ->columnSpanFull(),
+                HindiTranslationSection::make([
+                    TextInput::make('heading_hi')
+                        ->label('Headline (Hindi)')
+                        ->maxLength(150),
+                    TextInput::make('meta_title_hi')
+                        ->label('Page title (Hindi)')
+                        ->maxLength(105),
+                    Textarea::make('description_hi')
+                        ->label('Introduction (Hindi)')
+                        ->rows(2)
+                        ->maxLength(450),
+                    Textarea::make('meta_description_hi')
+                        ->label('Meta description (Hindi)')
+                        ->rows(2)
+                        ->maxLength(240),
+                    TextInput::make('title_hi')
+                        ->label('"About" section heading (Hindi)'),
+                    HindiTranslationSection::richEditor('body_hi', 'About Calculator (Hindi)'),
+                ])->columns(2),
             ]);
     }
 }

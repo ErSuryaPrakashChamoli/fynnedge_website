@@ -1,0 +1,107 @@
+[
+ {
+  "field": "description",
+  "en": "One last step before we match you with lenders.",
+  "hi": "आपको लेंडर से मिलाने से पहले बस एक आख़िरी कदम।"
+ },
+ {
+  "field": "description",
+  "en": "Tell us about yourself as the business owner or promoter.",
+  "hi": "बिज़नेस के मालिक या प्रमोटर के तौर पर हमें अपने बारे में बताएं।"
+ },
+ {
+  "field": "description",
+  "en": "Existing business loans or EMIs, if any.",
+  "hi": "मौजूदा बिज़नेस लोन या ईएमआई, अगर कोई हो।"
+ },
+ {
+  "field": "description",
+  "en": "One last step before we match you with card issuers.",
+  "hi": "आपको कार्ड जारी करने वाली कंपनियों से मिलाने से पहले बस एक आख़िरी कदम।"
+ },
+ {
+  "field": "description",
+  "en": "Tell us about yourself as the business owner.",
+  "hi": "बिज़नेस के मालिक के तौर पर हमें अपने बारे में बताएं।"
+ },
+ {
+  "field": "description",
+  "en": "Which stage of funding are you applying for?",
+  "hi": "आप फ़ंडिंग के किस चरण के लिए आवेदन कर रहे हैं?"
+ },
+ {
+  "field": "title",
+  "en": "Basic details",
+  "hi": "बुनियादी जानकारी"
+ },
+ {
+  "field": "title",
+  "en": "Employment details",
+  "hi": "रोज़गार की जानकारी"
+ },
+ {
+  "field": "title",
+  "en": "Income details",
+  "hi": "आय की जानकारी"
+ },
+ {
+  "field": "title",
+  "en": "Existing obligations",
+  "hi": "मौजूदा देनदारियां"
+ },
+ {
+  "field": "title",
+  "en": "Loan requirement",
+  "hi": "लोन की ज़रूरत"
+ },
+ {
+  "field": "title",
+  "en": "Consent",
+  "hi": "सहमति"
+ },
+ {
+  "field": "title",
+  "en": "Property details",
+  "hi": "प्रॉपर्टी की जानकारी"
+ },
+ {
+  "field": "title",
+  "en": "Vehicle details",
+  "hi": "वाहन की जानकारी"
+ },
+ {
+  "field": "title",
+  "en": "Business profile",
+  "hi": "बिज़नेस प्रोफ़ाइल"
+ },
+ {
+  "field": "title",
+  "en": "Business financials",
+  "hi": "बिज़नेस की वित्तीय जानकारी"
+ },
+ {
+  "field": "title",
+  "en": "Existing cards",
+  "hi": "मौजूदा कार्ड"
+ },
+ {
+  "field": "title",
+  "en": "Gold details",
+  "hi": "गोल्ड की जानकारी"
+ },
+ {
+  "field": "title",
+  "en": "Agricultural profile",
+  "hi": "कृषि प्रोफ़ाइल"
+ },
+ {
+  "field": "title",
+  "en": "Tractor details",
+  "hi": "ट्रैक्टर की जानकारी"
+ },
+ {
+  "field": "title",
+  "en": "Mudra tier",
+  "hi": "मुद्रा श्रेणी"
+ }
+]

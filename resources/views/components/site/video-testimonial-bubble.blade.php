@@ -56,7 +56,7 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="translate-y-4 opacity-0"
         role="complementary"
-        aria-label="Customer video testimonial"
+        aria-label="{{ __('Customer video testimonial') }}"
         {{-- Lifted clear of the promo bar while it is showing; x-site.promo-bar sets the offset. --}}
         style="margin-bottom: var(--promo-bar-offset, 0px)"
         class="fixed bottom-4 left-4 z-40 transition-[margin-bottom] duration-300 sm:bottom-6 sm:left-6"
@@ -66,7 +66,7 @@
             <button
                 type="button"
                 @click="$dispatch('open-video-testimonial', @js($floatingTestimonial->playerData()))"
-                aria-label="Watch {{ $floatingTestimonial->customer_name }}'s video testimonial"
+                aria-label="{{ __("Watch :name's video testimonial", ['name' => $floatingTestimonial->customer_name]) }}"
                 class="group relative block h-40 w-26 animate-soft-pulse overflow-hidden rounded-2xl border-2 border-white bg-gradient-to-br from-accent to-accent-strong shadow-xl transition duration-300 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent motion-reduce:animate-none motion-reduce:hover:scale-100 sm:h-48 sm:w-30"
             >
                 <span class="absolute inset-0 flex items-center justify-center font-display text-5xl font-semibold text-white/25" aria-hidden="true">
@@ -96,7 +96,7 @@
 
                 <span class="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-full bg-black/45 px-1.5 py-0.5 text-[0.625rem] font-semibold uppercase tracking-wide text-white" aria-hidden="true">
                     <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-pass motion-reduce:animate-none"></span>
-                    Customer
+                    {{ __('Customer') }}
                 </span>
 
                 <span class="absolute left-1/2 top-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-accent shadow-md transition group-hover:scale-110" aria-hidden="true">
@@ -104,14 +104,14 @@
                 </span>
 
                 <span class="absolute inset-x-0 bottom-0 p-2 text-center text-[0.6875rem] font-semibold leading-tight text-white">
-                    Watch {{ $firstName }}'s story
+                    {!! __("Watch :name's story", ['name' => e($firstName)]) !!}
                 </span>
             </button>
 
             <button
                 type="button"
                 @click="dismiss()"
-                aria-label="Close video testimonial"
+                aria-label="{{ __('Close video testimonial') }}"
                 class="absolute -right-2.5 -top-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-surface text-ink shadow-md ring-1 ring-line transition hover:bg-surface-2"
             >
                 <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" class="h-3.5 w-3.5" aria-hidden="true"><path stroke-linecap="round" d="M5 5l10 10M15 5 5 15" /></svg>

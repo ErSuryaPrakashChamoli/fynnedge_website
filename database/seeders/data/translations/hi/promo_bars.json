@@ -1,0 +1,28 @@
+[
+ {
+  "field": "cta_label",
+  "en": "Check eligibility",
+  "hi": "पात्रता जांचें"
+ },
+ {
+  "field": "eyebrow",
+  "en": "Limited time offer",
+  "hi": "सीमित समय का ऑफ़र"
+ },
+ {
+  "field": "headline",
+  "en": "Get up to *₹50 Lakhs* starting at *9.99%* p.a.",
+  "hi": "*₹50 लाख* तक पाएं, *9.99%* प्रति वर्ष से शुरू"
+ },
+ {
+  "field": "rotating_messages",
+  "en": [
+   "Compare offers from *30+ banks & NBFCs* in minutes",
+   "*Zero* impact on your credit score to check eligibility"
+  ],
+  "hi": [
+   "मिनटों में *30+ बैंक और एनबीएफसी* के ऑफ़र की तुलना करें",
+   "पात्रता जांचने से आपके क्रेडिट स्कोर पर *ज़ीरो* असर"
+  ]
+ }
+]

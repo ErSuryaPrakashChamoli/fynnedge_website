@@ -5,6 +5,7 @@ namespace App\Filament\Resources\PromoBars\Schemas;
 use App\Enums\PromoBarDevice;
 use App\Enums\PromoBarTrigger;
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\PromoBar;
 use App\Support\Faqs\FaqPlacements;
 use App\Support\PromoBars\PromoBars;
@@ -183,6 +184,29 @@ class PromoBarForm
                             ->required(fn (callable $get): bool => (bool) $get('show_countdown'))
                             ->helperText('Optional, unless the countdown is on — then this is what it counts down to.'),
                     ]),
+                HindiTranslationSection::make([
+                    TextInput::make('headline_hi')
+                        ->label('Headline (Hindi)')
+                        ->maxLength(135)
+                        ->rule(fn () => RateText::rule())
+                        ->helperText('*Asterisks* highlight words and rates use [rate:loan-slug], as in the English headline.')
+                        ->columnSpanFull(),
+                    TagsInput::make('rotating_messages_hi')
+                        ->label('Rotating messages (Hindi)')
+                        ->placeholder('Type a message and press Enter')
+                        ->nestedRecursiveRules(['max:90'])
+                        ->rule(fn () => RateText::rule())
+                        ->columnSpanFull(),
+                    TextInput::make('eyebrow_hi')
+                        ->label('Badge (Hindi)')
+                        ->maxLength(60),
+                    TextInput::make('cta_label_hi')
+                        ->label('Button text (Hindi)')
+                        ->maxLength(45),
+                    TextInput::make('image_alt_hi')
+                        ->label('Image alt text (Hindi)')
+                        ->maxLength(500),
+                ])->columns(2),
             ]);
     }
 

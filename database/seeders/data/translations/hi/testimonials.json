@@ -1,0 +1,92 @@
+[
+ {
+  "field": "customer_name",
+  "en": "Ananya Rao",
+  "hi": "अनन्या राव"
+ },
+ {
+  "field": "customer_name",
+  "en": "Vikram Singh",
+  "hi": "विक्रम सिंह"
+ },
+ {
+  "field": "customer_name",
+  "en": "Priya Nair",
+  "hi": "प्रिया नायर"
+ },
+ {
+  "field": "customer_name",
+  "en": "Rohit Malhotra",
+  "hi": "रोहित मल्होत्रा"
+ },
+ {
+  "field": "customer_name",
+  "en": "Sneha Deshmukh",
+  "hi": "स्नेहा देशमुख"
+ },
+ {
+  "field": "customer_name",
+  "en": "Arjun Mehta",
+  "hi": "अर्जुन मेहता"
+ },
+ {
+  "field": "quote",
+  "en": "I compared three lenders on FynnEdge in minutes instead of visiting three branches. The eligibility check was upfront and honest about what I actually qualified for.",
+  "hi": "तीन ब्रांच के चक्कर लगाने के बजाय मैंने FynnEdge पर मिनटों में तीन लेंडर की तुलना कर ली। पात्रता जांच ने शुरुआत में ही साफ़ और ईमानदारी से बता दिया कि मैं असल में किसके लिए पात्र थी।"
+ },
+ {
+  "field": "quote",
+  "en": "What I liked most was there were no surprise charges — everything the lender would charge was shown before I applied.",
+  "hi": "मुझे सबसे अच्छी बात यह लगी कि कोई अचानक लगने वाला चार्ज नहीं था — लेंडर जो भी चार्ज लेता, वह सब मेरे आवेदन करने से पहले ही दिखा दिया गया।"
+ },
+ {
+  "field": "quote",
+  "en": "Needed funds quickly for a family medical expense. FynnEdge matched me to a lender I was actually eligible for, and the whole process was online.",
+  "hi": "परिवार के इलाज के खर्च के लिए मुझे जल्दी पैसों की ज़रूरत थी। FynnEdge ने मुझे ऐसे लेंडर से मिलाया जिसके लिए मैं वाकई पात्र थी, और पूरी प्रक्रिया ऑनलाइन हुई।"
+ },
+ {
+  "field": "quote",
+  "en": "The home loan EMI calculator helped me plan my budget before I even applied. Comparing lenders side by side made the decision easy.",
+  "hi": "होम लोन ईएमआई कैलकुलेटर ने आवेदन करने से पहले ही मेरा बजट प्लान करने में मदद की। लेंडर की साथ-साथ तुलना करने से फ़ैसला लेना आसान हो गया।"
+ },
+ {
+  "field": "quote",
+  "en": "Got a clear picture of interest rates and processing fees across lenders before walking into the showroom to finalise my car.",
+  "hi": "अपनी कार फ़ाइनल करने के लिए शोरूम जाने से पहले ही मुझे अलग-अलग लेंडर की ब्याज दरों और प्रोसेसिंग फीस की साफ़ तस्वीर मिल गई।"
+ },
+ {
+  "field": "quote",
+  "en": "As a small business owner, I did not have time to chase multiple banks. FynnEdge showed me which lenders fit my profile straightaway.",
+  "hi": "एक छोटे बिज़नेस का मालिक होने के नाते, मेरे पास कई बैंकों के चक्कर लगाने का समय नहीं था। FynnEdge ने तुरंत दिखा दिया कि कौन-से लेंडर मेरी प्रोफ़ाइल के हिसाब से सही हैं।"
+ },
+ {
+  "field": "role_location",
+  "en": "Bengaluru",
+  "hi": "बेंगलुरु"
+ },
+ {
+  "field": "role_location",
+  "en": "Delhi",
+  "hi": "दिल्ली"
+ },
+ {
+  "field": "role_location",
+  "en": "Personal Loan customer, Kochi",
+  "hi": "पर्सनल लोन ग्राहक, कोच्चि"
+ },
+ {
+  "field": "role_location",
+  "en": "Home Loan customer, Pune",
+  "hi": "होम लोन ग्राहक, पुणे"
+ },
+ {
+  "field": "role_location",
+  "en": "Car Loan customer, Nagpur",
+  "hi": "कार लोन ग्राहक, नागपुर"
+ },
+ {
+  "field": "role_location",
+  "en": "Business Loan customer, Ahmedabad",
+  "hi": "बिज़नेस लोन ग्राहक, अहमदाबाद"
+ }
+]

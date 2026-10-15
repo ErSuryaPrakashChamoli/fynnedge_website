@@ -14,6 +14,56 @@
  * App\Modules\Journey\Models\Concerns\EvaluatesCondition on the server.
  */
 /**
+ * The visitor-facing English this file writes into the page, in the visitor's
+ * language. While the site runs in Hindi the layout prints a JSON block of
+ * English => Hindi (App\Support\Localization\ScriptTranslations, which must
+ * list every string passed here, spelled exactly the same); anything missing
+ * from it, and every string on an English page, comes back as the English.
+ * `:name` placeholders are filled from `replacements`, like Laravel's __().
+ */
+let siteTranslations = null;
+
+function t(text, replacements = {}) {
+    if (siteTranslations === null) {
+        try {
+            const parsed = JSON.parse(document.getElementById('site-translations')?.textContent || '{}');
+            siteTranslations = parsed && typeof parsed === 'object' ? parsed : {};
+        } catch {
+            siteTranslations = {};
+        }
+    }
+
+    let line = Object.hasOwn(siteTranslations, text) && typeof siteTranslations[text] === 'string' ? siteTranslations[text] : text;
+
+    // Longest name first, so a :len never eats the start of a :length.
+    Object.keys(replacements)
+        .sort((a, b) => b.length - a.length)
+        .forEach((key) => {
+            line = line.replaceAll(`:${key}`, String(replacements[key]));
+        });
+
+    return line;
+}
+
+/**
+ * Hindi number words for numberToIndianWords(). Unlike English, Hindi has its
+ * own word for every number up to 99 (21 is इक्कीस, not "बीस एक"), so these
+ * are a lookup table rather than tens + ones.
+ */
+const HINDI_NUMBER_WORDS = [
+    'शून्य', 'एक', 'दो', 'तीन', 'चार', 'पांच', 'छह', 'सात', 'आठ', 'नौ',
+    'दस', 'ग्यारह', 'बारह', 'तेरह', 'चौदह', 'पंद्रह', 'सोलह', 'सत्रह', 'अठारह', 'उन्नीस',
+    'बीस', 'इक्कीस', 'बाईस', 'तेईस', 'चौबीस', 'पच्चीस', 'छब्बीस', 'सत्ताईस', 'अट्ठाईस', 'उनतीस',
+    'तीस', 'इकतीस', 'बत्तीस', 'तैंतीस', 'चौंतीस', 'पैंतीस', 'छत्तीस', 'सैंतीस', 'अड़तीस', 'उनतालीस',
+    'चालीस', 'इकतालीस', 'बयालीस', 'तैंतालीस', 'चौवालीस', 'पैंतालीस', 'छियालीस', 'सैंतालीस', 'अड़तालीस', 'उनचास',
+    'पचास', 'इक्यावन', 'बावन', 'तिरपन', 'चौवन', 'पचपन', 'छप्पन', 'सत्तावन', 'अट्ठावन', 'उनसठ',
+    'साठ', 'इकसठ', 'बासठ', 'तिरसठ', 'चौंसठ', 'पैंसठ', 'छियासठ', 'सड़सठ', 'अड़सठ', 'उनहत्तर',
+    'सत्तर', 'इकहत्तर', 'बहत्तर', 'तिहत्तर', 'चौहत्तर', 'पचहत्तर', 'छिहत्तर', 'सतहत्तर', 'अठहत्तर', 'उन्यासी',
+    'अस्सी', 'इक्यासी', 'बयासी', 'तिरासी', 'चौरासी', 'पचासी', 'छियासी', 'सत्तासी', 'अट्ठासी', 'नवासी',
+    'नब्बे', 'इक्यानवे', 'बानवे', 'तिरानवे', 'चौरानवे', 'पचानवे', 'छियानवे', 'सत्तानवे', 'अट्ठानवे', 'निन्यानवे',
+];
+
+/**
  * Indian digit-grouping (8,00,000 rather than 800,000) for the raw digit
  * string a currency input holds — the last three digits together, then
  * pairs of two for the rest. Mirrors App\Support\Formatting\IndianNumberFormatter
@@ -95,7 +145,7 @@ function isoToDateInputDigits(iso) {
 /**
  * Spells out a rupee amount using the Indian numbering system (Thousand,
  * Lakh, Crore, ...) so customers can double-check the figure they typed —
- * e.g. 800000 -> "Eight Lakh".
+ * e.g. 800000 -> "Eight Lakh" (or "आठ लाख" while the page is in Hindi).
  */
 function numberToIndianWords(digits) {
     let amount = parseInt(digits, 10);
@@ -104,8 +154,10 @@ function numberToIndianWords(digits) {
         return '';
     }
 
+    const hindi = document.documentElement.lang === 'hi';
+
     if (amount === 0) {
-        return 'Zero';
+        return hindi ? HINDI_NUMBER_WORDS[0] : 'Zero';
     }
 
     const negative = amount < 0;
@@ -114,9 +166,20 @@ function numberToIndianWords(digits) {
     const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
         'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
     const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-    const scales = ['', 'Thousand', 'Lakh', 'Crore', 'Arab', 'Kharab'];
+    const scales = hindi
+        ? ['', 'हज़ार', 'लाख', 'करोड़', 'अरब', 'खरब']
+        : ['', 'Thousand', 'Lakh', 'Crore', 'Arab', 'Kharab'];
 
     const threeDigitWords = (n) => {
+        if (hindi) {
+            const hundreds = Math.floor(n / 100);
+            const rest = n % 100;
+
+            return [hundreds ? `${HINDI_NUMBER_WORDS[hundreds]} सौ` : '', rest ? HINDI_NUMBER_WORDS[rest] : '']
+                .filter(Boolean)
+                .join(' ');
+        }
+
         let words = '';
 
         if (n >= 100) {
@@ -151,7 +214,7 @@ function numberToIndianWords(digits) {
         }
     }
 
-    return (negative ? 'Minus ' : '') + words.trim().replace(/\s+/g, ' ');
+    return (negative ? (hindi ? 'माइनस ' : 'Minus ') : '') + words.trim().replace(/\s+/g, ' ');
 }
 
 /**
@@ -447,7 +510,7 @@ document.addEventListener('alpine:init', () => {
             }
 
             if (!/^[6-9]\d{9}$/.test(this.phone)) {
-                this.error = 'Please enter a valid 10-digit mobile number, or leave the phone blank.';
+                this.error = t('Please enter a valid 10-digit mobile number, or leave the phone blank.');
 
                 return;
             }
@@ -463,7 +526,7 @@ document.addEventListener('alpine:init', () => {
                 });
 
                 if (!data.success) {
-                    this.error = data.message ?? 'We could not send a code. Please try again.';
+                    this.error = data.message ?? t('We could not send a code. Please try again.');
 
                     if (data.data?.retry_after_seconds) {
                         this.startResendCountdown(data.data.retry_after_seconds);
@@ -479,7 +542,7 @@ document.addEventListener('alpine:init', () => {
                 this.startResendCountdown(data.data.resend_after_seconds ?? 0);
                 this.$nextTick(() => document.getElementById('contact-otp')?.focus());
             } catch {
-                this.error = 'Something went wrong. Please try again.';
+                this.error = t('Something went wrong. Please try again.');
             } finally {
                 this.loading = false;
             }
@@ -491,7 +554,7 @@ document.addEventListener('alpine:init', () => {
             }
 
             if (this.otpCode.length !== this.otpLength) {
-                this.error = `Please enter the ${this.otpLength}-digit code we sent you.`;
+                this.error = t('Please enter the :length-digit code we sent you.', { length: this.otpLength });
 
                 return;
             }
@@ -509,14 +572,14 @@ document.addEventListener('alpine:init', () => {
                 });
 
                 if (!data.success) {
-                    this.error = data.message ?? 'That code is incorrect or has expired. You can request a new one.';
+                    this.error = data.message ?? t('That code is incorrect or has expired. You can request a new one.');
 
                     return;
                 }
 
                 this.verified = true;
             } catch {
-                this.error = 'Something went wrong. Please try again.';
+                this.error = t('Something went wrong. Please try again.');
             } finally {
                 this.loading = false;
             }
@@ -537,8 +600,8 @@ document.addEventListener('alpine:init', () => {
 
             event.preventDefault();
             this.error = this.sent
-                ? 'Enter the code we texted you to confirm this number, or clear the phone field.'
-                : 'Tap "Send code" to confirm this number, or clear the phone field.';
+                ? t('Enter the code we texted you to confirm this number, or clear the phone field.')
+                : t('Tap "Send code" to confirm this number, or clear the phone field.');
             document.getElementById('phone')?.focus();
         },
     }));
@@ -644,7 +707,7 @@ document.addEventListener('alpine:init', () => {
                 const { ok, data } = await this.requestOtp(phoneVerification.sendOtpUrl, { phone: this.values.phone });
 
                 if (!ok) {
-                    this.phoneOtpError = data.message ?? data.errors?.phone?.[0] ?? 'Could not send the code. Please check the number and try again.';
+                    this.phoneOtpError = data.message ?? data.errors?.phone?.[0] ?? t('Could not send the code. Please check the number and try again.');
 
                     if (data.retry_after_seconds) {
                         this.startResendCountdown(data.retry_after_seconds);
@@ -659,7 +722,7 @@ document.addEventListener('alpine:init', () => {
                 this.phoneOtpCode = '';
                 this.startResendCountdown(data.resend_after_seconds ?? 0);
             } catch {
-                this.phoneOtpError = 'Something went wrong. Please try again.';
+                this.phoneOtpError = t('Something went wrong. Please try again.');
             } finally {
                 this.phoneOtpLoading = false;
             }
@@ -680,7 +743,7 @@ document.addEventListener('alpine:init', () => {
                 });
 
                 if (!ok) {
-                    this.phoneOtpError = data.message ?? 'That code is incorrect or has expired.';
+                    this.phoneOtpError = data.message ?? t('That code is incorrect or has expired.');
 
                     return;
                 }
@@ -688,7 +751,7 @@ document.addEventListener('alpine:init', () => {
                 this.phoneVerified = true;
                 this.verifiedPhoneNumber = this.phoneOtpNumber;
             } catch {
-                this.phoneOtpError = 'Something went wrong. Please try again.';
+                this.phoneOtpError = t('Something went wrong. Please try again.');
             } finally {
                 this.phoneOtpLoading = false;
             }
@@ -790,7 +853,7 @@ document.addEventListener('alpine:init', () => {
             }
 
             if (!this.isValid) {
-                this.error = 'Please enter a valid 10-digit mobile number.';
+                this.error = t('Please enter a valid 10-digit mobile number.');
                 trackQuickEnquiry('quick_enquiry_validation_failed', { source: config.source });
 
                 return;
@@ -808,13 +871,13 @@ document.addEventListener('alpine:init', () => {
                 });
 
                 if (response.status === 429) {
-                    this[this.step === 'otp' ? 'otpError' : 'error'] = 'Too many attempts. Please try again in a few minutes.';
+                    this[this.step === 'otp' ? 'otpError' : 'error'] = t('Too many attempts. Please try again in a few minutes.');
 
                     return;
                 }
 
                 if (!response.ok) {
-                    const message = data.errors?.phone?.[0] ?? data.message ?? 'Please enter a valid 10-digit mobile number.';
+                    const message = data.errors?.phone?.[0] ?? data.message ?? t('Please enter a valid 10-digit mobile number.');
 
                     // On step two the number field is hidden, so a refused resend
                     // (cooldown, hourly cap, gateway down) is shown under the code.
@@ -837,7 +900,7 @@ document.addEventListener('alpine:init', () => {
                 trackQuickEnquiry('quick_enquiry_otp_sent', { source: config.source });
                 this.$nextTick(() => this.$el.querySelector('input[name="otp_code"]')?.focus());
             } catch {
-                this.error = 'Something went wrong. Please try again.';
+                this.error = t('Something went wrong. Please try again.');
             } finally {
                 this.loading = false;
             }
@@ -864,7 +927,7 @@ document.addEventListener('alpine:init', () => {
             }
 
             if (this.otpCode.length !== this.otpLength || /\D/.test(this.otpCode)) {
-                this.otpError = `Please enter the ${this.otpLength}-digit code we sent you.`;
+                this.otpError = t('Please enter the :length-digit code we sent you.', { length: this.otpLength });
 
                 return;
             }
@@ -883,13 +946,13 @@ document.addEventListener('alpine:init', () => {
                 });
 
                 if (response.status === 429) {
-                    this.otpError = 'Too many attempts. Please try again in a few minutes.';
+                    this.otpError = t('Too many attempts. Please try again in a few minutes.');
 
                     return;
                 }
 
                 if (!response.ok) {
-                    this.otpError = data.errors?.otp_code?.[0] ?? data.errors?.phone?.[0] ?? data.message ?? 'That code is incorrect or has expired. You can request a new one.';
+                    this.otpError = data.errors?.otp_code?.[0] ?? data.errors?.phone?.[0] ?? data.message ?? t('That code is incorrect or has expired. You can request a new one.');
                     trackQuickEnquiry('quick_enquiry_otp_failed', { source: config.source });
 
                     return;
@@ -903,7 +966,7 @@ document.addEventListener('alpine:init', () => {
                     { source: config.source },
                 );
             } catch {
-                this.otpError = 'Something went wrong. Please try again.';
+                this.otpError = t('Something went wrong. Please try again.');
             } finally {
                 this.loading = false;
             }
@@ -960,7 +1023,7 @@ document.addEventListener('alpine:init', () => {
 
         get tracking() {
             return this.selected
-                ? { product: this.values.loan_product.replace(/-/g, '_'), productName: this.selected.name }
+                ? { product: this.values.loan_product.replace(/-/g, '_'), productName: this.selected.analyticsName ?? this.selected.name }
                 : { product: 'quick_enquiry', productName: 'Quick Enquiry' };
         },
 
@@ -1050,25 +1113,25 @@ document.addEventListener('alpine:init', () => {
             const errors = {};
 
             if (config.selectable && !this.selected) {
-                errors.loan_product = 'Please select a loan type.';
+                errors.loan_product = t('Please select a loan type.');
             }
 
             if (!this.values.name.trim()) {
-                errors.name = 'Please enter your name.';
+                errors.name = t('Please enter your name.');
             }
 
             // Indian mobile numbers are ten digits starting 6-9. Mirrors the
             // `regex:/^[6-9]\d{9}$/` rule the controller uses.
             if (!/^[6-9]\d{9}$/.test(this.values.phone)) {
-                errors.phone = 'Please enter a valid 10-digit mobile number.';
+                errors.phone = t('Please enter a valid 10-digit mobile number.');
             }
 
             if (this.values.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(this.values.email.trim())) {
-                errors.email = 'Please enter a valid email address.';
+                errors.email = t('Please enter a valid email address.');
             }
 
             if (!this.amountDigits || Number(this.amountDigits) <= 0) {
-                errors.loan_amount = 'Please enter the loan amount you need.';
+                errors.loan_amount = t('Please enter the loan amount you need.');
             } else if (this.amountRangeError()) {
                 errors.loan_amount = this.amountRangeError();
             }
@@ -1119,7 +1182,7 @@ document.addEventListener('alpine:init', () => {
                 const data = await response.json().catch(() => ({}));
 
                 if (response.status === 429) {
-                    this.errors = { phone: 'Too many attempts. Please try again in a few minutes.' };
+                    this.errors = { phone: t('Too many attempts. Please try again in a few minutes.') };
                     trackEnquiry('loan_enquiry_failed', this.tracking, { reason: 'rate_limited' });
 
                     return;
@@ -1132,7 +1195,7 @@ document.addEventListener('alpine:init', () => {
                     );
 
                     if (Object.keys(this.errors).length === 0) {
-                        this.errors = { phone: data.message ?? 'Something went wrong. Please try again.' };
+                        this.errors = { phone: data.message ?? t('Something went wrong. Please try again.') };
                     }
 
                     trackEnquiry('loan_enquiry_failed', this.tracking, { reason: 'validation' });
@@ -1145,7 +1208,7 @@ document.addEventListener('alpine:init', () => {
                 this.resultMessage = data.message;
                 trackEnquiry('loan_enquiry_success', this.tracking, { outcome: data.outcome });
             } catch {
-                this.errors = { phone: 'Something went wrong. Please try again.' };
+                this.errors = { phone: t('Something went wrong. Please try again.') };
                 trackEnquiry('loan_enquiry_failed', this.tracking, { reason: 'network' });
             } finally {
                 this.loading = false;
@@ -1378,13 +1441,13 @@ document.addEventListener('alpine:init', () => {
 
                 const days = Math.floor(seconds / 86400);
                 const units = [
-                    { label: 'h', value: pad(Math.floor((seconds % 86400) / 3600)) },
-                    { label: 'm', value: pad(Math.floor((seconds % 3600) / 60)) },
-                    { label: 's', value: pad(seconds % 60) },
+                    { label: t('h'), value: pad(Math.floor((seconds % 86400) / 3600)) },
+                    { label: t('m'), value: pad(Math.floor((seconds % 3600) / 60)) },
+                    { label: t('s'), value: pad(seconds % 60) },
                 ];
 
                 if (days > 0) {
-                    units.unshift({ label: 'd', value: pad(days) });
+                    units.unshift({ label: t('d'), value: pad(days) });
                 }
 
                 // Tiles for the eye; the plain string is read out to screen readers.
@@ -1408,3 +1471,57 @@ document.addEventListener('alpine:init', () => {
         },
     }));
 });
+
+/**
+ * Livewire's own "page expired" and "empty response" prompts are hardcoded
+ * English confirm() dialogs (a visitor meets the first on a calculator left
+ * open past the session lifetime). While the page has a translation for one,
+ * it is shown translated instead; on an English page nothing is intercepted
+ * and Livewire's default runs untouched.
+ */
+function translateLivewirePrompts() {
+    if (typeof window.Livewire?.interceptRequest !== 'function') {
+        return;
+    }
+
+    const expired = 'This page has expired.\nWould you like to refresh the page?';
+    const empty = 'The server returned an empty response.\nWould you like to refresh the page?';
+    let expiredPrompted = false;
+
+    window.Livewire.interceptRequest(({ onError }) => {
+        onError(({ response, body, preventDefault }) => {
+            let prompt = null;
+
+            if (response.status === 419) {
+                prompt = expired;
+            } else if (response.ok && String(body ?? '').trim() === '') {
+                prompt = empty;
+            }
+
+            if (!prompt || t(prompt) === prompt) {
+                return;
+            }
+
+            preventDefault();
+
+            // Like Livewire, ask about an expired page once, not once per request.
+            if (prompt === expired) {
+                if (expiredPrompted) {
+                    return;
+                }
+
+                expiredPrompted = true;
+            }
+
+            if (window.confirm(t(prompt))) {
+                window.location.reload();
+            }
+        });
+    });
+}
+
+if (window.Livewire) {
+    translateLivewirePrompts();
+} else {
+    document.addEventListener('livewire:init', translateLivewirePrompts, { once: true });
+}

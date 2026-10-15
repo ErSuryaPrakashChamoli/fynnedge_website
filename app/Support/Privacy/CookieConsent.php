@@ -91,14 +91,17 @@ class CookieConsent
     }
 
     /**
+     * Label => URL for each policy page an admin linked, labels in the
+     * visitor's language.
+     *
      * @return array<string, string|null>
      */
     public static function policyLinks(): array
     {
         return array_filter([
-            'Cookie policy' => Setting::get('cookie_policy_url'),
-            'Privacy policy' => Setting::get('privacy_policy_url'),
-            'Terms' => Setting::get('terms_url'),
+            __('Cookie policy') => Setting::get('cookie_policy_url'),
+            __('Privacy policy') => Setting::get('privacy_policy_url'),
+            __('Terms') => Setting::get('terms_url'),
         ], fn (mixed $url): bool => filled($url));
     }
 

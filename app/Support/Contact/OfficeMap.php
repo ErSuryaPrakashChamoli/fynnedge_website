@@ -58,8 +58,9 @@ class OfficeMap
         return [
             'embedUrl' => $embedUrl,
             'viewUrl' => self::viewUrl($embedUrl),
+            // Google is asked for directions to the English address it knows; the card shows the visitor's language.
             'directionsUrl' => self::directionsUrl($embedUrl, $address),
-            'address' => filled($address) ? $address : null,
+            'address' => filled($address) ? Setting::localized('contact_address') : null,
         ];
     }
 

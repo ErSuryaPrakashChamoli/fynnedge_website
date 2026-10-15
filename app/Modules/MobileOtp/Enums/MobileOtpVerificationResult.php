@@ -38,13 +38,13 @@ enum MobileOtpVerificationResult: string
     public function message(): string
     {
         return match ($this) {
-            self::Verified => 'Mobile number verified successfully.',
-            self::Incorrect, self::NotFound => 'That code is incorrect or has expired. You can request a new one.',
-            self::Expired => 'That code has expired. Please request a new one.',
-            self::AlreadyVerified => 'That code has already been used. Please request a new one.',
-            self::Superseded => 'A newer code has been sent. Please enter the latest code.',
-            self::AttemptsExhausted => 'Too many incorrect attempts. Please request a new code.',
-            self::NotSent => 'We could not send that code. Please request a new one.',
+            self::Verified => __('Mobile number verified successfully.'),
+            self::Incorrect, self::NotFound => __('That code is incorrect or has expired. You can request a new one.'),
+            self::Expired => __('That code has expired. Please request a new one.'),
+            self::AlreadyVerified => __('That code has already been used. Please request a new one.'),
+            self::Superseded => __('A newer code has been sent. Please enter the latest code.'),
+            self::AttemptsExhausted => __('Too many incorrect attempts. Please request a new code.'),
+            self::NotSent => __('We could not send that code. Please request a new one.'),
         };
     }
 }

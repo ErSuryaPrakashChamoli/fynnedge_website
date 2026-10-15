@@ -38,7 +38,7 @@ class JourneyController extends Controller
         $session = $action->handle($loanProduct, $request);
 
         if (! $session) {
-            return back()->with('status', 'Applications for this product aren\'t open yet — please check back soon.');
+            return back()->with('status', __('Applications for this product aren\'t open yet — please check back soon.'));
         }
 
         return redirect()->route('journey.show', $session);
@@ -58,12 +58,12 @@ class JourneyController extends Controller
                 // *value* through an intermediate array keyed by the sort value, and
                 // a huge sentinel float there gets truncated to int by PHP and throws.
                 'results' => $session->eligibilityResults()
-                    ->with(['lenderProduct.lender', 'reasons'])
+                    ->with(['lenderProduct.lender', 'reasons.rule'])
                     ->get()
                     ->sortBy([
                         fn ($a, $b) => ($a->status->value === 'eligible' ? 0 : 1) <=> ($b->status->value === 'eligible' ? 0 : 1),
-                        fn ($a, $b) => (RateBook::quoteFor($a->lender_product_id) !== null ? 0 : 1) <=> (RateBook::quoteFor($b->lender_product_id) !== null ? 0 : 1),
-                        fn ($a, $b) => (RateBook::quoteFor($a->lender_product_id)?->startingRate() ?? 0) <=> (RateBook::quoteFor($b->lender_product_id)?->startingRate() ?? 0),
+                        fn ($a, $b) => (RateBook::officialQuoteFor($a->lender_product_id) !== null ? 0 : 1) <=> (RateBook::officialQuoteFor($b->lender_product_id) !== null ? 0 : 1),
+                        fn ($a, $b) => (RateBook::officialQuoteFor($a->lender_product_id)?->startingRate() ?? 0) <=> (RateBook::officialQuoteFor($b->lender_product_id)?->startingRate() ?? 0),
                     ])
                     ->values(),
             ]);
@@ -105,7 +105,7 @@ class JourneyController extends Controller
         // been OTP-verified via sendPhoneOtp()/verifyPhoneOtp() below.
         if (array_key_exists('phone', $validated) && ($session->phone_verified_at === null || $session->phone_number !== $validated['phone'])) {
             throw ValidationException::withMessages([
-                'phone' => 'Please verify your mobile number with an OTP before continuing.',
+                'phone' => __('Please verify your mobile number with an OTP before continuing.'),
             ]);
         }
 
@@ -126,7 +126,7 @@ class JourneyController extends Controller
     {
         $validated = $request->validate([
             'phone' => ['required', 'regex:/^[6-9]\d{9}$/'],
-        ], [], ['phone' => 'mobile number']);
+        ], [], ['phone' => __('mobile number')]);
 
         try {
             $challenge = $action->handle($validated['phone'], MobileOtpPurpose::LoanApplication, $request->ip());
@@ -139,7 +139,7 @@ class JourneyController extends Controller
 
         if ($challenge->status === MobileOtpStatus::Failed) {
             return response()->json([
-                'message' => 'We could not send a verification code right now. Please try again shortly.',
+                'message' => __('We could not send a verification code right now. Please try again shortly.'),
             ], 503);
         }
 
@@ -175,7 +175,7 @@ class JourneyController extends Controller
             return response()->json([
                 'message' => $result === MobileOtpVerificationResult::AttemptsExhausted
                     ? $result->message()
-                    : 'That code is incorrect or has expired. You can resend a new one.',
+                    : __('That code is incorrect or has expired. You can resend a new one.'),
             ], 422);
         }
 

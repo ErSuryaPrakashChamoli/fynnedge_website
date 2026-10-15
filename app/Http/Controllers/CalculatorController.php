@@ -145,7 +145,7 @@ class CalculatorController extends Controller
      */
     private function aboutFor(string $pageKey, ?string $defaultHeading = null, ?string $fallbackBody = null): array
     {
-        $defaultHeading ??= 'About the '.(CalculatorCatalog::pages()[$pageKey] ?? 'calculator');
+        $defaultHeading ??= __('About the :name', ['name' => CalculatorCatalog::pages()[$pageKey] ?? __('calculator')]);
 
         return CalculatorPage::aboutFor($pageKey, $defaultHeading, $fallbackBody);
     }

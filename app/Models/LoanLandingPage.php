@@ -6,6 +6,7 @@ use App\Enums\LandingPageGroup;
 use App\Enums\PublishStatus;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use App\Models\Concerns\Publishable;
 use App\Models\Concerns\Seoable;
 use Database\Factories\LoanLandingPageFactory;
@@ -15,11 +16,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['loan_product_id', 'group', 'title', 'slug', 'amount', 'city', 'excerpt', 'cta_label', 'body', 'sort_order', 'status', 'published_at', 'expires_at'])]
+#[Fillable(['loan_product_id', 'group', 'title', 'slug', 'amount', 'city', 'excerpt', 'cta_label', 'body', 'sort_order', 'status', 'published_at', 'expires_at', 'title_hi', 'city_hi', 'excerpt_hi', 'cta_label_hi', 'body_hi'])]
 class LoanLandingPage extends Model
 {
     /** @use HasFactory<LoanLandingPageFactory> */
-    use Auditable, HasFactory, HasPublicId, Publishable, Seoable, SoftDeletes;
+    use Auditable, HasFactory, HasPublicId, HasTranslations, Publishable, Seoable, SoftDeletes;
 
     protected function casts(): array
     {
@@ -48,5 +49,19 @@ class LoanLandingPage extends Model
         return $this->group === LandingPageGroup::ByLocation && filled($this->city)
             ? $this->city
             : $this->title;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'title',
+            'city',
+            'excerpt',
+            'cta_label',
+            'body',
+        ];
     }
 }

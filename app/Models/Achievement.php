@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\PublishStatus;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use Database\Factories\AchievementFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -31,11 +32,11 @@ use Illuminate\Database\Eloquent\Model;
  * admin form offers none. Any number of rows can be published and the strip
  * spreads whatever exists evenly across the row.
  */
-#[Fillable(['label', 'value', 'prefix', 'suffix', 'sort_order', 'status'])]
+#[Fillable(['label', 'value', 'prefix', 'suffix', 'sort_order', 'status', 'label_hi', 'prefix_hi', 'suffix_hi'])]
 class Achievement extends Model
 {
     /** @use HasFactory<AchievementFactory> */
-    use Auditable, HasFactory, HasPublicId;
+    use Auditable, HasFactory, HasPublicId, HasTranslations;
 
     protected function casts(): array
     {
@@ -55,5 +56,17 @@ class Achievement extends Model
     public function displayValue(): string
     {
         return $this->prefix.$this->value.$this->suffix;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'label',
+            'prefix',
+            'suffix',
+        ];
     }
 }

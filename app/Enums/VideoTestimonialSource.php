@@ -5,8 +5,9 @@ namespace App\Enums;
 use Filament\Support\Contracts\HasLabel;
 
 /**
- * Where a video testimonial's footage comes from: a file uploaded to the
- * public disk, or a YouTube video embedded through youtube-nocookie.com.
+ * Where a video testimonial's or social media video's footage comes from: a
+ * file uploaded to the public disk, or a YouTube video embedded through
+ * youtube-nocookie.com. The values double as the shared player's `type`.
  */
 enum VideoTestimonialSource: string implements HasLabel
 {

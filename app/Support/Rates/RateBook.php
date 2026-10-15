@@ -4,6 +4,7 @@ namespace App\Support\Rates;
 
 use App\Enums\LenderStatus;
 use App\Enums\LoanCategory;
+use App\Enums\RateSourceType;
 use App\Enums\RateStatus;
 use App\Enums\RateType;
 use App\Enums\RateUnit;
@@ -11,6 +12,7 @@ use App\Enums\RateVerificationStatus;
 use App\Enums\RepaymentMethod;
 use App\Models\LenderProductRate;
 use App\Models\LoanProduct;
+use App\Support\Localization\SiteLocale;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -35,7 +37,18 @@ final class RateBook
 {
     public const TIMEZONE = LenderProductRate::TIMEZONE;
 
-    private const CACHE_KEY = 'rate-book:published-rates:v2';
+    /**
+     * v4 added the Hindi (`{column}_hi`) values to each cached row, so a copy
+     * cached before them is never read.
+     */
+    private const CACHE_KEY = 'rate-book:published-rates:v4';
+
+    /**
+     * Visitor-facing rate text with a translated sibling column (see
+     * LenderProductRate::translatableAttributes()). Both languages are cached;
+     * quote() picks one at read time, so the cache stays language-neutral.
+     */
+    private const TRANSLATED_COLUMNS = ['variant', 'borrower_segment', 'promo_label', 'eligibility_notes', 'disclaimer'];
 
     /**
      * A token that changes after every committed change to rates, offers,
@@ -96,8 +109,9 @@ final class RateBook
 
     /**
      * Every live quote for one lender offer, best first: rates open to all
-     * borrowers before segment-only ones, then lowest starting rate, then the
-     * marketing team's featured flag and display priority.
+     * borrowers before segment-only ones, the lender's own rates before
+     * third-party ones, then lowest starting rate, then the marketing team's
+     * featured flag and display priority.
      *
      * @return list<RateQuote>
      */
@@ -105,8 +119,8 @@ final class RateBook
     {
         return self::instance()->live()
             ->where('lenderProductId', $lenderProductId)
-            ->sort(fn (RateQuote $a, RateQuote $b) => [$a->isForAllBorrowers() ? 0 : 1, $a->startingRate(), $b->featured, $b->displayPriority]
-                <=> [$b->isForAllBorrowers() ? 0 : 1, $b->startingRate(), $a->featured, $a->displayPriority])
+            ->sort(fn (RateQuote $a, RateQuote $b) => [$a->isForAllBorrowers() ? 0 : 1, $a->isOfficial() ? 0 : 1, $a->startingRate(), $b->featured, $b->displayPriority]
+                <=> [$b->isForAllBorrowers() ? 0 : 1, $b->isOfficial() ? 0 : 1, $b->startingRate(), $a->featured, $a->displayPriority])
             ->values()
             ->all();
     }
@@ -114,6 +128,16 @@ final class RateBook
     public static function quoteFor(int $lenderProductId): ?RateQuote
     {
         return self::quotesFor($lenderProductId)[0] ?? null;
+    }
+
+    /**
+     * The best quote read from the lender's own source — for anything that
+     * ranks lenders or calculates with a rate, which a third-party figure must
+     * not drive.
+     */
+    public static function officialQuoteFor(int $lenderProductId): ?RateQuote
+    {
+        return collect(self::quotesFor($lenderProductId))->first(fn (RateQuote $quote) => $quote->isOfficial());
     }
 
     /**
@@ -135,7 +159,9 @@ final class RateBook
     {
         $quotes = $this->live()
             ->where('loanProductId', $loanProductId)
-            ->filter(fn (RateQuote $quote) => $quote->isForAllBorrowers());
+            // Only the lenders' own published rates may make a product-wide
+            // claim; a third-party figure is shown only in its lender's row.
+            ->filter(fn (RateQuote $quote) => $quote->isForAllBorrowers() && $quote->isOfficial());
 
         $unit = $this->unitFor($loanProductId);
 
@@ -210,8 +236,8 @@ final class RateBook
             lenderProductId: $row['lender_product_id'],
             loanProductId: $row['loan_product_id'],
             lenderName: $row['lender_name'],
-            variant: $row['variant'],
-            borrowerSegment: $row['borrower_segment'],
+            variant: $this->localized($row, 'variant'),
+            borrowerSegment: $this->localized($row, 'borrower_segment'),
             rateMin: $row['rate_min'],
             rateMax: $row['rate_max'],
             unit: RateUnit::from($row['rate_unit']),
@@ -219,15 +245,38 @@ final class RateBook
             repaymentMethod: $row['repayment_method'] ? RepaymentMethod::tryFrom($row['repayment_method']) : null,
             benchmark: $row['benchmark'],
             promoRate: $promoOpen ? $row['promo_rate'] : null,
-            promoLabel: $promoOpen ? $row['promo_label'] : null,
+            promoLabel: $promoOpen ? $this->localized($row, 'promo_label') : null,
             promoEndsAt: $promoOpen ? $promoEndsAt : null,
-            eligibilityNotes: $row['eligibility_notes'],
-            disclaimer: $row['disclaimer'],
+            eligibilityNotes: $this->localized($row, 'eligibility_notes'),
+            disclaimer: $this->localized($row, 'disclaimer'),
             sourceUrl: $row['source_url'],
+            sourceType: RateSourceType::tryFrom((string) $row['source_type']) ?? RateSourceType::Official,
+            sourceName: $row['source_name'],
             lastVerifiedAt: CarbonImmutable::parse($row['last_verified_at'], self::TIMEZONE),
             featured: $row['is_featured'],
             displayPriority: $row['display_priority'],
         );
+    }
+
+    /**
+     * A row's text in the visitor's language: the `{column}_hi` value while the
+     * site runs in Hindi and it is filled, otherwise the English. A blank English
+     * value stays blank, so whether a rate is segment-only (and may drive the
+     * product headline) never depends on the language.
+     *
+     * @param  array<string, mixed>  $row
+     */
+    private function localized(array $row, string $column): ?string
+    {
+        $value = $row[$column];
+
+        if (blank($value) || ! SiteLocale::isTranslating()) {
+            return $value;
+        }
+
+        $translated = $row[$column.'_'.SiteLocale::current()] ?? null;
+
+        return blank($translated) ? $value : $translated;
     }
 
     /**
@@ -308,9 +357,14 @@ final class RateBook
                 'eligibility_notes' => $row->eligibility_notes,
                 'disclaimer' => $row->disclaimer,
                 'source_url' => $row->source_url,
+                'source_type' => $row->source_type,
+                'source_name' => $row->source_name,
                 'last_verified_at' => substr((string) $row->last_verified_at, 0, 10),
                 'is_featured' => (bool) $row->is_featured,
                 'display_priority' => (int) $row->display_priority,
+                ...collect(self::TRANSLATED_COLUMNS)
+                    ->mapWithKeys(fn (string $column): array => ["{$column}_hi" => $row->{"{$column}_hi"} ?? null])
+                    ->all(),
             ])
             ->all();
     }

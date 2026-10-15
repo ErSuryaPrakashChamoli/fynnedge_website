@@ -6,6 +6,7 @@ use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use App\Models\Concerns\Publishable;
 use App\Models\Concerns\Seoable;
 use App\Modules\Journey\Models\JourneyDefinition;
@@ -30,11 +31,24 @@ use Illuminate\Support\Facades\Storage;
     'default_amount', 'default_tenure_months', 'default_interest_rate',
     'default_initial_tenure_months',
     'marketing_headline', 'benefits', 'image_path', 'image_alt', 'cta_label',
+    'name_hi',
+    'marketing_headline_hi',
+    'summary_hi',
+    'body_hi',
+    'image_alt_hi',
+    'cta_label_hi',
+    'features_hi',
+    'benefits_hi',
+    'eligibility_points_hi',
+    'documents_required_hi',
+    'process_steps_hi',
+    'interest_rate_note_hi',
+    'calculator_explanation_hi',
 ])]
 class LoanProduct extends Model
 {
     /** @use HasFactory<LoanProductFactory> */
-    use Auditable, HasFactory, HasPublicId, Publishable, Seoable, SoftDeletes;
+    use Auditable, HasFactory, HasPublicId, HasTranslations, Publishable, Seoable, SoftDeletes;
 
     /**
      * RateBook caches each rate with its product's slug and category (the
@@ -53,10 +67,15 @@ class LoanProduct extends Model
             'category' => LoanCategory::class,
             'status' => PublishStatus::class,
             'features' => 'array',
+            'features_hi' => 'array',
             'eligibility_points' => 'array',
+            'eligibility_points_hi' => 'array',
             'documents_required' => 'array',
+            'documents_required_hi' => 'array',
             'process_steps' => 'array',
+            'process_steps_hi' => 'array',
             'benefits' => 'array',
+            'benefits_hi' => 'array',
             'published_at' => 'datetime',
             'expires_at' => 'datetime',
             'min_amount' => 'decimal:2',
@@ -111,5 +130,27 @@ class LoanProduct extends Model
     public function landingPages(): HasMany
     {
         return $this->hasMany(LoanLandingPage::class);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'name',
+            'marketing_headline',
+            'summary',
+            'body',
+            'image_alt',
+            'cta_label',
+            'features',
+            'benefits',
+            'eligibility_points',
+            'documents_required',
+            'process_steps',
+            'interest_rate_note',
+            'calculator_explanation',
+        ];
     }
 }

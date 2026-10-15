@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\JourneyDefinitions\RelationManagers;
 
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Modules\Journey\Enums\FieldType;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -14,6 +15,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -89,8 +91,35 @@ class StepsRelationManager extends RelationManager
                                     ->label('Value'),
                             ])
                             ->columnSpanFull(),
+
+                        HindiTranslationSection::make([
+                            TextInput::make('label_hi')
+                                ->label('Label (Hindi)'),
+                            TextInput::make('help_text_hi')
+                                ->label('Help text (Hindi)'),
+                            Repeater::make('options_hi')
+                                ->label('Options (Hindi)')
+                                ->helperText('List every option with the same value as its English option, so the answer saved is the same in both languages. Leave empty to show the English options.')
+                                ->visible(fn (Get $get): bool => in_array($get->enum('type', FieldType::class, isNullable: true), [FieldType::Select, FieldType::SearchableSelect, FieldType::Radio], true))
+                                ->schema([
+                                    TextInput::make('value')->required(),
+                                    TextInput::make('label')->required(),
+                                ])
+                                ->columns(2)
+                                ->defaultItems(0)
+                                ->addActionLabel('Add option')
+                                ->columnSpanFull(),
+                        ])->columns(2),
                     ])
                     ->columnSpanFull(),
+
+                HindiTranslationSection::make([
+                    TextInput::make('title_hi')
+                        ->label('Title (Hindi)'),
+                    Textarea::make('description_hi')
+                        ->label('Description (Hindi)')
+                        ->columnSpanFull(),
+                ]),
             ]);
     }
 

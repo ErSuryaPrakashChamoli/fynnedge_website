@@ -2,6 +2,7 @@
 
 namespace App\Support\Rates;
 
+use App\Enums\RateSourceType;
 use App\Enums\RateVerificationStatus;
 use App\Models\LenderProductRate;
 
@@ -32,6 +33,10 @@ final class RatePublicationRules
 
         if (! self::isOfficialSourceUrl($rate->source_url)) {
             $problems[] = 'Add the https:// link to the lender\'s own page or rate schedule that states this rate.';
+        }
+
+        if ($rate->source_type === RateSourceType::ThirdParty && blank($rate->source_name)) {
+            $problems[] = 'Name the third-party site the rate comes from (e.g. Paisabazaar), so the website can label it.';
         }
 
         if ($rate->last_verified_at === null) {

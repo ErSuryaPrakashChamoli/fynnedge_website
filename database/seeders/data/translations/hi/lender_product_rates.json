@@ -1,0 +1,3377 @@
+[
+ {
+  "field": "borrower_segment",
+  "en": "Rate based on CIBIL score; additional 10 bps premium for non-salaried customers with CIBIL < 825",
+  "hi": "CIBIL स्कोर के आधार पर दर; CIBIL < 825 वाले गैर-वेतनभोगी ग्राहकों के लिए 10 bps (बेसिस पॉइंट) का अतिरिक्त प्रीमियम"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Salaried & self-employed",
+  "hi": "वेतनभोगी और स्व-रोज़गार"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Self-employed",
+  "hi": "स्व-रोज़गार"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Salaried (non-salaried from 9.25%)",
+  "hi": "वेतनभोगी (गैर-वेतनभोगी के लिए 9.25% से)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Home Loan - overdraft (floating, repo-linked)",
+  "hi": "होम लोन - ओवरड्राफ्ट (फ्लोटिंग, रेपो-लिंक्ड)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Rate range - loans to individuals, Apr'26-Jun'26",
+  "hi": "दर रेंज - व्यक्तियों को दिए गए लोन, अप्रैल'26-जून'26"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "CIC score above 700; loans up to Rs 200 lakh",
+  "hi": "सीआईसी स्कोर 700 से ऊपर; ₹200 लाख तक के लोन"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Salaried govt/PSU employees, min gross monthly salary Rs 50,000, CIBIL 700 & above",
+  "hi": "वेतनभोगी सरकारी/पीएसयू कर्मचारी, न्यूनतम सकल मासिक सैलरी ₹50,000, CIBIL 700 और उससे ऊपर"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Women borrowers",
+  "hi": "महिला उधारकर्ता"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Women borrowers (scheme-specific); CIC-score based",
+  "hi": "महिला उधारकर्ता (स्कीम के अनुसार); सीआईसी स्कोर पर आधारित"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Headline 'starting' rate in page title/meta only",
+  "hi": "हेडलाइन 'शुरुआती' दर सिर्फ़ पेज टाइटल/मेटा में"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Fixed-rate Home Loan (24/37/60/120 months/full term)",
+  "hi": "फिक्स्ड रेट होम लोन (24/37/60/120 महीने/पूरी अवधि)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Customers with a pre-approved Home Loan offer only",
+  "hi": "सिर्फ़ प्री-अप्रूव्ड होम लोन ऑफ़र वाले ग्राहक"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Credit score 800+: 8.75% (salaried & self-employed); 750-800: 8.75% salaried / 8.85% self-employed",
+  "hi": "क्रेडिट स्कोर 800+: 8.75% (वेतनभोगी और स्व-रोज़गार); 750-800: वेतनभोगी 8.75% / स्व-रोज़गार 8.85%"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "General",
+  "hi": "सामान्य"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Borrowers opting/switching to fixed rate",
+  "hi": "फिक्स्ड रेट चुनने/उसमें स्विच करने वाले उधारकर्ता"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Affordable housing segment (individuals)",
+  "hi": "अफोर्डेबल हाउसिंग सेगमेंट (व्यक्ति)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Affordable housing segment",
+  "hi": "अफोर्डेबल हाउसिंग सेगमेंट"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Individuals, smaller ticket sizes",
+  "hi": "व्यक्ति, छोटी लोन राशि"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Individuals, larger ticket sizes",
+  "hi": "व्यक्ति, बड़ी लोन राशि"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Individual borrowers",
+  "hi": "व्यक्तिगत उधारकर्ता"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Professional borrowers / doctors",
+  "hi": "प्रोफेशनल उधारकर्ता / डॉक्टर"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Self-employed applicants",
+  "hi": "स्व-रोज़गार आवेदक"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Self-employed; credit-score tiered (7.30% needs CIBIL >= 825, loan up to Rs.5 cr)",
+  "hi": "स्व-रोज़गार; क्रेडिट स्कोर के अनुसार अलग-अलग दरें (7.30% के लिए CIBIL >= 825 ज़रूरी, ₹5 करोड़ तक का लोन)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Individual Housing Loans - contracted range Q1 FY2026-27 (all schemes)",
+  "hi": "व्यक्तिगत हाउसिंग लोन - Q1 FY2026-27 की अनुबंधित दर रेंज (सभी स्कीमें)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Self Employed Non-Professional (SENP)",
+  "hi": "स्व-रोज़गार नॉन-प्रोफेशनल (SENP)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Salaried",
+  "hi": "वेतनभोगी"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Home Loan - fixed rate",
+  "hi": "होम लोन - फिक्स्ड रेट"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Self-employed; loan Rs 5 lakh to Rs 7.5 crore",
+  "hi": "स्व-रोज़गार; ₹5 लाख से ₹7.5 करोड़ तक का लोन"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Individual borrowers, housing loans",
+  "hi": "व्यक्तिगत उधारकर्ता, हाउसिंग लोन"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Q1 FY2026-27 disclosed range — Housing Loan",
+  "hi": "Q1 FY2026-27 की घोषित रेंज — हाउसिंग लोन"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Muthoot Homefin - rates on housing loans contracted, quarter ended June 2026",
+  "hi": "Muthoot Homefin - जून 2026 को समाप्त तिमाही में अनुबंधित हाउसिंग लोन की दरें"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Cash-salaried borrowers",
+  "hi": "नकद वेतन पाने वाले उधारकर्ता"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Low-income salaried",
+  "hi": "कम आय वाले वेतनभोगी"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Loan Against Property CC and CC-Liquirent (Individual, Cash Credit)",
+  "hi": "प्रॉपर्टी पर लोन CC और CC-Liquirent (व्यक्तिगत, कैश क्रेडिट)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Rate range - Overdraft Against Property, Apr'26-Jun'26",
+  "hi": "दर रेंज - प्रॉपर्टी पर ओवरड्राफ्ट, अप्रैल'26-जून'26"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Mortgage Loan - Unnati 1 / Unnati 2 (small-ticket mortgage programs)",
+  "hi": "मॉर्गेज लोन - Unnati 1 / Unnati 2 (छोटी राशि वाले मॉर्गेज प्रोग्राम)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Fixed rack rate",
+  "hi": "फिक्स्ड रैक रेट"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "PSL 9.40%-10.00%; Non-PSL 9.65%-10.25%",
+  "hi": "PSL 9.40%-10.00%; नॉन-PSL 9.65%-10.25%"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Property Power (LAP) - overdraft (floating, repo-linked)",
+  "hi": "Property Power (प्रॉपर्टी पर लोन) - ओवरड्राफ्ट (फ्लोटिंग, रेपो-लिंक्ड)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Dedicated LAP rate page (expired table)",
+  "hi": "प्रॉपर्टी पर लोन का अलग दर पेज (समाप्त हो चुकी तालिका)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "LAP — salaried/self-employed starting rate (LAP interest-rate page)",
+  "hi": "प्रॉपर्टी पर लोन — वेतनभोगी/स्व-रोज़गार के लिए शुरुआती दर (LAP ब्याज दर पेज)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Ind Mortgage (Overdraft)",
+  "hi": "Ind Mortgage (ओवरड्राफ्ट)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Ind Mortgage (Term Loan) - loan above Rs.7.50 Cr",
+  "hi": "Ind Mortgage (टर्म लोन) - ₹7.50 करोड़ से ज़्यादा का लोन"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Loan Against Property (consolidated fees schedule)",
+  "hi": "प्रॉपर्टी पर लोन (समेकित फीस शेड्यूल)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Griha Vikas (non-housing) - contracted range Q1 FY2026-27",
+  "hi": "Griha Vikas (नॉन-हाउसिंग) - Q1 FY2026-27 की अनुबंधित दर रेंज"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Loan Against Property - Fixed rate",
+  "hi": "प्रॉपर्टी पर लोन - फिक्स्ड रेट"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "S-LAP (small-ticket LAP)",
+  "hi": "S-LAP (छोटी राशि वाला प्रॉपर्टी पर लोन)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "LAP product page",
+  "hi": "प्रॉपर्टी पर लोन का प्रोडक्ट पेज"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Non-Home Loan - fixed rate (lifetime fixed or 3-year fixed then floating)",
+  "hi": "नॉन-होम लोन - फिक्स्ड रेट (पूरी अवधि फिक्स्ड या 3 साल फिक्स्ड, फिर फ्लोटिंग)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "SME / business borrowers; LTV up to 65%",
+  "hi": "एसएमई / बिज़नेस उधारकर्ता; एलटीवी 65% तक"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Easy Credit Line (personal overdraft)",
+  "hi": "Easy Credit Line (पर्सनल ओवरड्राफ्ट)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Personal Loan — advertised starting rate (PL interest-rate page)",
+  "hi": "पर्सनल लोन — विज्ञापित शुरुआती दर (पर्सनल लोन ब्याज दर पेज)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Advertised range (page body text)",
+  "hi": "विज्ञापित रेंज (पेज के मुख्य टेक्स्ट में)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Personal loans not covered by a named scheme",
+  "hi": "ऐसे पर्सनल लोन जो किसी नामित स्कीम में शामिल नहीं हैं"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Salaried employees of employers with a salary tie-up with the bank",
+  "hi": "ऐसे नियोक्ताओं के वेतनभोगी कर्मचारी जिनका बैंक के साथ सैलरी टाई-अप है"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "All PL customers in the quarter",
+  "hi": "तिमाही के सभी पर्सनल लोन ग्राहक"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Professionals only (scheme-specific)",
+  "hi": "सिर्फ़ प्रोफेशनल (स्कीम के अनुसार)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Scheme-specific (IB Saral)",
+  "hi": "स्कीम के अनुसार (IB Saral)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Salaried customers (online journey)",
+  "hi": "वेतनभोगी ग्राहक (ऑनलाइन प्रक्रिया)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Pensioners only",
+  "hi": "सिर्फ़ पेंशनभोगी"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Individuals; Insta Funding variant (listed with vehicle-finance disclosure)",
+  "hi": "व्यक्ति; Insta Funding वेरिएंट (व्हीकल फाइनेंस खुलासे के साथ सूचीबद्ध)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "All personal loan borrowers in the quarter",
+  "hi": "तिमाही के सभी पर्सनल लोन उधारकर्ता"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "All PL borrowers",
+  "hi": "सभी पर्सनल लोन उधारकर्ता"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "CIBIL-based",
+  "hi": "CIBIL आधारित"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Same categories as floating; CIBIL-based",
+  "hi": "फ्लोटिंग जैसी ही श्रेणियां; CIBIL आधारित"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Confirmed employees of Central/State Govt., PSUs, Govt. educational institutions with salary account at BoM",
+  "hi": "केंद्र/राज्य सरकार, पीएसयू, सरकारी शैक्षणिक संस्थानों के स्थायी कर्मचारी, जिनका सैलरी अकाउंट BoM में है"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Confirmed employees of private/public limited companies (10 years of existence), salary credited to another bank",
+  "hi": "प्राइवेट/पब्लिक लिमिटेड कंपनियों (10 साल से मौजूद) के स्थायी कर्मचारी, जिनकी सैलरी दूसरे बैंक में आती है"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Pre-approved customers only",
+  "hi": "सिर्फ़ प्री-अप्रूव्ड ग्राहक"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Central/State Govt, PSU employees, pensioners, staff/ex-staff",
+  "hi": "केंद्र/राज्य सरकार, पीएसयू कर्मचारी, पेंशनभोगी, स्टाफ/पूर्व-स्टाफ"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Private/MNC/approved-institute salaried (salary account)",
+  "hi": "प्राइवेट/एमएनसी/मान्यता प्राप्त संस्थान के वेतनभोगी (सैलरी अकाउंट)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Pre-approved / digital; CIBIL >= 700",
+  "hi": "प्री-अप्रूव्ड / डिजिटल; CIBIL >= 700"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Personal Loan - Fixed Rate of Interest",
+  "hi": "पर्सनल लोन - फिक्स्ड ब्याज दर"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Govt salaried 10.25-11.70; private salaried 11.25-12.70 (CIBIL 750+)",
+  "hi": "सरकारी वेतनभोगी 10.25-11.70; प्राइवेट वेतनभोगी 11.25-12.70 (CIBIL 750+)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Non-salaried individuals",
+  "hi": "गैर-वेतनभोगी व्यक्ति"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Government employees under SRLGE (Special Retail Lending Scheme for Government Employee)",
+  "hi": "SRLGE (Special Retail Lending Scheme for Government Employee) के तहत सरकारी कर्मचारी"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Salaried/self-employed buying new consumer durables; bureau-score tiered",
+  "hi": "नए कंज़्यूमर ड्यूरेबल्स खरीदने वाले वेतनभोगी/स्व-रोज़गार; ब्यूरो स्कोर के अनुसार अलग-अलग दरें"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Pricing range - loans to individuals, Apr 2026-Jun 2026",
+  "hi": "प्राइसिंग रेंज - व्यक्तियों को दिए गए लोन, अप्रैल 2026-जून 2026"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Q1 FY2026-27 disclosed range — Personal Loan - Branch",
+  "hi": "Q1 FY2026-27 की घोषित रेंज — पर्सनल लोन - ब्रांच"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Q1 FY2026-27 disclosed range — Personal Loan - Digital Business - Direct",
+  "hi": "Q1 FY2026-27 की घोषित रेंज — पर्सनल लोन - डिजिटल बिज़नेस - डायरेक्ट"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Q1 FY2026-27 disclosed range — Personal Loan - Digital Business - Embedded Finance",
+  "hi": "Q1 FY2026-27 की घोषित रेंज — पर्सनल लोन - डिजिटल बिज़नेस - एम्बेडेड फाइनेंस"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Other Unsecured Loans (including Digital loans, Fintech partnership loan etc)",
+  "hi": "अन्य अनसिक्योर्ड लोन (डिजिटल लोन, फिनटेक पार्टनरशिप लोन आदि सहित)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Relationship Personal Loan",
+  "hi": "रिलेशनशिप पर्सनल लोन"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Secured Personal Loan",
+  "hi": "सिक्योर्ड पर्सनल लोन"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Mortgage/housing customers (Mahindra Rural Housing / Sahyog)",
+  "hi": "मॉर्गेज/हाउसिंग ग्राहक (Mahindra Rural Housing / Sahyog)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Digitally sourced loans (e.g. Shriram One app)",
+  "hi": "डिजिटल माध्यम से मिले लोन (जैसे Shriram One ऐप)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Loans via co-lending, business-correspondent partners or the CholaOne app (D2C)",
+  "hi": "को-लेंडिंग, बिज़नेस-करेस्पॉन्डेंट पार्टनर या CholaOne ऐप (D2C) के ज़रिए लोन"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Personal loan (Interest Rate Policy band)",
+  "hi": "पर्सनल लोन (ब्याज दर नीति बैंड)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Unsecured business loans",
+  "hi": "अनसिक्योर्ड बिज़नेस लोन"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Self-employed professionals (doctors, CAs etc.)",
+  "hi": "स्व-रोज़गार प्रोफेशनल (डॉक्टर, सीए आदि)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "IRR actually offered Apr–Jun 2026 (Q1 FY2026-27)",
+  "hi": "अप्रैल–जून 2026 में वास्तव में दी गई आईआरआर (Q1 FY2026-27)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Business Instalment Loan — product page figure",
+  "hi": "बिज़नेस इंस्टॉलमेंट लोन — प्रोडक्ट पेज पर दिया गया आंकड़ा"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Business loan borrowers",
+  "hi": "बिज़नेस लोन उधारकर्ता"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Micro & small enterprises with collateral",
+  "hi": "कोलैटरल देने वाले माइक्रो और स्मॉल एंटरप्राइज़"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Professionals (doctors, CAs etc.) only",
+  "hi": "सिर्फ़ प्रोफेशनल (डॉक्टर, सीए आदि)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Secured (property-backed) small business loans",
+  "hi": "सिक्योर्ड (प्रॉपर्टी के बदले) स्मॉल बिज़नेस लोन"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Q1 FY2026-27 disclosed range — MSME Unsecured",
+  "hi": "Q1 FY2026-27 की घोषित रेंज — एमएसएमई अनसिक्योर्ड"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "MSME borrowers rated up to CBI-6",
+  "hi": "CBI-6 तक रेटिंग वाले एमएसएमई उधारकर्ता"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Individual borrowers only",
+  "hi": "सिर्फ़ व्यक्तिगत उधारकर्ता"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Businesses financing commercial/construction equipment",
+  "hi": "कमर्शियल/कंस्ट्रक्शन इक्विपमेंट के लिए फाइनेंस लेने वाले बिज़नेस"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "MSMEs financing equipment/machinery",
+  "hi": "इक्विपमेंट/मशीनरी के लिए फाइनेंस लेने वाले एमएसएमई"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "SME / MSME businesses",
+  "hi": "एसएमई / एमएसएमई बिज़नेस"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Business borrowers; loans up to Rs 80 lakh",
+  "hi": "बिज़नेस उधारकर्ता; ₹80 लाख तक के लोन"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Q1 FY2026-27 disclosed range — MSME Secured",
+  "hi": "Q1 FY2026-27 की घोषित रेंज — एमएसएमई सिक्योर्ड"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Flexi Personal Loan / Flexi Dropline Credit (PL schedule of charges)",
+  "hi": "फ्लेक्सी पर्सनल लोन / फ्लेक्सी ड्रॉपलाइन क्रेडिट (पर्सनल लोन चार्ज शेड्यूल)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Self-employed / business borrowers",
+  "hi": "स्व-रोज़गार / बिज़नेस उधारकर्ता"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Tarun Plus (borrowers who repaid earlier Tarun loan)",
+  "hi": "तरुण प्लस (जिन उधारकर्ताओं ने पिछला तरुण लोन चुका दिया है)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Micro enterprises under PMMY (Kishore/Tarun band)",
+  "hi": "PMMY के तहत माइक्रो एंटरप्राइज़ (किशोर/तरुण बैंड)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Shishu, straight-through digital journey",
+  "hi": "शिशु, पूरी तरह डिजिटल (स्ट्रेट-थ्रू) प्रक्रिया"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "IB Vehicle Loan (Eco Vahan)",
+  "hi": "IB Vehicle Loan (Eco Vahan)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "IB Vehicle Loan for purchase of used car",
+  "hi": "यूज़्ड कार खरीदने के लिए IB Vehicle Loan"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Individuals; used cars",
+  "hi": "व्यक्ति; यूज़्ड कारें"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Used cars",
+  "hi": "यूज़्ड कारें"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Digital channel",
+  "hi": "डिजिटल चैनल"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "CIC-score based",
+  "hi": "सीआईसी स्कोर पर आधारित"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Electric vehicle buyers",
+  "hi": "इलेक्ट्रिक वाहन खरीदार"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Used car buyers",
+  "hi": "यूज़्ड कार खरीदार"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Mean interest rate disclosure - cases disbursed July-September 2026",
+  "hi": "औसत ब्याज दर का खुलासा - जुलाई-सितंबर 2026 में वितरित केस"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Used-car borrowers",
+  "hi": "यूज़्ड कार उधारकर्ता"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "CIC score above 700 (or NTC); up to Rs 50 lakh",
+  "hi": "सीआईसी स्कोर 700 से ऊपर (या NTC); ₹50 लाख तक"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Electric 4-wheeler buyers",
+  "hi": "इलेक्ट्रिक 4-व्हीलर खरीदार"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Used car / Loan against car - fixed rate",
+  "hi": "यूज़्ड कार / कार पर लोन - फिक्स्ड रेट"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Retail; based on CIBIL score and car segment",
+  "hi": "रिटेल; CIBIL स्कोर और कार सेगमेंट के आधार पर"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Vehicle Loan (Electric) - Individual Four Wheeler",
+  "hi": "व्हीकल लोन (इलेक्ट्रिक) - व्यक्तिगत फोर व्हीलर"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Individuals; pre-owned cars",
+  "hi": "व्यक्ति; प्री-ओन्ड कारें"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Electric cars",
+  "hi": "इलेक्ट्रिक कारें"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Pricing range - New Car Loan, Jul-Sep 2026",
+  "hi": "प्राइसिंग रेंज - नई कार लोन, जुलाई-सितंबर 2026"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Used Car Loan & Loan Against Car - pricing grid",
+  "hi": "यूज़्ड कार लोन और कार पर लोन - प्राइसिंग ग्रिड"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Individuals, used cars (up to 85% of valuation, up to 5 years)",
+  "hi": "व्यक्ति, यूज़्ड कारें (वैल्यूएशन का 85% तक, 5 साल तक)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Existing SBI home loan borrowers (Loyalty scheme)",
+  "hi": "मौजूदा SBI होम लोन उधारकर्ता (Loyalty स्कीम)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Electric cars only",
+  "hi": "सिर्फ़ इलेक्ट्रिक कारें"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Festive Treat offer",
+  "hi": "Festive Treat ऑफ़र"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "IRR actually offered Apr–Jun 2026 (Auto Loan)",
+  "hi": "अप्रैल–जून 2026 में वास्तव में दी गई आईआरआर (ऑटो लोन)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Used Car Finance",
+  "hi": "यूज़्ड कार फाइनेंस"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Car - used",
+  "hi": "कार - यूज़्ड"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Used Car Loan (UCL)",
+  "hi": "यूज़्ड कार लोन (UCL)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Used Car Loan Balance Transfer",
+  "hi": "यूज़्ड कार लोन बैलेंस ट्रांसफ़र"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Non-commercial vehicle (New) - Others",
+  "hi": "नॉन-कमर्शियल वाहन (नया) - अन्य"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Commuter from 10%; Mid Premium/EV from 10%; Premium from 9%",
+  "hi": "कम्यूटर 10% से; मिड प्रीमियम/ईवी 10% से; प्रीमियम 9% से"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Baroda Two Wheeler Loan (fixed, 1-year MCLR linked)",
+  "hi": "Baroda Two Wheeler Loan (फिक्स्ड, 1 साल के एमसीएलआर से लिंक्ड)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Women borrowers, electric two-wheelers only; CIC-score based",
+  "hi": "महिला उधारकर्ता, सिर्फ़ इलेक्ट्रिक टू व्हीलर; सीआईसी स्कोर पर आधारित"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Superbike buyers",
+  "hi": "सुपरबाइक खरीदार"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "IRR actually offered Apr–Jun 2026 — Two-Wheeler Loan",
+  "hi": "अप्रैल–जून 2026 में वास्तव में दी गई आईआरआर — टू व्हीलर लोन"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Women borrowers (Pink Wheel scheme)",
+  "hi": "महिला उधारकर्ता (Pink Wheel स्कीम)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Vehicle Loan (Electric) - Individual Two Wheeler",
+  "hi": "व्हीकल लोन (इलेक्ट्रिक) - व्यक्तिगत टू व्हीलर"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Individuals; used two-wheelers",
+  "hi": "व्यक्ति; यूज़्ड टू व्हीलर"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "PNB Power Ride",
+  "hi": "PNB Power Ride"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Mean interest rate disclosure - cases disbursed April-June 2026",
+  "hi": "औसत ब्याज दर का खुलासा - अप्रैल-जून 2026 में वितरित केस"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "CIBIL 721+ (9.25 for >=825 to 10.50 for 721-749); premium two-wheelers (minimum loan Rs.1.50 lakh)",
+  "hi": "CIBIL 721+ (>=825 के लिए 9.25 से 721-749 के लिए 10.50 तक); प्रीमियम टू व्हीलर (न्यूनतम लोन ₹1.50 लाख)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Non-commercial two-wheeler (Used)",
+  "hi": "नॉन-कमर्शियल टू व्हीलर (यूज़्ड)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Used Two-Wheeler",
+  "hi": "यूज़्ड टू व्हीलर"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Agricultural land up to 2.5 acres",
+  "hi": "2.5 एकड़ तक की कृषि भूमि"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "No agricultural land requirement",
+  "hi": "कृषि भूमि की कोई शर्त नहीं"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "New Tractor Loan, tenure up to 36 months (disbursed Apr'26-Jun'26)",
+  "hi": "नया ट्रैक्टर लोन, 36 महीने तक की अवधि (अप्रैल'26-जून'26 में वितरित)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Used Tractor Loan (disbursed Apr'26-Jun'26)",
+  "hi": "यूज़्ड ट्रैक्टर लोन (अप्रैल'26-जून'26 में वितरित)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Individuals; used tractors",
+  "hi": "व्यक्ति; यूज़्ड ट्रैक्टर"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Pre-owned tractors up to 15 years old",
+  "hi": "15 साल तक पुराने प्री-ओन्ड ट्रैक्टर"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "IRR actually offered Apr–Jun 2026",
+  "hi": "अप्रैल–जून 2026 में वास्तव में दी गई आईआरआर"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Tractor loan (product page FAQ)",
+  "hi": "ट्रैक्टर लोन (प्रोडक्ट पेज के सवाल-जवाब)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Personal (OD) and retail/MSME gold loans",
+  "hi": "पर्सनल (ओवरड्राफ्ट) और रिटेल/एमएसएमई गोल्ड लोन"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Loan amount above INR 8 lakh with tenure exceeding 12 months; at branches offering gold loans",
+  "hi": "₹8 लाख से ज़्यादा की लोन राशि और 12 महीने से ज़्यादा की अवधि; गोल्ड लोन देने वाली ब्रांचों में"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Individuals, consumption purpose",
+  "hi": "व्यक्ति, उपभोग के उद्देश्य से"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Individuals (retail personal gold loan)",
+  "hi": "व्यक्ति (रिटेल पर्सनल गोल्ड लोन)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Individuals engaged in agriculture & allied activities (dairy, fishery, animal husbandry, poultry, bee-keeping, sericulture)",
+  "hi": "खेती और उससे जुड़े कामों (डेयरी, मछली पालन, पशुपालन, मुर्गी पालन, मधुमक्खी पालन, रेशम कीट पालन) में लगे व्यक्ति"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Agriculturists",
+  "hi": "किसान"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "All individuals owning the gold (consumption purpose); SB account with BoB required",
+  "hi": "गोल्ड के मालिक सभी व्यक्ति (उपभोग के उद्देश्य से); BoB में सेविंग्स (SB) अकाउंट ज़रूरी"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Agriculturists (crop cultivation / allied activities)",
+  "hi": "किसान (फसल की खेती / उससे जुड़े काम)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "All gold loan customers in the quarter",
+  "hi": "तिमाही के सभी गोल्ड लोन ग्राहक"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Women borrowers only; max Rs.5 lakh",
+  "hi": "सिर्फ़ महिला उधारकर्ता; अधिकतम ₹5 लाख"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "MSME borrowers, income-generating purpose",
+  "hi": "एमएसएमई उधारकर्ता, आय अर्जित करने के उद्देश्य से"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Retail (non-priority) borrowers",
+  "hi": "रिटेल (नॉन-प्रायोरिटी) उधारकर्ता"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "GOLD Overdraft Retail - 30% Margin",
+  "hi": "गोल्ड ओवरड्राफ्ट रिटेल - 30% मार्जिन"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Gold Loan - Overdraft (fixed category)",
+  "hi": "गोल्ड लोन - ओवरड्राफ्ट (फिक्स्ड श्रेणी)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Gold Loan via ABCD app (monthly rate as stated)",
+  "hi": "ABCD ऐप के ज़रिए गोल्ड लोन (बताई गई मासिक दर)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Balance-transfer (takeover) borrowers, Rs.5 lakh to Rs.5 crore, 3-month tenure",
+  "hi": "बैलेंस ट्रांसफ़र (टेकओवर) उधारकर्ता, ₹5 लाख से ₹5 करोड़, 3 महीने की अवधि"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Loan Rs.15 lakh to Rs.25 lakh, 75% LTV",
+  "hi": "लोन ₹15 लाख से ₹25 लाख, 75% एलटीवी"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Small-ticket borrowers (loan Rs.1,500 to Rs.50,000), 12-month tenure",
+  "hi": "छोटी राशि वाले उधारकर्ता (लोन ₹1,500 से ₹50,000), 12 महीने की अवधि"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Scheme by loan size: Premium/Dhanush/Prithivi Rs 5 lakh & above; Fortune/Shaurya/Akash Rs 2.5-5 lakh; Enrich/Agni/Brahmos Rs 5,000-2.5 lakh",
+  "hi": "लोन राशि के अनुसार स्कीम: Premium/Dhanush/Prithivi ₹5 लाख और उससे ज़्यादा; Fortune/Shaurya/Akash ₹2.5-5 लाख; Enrich/Agni/Brahmos ₹5,000-2.5 लाख"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Chola Welfare loan Scheme",
+  "hi": "Chola Welfare loan Scheme"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Secured credit card holders",
+  "hi": "सिक्योर्ड क्रेडिट कार्ड धारक"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "FD-backed (secured) cards only",
+  "hi": "सिर्फ़ एफडी-आधारित (सिक्योर्ड) कार्ड"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "AU CA (chartered accountants) / AU CS (company secretaries) cardholders",
+  "hi": "AU CA (चार्टर्ड अकाउंटेंट) / AU CS (कंपनी सेक्रेटरी) कार्डधारक"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Zenith+ cardholders",
+  "hi": "Zenith+ कार्डधारक"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "All variants — range per Credit Card Issuance and Conduct Policy FY 26-27",
+  "hi": "सभी वेरिएंट — Credit Card Issuance and Conduct Policy FY 26-27 के अनुसार रेंज"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Micro enterprise (business) card only",
+  "hi": "सिर्फ़ माइक्रो एंटरप्राइज़ (बिज़नेस) कार्ड"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Holders of the named premium/specific variants only",
+  "hi": "सिर्फ़ बताए गए प्रीमियम/खास वेरिएंट के धारक"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Micro enterprise (business) card holders",
+  "hi": "माइक्रो एंटरप्राइज़ (बिज़नेस) कार्ड धारक"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "1838 Reserve card holders only",
+  "hi": "सिर्फ़ 1838 Reserve कार्ड धारक"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Lowest possible finance charge (discretionary)",
+  "hi": "सबसे कम संभव फाइनेंस चार्ज (विवेकाधीन)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Cardholders who do not pay MAD by due date",
+  "hi": "ऐसे कार्डधारक जो ड्यू डेट तक MAD (मिनिमम अमाउंट ड्यू) का भुगतान नहीं करते"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Platinum Aura, Platinum Aura Edge, ePay American Express, Platinum, Platinum RuPay & Legend, Platinum Select, Samman, CRED IndusInd Bank RuPay, Jio-bp Mobility+ cardholders",
+  "hi": "Platinum Aura, Platinum Aura Edge, ePay American Express, Platinum, Platinum RuPay & Legend, Platinum Select, Samman, CRED IndusInd Bank RuPay, Jio-bp Mobility+ कार्डधारक"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Premium cards (White Reserve, Solitaire, Kotak Signature, Infinite, White Signature, Privy League Signature, Air+, 811 Super Money, Air+ Prime)",
+  "hi": "प्रीमियम कार्ड (White Reserve, Solitaire, Kotak Signature, Infinite, White Signature, Privy League Signature, Air+, 811 Super Money, Air+ Prime)"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Shaurya / Defence cards and secured (FD-backed) cards only",
+  "hi": "सिर्फ़ Shaurya / Defence कार्ड और सिक्योर्ड (एफडी-आधारित) कार्ड"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "Yes Private for NRI / Elite+ issued against FD / Select for NRI / Select issued against FD / Ace issued against FD / YES First Preferred issued against FD / YES First Preferred for NRI / Reserv for NRI",
+  "hi": "एनआरआई के लिए Yes Private / एफडी के बदले जारी Elite+ / एनआरआई के लिए Select / एफडी के बदले जारी Select / एफडी के बदले जारी Ace / एफडी के बदले जारी YES First Preferred / एनआरआई के लिए YES First Preferred / एनआरआई के लिए Reserv"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "VISA Bharat Card - purchases",
+  "hi": "VISA Bharat Card - खरीदारी"
+ },
+ {
+  "field": "borrower_segment",
+  "en": "VISA Gold / RuPay Classic - purchases",
+  "hi": "VISA Gold / RuPay Classic - खरीदारी"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan (TL)",
+  "hi": "होम लोन (टर्म लोन)"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan Maxgain (OD)",
+  "hi": "होम लोन Maxgain (ओवरड्राफ्ट)"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan — salaried, floating (rates hub)",
+  "hi": "होम लोन — वेतनभोगी, फ्लोटिंग (रेट्स हब)"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan — advertised starting rate (HL interest-rate page)",
+  "hi": "होम लोन — विज्ञापित शुरुआती दर (होम लोन ब्याज दर पेज)"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan — self-employed, floating (rates hub)",
+  "hi": "होम लोन — स्व-रोज़गार, फ्लोटिंग (रेट्स हब)"
+ },
+ {
+  "field": "variant",
+  "en": "Baroda Home Loan to Non-Staff members (floating)",
+  "hi": "नॉन-स्टाफ सदस्यों के लिए Baroda Home Loan (फ्लोटिंग)"
+ },
+ {
+  "field": "variant",
+  "en": "Baroda Home Loan to Non-Staff members (fixed)",
+  "hi": "नॉन-स्टाफ सदस्यों के लिए Baroda Home Loan (फिक्स्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan - term loan (floating, repo-linked)",
+  "hi": "होम लोन - टर्म लोन (फ्लोटिंग, रेपो-लिंक्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan - overdraft (floating, repo-linked)",
+  "hi": "होम लोन - ओवरड्राफ्ट (फ्लोटिंग, रेपो-लिंक्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Housing Loan - headline rate",
+  "hi": "हाउसिंग लोन - हेडलाइन दर"
+ },
+ {
+  "field": "variant",
+  "en": "Rate range - loans to individuals, Apr'26-Jun'26",
+  "hi": "दर रेंज - व्यक्तियों को दिए गए लोन, अप्रैल'26-जून'26"
+ },
+ {
+  "field": "variant",
+  "en": "SIB Home Loan (floating)",
+  "hi": "SIB Home Loan (फ्लोटिंग)"
+ },
+ {
+  "field": "variant",
+  "en": "Home loan Interest Rate Card (Floating), all loan amounts",
+  "hi": "होम लोन ब्याज दर कार्ड (फ्लोटिंग), सभी लोन राशियां"
+ },
+ {
+  "field": "variant",
+  "en": "Maha Super Housing Loan (floating)",
+  "hi": "Maha Super Housing Loan (फ्लोटिंग)"
+ },
+ {
+  "field": "variant",
+  "en": "Fixed Rate Housing Loan (Maha Super Housing)",
+  "hi": "फिक्स्ड रेट हाउसिंग लोन (Maha Super Housing)"
+ },
+ {
+  "field": "variant",
+  "en": "Housing loan for Central/State Govt/PSU/Govt-aided educational institution employees",
+  "hi": "केंद्र/राज्य सरकार/पीएसयू/सरकारी सहायता प्राप्त शैक्षणिक संस्थानों के कर्मचारियों के लिए हाउसिंग लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Housing Loan - other (non-women) borrowers, all loan slabs",
+  "hi": "हाउसिंग लोन - अन्य (गैर-महिला) उधारकर्ता, सभी लोन स्लैब"
+ },
+ {
+  "field": "variant",
+  "en": "Housing Loan - women borrowers, all loan slabs",
+  "hi": "हाउसिंग लोन - महिला उधारकर्ता, सभी लोन स्लैब"
+ },
+ {
+  "field": "variant",
+  "en": "Cent Home",
+  "hi": "Cent Home"
+ },
+ {
+  "field": "variant",
+  "en": "Cent Grih Lakhsmi Home",
+  "hi": "Cent Grih Lakhsmi Home"
+ },
+ {
+  "field": "variant",
+  "en": "Adjustable (floating) rate — Special Housing Loan Rates, salaried & self-employed",
+  "hi": "एडजस्टेबल (फ्लोटिंग) दर — स्पेशल हाउसिंग लोन दरें, वेतनभोगी और स्व-रोज़गार"
+ },
+ {
+  "field": "variant",
+  "en": "Headline 'starting' rate in page title/meta only",
+  "hi": "हेडलाइन 'शुरुआती' दर सिर्फ़ पेज टाइटल/मेटा में"
+ },
+ {
+  "field": "variant",
+  "en": "Standard Home Loan (floating, repo-linked) — salaried & self-employed, all slabs",
+  "hi": "स्टैंडर्ड होम लोन (फ्लोटिंग, रेपो-लिंक्ड) — वेतनभोगी और स्व-रोज़गार, सभी स्लैब"
+ },
+ {
+  "field": "variant",
+  "en": "Fixed-rate Home Loan (24/37/60/120 months/full term)",
+  "hi": "फिक्स्ड रेट होम लोन (24/37/60/120 महीने/पूरी अवधि)"
+ },
+ {
+  "field": "variant",
+  "en": "Pre-approved Home Loan via digital journey",
+  "hi": "डिजिटल प्रक्रिया से प्री-अप्रूव्ड होम लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Special Home Loan rates by credit score",
+  "hi": "क्रेडिट स्कोर के अनुसार स्पेशल होम लोन दरें"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan (floating, repo-linked)",
+  "hi": "होम लोन (फ्लोटिंग, रेपो-लिंक्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan — FAQ starting rate (conflicting)",
+  "hi": "होम लोन — सवाल-जवाब में दी गई शुरुआती दर (परस्पर विरोधी)"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan — fixed rate option",
+  "hi": "होम लोन — फिक्स्ड रेट विकल्प"
+ },
+ {
+  "field": "variant",
+  "en": "IB Home Loan / IB Home Loan (NRI)",
+  "hi": "IB Home Loan / IB Home Loan (NRI)"
+ },
+ {
+  "field": "variant",
+  "en": "Housing Loan schemes incl. Subhagruha (Term Loan)",
+  "hi": "Subhagruha सहित हाउसिंग लोन स्कीमें (टर्म लोन)"
+ },
+ {
+  "field": "variant",
+  "en": "Housing Loan — Floating, up to 30 years",
+  "hi": "हाउसिंग लोन — फ्लोटिंग, 30 साल तक"
+ },
+ {
+  "field": "variant",
+  "en": "Affordable Home Loan — Q1 FY27 disclosure",
+  "hi": "अफोर्डेबल होम लोन — Q1 FY27 खुलासा"
+ },
+ {
+  "field": "variant",
+  "en": "PSB Apna Ghar & Kisan Home Loan",
+  "hi": "PSB Apna Ghar और Kisan Home Loan"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan / UCO Home Plus (individuals)",
+  "hi": "होम लोन / UCO Home Plus (व्यक्तियों के लिए)"
+ },
+ {
+  "field": "variant",
+  "en": "Union Home / Awas / Repair & Renovation",
+  "hi": "Union Home / Awas / Repair & Renovation"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan — Apr-Jun 2026 disclosed range",
+  "hi": "होम लोन — अप्रैल-जून 2026 की घोषित रेंज"
+ },
+ {
+  "field": "variant",
+  "en": "YES KHUSHI - Affordable Home Loan — Apr-Jun 2026",
+  "hi": "YES KHUSHI - अफोर्डेबल होम लोन — अप्रैल-जून 2026"
+ },
+ {
+  "field": "variant",
+  "en": "CUB Home Loans (floating) — Affordable and Prime",
+  "hi": "CUB Home Loans (फ्लोटिंग) — अफोर्डेबल और प्राइम"
+ },
+ {
+  "field": "variant",
+  "en": "Affordable Housing loan (up to Rs 35 lakh metro / Rs 30 lakh other)",
+  "hi": "अफोर्डेबल हाउसिंग लोन (मेट्रो में ₹35 लाख तक / अन्य जगह ₹30 लाख तक)"
+ },
+ {
+  "field": "variant",
+  "en": "Prime Home loan (above Rs 35 lakh metro / Rs 30 lakh other)",
+  "hi": "प्राइम होम लोन (मेट्रो में ₹35 लाख से ज़्यादा / अन्य जगह ₹30 लाख से ज़्यादा)"
+ },
+ {
+  "field": "variant",
+  "en": "Previous-quarter actual ROI range - D_Home Loan (individual borrowers, 1 Apr-30 Jun 2026)",
+  "hi": "पिछली तिमाही की वास्तविक ब्याज दर रेंज - D_Home Loan (व्यक्तिगत उधारकर्ता, 1 अप्रैल-30 जून 2026)"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan (floating, repo-linked) — all CIBIL bands",
+  "hi": "होम लोन (फ्लोटिंग, रेपो-लिंक्ड) — सभी CIBIL बैंड"
+ },
+ {
+  "field": "variant",
+  "en": "Star Home Loan (CIBIL-linked)",
+  "hi": "Star Home Loan (CIBIL-लिंक्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Mortgage Loan - Home Loan (salaried and self-employed)",
+  "hi": "मॉर्गेज लोन - होम लोन (वेतनभोगी और स्व-रोज़गार)"
+ },
+ {
+  "field": "variant",
+  "en": "Housing Loan / Home Loan (floating)",
+  "hi": "हाउसिंग लोन / होम लोन (फ्लोटिंग)"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan - Salaried",
+  "hi": "होम लोन - वेतनभोगी"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan - Professional borrowers (Doctors)",
+  "hi": "होम लोन - प्रोफेशनल उधारकर्ता (डॉक्टर)"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan - Self-employed",
+  "hi": "होम लोन - स्व-रोज़गार"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan - Salaried (CIBIL-based rate card)",
+  "hi": "होम लोन - वेतनभोगी (CIBIL आधारित रेट कार्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan - Self-Employed (CIBIL-based rate card)",
+  "hi": "होम लोन - स्व-रोज़गार (CIBIL आधारित रेट कार्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Individual Housing Loans - contracted range Q1 FY2026-27 (all schemes)",
+  "hi": "व्यक्तिगत हाउसिंग लोन - Q1 FY2026-27 की अनुबंधित दर रेंज (सभी स्कीमें)"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan - Salaried / Self Employed Professional (Aditya Birla Housing Finance)",
+  "hi": "होम लोन - वेतनभोगी / स्व-रोज़गार प्रोफेशनल (Aditya Birla Housing Finance)"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan - Self Employed Non-Professional (Aditya Birla Housing Finance)",
+  "hi": "होम लोन - स्व-रोज़गार नॉन-प्रोफेशनल (Aditya Birla Housing Finance)"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan (floating, external-benchmark linked)",
+  "hi": "होम लोन (फ्लोटिंग, एक्सटर्नल बेंचमार्क से लिंक्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Indicative grid by credit score — Salaried",
+  "hi": "क्रेडिट स्कोर के अनुसार सांकेतिक ग्रिड — वेतनभोगी"
+ },
+ {
+  "field": "variant",
+  "en": "Indicative grid by credit score — Self Employed",
+  "hi": "क्रेडिट स्कोर के अनुसार सांकेतिक ग्रिड — स्व-रोज़गार"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan - floating, all loan slabs (Salaried and Non-Salaried, CIBIL-tiered)",
+  "hi": "होम लोन - फ्लोटिंग, सभी लोन स्लैब (वेतनभोगी और गैर-वेतनभोगी, CIBIL के स्तर के अनुसार)"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan - fixed rate",
+  "hi": "होम लोन - फिक्स्ड रेट"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan - Self Employed",
+  "hi": "होम लोन - स्व-रोज़गार"
+ },
+ {
+  "field": "variant",
+  "en": "IIFL Home Finance Ltd - Home Loan (advertised starting rate)",
+  "hi": "IIFL Home Finance Ltd - होम लोन (विज्ञापित शुरुआती दर)"
+ },
+ {
+  "field": "variant",
+  "en": "IIFL Home Finance - Individual HL contracted range, Q2 FY27",
+  "hi": "IIFL Home Finance - व्यक्तिगत होम लोन की अनुबंधित दर रेंज, Q2 FY27"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan (current product page)",
+  "hi": "होम लोन (मौजूदा प्रोडक्ट पेज)"
+ },
+ {
+  "field": "variant",
+  "en": "Q1 FY2026-27 disclosed range — Housing Loan",
+  "hi": "Q1 FY2026-27 की घोषित रेंज — हाउसिंग लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan — Salaried (SMFG Grihashakti / SMFG India Home Finance Co. Ltd.)",
+  "hi": "होम लोन — वेतनभोगी (SMFG Grihashakti / SMFG India Home Finance Co. Ltd.)"
+ },
+ {
+  "field": "variant",
+  "en": "Home Loan — Self-Employed (SMFG Grihashakti)",
+  "hi": "होम लोन — स्व-रोज़गार (SMFG Grihashakti)"
+ },
+ {
+  "field": "variant",
+  "en": "Housing Loan (Manappuram Finance Ltd)",
+  "hi": "हाउसिंग लोन (Manappuram Finance Ltd)"
+ },
+ {
+  "field": "variant",
+  "en": "Muthoot Homefin (India) Ltd - applicable rate card (Home Loans by profile)",
+  "hi": "Muthoot Homefin (India) Ltd - लागू रेट कार्ड (प्रोफ़ाइल के अनुसार होम लोन)"
+ },
+ {
+  "field": "variant",
+  "en": "Muthoot Homefin - rates on housing loans contracted, quarter ended June 2026",
+  "hi": "Muthoot Homefin - जून 2026 को समाप्त तिमाही में अनुबंधित हाउसिंग लोन की दरें"
+ },
+ {
+  "field": "variant",
+  "en": "Affordable housing - new purchase/construction/existing property",
+  "hi": "अफोर्डेबल हाउसिंग - नई खरीद/निर्माण/मौजूदा प्रॉपर्टी"
+ },
+ {
+  "field": "variant",
+  "en": "Cash Salaried (HL & LAP)",
+  "hi": "नकद वेतन पाने वाले (होम लोन और प्रॉपर्टी पर लोन)"
+ },
+ {
+  "field": "variant",
+  "en": "Low Income Salaried (HL)",
+  "hi": "कम आय वाले वेतनभोगी (होम लोन)"
+ },
+ {
+  "field": "variant",
+  "en": "Baroda Mortgage Loan - Individuals (floating, tenor up to 120 months, up to Rs 7.5 crore)",
+  "hi": "Baroda Mortgage Loan - व्यक्ति (फ्लोटिंग, 120 महीने तक की अवधि, ₹7.5 करोड़ तक)"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property (Individual, Term Loan)",
+  "hi": "प्रॉपर्टी पर लोन (व्यक्तिगत, टर्म लोन)"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property CC and CC-Liquirent (Individual, Cash Credit)",
+  "hi": "प्रॉपर्टी पर लोन CC और CC-Liquirent (व्यक्तिगत, कैश क्रेडिट)"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property",
+  "hi": "प्रॉपर्टी पर लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property (term loan / dropline OD)",
+  "hi": "प्रॉपर्टी पर लोन (टर्म लोन / ड्रॉपलाइन ओवरड्राफ्ट)"
+ },
+ {
+  "field": "variant",
+  "en": "Rate range - Loan Against Property to individuals, Apr'26-Jun'26",
+  "hi": "दर रेंज - व्यक्तियों को प्रॉपर्टी पर लोन, अप्रैल'26-जून'26"
+ },
+ {
+  "field": "variant",
+  "en": "Rate range - Overdraft Against Property, Apr'26-Jun'26",
+  "hi": "दर रेंज - प्रॉपर्टी पर ओवरड्राफ्ट, अप्रैल'26-जून'26"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property — Individual",
+  "hi": "प्रॉपर्टी पर लोन — व्यक्तिगत"
+ },
+ {
+  "field": "variant",
+  "en": "Cent Mortgage",
+  "hi": "Cent Mortgage"
+ },
+ {
+  "field": "variant",
+  "en": "Mortgage Loan - Business Loan (salaried and self-employed)",
+  "hi": "मॉर्गेज लोन - बिज़नेस लोन (वेतनभोगी और स्व-रोज़गार)"
+ },
+ {
+  "field": "variant",
+  "en": "Mortgage Loan - Unnati 1 / Unnati 2 (small-ticket mortgage programs)",
+  "hi": "मॉर्गेज लोन - Unnati 1 / Unnati 2 (छोटी राशि वाले मॉर्गेज प्रोग्राम)"
+ },
+ {
+  "field": "variant",
+  "en": "LAP / Loan for Commercial Property / Loan Against Rent Receivables — floating rack",
+  "hi": "प्रॉपर्टी पर लोन / कमर्शियल प्रॉपर्टी के लिए लोन / किराए की प्राप्तियों पर लोन — फ्लोटिंग रैक रेट"
+ },
+ {
+  "field": "variant",
+  "en": "Fixed rack rate",
+  "hi": "फिक्स्ड रैक रेट"
+ },
+ {
+  "field": "variant",
+  "en": "PSB Mortgage — Term Loan facilities (for personal use)",
+  "hi": "PSB Mortgage — टर्म लोन सुविधाएं (निजी इस्तेमाल के लिए)"
+ },
+ {
+  "field": "variant",
+  "en": "Union Mortgage (all property types)",
+  "hi": "Union Mortgage (सभी तरह की प्रॉपर्टी)"
+ },
+ {
+  "field": "variant",
+  "en": "Canara Mortgage",
+  "hi": "Canara Mortgage"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property (P-LAP)",
+  "hi": "प्रॉपर्टी पर लोन (P-LAP)"
+ },
+ {
+  "field": "variant",
+  "en": "LAP Term Loan (floating, repo-linked)",
+  "hi": "प्रॉपर्टी पर टर्म लोन (फ्लोटिंग, रेपो-लिंक्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "LAP Overdraft (floating, repo-linked)",
+  "hi": "प्रॉपर्टी पर ओवरड्राफ्ट (फ्लोटिंग, रेपो-लिंक्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property Rate card (Floating), all loan amounts",
+  "hi": "प्रॉपर्टी पर लोन रेट कार्ड (फ्लोटिंग), सभी लोन राशियां"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property / Dropline OD",
+  "hi": "प्रॉपर्टी पर लोन / ड्रॉपलाइन ओवरड्राफ्ट"
+ },
+ {
+  "field": "variant",
+  "en": "Property Power (LAP) - term loan (floating, repo-linked)",
+  "hi": "Property Power (प्रॉपर्टी पर लोन) - टर्म लोन (फ्लोटिंग, रेपो-लिंक्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Property Power (LAP) - overdraft (floating, repo-linked)",
+  "hi": "Property Power (प्रॉपर्टी पर लोन) - ओवरड्राफ्ट (फ्लोटिंग, रेपो-लिंक्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Non-Housing Loans & LAP (repo-linked) — current table on Home Loan rates page",
+  "hi": "नॉन-हाउसिंग लोन और प्रॉपर्टी पर लोन (रेपो-लिंक्ड) — होम लोन दरों वाले पेज की मौजूदा तालिका"
+ },
+ {
+  "field": "variant",
+  "en": "Dedicated LAP rate page (expired table)",
+  "hi": "प्रॉपर्टी पर लोन का अलग दर पेज (समाप्त हो चुकी तालिका)"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property and Affordable LAP (rates hub)",
+  "hi": "प्रॉपर्टी पर लोन और अफोर्डेबल LAP (रेट्स हब)"
+ },
+ {
+  "field": "variant",
+  "en": "LAP — salaried/self-employed starting rate (LAP interest-rate page)",
+  "hi": "प्रॉपर्टी पर लोन — वेतनभोगी/स्व-रोज़गार के लिए शुरुआती दर (LAP ब्याज दर पेज)"
+ },
+ {
+  "field": "variant",
+  "en": "PNB myPROPERTY - term loan (floating)",
+  "hi": "PNB myPROPERTY - टर्म लोन (फ्लोटिंग)"
+ },
+ {
+  "field": "variant",
+  "en": "Secured Business Loan (property-backed), Rs 1.5 lakh - 50 lakh",
+  "hi": "सिक्योर्ड बिज़नेस लोन (प्रॉपर्टी के बदले), ₹1.5 लाख - 50 लाख"
+ },
+ {
+  "field": "variant",
+  "en": "Ind Mortgage (Term Loan) - loan up to Rs.7.50 Cr",
+  "hi": "Ind Mortgage (टर्म लोन) - ₹7.50 करोड़ तक का लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Ind Mortgage (Overdraft)",
+  "hi": "Ind Mortgage (ओवरड्राफ्ट)"
+ },
+ {
+  "field": "variant",
+  "en": "Ind Mortgage (Term Loan) - loan above Rs.7.50 Cr",
+  "hi": "Ind Mortgage (टर्म लोन) - ₹7.50 करोड़ से ज़्यादा का लोन"
+ },
+ {
+  "field": "variant",
+  "en": "UCO Property - Individuals",
+  "hi": "UCO Property - व्यक्ति"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property - Salaried / SEP (Aditya Birla Housing Finance)",
+  "hi": "प्रॉपर्टी पर लोन - वेतनभोगी / स्व-रोज़गार प्रोफेशनल (SEP) (Aditya Birla Housing Finance)"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property - Self Employed Non-Professional (Aditya Birla Housing Finance)",
+  "hi": "प्रॉपर्टी पर लोन - स्व-रोज़गार नॉन-प्रोफेशनल (Aditya Birla Housing Finance)"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property (product rates page)",
+  "hi": "प्रॉपर्टी पर लोन (प्रोडक्ट दरों वाला पेज)"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property (consolidated fees schedule)",
+  "hi": "प्रॉपर्टी पर लोन (समेकित फीस शेड्यूल)"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property/Rent Receivables",
+  "hi": "प्रॉपर्टी/किराए की प्राप्तियों पर लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property (CIBIL-based rate card)",
+  "hi": "प्रॉपर्टी पर लोन (CIBIL आधारित रेट कार्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Griha Vikas (non-housing) - contracted range Q1 FY2026-27",
+  "hi": "Griha Vikas (नॉन-हाउसिंग) - Q1 FY2026-27 की अनुबंधित दर रेंज"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property - Floating rate",
+  "hi": "प्रॉपर्टी पर लोन - फ्लोटिंग रेट"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property - Fixed rate",
+  "hi": "प्रॉपर्टी पर लोन - फिक्स्ड रेट"
+ },
+ {
+  "field": "variant",
+  "en": "LAP",
+  "hi": "प्रॉपर्टी पर लोन"
+ },
+ {
+  "field": "variant",
+  "en": "S-LAP (small-ticket LAP)",
+  "hi": "S-LAP (छोटी राशि वाला प्रॉपर्टी पर लोन)"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property (LAP)",
+  "hi": "प्रॉपर्टी पर लोन (LAP)"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property (rate page)",
+  "hi": "प्रॉपर्टी पर लोन (दर पेज)"
+ },
+ {
+  "field": "variant",
+  "en": "LAP product page",
+  "hi": "प्रॉपर्टी पर लोन का प्रोडक्ट पेज"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property - floating, all loan slabs (CIBIL-tiered)",
+  "hi": "प्रॉपर्टी पर लोन - फ्लोटिंग, सभी लोन स्लैब (CIBIL के स्तर के अनुसार)"
+ },
+ {
+  "field": "variant",
+  "en": "Non-Home Loan - fixed rate (lifetime fixed or 3-year fixed then floating)",
+  "hi": "नॉन-होम लोन - फिक्स्ड रेट (पूरी अवधि फिक्स्ड या 3 साल फिक्स्ड, फिर फ्लोटिंग)"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property / Mortgage Loan",
+  "hi": "प्रॉपर्टी पर लोन / मॉर्गेज लोन"
+ },
+ {
+  "field": "variant",
+  "en": "IIFL Finance - Secured Business Loan / Loan Against Property",
+  "hi": "IIFL Finance - सिक्योर्ड बिज़नेस लोन / प्रॉपर्टी पर लोन"
+ },
+ {
+  "field": "variant",
+  "en": "IIFL Home Finance Ltd - Secured Business Loan (LAP)",
+  "hi": "IIFL Home Finance Ltd - सिक्योर्ड बिज़नेस लोन (प्रॉपर्टी पर लोन)"
+ },
+ {
+  "field": "variant",
+  "en": "Loan Against Property (product page)",
+  "hi": "प्रॉपर्टी पर लोन (प्रोडक्ट पेज)"
+ },
+ {
+  "field": "variant",
+  "en": "Property Loan (LAP)",
+  "hi": "प्रॉपर्टी लोन (LAP)"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan — salaried (rates hub)",
+  "hi": "पर्सनल लोन — वेतनभोगी (रेट्स हब)"
+ },
+ {
+  "field": "variant",
+  "en": "Easy Credit Line (personal overdraft)",
+  "hi": "Easy Credit Line (पर्सनल ओवरड्राफ्ट)"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan — advertised starting rate (PL interest-rate page)",
+  "hi": "पर्सनल लोन — विज्ञापित शुरुआती दर (पर्सनल लोन ब्याज दर पेज)"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan (MCLR rate table)",
+  "hi": "पर्सनल लोन (एमसीएलआर दर तालिका)"
+ },
+ {
+  "field": "variant",
+  "en": "Advertised range (page body text)",
+  "hi": "विज्ञापित रेंज (पेज के मुख्य टेक्स्ट में)"
+ },
+ {
+  "field": "variant",
+  "en": "Canara Budget - Individual",
+  "hi": "Canara Budget - व्यक्तिगत"
+ },
+ {
+  "field": "variant",
+  "en": "All other personal loans",
+  "hi": "बाकी सभी पर्सनल लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Canara Budget - Prime (with salary tie-up)",
+  "hi": "Canara Budget - Prime (सैलरी टाई-अप के साथ)"
+ },
+ {
+  "field": "variant",
+  "en": "Rack rate (salaried)",
+  "hi": "रैक रेट (वेतनभोगी)"
+ },
+ {
+  "field": "variant",
+  "en": "IRR actually offered Apr–Jun 2026 (Q1 FY2026-27)",
+  "hi": "अप्रैल–जून 2026 में वास्तव में दी गई आईआरआर (Q1 FY2026-27)"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan (salaried/self-employed)",
+  "hi": "पर्सनल लोन (वेतनभोगी/स्व-रोज़गार)"
+ },
+ {
+  "field": "variant",
+  "en": "Clean Loan to Salaried Class - Term Loan",
+  "hi": "वेतनभोगी वर्ग के लिए क्लीन लोन - टर्म लोन"
+ },
+ {
+  "field": "variant",
+  "en": "IB Professional",
+  "hi": "IB Professional"
+ },
+ {
+  "field": "variant",
+  "en": "IB Saral",
+  "hi": "IB Saral"
+ },
+ {
+  "field": "variant",
+  "en": "Online Personal Loan to Salaried Customers",
+  "hi": "वेतनभोगी ग्राहकों के लिए ऑनलाइन पर्सनल लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Pension Loan",
+  "hi": "पेंशन लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan (advertised starting rate)",
+  "hi": "पर्सनल लोन (विज्ञापित शुरुआती दर)"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan (Insta Funding) — Q1 FY27 disclosure",
+  "hi": "पर्सनल लोन (Insta Funding) — Q1 FY27 खुलासा"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan — Q1 FY27 disclosed rate range",
+  "hi": "पर्सनल लोन — Q1 FY27 की घोषित दर रेंज"
+ },
+ {
+  "field": "variant",
+  "en": "SBI Personal Loan scheme",
+  "hi": "SBI Personal Loan स्कीम"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan — Apr-Jun 2026 disclosed range",
+  "hi": "पर्सनल लोन — अप्रैल-जून 2026 की घोषित रेंज"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan (salaried / self-employed)",
+  "hi": "पर्सनल लोन (वेतनभोगी / स्व-रोज़गार)"
+ },
+ {
+  "field": "variant",
+  "en": "Mean interest rate disclosure - cases disbursed April-June 2026",
+  "hi": "औसत ब्याज दर का खुलासा - अप्रैल-जून 2026 में वितरित केस"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan (fixed rate)",
+  "hi": "पर्सनल लोन (फिक्स्ड रेट)"
+ },
+ {
+  "field": "variant",
+  "en": "SIB Personal Loan (fixed)",
+  "hi": "SIB Personal Loan (फिक्स्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Baroda Personal Loan (floating) - all borrower categories",
+  "hi": "Baroda Personal Loan (फ्लोटिंग) - उधारकर्ताओं की सभी श्रेणियां"
+ },
+ {
+  "field": "variant",
+  "en": "Baroda Digital Personal Loan",
+  "hi": "Baroda Digital Personal Loan"
+ },
+ {
+  "field": "variant",
+  "en": "Baroda Personal Loan (fixed, 1-year MCLR linked)",
+  "hi": "Baroda Personal Loan (फिक्स्ड, 1 साल के एमसीएलआर से लिंक्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Star Personal Loan Scheme (fully secured / clean-unsecured)",
+  "hi": "Star Personal Loan Scheme (पूरी तरह सिक्योर्ड / क्लीन-अनसिक्योर्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Maha Bank Personal Loan Scheme (all categories)",
+  "hi": "Maha Bank Personal Loan Scheme (सभी श्रेणियां)"
+ },
+ {
+  "field": "variant",
+  "en": "Category A — Govt/PSU employees, salary account with BoM",
+  "hi": "श्रेणी A — सरकारी/पीएसयू कर्मचारी, BoM में सैलरी अकाउंट"
+ },
+ {
+  "field": "variant",
+  "en": "Category B — Pvt/Public Ltd company employees, salary account with other bank",
+  "hi": "श्रेणी B — प्राइवेट/पब्लिक लिमिटेड कंपनी के कर्मचारी, दूसरे बैंक में सैलरी अकाउंट"
+ },
+ {
+  "field": "variant",
+  "en": "Cent Personal",
+  "hi": "Cent Personal"
+ },
+ {
+  "field": "variant",
+  "en": "Cent Pension",
+  "hi": "Cent Pension"
+ },
+ {
+  "field": "variant",
+  "en": "Pre-Approved Personal Loan",
+  "hi": "प्री-अप्रूव्ड पर्सनल लोन"
+ },
+ {
+  "field": "variant",
+  "en": "PSB Personal Loan (Govt/PSU/pensioner and Private/MNC salaried categories)",
+  "hi": "PSB Personal Loan (सरकारी/पीएसयू/पेंशनभोगी और प्राइवेट/एमएनसी वेतनभोगी श्रेणियां)"
+ },
+ {
+  "field": "variant",
+  "en": "PSB Personal Loan — Govt/State Govt/PSU/Pensioner/Staff/Ex-staff",
+  "hi": "PSB Personal Loan — सरकारी/राज्य सरकार/पीएसयू/पेंशनभोगी/स्टाफ/पूर्व-स्टाफ"
+ },
+ {
+  "field": "variant",
+  "en": "PSB Personal Loan — Private Employee / MNC / Approved Institute (Salary Account)",
+  "hi": "PSB Personal Loan — प्राइवेट कर्मचारी / एमएनसी / मान्यता प्राप्त संस्थान (सैलरी अकाउंट)"
+ },
+ {
+  "field": "variant",
+  "en": "PNB Sahyog Rin - Personal Loan Scheme for Public (floating, term loan)",
+  "hi": "PNB Sahyog Rin - आम लोगों के लिए पर्सनल लोन स्कीम (फ्लोटिंग, टर्म लोन)"
+ },
+ {
+  "field": "variant",
+  "en": "PNB Digital Personal Loan / PAPL / PNB Swaagat (NTB)",
+  "hi": "PNB Digital Personal Loan / PAPL / PNB Swaagat (NTB)"
+ },
+ {
+  "field": "variant",
+  "en": "Previous-quarter actual ROI range (loans to individuals, 1 Apr-30 Jun 2026)",
+  "hi": "पिछली तिमाही की वास्तविक ब्याज दर रेंज (व्यक्तियों को दिए गए लोन, 1 अप्रैल-30 जून 2026)"
+ },
+ {
+  "field": "variant",
+  "en": "FIRSTmoney Personal Loan",
+  "hi": "FIRSTmoney Personal Loan"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan (Term Loan), Categories A/B/C",
+  "hi": "पर्सनल लोन (टर्म लोन), श्रेणी A/B/C"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan - Fixed Rate of Interest",
+  "hi": "पर्सनल लोन - फिक्स्ड ब्याज दर"
+ },
+ {
+  "field": "variant",
+  "en": "UCO Cash (salaried; Govt and other-than-Govt employees)",
+  "hi": "UCO Cash (वेतनभोगी; सरकारी और गैर-सरकारी कर्मचारी)"
+ },
+ {
+  "field": "variant",
+  "en": "UCO Cash STP (digital)",
+  "hi": "UCO Cash STP (डिजिटल)"
+ },
+ {
+  "field": "variant",
+  "en": "Union Personal - salaried (other than Govt employees), tie-up & non-tie-up",
+  "hi": "Union Personal - वेतनभोगी (सरकारी कर्मचारियों के अलावा), टाई-अप और नॉन-टाई-अप"
+ },
+ {
+  "field": "variant",
+  "en": "Union Personal - non-salaried individuals",
+  "hi": "Union Personal - गैर-वेतनभोगी व्यक्ति"
+ },
+ {
+  "field": "variant",
+  "en": "Union Personal Loan - SRLGE (Government employees)",
+  "hi": "Union Personal Loan - SRLGE (सरकारी कर्मचारी)"
+ },
+ {
+  "field": "variant",
+  "en": "CUB Personal Loan (Pre-Qualified Unsecured Personal Loan, PQPL)",
+  "hi": "CUB Personal Loan (प्री-क्वालिफाइड अनसिक्योर्ड पर्सनल लोन, PQPL)"
+ },
+ {
+  "field": "variant",
+  "en": "CUB Consumer Loan (consumer durables, max Rs 1 lakh)",
+  "hi": "CUB Consumer Loan (कंज़्यूमर ड्यूरेबल्स, अधिकतम ₹1 लाख)"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan (Unsecured) - existing savings/salary account holders",
+  "hi": "पर्सनल लोन (अनसिक्योर्ड) - मौजूदा सेविंग्स/सैलरी अकाउंट धारक"
+ },
+ {
+  "field": "variant",
+  "en": "Pricing range - loans to individuals, Apr 2026-Jun 2026",
+  "hi": "प्राइसिंग रेंज - व्यक्तियों को दिए गए लोन, अप्रैल 2026-जून 2026"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan (Term Loan / Flexi Dropline / Flexi Hybrid)",
+  "hi": "पर्सनल लोन (टर्म लोन / फ्लेक्सी ड्रॉपलाइन / फ्लेक्सी हाइब्रिड)"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loans - RCMB Physical (Term Loan, Flexi PL, Dropline, Flexi Dropline)",
+  "hi": "पर्सनल लोन - RCMB Physical (टर्म लोन, फ्लेक्सी पर्सनल लोन, ड्रॉपलाइन, फ्लेक्सी ड्रॉपलाइन)"
+ },
+ {
+  "field": "variant",
+  "en": "Secured Personal Loan (against property)",
+  "hi": "सिक्योर्ड पर्सनल लोन (प्रॉपर्टी के बदले)"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan",
+  "hi": "पर्सनल लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan (current product page)",
+  "hi": "पर्सनल लोन (मौजूदा प्रोडक्ट पेज)"
+ },
+ {
+  "field": "variant",
+  "en": "Q1 FY2026-27 disclosed range — Personal Loan - Branch",
+  "hi": "Q1 FY2026-27 की घोषित रेंज — पर्सनल लोन - ब्रांच"
+ },
+ {
+  "field": "variant",
+  "en": "Q1 FY2026-27 disclosed range — Personal Loan - Digital Business - Direct",
+  "hi": "Q1 FY2026-27 की घोषित रेंज — पर्सनल लोन - डिजिटल बिज़नेस - डायरेक्ट"
+ },
+ {
+  "field": "variant",
+  "en": "Q1 FY2026-27 disclosed range — Personal Loan - Digital Business - Embedded Finance",
+  "hi": "Q1 FY2026-27 की घोषित रेंज — पर्सनल लोन - डिजिटल बिज़नेस - एम्बेडेड फाइनेंस"
+ },
+ {
+  "field": "variant",
+  "en": "Salaried Personal Loan",
+  "hi": "वेतनभोगियों के लिए पर्सनल लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Other Unsecured Loans (including Digital loans, Fintech partnership loan etc)",
+  "hi": "अन्य अनसिक्योर्ड लोन (डिजिटल लोन, फिनटेक पार्टनरशिप लोन आदि सहित)"
+ },
+ {
+  "field": "variant",
+  "en": "Relationship Personal Loan",
+  "hi": "रिलेशनशिप पर्सनल लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Secured Personal Loan",
+  "hi": "सिक्योर्ड पर्सनल लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan (product page headline)",
+  "hi": "पर्सनल लोन (प्रोडक्ट पेज की हेडलाइन)"
+ },
+ {
+  "field": "variant",
+  "en": "Personal/ Consumer loans (IRP band)",
+  "hi": "पर्सनल/ कंज़्यूमर लोन (IRP बैंड)"
+ },
+ {
+  "field": "variant",
+  "en": "PL to mortgage customers (Sahyog)",
+  "hi": "मॉर्गेज ग्राहकों को पर्सनल लोन (Sahyog)"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan - Core (unsecured)",
+  "hi": "पर्सनल लोन - कोर (अनसिक्योर्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan - Digital (unsecured)",
+  "hi": "पर्सनल लोन - डिजिटल (अनसिक्योर्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Open-Market Personal Loan (OMPL) / instant personal loan",
+  "hi": "ओपन-मार्केट पर्सनल लोन (OMPL) / इंस्टेंट पर्सनल लोन"
+ },
+ {
+  "field": "variant",
+  "en": "CSEL Personal Loan (Salaried and Professional) - Term Loan",
+  "hi": "CSEL Personal Loan (वेतनभोगी और प्रोफेशनल) - टर्म लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Co-lending / BC Model / CholaOne D2C",
+  "hi": "को-लेंडिंग / BC मॉडल / CholaOne D2C"
+ },
+ {
+  "field": "variant",
+  "en": "Online Personal Loan (TVS Credit Saathi app)",
+  "hi": "ऑनलाइन पर्सनल लोन (TVS Credit Saathi ऐप)"
+ },
+ {
+  "field": "variant",
+  "en": "Personal loan (Interest Rate Policy band)",
+  "hi": "पर्सनल लोन (ब्याज दर नीति बैंड)"
+ },
+ {
+  "field": "variant",
+  "en": "Union MSME Superfast (Union GST Gain) - working capital",
+  "hi": "Union MSME Superfast (Union GST Gain) - वर्किंग कैपिटल"
+ },
+ {
+  "field": "variant",
+  "en": "Canara GST (working capital)",
+  "hi": "Canara GST (वर्किंग कैपिटल)"
+ },
+ {
+  "field": "variant",
+  "en": "PNB GST Express Scheme",
+  "hi": "PNB GST Express Scheme"
+ },
+ {
+  "field": "variant",
+  "en": "Unsecured Business Loan (product page)",
+  "hi": "अनसिक्योर्ड बिज़नेस लोन (प्रोडक्ट पेज)"
+ },
+ {
+  "field": "variant",
+  "en": "Business loan rates page (table dated August 2025)",
+  "hi": "बिज़नेस लोन दर पेज (अगस्त 2025 की तालिका)"
+ },
+ {
+  "field": "variant",
+  "en": "Business Loan — individual (rates hub)",
+  "hi": "बिज़नेस लोन — व्यक्तिगत (रेट्स हब)"
+ },
+ {
+  "field": "variant",
+  "en": "Business Loan - SENP (self-employed non-professional, unsecured)",
+  "hi": "बिज़नेस लोन - SENP (स्व-रोज़गार नॉन-प्रोफेशनल, अनसिक्योर्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Business Loan - SEP (self-employed professional, unsecured)",
+  "hi": "बिज़नेस लोन - SEP (स्व-रोज़गार प्रोफेशनल, अनसिक्योर्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Business Loan (unsecured term loan) — rack",
+  "hi": "बिज़नेस लोन (अनसिक्योर्ड टर्म लोन) — रैक रेट"
+ },
+ {
+  "field": "variant",
+  "en": "Business Loan — Apr-Jun 2026 disclosed range",
+  "hi": "बिज़नेस लोन — अप्रैल-जून 2026 की घोषित रेंज"
+ },
+ {
+  "field": "variant",
+  "en": "Business Instalment Loan (unsecured) — interest rate page",
+  "hi": "बिज़नेस इंस्टॉलमेंट लोन (अनसिक्योर्ड) — ब्याज दर पेज"
+ },
+ {
+  "field": "variant",
+  "en": "Business Instalment Loan — product page figure",
+  "hi": "बिज़नेस इंस्टॉलमेंट लोन — प्रोडक्ट पेज पर दिया गया आंकड़ा"
+ },
+ {
+  "field": "variant",
+  "en": "Business Installment Loan (unsecured)",
+  "hi": "बिज़नेस इंस्टॉलमेंट लोन (अनसिक्योर्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Business Loan — Q1 FY27 disclosed rate range",
+  "hi": "बिज़नेस लोन — Q1 FY27 की घोषित दर रेंज"
+ },
+ {
+  "field": "variant",
+  "en": "Business Loans (unsecured) - pricing grid by ticket size",
+  "hi": "बिज़नेस लोन (अनसिक्योर्ड) - लोन राशि के अनुसार प्राइसिंग ग्रिड"
+ },
+ {
+  "field": "variant",
+  "en": "Aspiring Business Loan - Unsecured (Rs 3 lakh-25 lakh)",
+  "hi": "Aspiring Business Loan - अनसिक्योर्ड (₹3 लाख-25 लाख)"
+ },
+ {
+  "field": "variant",
+  "en": "Aspiring Business Loan - Secured (up to Rs 1 crore)",
+  "hi": "Aspiring Business Loan - सिक्योर्ड (₹1 करोड़ तक)"
+ },
+ {
+  "field": "variant",
+  "en": "MSME Smart Finance",
+  "hi": "MSME Smart Finance"
+ },
+ {
+  "field": "variant",
+  "en": "Business Installment Loan (BIL)",
+  "hi": "बिज़नेस इंस्टॉलमेंट लोन (BIL)"
+ },
+ {
+  "field": "variant",
+  "en": "Business Loan / SME Loan (businesses)",
+  "hi": "बिज़नेस लोन / एसएमई लोन (बिज़नेस के लिए)"
+ },
+ {
+  "field": "variant",
+  "en": "Professional loan",
+  "hi": "प्रोफेशनल लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Business Loan (unsecured)",
+  "hi": "बिज़नेस लोन (अनसिक्योर्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Business Loan/SME/TA - Core (unsecured)",
+  "hi": "बिज़नेस लोन/एसएमई/TA - कोर (अनसिक्योर्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Unsecured Business Loan (self-employed)",
+  "hi": "अनसिक्योर्ड बिज़नेस लोन (स्व-रोज़गार)"
+ },
+ {
+  "field": "variant",
+  "en": "Business Loan (Term / Flexi Dropline / Flexi Hybrid)",
+  "hi": "बिज़नेस लोन (टर्म / फ्लेक्सी ड्रॉपलाइन / फ्लेक्सी हाइब्रिड)"
+ },
+ {
+  "field": "variant",
+  "en": "Unsecured Business Loan",
+  "hi": "अनसिक्योर्ड बिज़नेस लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Unsecured Business Loan (UBL)",
+  "hi": "अनसिक्योर्ड बिज़नेस लोन (UBL)"
+ },
+ {
+  "field": "variant",
+  "en": "CSEL Business Loan (Self Employed Non Professional) - Term Loan",
+  "hi": "CSEL Business Loan (स्व-रोज़गार नॉन-प्रोफेशनल) - टर्म लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Secured Business and Personal Loan (SBPL)",
+  "hi": "सिक्योर्ड बिज़नेस और पर्सनल लोन (SBPL)"
+ },
+ {
+  "field": "variant",
+  "en": "Business Loans",
+  "hi": "बिज़नेस लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Q1 FY2026-27 disclosed range — MSME Unsecured",
+  "hi": "Q1 FY2026-27 की घोषित रेंज — एमएसएमई अनसिक्योर्ड"
+ },
+ {
+  "field": "variant",
+  "en": "SME/ Working Capital financing (unsecured loan)",
+  "hi": "एसएमई/ वर्किंग कैपिटल फाइनेंसिंग (अनसिक्योर्ड लोन)"
+ },
+ {
+  "field": "variant",
+  "en": "Mid-Corp (Emerging & Mid-corporate business loans, incl. invoice financing)",
+  "hi": "Mid-Corp (इमर्जिंग और मिड-कॉर्पोरेट बिज़नेस लोन, इनवॉइस फाइनेंसिंग सहित)"
+ },
+ {
+  "field": "variant",
+  "en": "MSME advances card rate (exposure up to Rs 5 crore)",
+  "hi": "एमएसएमई एडवांस कार्ड रेट (₹5 करोड़ तक का एक्सपोज़र)"
+ },
+ {
+  "field": "variant",
+  "en": "MSME loans (regulatory) up to Rs 7.5 crore - BRLLR linked",
+  "hi": "₹7.5 करोड़ तक के एमएसएमई लोन (रेगुलेटरी) - BRLLR से लिंक्ड"
+ },
+ {
+  "field": "variant",
+  "en": "Cent Business Loan",
+  "hi": "Cent Business Loan"
+ },
+ {
+  "field": "variant",
+  "en": "General MSME",
+  "hi": "सामान्य एमएसएमई"
+ },
+ {
+  "field": "variant",
+  "en": "Previous-quarter actual ROI range - J_Business Banking (individual borrowers, 1 Apr-30 Jun 2026)",
+  "hi": "पिछली तिमाही की वास्तविक ब्याज दर रेंज - J_Business Banking (व्यक्तिगत उधारकर्ता, 1 अप्रैल-30 जून 2026)"
+ },
+ {
+  "field": "variant",
+  "en": "Small Business Banking Term Loan (floating, repo-linked)",
+  "hi": "स्मॉल बिज़नेस बैंकिंग टर्म लोन (फ्लोटिंग, रेपो-लिंक्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Star Equipment Express (MSME equipment term loan)",
+  "hi": "Star Equipment Express (एमएसएमई इक्विपमेंट टर्म लोन)"
+ },
+ {
+  "field": "variant",
+  "en": "MSME term loan, exposure up to Rs.2 crore (RLLR card)",
+  "hi": "एमएसएमई टर्म लोन, ₹2 करोड़ तक का एक्सपोज़र (आरएलएलआर कार्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "EasyEMI SME (equipment purchase EMI loan for SMEs)",
+  "hi": "EasyEMI SME (एसएमई के लिए इक्विपमेंट खरीदने का ईएमआई लोन)"
+ },
+ {
+  "field": "variant",
+  "en": "Commercial / Construction Equipment Finance — IRR actually offered Apr–Jun 2026",
+  "hi": "कमर्शियल / कंस्ट्रक्शन इक्विपमेंट फाइनेंस — अप्रैल–जून 2026 में वास्तव में दी गई आईआरआर"
+ },
+ {
+  "field": "variant",
+  "en": "Machinery Finance",
+  "hi": "मशीनरी फाइनेंस"
+ },
+ {
+  "field": "variant",
+  "en": "PSB Vyapar Loan (OD / dropline OD / working capital term loan / term loan)",
+  "hi": "PSB Vyapar Loan (ओवरड्राफ्ट / ड्रॉपलाइन ओवरड्राफ्ट / वर्किंग कैपिटल टर्म लोन / टर्म लोन)"
+ },
+ {
+  "field": "variant",
+  "en": "Advances to MSME (card rate by exposure / internal rating)",
+  "hi": "एमएसएमई को एडवांस (एक्सपोज़र / इंटरनल रेटिंग के अनुसार कार्ड रेट)"
+ },
+ {
+  "field": "variant",
+  "en": "MSME card rate - exposure up to Rs.50 lakh",
+  "hi": "एमएसएमई कार्ड रेट - ₹50 लाख तक का एक्सपोज़र"
+ },
+ {
+  "field": "variant",
+  "en": "Union Equipment Finance",
+  "hi": "Union Equipment Finance"
+ },
+ {
+  "field": "variant",
+  "en": "SME Term Loan / Micro Term Loan",
+  "hi": "एसएमई टर्म लोन / माइक्रो टर्म लोन"
+ },
+ {
+  "field": "variant",
+  "en": "SME Equipment Finance",
+  "hi": "एसएमई इक्विपमेंट फाइनेंस"
+ },
+ {
+  "field": "variant",
+  "en": "Machinery Loan",
+  "hi": "मशीनरी लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Business Loan/SME/TA - Core (secured)",
+  "hi": "बिज़नेस लोन/एसएमई/TA - कोर (सिक्योर्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Secured Business Loan",
+  "hi": "सिक्योर्ड बिज़नेस लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Machinery / Equipment Loan",
+  "hi": "मशीनरी / इक्विपमेंट लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Enterprise Business Loan",
+  "hi": "एंटरप्राइज़ बिज़नेस लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Business Loan (secured MSME loan)",
+  "hi": "बिज़नेस लोन (सिक्योर्ड एमएसएमई लोन)"
+ },
+ {
+  "field": "variant",
+  "en": "Secured Business Loan (product page)",
+  "hi": "सिक्योर्ड बिज़नेस लोन (प्रोडक्ट पेज)"
+ },
+ {
+  "field": "variant",
+  "en": "Q1 FY2026-27 disclosed range — MSME Secured",
+  "hi": "Q1 FY2026-27 की घोषित रेंज — एमएसएमई सिक्योर्ड"
+ },
+ {
+  "field": "variant",
+  "en": "SME/ Working Capital financing (except unsecured loan) - incl. Machinery Loan",
+  "hi": "एसएमई/ वर्किंग कैपिटल फाइनेंसिंग (अनसिक्योर्ड लोन को छोड़कर) - मशीनरी लोन सहित"
+ },
+ {
+  "field": "variant",
+  "en": "Flexi Hybrid Personal Loan",
+  "hi": "फ्लेक्सी हाइब्रिड पर्सनल लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Flexi Loan (personal finance)",
+  "hi": "फ्लेक्सी लोन (पर्सनल फाइनेंस)"
+ },
+ {
+  "field": "variant",
+  "en": "Flexi Personal Loan / Flexi Dropline Credit (PL schedule of charges)",
+  "hi": "फ्लेक्सी पर्सनल लोन / फ्लेक्सी ड्रॉपलाइन क्रेडिट (पर्सनल लोन चार्ज शेड्यूल)"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Loan Hybrid Term Loan (Dropline facility)",
+  "hi": "पर्सनल लोन हाइब्रिड टर्म लोन (ड्रॉपलाइन सुविधा)"
+ },
+ {
+  "field": "variant",
+  "en": "Business Loan Hybrid Term Loan",
+  "hi": "बिज़नेस लोन हाइब्रिड टर्म लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Cent Mudra / Mudra Homestay",
+  "hi": "Cent Mudra / Mudra Homestay"
+ },
+ {
+  "field": "variant",
+  "en": "PMMY (Shishu / Kishor / Tarun) — single published range",
+  "hi": "PMMY (शिशु / किशोर / तरुण) — एक ही प्रकाशित रेंज"
+ },
+ {
+  "field": "variant",
+  "en": "Mudra Manufacturing / Services / Traders - up to Rs.2 lakh (Shishu/Kishore band)",
+  "hi": "मुद्रा मैन्युफैक्चरिंग / सर्विसेज़ / ट्रेडर्स - ₹2 लाख तक (शिशु/किशोर बैंड)"
+ },
+ {
+  "field": "variant",
+  "en": "MUDRA Tarun Plus - above Rs.10 lakh up to Rs.20 lakh",
+  "hi": "मुद्रा तरुण प्लस - ₹10 लाख से ज़्यादा, ₹20 लाख तक"
+ },
+ {
+  "field": "variant",
+  "en": "Mudra Manufacturing / Services / Traders - above Rs.2 lakh up to Rs.10 lakh",
+  "hi": "मुद्रा मैन्युफैक्चरिंग / सर्विसेज़ / ट्रेडर्स - ₹2 लाख से ज़्यादा, ₹10 लाख तक"
+ },
+ {
+  "field": "variant",
+  "en": "Prime Minister's Mudra Yojana (PMMY) incl. two-wheeler & e-rickshaw under MUDRA",
+  "hi": "प्रधानमंत्री मुद्रा योजना (PMMY), मुद्रा के तहत टू व्हीलर और ई-रिक्शा सहित"
+ },
+ {
+  "field": "variant",
+  "en": "STP Shishu Mudra (digital)",
+  "hi": "STP शिशु मुद्रा (डिजिटल)"
+ },
+ {
+  "field": "variant",
+  "en": "Union Mudra (Shishu / Kishor / Tarun)",
+  "hi": "Union Mudra (शिशु / किशोर / तरुण)"
+ },
+ {
+  "field": "variant",
+  "en": "IB Vehicle Loan (new car)",
+  "hi": "IB Vehicle Loan (नई कार)"
+ },
+ {
+  "field": "variant",
+  "en": "IB Vehicle Loan (Eco Vahan)",
+  "hi": "IB Vehicle Loan (Eco Vahan)"
+ },
+ {
+  "field": "variant",
+  "en": "IB Vehicle Loan for purchase of used car",
+  "hi": "यूज़्ड कार खरीदने के लिए IB Vehicle Loan"
+ },
+ {
+  "field": "variant",
+  "en": "New Car Loan — Apr-Jun 2026 disclosed range",
+  "hi": "नई कार लोन — अप्रैल-जून 2026 की घोषित रेंज"
+ },
+ {
+  "field": "variant",
+  "en": "Used Car Loan — Apr-Jun 2026 disclosed range",
+  "hi": "यूज़्ड कार लोन — अप्रैल-जून 2026 की घोषित रेंज"
+ },
+ {
+  "field": "variant",
+  "en": "Baroda Car Loan - New Car (floating)",
+  "hi": "Baroda Car Loan - नई कार (फ्लोटिंग)"
+ },
+ {
+  "field": "variant",
+  "en": "Baroda Car Loan - Pre Owned Car (floating)",
+  "hi": "Baroda Car Loan - प्री-ओन्ड कार (फ्लोटिंग)"
+ },
+ {
+  "field": "variant",
+  "en": "Digital Car Loan - New Car (floating)",
+  "hi": "डिजिटल कार लोन - नई कार (फ्लोटिंग)"
+ },
+ {
+  "field": "variant",
+  "en": "Cent Vehicle (4-Wheeler)",
+  "hi": "Cent Vehicle (4-व्हीलर)"
+ },
+ {
+  "field": "variant",
+  "en": "Cent Go Green Vehicle (4-Wheeler)",
+  "hi": "Cent Go Green Vehicle (4-व्हीलर)"
+ },
+ {
+  "field": "variant",
+  "en": "New Car Loan",
+  "hi": "नई कार लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Union Vehicle Loan - new 4-wheeler",
+  "hi": "Union Vehicle Loan - नया 4-व्हीलर"
+ },
+ {
+  "field": "variant",
+  "en": "Union Green Vehicle Loan - new electric 4-wheeler",
+  "hi": "Union Green Vehicle Loan - नया इलेक्ट्रिक 4-व्हीलर"
+ },
+ {
+  "field": "variant",
+  "en": "Union Vehicle Loan - used 4-wheeler (not older than 3 years)",
+  "hi": "Union Vehicle Loan - यूज़्ड 4-व्हीलर (3 साल से ज़्यादा पुराना नहीं)"
+ },
+ {
+  "field": "variant",
+  "en": "New Car Loan (rate table)",
+  "hi": "नई कार लोन (दर तालिका)"
+ },
+ {
+  "field": "variant",
+  "en": "Mean interest rate disclosure - cases disbursed July-September 2026",
+  "hi": "औसत ब्याज दर का खुलासा - जुलाई-सितंबर 2026 में वितरित केस"
+ },
+ {
+  "field": "variant",
+  "en": "Pre-Owned Car Loan",
+  "hi": "प्री-ओन्ड कार लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Maha Super Car Loan (floating, individuals)",
+  "hi": "Maha Super Car Loan (फ्लोटिंग, व्यक्तियों के लिए)"
+ },
+ {
+  "field": "variant",
+  "en": "Fixed Rate Car Loan (new car, incl. Green/EV)",
+  "hi": "फिक्स्ड रेट कार लोन (नई कार, ग्रीन/ईवी सहित)"
+ },
+ {
+  "field": "variant",
+  "en": "Canara Vehicle 4-wheeler - other (non-women) borrowers",
+  "hi": "Canara Vehicle 4-wheeler - अन्य (गैर-महिला) उधारकर्ता"
+ },
+ {
+  "field": "variant",
+  "en": "Canara Green Vehicle (4-wheeler EV)",
+  "hi": "Canara Green Vehicle (4-व्हीलर ईवी)"
+ },
+ {
+  "field": "variant",
+  "en": "CUB Yoha Vahana (new four-wheelers only)",
+  "hi": "CUB Yoha Vahana (सिर्फ़ नए फोर व्हीलर)"
+ },
+ {
+  "field": "variant",
+  "en": "Car Loan (New) - fixed rate",
+  "hi": "कार लोन (नई) - फिक्स्ड रेट"
+ },
+ {
+  "field": "variant",
+  "en": "Used car / Loan against car - fixed rate",
+  "hi": "यूज़्ड कार / कार पर लोन - फिक्स्ड रेट"
+ },
+ {
+  "field": "variant",
+  "en": "New Car Loan, tenure more than 36 months",
+  "hi": "नई कार लोन, 36 महीने से ज़्यादा की अवधि"
+ },
+ {
+  "field": "variant",
+  "en": "New Car Loan, tenure less than 36 months",
+  "hi": "नई कार लोन, 36 महीने से कम की अवधि"
+ },
+ {
+  "field": "variant",
+  "en": "Vehicle Loan (Non-Electric) - Individual Four Wheeler",
+  "hi": "व्हीकल लोन (नॉन-इलेक्ट्रिक) - व्यक्तिगत फोर व्हीलर"
+ },
+ {
+  "field": "variant",
+  "en": "Vehicle Loan (Electric) - Individual Four Wheeler",
+  "hi": "व्हीकल लोन (इलेक्ट्रिक) - व्यक्तिगत फोर व्हीलर"
+ },
+ {
+  "field": "variant",
+  "en": "New car (Passenger Vehicle — New) Q1 FY27 disclosure",
+  "hi": "नई कार (पैसेंजर व्हीकल — नया) Q1 FY27 खुलासा"
+ },
+ {
+  "field": "variant",
+  "en": "Used car (Passenger Vehicle — Used) Q1 FY27 disclosure",
+  "hi": "यूज़्ड कार (पैसेंजर व्हीकल — यूज़्ड) Q1 FY27 खुलासा"
+ },
+ {
+  "field": "variant",
+  "en": "PSB Apna Vahan — Four Wheeler (new, individual)",
+  "hi": "PSB Apna Vahan — फोर व्हीलर (नया, व्यक्तिगत)"
+ },
+ {
+  "field": "variant",
+  "en": "Car Loan (New Car, other than e-vehicle) - floating",
+  "hi": "कार लोन (नई कार, ई-व्हीकल के अलावा) - फ्लोटिंग"
+ },
+ {
+  "field": "variant",
+  "en": "Car Loan (New Car, e-vehicle) - floating",
+  "hi": "कार लोन (नई कार, ई-व्हीकल) - फ्लोटिंग"
+ },
+ {
+  "field": "variant",
+  "en": "New Car Loan - pricing grid (standard rate by loan band)",
+  "hi": "नई कार लोन - प्राइसिंग ग्रिड (लोन बैंड के अनुसार स्टैंडर्ड दर)"
+ },
+ {
+  "field": "variant",
+  "en": "Pricing range - New Car Loan, Jul-Sep 2026",
+  "hi": "प्राइसिंग रेंज - नई कार लोन, जुलाई-सितंबर 2026"
+ },
+ {
+  "field": "variant",
+  "en": "Used Car Loan & Loan Against Car - pricing grid",
+  "hi": "यूज़्ड कार लोन और कार पर लोन - प्राइसिंग ग्रिड"
+ },
+ {
+  "field": "variant",
+  "en": "SIB Car Loan — new car (floating)",
+  "hi": "SIB Car Loan — नई कार (फ्लोटिंग)"
+ },
+ {
+  "field": "variant",
+  "en": "SIB Car Loan — used car (fixed)",
+  "hi": "SIB Car Loan — यूज़्ड कार (फिक्स्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "SBI Car Loan / NRI Car Loan / Assured Car Loan (new car)",
+  "hi": "SBI Car Loan / NRI Car Loan / Assured Car Loan (नई कार)"
+ },
+ {
+  "field": "variant",
+  "en": "Loyalty Car Loan Scheme",
+  "hi": "Loyalty Car Loan Scheme"
+ },
+ {
+  "field": "variant",
+  "en": "SBI Green Car Loan (For Electric Cars)",
+  "hi": "SBI Green Car Loan (इलेक्ट्रिक कारों के लिए)"
+ },
+ {
+  "field": "variant",
+  "en": "UCO Car / STP Car Loan / Car Loan PQVL (individuals, new car)",
+  "hi": "UCO Car / STP Car Loan / Car Loan PQVL (व्यक्ति, नई कार)"
+ },
+ {
+  "field": "variant",
+  "en": "Star Vehicle Loan - new 4-wheeler (CIBIL-linked)",
+  "hi": "Star Vehicle Loan - नया 4-व्हीलर (CIBIL-लिंक्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Rack rate (new car)",
+  "hi": "रैक रेट (नई कार)"
+ },
+ {
+  "field": "variant",
+  "en": "Festive Treat offer",
+  "hi": "Festive Treat ऑफ़र"
+ },
+ {
+  "field": "variant",
+  "en": "IRR actually offered Apr–Jun 2026 (Auto Loan)",
+  "hi": "अप्रैल–जून 2026 में वास्तव में दी गई आईआरआर (ऑटो लोन)"
+ },
+ {
+  "field": "variant",
+  "en": "Used Car Finance",
+  "hi": "यूज़्ड कार फाइनेंस"
+ },
+ {
+  "field": "variant",
+  "en": "Car - new",
+  "hi": "कार - नई"
+ },
+ {
+  "field": "variant",
+  "en": "Car - used",
+  "hi": "कार - यूज़्ड"
+ },
+ {
+  "field": "variant",
+  "en": "Auto Loan",
+  "hi": "ऑटो लोन"
+ },
+ {
+  "field": "variant",
+  "en": "New Assets (except 3 wheelers) - Wheels segment band",
+  "hi": "नए एसेट (3 व्हीलर को छोड़कर) - Wheels सेगमेंट बैंड"
+ },
+ {
+  "field": "variant",
+  "en": "Car Loan (Interest Rate Policy indicative range)",
+  "hi": "कार लोन (ब्याज दर नीति की सांकेतिक रेंज)"
+ },
+ {
+  "field": "variant",
+  "en": "Used Car",
+  "hi": "यूज़्ड कार"
+ },
+ {
+  "field": "variant",
+  "en": "Pre-owned Car Loan",
+  "hi": "प्री-ओन्ड कार लोन"
+ },
+ {
+  "field": "variant",
+  "en": "New Car Loan (NCL)",
+  "hi": "नई कार लोन (NCL)"
+ },
+ {
+  "field": "variant",
+  "en": "Used Car Loan (UCL)",
+  "hi": "यूज़्ड कार लोन (UCL)"
+ },
+ {
+  "field": "variant",
+  "en": "Q1 FY2026-27 disclosed range — Used Car Loan",
+  "hi": "Q1 FY2026-27 की घोषित रेंज — यूज़्ड कार लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Used Car Loan Balance Transfer",
+  "hi": "यूज़्ड कार लोन बैलेंस ट्रांसफ़र"
+ },
+ {
+  "field": "variant",
+  "en": "Used car - Non-commercial vehicle (Used), other than two-wheeler",
+  "hi": "यूज़्ड कार - नॉन-कमर्शियल वाहन (यूज़्ड), टू व्हीलर के अलावा"
+ },
+ {
+  "field": "variant",
+  "en": "Non-commercial vehicle (New) - Others",
+  "hi": "नॉन-कमर्शियल वाहन (नया) - अन्य"
+ },
+ {
+  "field": "variant",
+  "en": "Two-Wheeler Loan — current starting rate",
+  "hi": "टू व्हीलर लोन — मौजूदा शुरुआती दर"
+ },
+ {
+  "field": "variant",
+  "en": "Mahabank Vehicle Loan Scheme — Two Wheeler",
+  "hi": "Mahabank Vehicle Loan Scheme — टू व्हीलर"
+ },
+ {
+  "field": "variant",
+  "en": "New two-wheeler — all categories (Bike Loan Interest Rates page)",
+  "hi": "नया टू व्हीलर — सभी श्रेणियां (बाइक लोन ब्याज दर पेज)"
+ },
+ {
+  "field": "variant",
+  "en": "Product page variant table (conflicting)",
+  "hi": "प्रोडक्ट पेज की वेरिएंट तालिका (परस्पर विरोधी)"
+ },
+ {
+  "field": "variant",
+  "en": "Two Wheeler Loan (rate table)",
+  "hi": "टू व्हीलर लोन (दर तालिका)"
+ },
+ {
+  "field": "variant",
+  "en": "Baroda Two Wheeler Loan (floating)",
+  "hi": "Baroda Two Wheeler Loan (फ्लोटिंग)"
+ },
+ {
+  "field": "variant",
+  "en": "Baroda Two Wheeler Loan (fixed, 1-year MCLR linked)",
+  "hi": "Baroda Two Wheeler Loan (फिक्स्ड, 1 साल के एमसीएलआर से लिंक्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Star Vehicle Loan - two-wheeler",
+  "hi": "Star Vehicle Loan - टू व्हीलर"
+ },
+ {
+  "field": "variant",
+  "en": "Canara Vehicle (2 Wheelers) - other (non-women) borrowers",
+  "hi": "Canara Vehicle (2 Wheelers) - अन्य (गैर-महिला) उधारकर्ता"
+ },
+ {
+  "field": "variant",
+  "en": "Cent Vehicle (2-Wheeler)",
+  "hi": "Cent Vehicle (2-व्हीलर)"
+ },
+ {
+  "field": "variant",
+  "en": "Cent EV 2-Wheeler for Females",
+  "hi": "Cent EV 2-Wheeler (महिलाओं के लिए)"
+ },
+ {
+  "field": "variant",
+  "en": "Rack rate",
+  "hi": "रैक रेट"
+ },
+ {
+  "field": "variant",
+  "en": "IRR actually offered Apr–Jun 2026 — Superbike Two-Wheeler Loan",
+  "hi": "अप्रैल–जून 2026 में वास्तव में दी गई आईआरआर — सुपरबाइक टू व्हीलर लोन"
+ },
+ {
+  "field": "variant",
+  "en": "IRR actually offered Apr–Jun 2026 — Two-Wheeler Loan",
+  "hi": "अप्रैल–जून 2026 में वास्तव में दी गई आईआरआर — टू व्हीलर लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Vehicle Loan for Purchase of 2 Wheeler",
+  "hi": "2 व्हीलर खरीदने के लिए व्हीकल लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Vehicle Loan (Non-Electric) - Individual Two Wheeler",
+  "hi": "व्हीकल लोन (नॉन-इलेक्ट्रिक) - व्यक्तिगत टू व्हीलर"
+ },
+ {
+  "field": "variant",
+  "en": "IOB Pink Wheel Scheme - Two Wheeler (Non-Electric)",
+  "hi": "IOB Pink Wheel Scheme - टू व्हीलर (नॉन-इलेक्ट्रिक)"
+ },
+ {
+  "field": "variant",
+  "en": "Vehicle Loan (Electric) - Individual Two Wheeler",
+  "hi": "व्हीकल लोन (इलेक्ट्रिक) - व्यक्तिगत टू व्हीलर"
+ },
+ {
+  "field": "variant",
+  "en": "New two-wheeler Q1 FY27 disclosure",
+  "hi": "नया टू व्हीलर Q1 FY27 खुलासा"
+ },
+ {
+  "field": "variant",
+  "en": "Used two-wheeler Q1 FY27 disclosure",
+  "hi": "यूज़्ड टू व्हीलर Q1 FY27 खुलासा"
+ },
+ {
+  "field": "variant",
+  "en": "PNB Saarthi (floating)",
+  "hi": "PNB Saarthi (फ्लोटिंग)"
+ },
+ {
+  "field": "variant",
+  "en": "PNB Power Ride",
+  "hi": "PNB Power Ride"
+ },
+ {
+  "field": "variant",
+  "en": "Union Vehicle Loan - new 2-wheeler",
+  "hi": "Union Vehicle Loan - नया 2-व्हीलर"
+ },
+ {
+  "field": "variant",
+  "en": "Previous-quarter actual ROI range - A_Wheels - 2Wheeler (1 Apr-30 Jun 2026)",
+  "hi": "पिछली तिमाही की वास्तविक ब्याज दर रेंज - A_Wheels - 2Wheeler (1 अप्रैल-30 जून 2026)"
+ },
+ {
+  "field": "variant",
+  "en": "Two-Wheeler Loan",
+  "hi": "टू व्हीलर लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Two-Wheeler Loan (fixed rate)",
+  "hi": "टू व्हीलर लोन (फिक्स्ड रेट)"
+ },
+ {
+  "field": "variant",
+  "en": "PSB Apna Vahan — Two Wheeler",
+  "hi": "PSB Apna Vahan — टू व्हीलर"
+ },
+ {
+  "field": "variant",
+  "en": "CUB Easy Ride (two-wheeler)",
+  "hi": "CUB Easy Ride (टू व्हीलर)"
+ },
+ {
+  "field": "variant",
+  "en": "SBI Two-Wheeler Loan",
+  "hi": "SBI Two-Wheeler Loan"
+ },
+ {
+  "field": "variant",
+  "en": "UCO 2-Wheeler - General Category",
+  "hi": "UCO 2-Wheeler - सामान्य श्रेणी"
+ },
+ {
+  "field": "variant",
+  "en": "Uco 2-Wheeler Elite (min loan Rs.1.50 lakh)",
+  "hi": "Uco 2-Wheeler Elite (न्यूनतम लोन ₹1.50 लाख)"
+ },
+ {
+  "field": "variant",
+  "en": "Two Wheeler Loan",
+  "hi": "टू व्हीलर लोन"
+ },
+ {
+  "field": "variant",
+  "en": "2-Wheeler (new; Non-EV and EV)",
+  "hi": "2-व्हीलर (नया; नॉन-ईवी और ईवी)"
+ },
+ {
+  "field": "variant",
+  "en": "Two-wheeler loan (TWL), new",
+  "hi": "टू व्हीलर लोन (TWL), नया"
+ },
+ {
+  "field": "variant",
+  "en": "Two-wheeler loan (Interest Rate Policy indicative range)",
+  "hi": "टू व्हीलर लोन (ब्याज दर नीति की सांकेतिक रेंज)"
+ },
+ {
+  "field": "variant",
+  "en": "Non-commercial two-wheeler (New)",
+  "hi": "नॉन-कमर्शियल टू व्हीलर (नया)"
+ },
+ {
+  "field": "variant",
+  "en": "Non-commercial two-wheeler (Used)",
+  "hi": "नॉन-कमर्शियल टू व्हीलर (यूज़्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Two-Wheeler (new)",
+  "hi": "टू व्हीलर (नया)"
+ },
+ {
+  "field": "variant",
+  "en": "Used Two-Wheeler",
+  "hi": "यूज़्ड टू व्हीलर"
+ },
+ {
+  "field": "variant",
+  "en": "Tractor Loan - Agricultural end use and Agri Hiring",
+  "hi": "ट्रैक्टर लोन - खेती में इस्तेमाल और कृषि हायरिंग"
+ },
+ {
+  "field": "variant",
+  "en": "Tractor Loan - Agri cum commercial End use",
+  "hi": "ट्रैक्टर लोन - खेती के साथ कमर्शियल इस्तेमाल"
+ },
+ {
+  "field": "variant",
+  "en": "Tractor Loan - Tatkal Tractor Loan",
+  "hi": "ट्रैक्टर लोन - Tatkal Tractor Loan"
+ },
+ {
+  "field": "variant",
+  "en": "Scheme for financing small tractors (up to 30 HP)",
+  "hi": "छोटे ट्रैक्टरों (30 HP तक) की फाइनेंसिंग के लिए स्कीम"
+ },
+ {
+  "field": "variant",
+  "en": "MC-New Tractor Loan Scheme",
+  "hi": "MC-New Tractor Loan Scheme"
+ },
+ {
+  "field": "variant",
+  "en": "Farm Mechanization scheme - tractors/power tillers/harvesters",
+  "hi": "फार्म मशीनीकरण स्कीम - ट्रैक्टर/पावर टिलर/हार्वेस्टर"
+ },
+ {
+  "field": "variant",
+  "en": "New Tractor Loan, tenure >36 months (rate of interest disbursed Apr'26-Jun'26)",
+  "hi": "नया ट्रैक्टर लोन, अवधि >36 महीने (अप्रैल'26-जून'26 में वितरित लोन की ब्याज दर)"
+ },
+ {
+  "field": "variant",
+  "en": "New Tractor Loan, tenure up to 36 months (disbursed Apr'26-Jun'26)",
+  "hi": "नया ट्रैक्टर लोन, 36 महीने तक की अवधि (अप्रैल'26-जून'26 में वितरित)"
+ },
+ {
+  "field": "variant",
+  "en": "Used Tractor Loan (disbursed Apr'26-Jun'26)",
+  "hi": "यूज़्ड ट्रैक्टर लोन (अप्रैल'26-जून'26 में वितरित)"
+ },
+ {
+  "field": "variant",
+  "en": "Tractor Loan — published rate range (Apr–Jun 2026)",
+  "hi": "ट्रैक्टर लोन — प्रकाशित दर रेंज (अप्रैल–जून 2026)"
+ },
+ {
+  "field": "variant",
+  "en": "New Tractor & Farm Equipment Q1 FY27 disclosure",
+  "hi": "नया ट्रैक्टर और फार्म इक्विपमेंट Q1 FY27 खुलासा"
+ },
+ {
+  "field": "variant",
+  "en": "Used Tractor & Farm Equipment Q1 FY27 disclosure",
+  "hi": "यूज़्ड ट्रैक्टर और फार्म इक्विपमेंट Q1 FY27 खुलासा"
+ },
+ {
+  "field": "variant",
+  "en": "New Tractor Loan",
+  "hi": "नया ट्रैक्टर लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Used Tractor Loan",
+  "hi": "यूज़्ड ट्रैक्टर लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Tractor loan (new/used tractor, harvester, implements)",
+  "hi": "ट्रैक्टर लोन (नया/यूज़्ड ट्रैक्टर, हार्वेस्टर, उपकरण)"
+ },
+ {
+  "field": "variant",
+  "en": "IRR actually offered Apr–Jun 2026",
+  "hi": "अप्रैल–जून 2026 में वास्तव में दी गई आईआरआर"
+ },
+ {
+  "field": "variant",
+  "en": "Tractor / Tractor FE - new",
+  "hi": "ट्रैक्टर / ट्रैक्टर FE - नया"
+ },
+ {
+  "field": "variant",
+  "en": "Tractor Loan",
+  "hi": "ट्रैक्टर लोन"
+ },
+ {
+  "field": "variant",
+  "en": "New Tractor",
+  "hi": "नया ट्रैक्टर"
+ },
+ {
+  "field": "variant",
+  "en": "Tractor loan (product page FAQ)",
+  "hi": "ट्रैक्टर लोन (प्रोडक्ट पेज के सवाल-जवाब)"
+ },
+ {
+  "field": "variant",
+  "en": "SIB Gold Max / Gold Max Agri (fixed)",
+  "hi": "SIB Gold Max / Gold Max Agri (फिक्स्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Repo-linked gold loans (personal OD, retail/MSME)",
+  "hi": "रेपो-लिंक्ड गोल्ड लोन (पर्सनल ओवरड्राफ्ट, रिटेल/एमएसएमई)"
+ },
+ {
+  "field": "variant",
+  "en": "Gold Loan — rate range Q1 FY27 (Apr–Jun 2026), presented as current range",
+  "hi": "गोल्ड लोन — Q1 FY27 (अप्रैल–जून 2026) की दर रेंज, मौजूदा रेंज के रूप में दिखाई गई"
+ },
+ {
+  "field": "variant",
+  "en": "Gold loans - credit pricing disclosure (historic range)",
+  "hi": "गोल्ड लोन - क्रेडिट प्राइसिंग खुलासा (पिछली रेंज)"
+ },
+ {
+  "field": "variant",
+  "en": "Gold Loan (all schemes)",
+  "hi": "गोल्ड लोन (सभी स्कीमें)"
+ },
+ {
+  "field": "variant",
+  "en": "Smart Choice Gold Loan (limited-time offer)",
+  "hi": "Smart Choice Gold Loan (सीमित समय का ऑफ़र)"
+ },
+ {
+  "field": "variant",
+  "en": "Gold Loan - schedule of charges w.e.f. 9 Oct 2026",
+  "hi": "गोल्ड लोन - 9 अक्टूबर 2026 से लागू चार्ज शेड्यूल"
+ },
+ {
+  "field": "variant",
+  "en": "Maha Gold Loan Scheme (retail)",
+  "hi": "Maha Gold Loan Scheme (रिटेल)"
+ },
+ {
+  "field": "variant",
+  "en": "Retail Gold Loan (consumption, bullet)",
+  "hi": "रिटेल गोल्ड लोन (उपभोग, बुलेट भुगतान)"
+ },
+ {
+  "field": "variant",
+  "en": "Gold Plus OD (consumption overdraft)",
+  "hi": "Gold Plus OD (उपभोग के लिए ओवरड्राफ्ट)"
+ },
+ {
+  "field": "variant",
+  "en": "Gold Loan",
+  "hi": "गोल्ड लोन"
+ },
+ {
+  "field": "variant",
+  "en": "SBI Personal Gold Loan - range across 12M bullet / EMI / overdraft variants",
+  "hi": "SBI Personal Gold Loan - 12 महीने बुलेट / ईएमआई / ओवरड्राफ्ट वेरिएंट की रेंज"
+ },
+ {
+  "field": "variant",
+  "en": "12 Months Bullet Repayment Gold Loan",
+  "hi": "12 महीने बुलेट भुगतान वाला गोल्ड लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Liquid Gold Loan (Overdraft)",
+  "hi": "Liquid Gold Loan (ओवरड्राफ्ट)"
+ },
+ {
+  "field": "variant",
+  "en": "Personal Gold Loan (EMI)",
+  "hi": "पर्सनल गोल्ड लोन (ईएमआई)"
+ },
+ {
+  "field": "variant",
+  "en": "Non-Agri Gold Loan",
+  "hi": "गैर-कृषि गोल्ड लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Agri Gold Loan",
+  "hi": "कृषि गोल्ड लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Cent Gold Loan (Retail)",
+  "hi": "Cent Gold Loan (रिटेल)"
+ },
+ {
+  "field": "variant",
+  "en": "Cent Agri Gold Loan (non-interest-subvention, DL/CKCC)",
+  "hi": "Cent Agri Gold Loan (ब्याज सबवेंशन के बिना, DL/CKCC)"
+ },
+ {
+  "field": "variant",
+  "en": "Gold loan for consumption purposes - fixed rate option",
+  "hi": "उपभोग के लिए गोल्ड लोन - फिक्स्ड रेट विकल्प"
+ },
+ {
+  "field": "variant",
+  "en": "Gold loan for consumption purposes - floating Demand Loan / EMI",
+  "hi": "उपभोग के लिए गोल्ड लोन - फ्लोटिंग डिमांड लोन / ईएमआई"
+ },
+ {
+  "field": "variant",
+  "en": "Gold loan for consumption purposes - floating Overdraft",
+  "hi": "उपभोग के लिए गोल्ड लोन - फ्लोटिंग ओवरड्राफ्ट"
+ },
+ {
+  "field": "variant",
+  "en": "Swarna Loan / Swarna OD / Swarna Express (retail gold loan)",
+  "hi": "Swarna Loan / Swarna OD / Swarna Express (रिटेल गोल्ड लोन)"
+ },
+ {
+  "field": "variant",
+  "en": "Agriculture gold loans",
+  "hi": "कृषि गोल्ड लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Advertised current rate (retail gold loan: term loan / overdraft / bullet)",
+  "hi": "विज्ञापित मौजूदा दर (रिटेल गोल्ड लोन: टर्म लोन / ओवरड्राफ्ट / बुलेट)"
+ },
+ {
+  "field": "variant",
+  "en": "IRR actually offered Jan–Mar 2026 (Q4 FY2025-26)",
+  "hi": "जनवरी–मार्च 2026 में वास्तव में दी गई आईआरआर (Q4 FY2025-26)"
+ },
+ {
+  "field": "variant",
+  "en": "JL-Others (Jewel Loan - Others) JLOTH",
+  "hi": "JL-Others (ज्वेल लोन - अन्य) JLOTH"
+ },
+ {
+  "field": "variant",
+  "en": "IOB Swarna Lakshmi (Women Borrowers) - JLSWL",
+  "hi": "IOB Swarna Lakshmi (महिला उधारकर्ता) - JLSWL"
+ },
+ {
+  "field": "variant",
+  "en": "PSB Jewel Loan — gold, consumption purpose",
+  "hi": "PSB Jewel Loan — गोल्ड, उपभोग के उद्देश्य से"
+ },
+ {
+  "field": "variant",
+  "en": "PSB Jewel Loan — gold, MSME income-generating purpose",
+  "hi": "PSB Jewel Loan — गोल्ड, एमएसएमई, आय अर्जित करने के उद्देश्य से"
+ },
+ {
+  "field": "variant",
+  "en": "Union Swarna Shakti Loan Scheme - Retail (USSLS), up to Rs.50 lakh",
+  "hi": "Union Swarna Shakti Loan Scheme - रिटेल (USSLS), ₹50 लाख तक"
+ },
+ {
+  "field": "variant",
+  "en": "Union Krishi Kamdhenu Gold Loan (agri), up to Rs.25 lakh",
+  "hi": "Union Krishi Kamdhenu Gold Loan (कृषि), ₹25 लाख तक"
+ },
+ {
+  "field": "variant",
+  "en": "Gold Loan (retail)",
+  "hi": "गोल्ड लोन (रिटेल)"
+ },
+ {
+  "field": "variant",
+  "en": "Jewel Loan (Non-Priority) - OD against Gold Jewels",
+  "hi": "ज्वेल लोन (नॉन-प्रायोरिटी) - सोने के गहनों पर ओवरड्राफ्ट"
+ },
+ {
+  "field": "variant",
+  "en": "Jewel Loan (Non-Priority) - Term Loan with Bullet Repayment",
+  "hi": "ज्वेल लोन (नॉन-प्रायोरिटी) - बुलेट भुगतान वाला टर्म लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Gold Loan - Retail (consumption) term loan",
+  "hi": "गोल्ड लोन - रिटेल (उपभोग) टर्म लोन"
+ },
+ {
+  "field": "variant",
+  "en": "GOLD Overdraft Retail - 30% Margin",
+  "hi": "गोल्ड ओवरड्राफ्ट रिटेल - 30% मार्जिन"
+ },
+ {
+  "field": "variant",
+  "en": "Gold loan - retail (non-agri)",
+  "hi": "गोल्ड लोन - रिटेल (गैर-कृषि)"
+ },
+ {
+  "field": "variant",
+  "en": "Gold Loan - Term Loan (fixed category)",
+  "hi": "गोल्ड लोन - टर्म लोन (फिक्स्ड श्रेणी)"
+ },
+ {
+  "field": "variant",
+  "en": "Gold Loan - Overdraft (fixed category)",
+  "hi": "गोल्ड लोन - ओवरड्राफ्ट (फिक्स्ड श्रेणी)"
+ },
+ {
+  "field": "variant",
+  "en": "Non-Agri (Retail) Gold Loan",
+  "hi": "गैर-कृषि (रिटेल) गोल्ड लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Gold Loan via ABCD app (monthly rate as stated)",
+  "hi": "ABCD ऐप के ज़रिए गोल्ड लोन (बताई गई मासिक दर)"
+ },
+ {
+  "field": "variant",
+  "en": "Gold loan schemes (overall: monthly-serviced minimum to base rate)",
+  "hi": "गोल्ड लोन स्कीमें (कुल मिलाकर: मासिक ब्याज भुगतान वाली न्यूनतम दर से बेस रेट तक)"
+ },
+ {
+  "field": "variant",
+  "en": "High Value Balance Transfer Scheme (HVB), Rs.5 lakh-5 crore",
+  "hi": "High Value Balance Transfer Scheme (HVB), ₹5 लाख-5 करोड़"
+ },
+ {
+  "field": "variant",
+  "en": "High Value Elite Gold (HEG), Rs.15-25 lakh",
+  "hi": "High Value Elite Gold (HEG), ₹15-25 लाख"
+ },
+ {
+  "field": "variant",
+  "en": "Small Value Interest Repayment Scheme (SIR), Rs.1,500-50,000",
+  "hi": "Small Value Interest Repayment Scheme (SIR), ₹1,500-50,000"
+ },
+ {
+  "field": "variant",
+  "en": "Gold loan",
+  "hi": "गोल्ड लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Gold loan schemes MT+5 / SA+1 / DS (monthly to quarterly interest servicing)",
+  "hi": "गोल्ड लोन स्कीमें MT+5 / SA+1 / DS (मासिक से तिमाही ब्याज भुगतान)"
+ },
+ {
+  "field": "variant",
+  "en": "Bullet Rebate / Bullet Fixed / Interest Only schemes",
+  "hi": "Bullet Rebate / Bullet Fixed / Interest Only स्कीमें"
+ },
+ {
+  "field": "variant",
+  "en": "Chola Welfare loan Scheme",
+  "hi": "Chola Welfare loan Scheme"
+ },
+ {
+  "field": "variant",
+  "en": "Loan against Gold",
+  "hi": "गोल्ड पर लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Suvarna Raksha gold loan",
+  "hi": "Suvarna Raksha गोल्ड लोन"
+ },
+ {
+  "field": "variant",
+  "en": "Unsecured credit cards (all variants other than secured)",
+  "hi": "अनसिक्योर्ड क्रेडिट कार्ड (सिक्योर्ड को छोड़कर सभी वेरिएंट)"
+ },
+ {
+  "field": "variant",
+  "en": "Secured credit cards (against FD)",
+  "hi": "सिक्योर्ड क्रेडिट कार्ड (एफडी के बदले)"
+ },
+ {
+  "field": "variant",
+  "en": "PNB retail credit cards (unsecured)",
+  "hi": "PNB रिटेल क्रेडिट कार्ड (अनसिक्योर्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "PNB credit card issued against FD",
+  "hi": "एफडी के बदले जारी PNB क्रेडिट कार्ड"
+ },
+ {
+  "field": "variant",
+  "en": "All AU Retail Credit Cards - charges on revolving credit",
+  "hi": "सभी AU रिटेल क्रेडिट कार्ड - रिवॉल्विंग क्रेडिट पर चार्ज"
+ },
+ {
+  "field": "variant",
+  "en": "AU CA / AU CS Credit Cards - charges on revolving credit",
+  "hi": "AU CA / AU CS क्रेडिट कार्ड - रिवॉल्विंग क्रेडिट पर चार्ज"
+ },
+ {
+  "field": "variant",
+  "en": "Zenith+ Credit Card - charges on revolving credit",
+  "hi": "Zenith+ क्रेडिट कार्ड - रिवॉल्विंग क्रेडिट पर चार्ज"
+ },
+ {
+  "field": "variant",
+  "en": "Retail credit cards (standard variants)",
+  "hi": "रिटेल क्रेडिट कार्ड (स्टैंडर्ड वेरिएंट)"
+ },
+ {
+  "field": "variant",
+  "en": "All variants — range per Credit Card Issuance and Conduct Policy FY 26-27",
+  "hi": "सभी वेरिएंट — Credit Card Issuance and Conduct Policy FY 26-27 के अनुसार रेंज"
+ },
+ {
+  "field": "variant",
+  "en": "BOBCARD - all credit cards (finance charge)",
+  "hi": "BOBCARD - सभी क्रेडिट कार्ड (फाइनेंस चार्ज)"
+ },
+ {
+  "field": "variant",
+  "en": "BOBCARD Micro Enterprise credit card",
+  "hi": "BOBCARD Micro Enterprise क्रेडिट कार्ड"
+ },
+ {
+  "field": "variant",
+  "en": "BOI credit cards (unsecured, other than SwaDhan)",
+  "hi": "BOI क्रेडिट कार्ड (अनसिक्योर्ड, SwaDhan के अलावा)"
+ },
+ {
+  "field": "variant",
+  "en": "Finance charge — all other (standard) card variants",
+  "hi": "फाइनेंस चार्ज — बाकी सभी (स्टैंडर्ड) कार्ड वेरिएंट"
+ },
+ {
+  "field": "variant",
+  "en": "Finance charge — Infinia, Infinia (Metal Edition), Diners Black Metal Edition, Diners Black, BizBlack Metal Card, UPI RuPay Mega Saver Card",
+  "hi": "फाइनेंस चार्ज — Infinia, Infinia (Metal Edition), Diners Black Metal Edition, Diners Black, BizBlack Metal Card, UPI RuPay Mega Saver Card"
+ },
+ {
+  "field": "variant",
+  "en": "Finance charge — Micro Enterprise Card",
+  "hi": "फाइनेंस चार्ज — Micro Enterprise Card"
+ },
+ {
+  "field": "variant",
+  "en": "Finance charge — standard (all cards except 1838 Reserve)",
+  "hi": "फाइनेंस चार्ज — स्टैंडर्ड (1838 Reserve को छोड़कर सभी कार्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Finance charge — 1838 Reserve ICICI Bank Credit Card",
+  "hi": "फाइनेंस चार्ज — 1838 Reserve ICICI Bank Credit Card"
+ },
+ {
+  "field": "variant",
+  "en": "Lowest possible finance charge (discretionary)",
+  "hi": "सबसे कम संभव फाइनेंस चार्ज (विवेकाधीन)"
+ },
+ {
+  "field": "variant",
+  "en": "All IDFC FIRST credit cards except FIRST SWYP (revolving finance charge)",
+  "hi": "FIRST SWYP को छोड़कर सभी IDFC FIRST क्रेडिट कार्ड (रिवॉल्विंग फाइनेंस चार्ज)"
+ },
+ {
+  "field": "variant",
+  "en": "Overdue interest (non-payment of Minimum Amount Due)",
+  "hi": "ओवरड्यू ब्याज (मिनिमम अमाउंट ड्यू का भुगतान न करने पर)"
+ },
+ {
+  "field": "variant",
+  "en": "All consumer credit cards (MITC range)",
+  "hi": "सभी कंज़्यूमर क्रेडिट कार्ड (MITC रेंज)"
+ },
+ {
+  "field": "variant",
+  "en": "Mainstream cards (Platinum Aura Edge, Legend, Platinum, Samman etc.)",
+  "hi": "मुख्य कार्ड (Platinum Aura Edge, Legend, Platinum, Samman आदि)"
+ },
+ {
+  "field": "variant",
+  "en": "KVB Platinum / KVB Honour Credit Card (KVB-issued)",
+  "hi": "KVB Platinum / KVB Honour Credit Card (KVB द्वारा जारी)"
+ },
+ {
+  "field": "variant",
+  "en": "Most retail cards (League Platinum, Cashback+, 811, Royale Signature, Zen Signature, IndiGo, Air etc.)",
+  "hi": "ज़्यादातर रिटेल कार्ड (League Platinum, Cashback+, 811, Royale Signature, Zen Signature, IndiGo, Air आदि)"
+ },
+ {
+  "field": "variant",
+  "en": "Premium cards (White Reserve, Solitaire, Kotak Signature, Infinite, White Signature, Privy League Signature, Air+, 811 Super Money, Air+ Prime)",
+  "hi": "प्रीमियम कार्ड (White Reserve, Solitaire, Kotak Signature, Infinite, White Signature, Privy League Signature, Air+, 811 Super Money, Air+ Prime)"
+ },
+ {
+  "field": "variant",
+  "en": "SBI Card - Shaurya, Defence and Secured cards",
+  "hi": "SBI Card - Shaurya, Defence और सिक्योर्ड कार्ड"
+ },
+ {
+  "field": "variant",
+  "en": "Union Bank credit cards (retail)",
+  "hi": "Union Bank क्रेडिट कार्ड (रिटेल)"
+ },
+ {
+  "field": "variant",
+  "en": "Regular credit cards (YES Private/Prime/Marquee/Reserv 2.99%; Other Credit Cards 3.99%)",
+  "hi": "रेगुलर क्रेडिट कार्ड (YES Private/Prime/Marquee/Reserv 2.99%; अन्य क्रेडिट कार्ड 3.99%)"
+ },
+ {
+  "field": "variant",
+  "en": "FD-backed / NRI card variants",
+  "hi": "एफडी-आधारित / एनआरआई कार्ड वेरिएंट"
+ },
+ {
+  "field": "variant",
+  "en": "IOB Credit Cards (RuPay / VISA) - finance charge",
+  "hi": "IOB क्रेडिट कार्ड (RuPay / VISA) - फाइनेंस चार्ज"
+ },
+ {
+  "field": "variant",
+  "en": "VISA Platinum / RuPay Select / RuPay Platinum - purchases",
+  "hi": "VISA Platinum / RuPay Select / RuPay Platinum - खरीदारी"
+ },
+ {
+  "field": "variant",
+  "en": "VISA Bharat Card - purchases",
+  "hi": "VISA Bharat Card - खरीदारी"
+ },
+ {
+  "field": "variant",
+  "en": "VISA Gold / RuPay Classic - purchases",
+  "hi": "VISA Gold / RuPay Classic - खरीदारी"
+ },
+ {
+  "field": "variant",
+  "en": "ABC Flex / ABC Nxt Credit Card (co-brand issued by AU Small Finance Bank)",
+  "hi": "ABC Flex / ABC Nxt Credit Card (AU Small Finance Bank द्वारा जारी को-ब्रांड कार्ड)"
+ },
+ {
+  "field": "variant",
+  "en": "Flexi Loan (personal)",
+  "hi": "फ्लेक्सी लोन (पर्सनल)"
+ }
+]

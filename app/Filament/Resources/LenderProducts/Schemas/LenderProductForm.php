@@ -4,6 +4,7 @@ namespace App\Filament\Resources\LenderProducts\Schemas;
 
 use App\Enums\EmploymentType;
 use App\Enums\LenderStatus;
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Support\Rates\RateText;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Repeater;
@@ -155,6 +156,13 @@ class LenderProductForm
                         ->columnSpanFull()
                         ->helperText('Informational only — shown to visitors as "who qualifies" bullet points. Does not affect the eligibility rule engine used during the application journey.'),
                 ]),
+            HindiTranslationSection::make([
+                TextInput::make('processing_fee_note_hi')
+                    ->label('Processing fee note (Hindi)')
+                    ->rule(fn () => RateText::rule())
+                    ->helperText('Interest rates belong in Catalog → Interest Rates, here too.')
+                    ->columnSpanFull(),
+            ]),
         ];
     }
 }

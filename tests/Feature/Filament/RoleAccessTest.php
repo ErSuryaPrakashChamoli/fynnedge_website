@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
+use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
     $this->seed(RoleSeeder::class);
@@ -91,4 +92,33 @@ it('leaves a panel user with no role at all unable to reach any module', functio
     $this->actingAs($user);
 
     $this->get('/admin/articles')->assertForbidden();
+});
+
+it('lets a Marketing-role user manage social media videos', function () {
+    $user = User::factory()->create(['is_admin' => true]);
+    $user->syncRoles(['Marketing']);
+
+    $this->actingAs($user);
+
+    $this->get('/admin/social-videos')->assertOk();
+    $this->get('/admin/social-videos/create')->assertOk();
+});
+
+it('blocks an SEO-role user from social media videos', function () {
+    $user = User::factory()->create(['is_admin' => true]);
+    $user->syncRoles(['SEO']);
+
+    $this->actingAs($user);
+
+    $this->get('/admin/social-videos')->assertForbidden();
+});
+
+it('grants an existing Marketing role social media videos on migrate, keeping its other permissions', function () {
+    $role = Role::findByName('Marketing');
+    $role->syncPermissions(['Update:Article']);
+
+    (require database_path('migrations/2026_10_14_144416_grant_social_video_permissions_to_marketing_role.php'))->up();
+
+    expect($role->fresh()->hasPermissionTo('Update:SocialVideo'))->toBeTrue();
+    expect($role->fresh()->hasPermissionTo('Update:Article'))->toBeTrue();
 });

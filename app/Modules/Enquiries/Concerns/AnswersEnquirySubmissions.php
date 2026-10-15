@@ -44,12 +44,12 @@ trait AnswersEnquirySubmissions
     {
         return $outcome->isNewRequest()
             ? [
-                'title' => 'Thank You!',
-                'message' => 'Your enquiry has been submitted successfully. Our team will contact you shortly.',
+                'title' => __('Thank You!'),
+                'message' => __('Your enquiry has been submitted successfully. Our team will contact you shortly.'),
             ]
             : [
-                'title' => "You're Already Connected",
-                'message' => 'We already have your enquiry. Our team will contact you shortly.',
+                'title' => __("You're Already Connected"),
+                'message' => __('We already have your enquiry. Our team will contact you shortly.'),
             ];
     }
 

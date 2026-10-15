@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Testimonials\Schemas;
 
 use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HindiTranslationSection;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -54,6 +55,17 @@ class TestimonialForm
                     ->visible(fn (callable $get) => $get('status') === PublishStatus::Published->value),
                 DateTimePicker::make('expires_at')
                     ->helperText('Optional. The testimonial stops appearing publicly after this time.'),
+                HindiTranslationSection::make([
+                    TextInput::make('customer_name_hi')
+                        ->label('Customer name (Hindi)'),
+                    TextInput::make('role_location_hi')
+                        ->label('Role / location (Hindi)'),
+                    Textarea::make('quote_hi')
+                        ->label('Quote (Hindi)')
+                        ->columnSpanFull(),
+                    TextInput::make('avatar_alt_hi')
+                        ->label('Avatar alt text (Hindi)'),
+                ])->columns(2),
             ]);
     }
 }

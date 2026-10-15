@@ -7,6 +7,7 @@ use App\Filament\Resources\MarketingSections\Pages\EditMarketingSection;
 use App\Filament\Resources\MarketingSections\Pages\ListMarketingSections;
 use App\Models\MarketingSection;
 use App\Models\User;
+use App\Support\SocialVideos\SocialVideos;
 use Livewire\Livewire;
 
 beforeEach(function () {
@@ -33,6 +34,20 @@ it('creates a marketing section for a homepage placement', function () {
         ->assertHasNoFormErrors();
 
     expect(MarketingSection::query()->where('placement', 'home_finance_cta')->exists())->toBeTrue();
+});
+
+it('creates the marketing section that words the social media videos section', function () {
+    Livewire::test(CreateMarketingSection::class)
+        ->fillForm([
+            'placement' => SocialVideos::SECTION_PLACEMENT,
+            'heading' => 'Money tips in a minute',
+            'subheading' => 'Fresh from our feed',
+            'status' => PublishStatus::Published->value,
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(MarketingSection::query()->where('placement', SocialVideos::SECTION_PLACEMENT)->value('heading'))->toBe('Money tips in a minute');
 });
 
 it('shows the homepage finance CTA once a marketing section is published for it, replacing the hardcoded default', function () {

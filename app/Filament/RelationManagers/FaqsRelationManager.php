@@ -3,6 +3,7 @@
 namespace App\Filament\RelationManagers;
 
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HindiTranslationSection;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -51,6 +52,15 @@ class FaqsRelationManager extends RelationManager
                     ->visible(fn (callable $get) => $get('status') === PublishStatus::Published->value),
                 DateTimePicker::make('expires_at')
                     ->helperText('Optional. The FAQ stops appearing publicly after this time.'),
+                HindiTranslationSection::make([
+                    TextInput::make('question_hi')
+                        ->label('Question (Hindi)')
+                        ->columnSpanFull(),
+                    Textarea::make('answer_hi')
+                        ->label('Answer (Hindi)')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
             ]);
     }
 

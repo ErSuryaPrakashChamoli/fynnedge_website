@@ -1,0 +1,1752 @@
+[
+ {
+  "field": "processing_fee_note",
+  "en": "0.35% (min ₹2,000, max ₹10,000) + GST; women get 0.05% rate concession; from 7.25% w.e.f. 01-Apr-2026, CIBIL-tiered up to ~8.45%",
+  "hi": "0.35% (न्यूनतम ₹2,000, अधिकतम ₹10,000) + जीएसटी; महिलाओं को ब्याज दर में 0.05% की रियायत; 01-अप्रैल-2026 से 7.25% से शुरू, CIBIL स्कोर के अनुसार ~8.45% तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 2% of loan + taxes (₹5,000 non-refundable upfront at login); floating from 7.60% (Repo 5.25%); fixed switch 12% onwards; up to 90% LTV; salaried 18-60, self-employed 18-65; min income ₹20,000 metro / ₹15,000 other; Paisabazaar: PF 0.50% salaried...",
+  "hi": "लोन का 2% तक + टैक्स (लॉगिन के समय ₹5,000 अग्रिम, नॉन-रिफंडेबल); फ्लोटिंग 7.60% से (रेपो 5.25%); फिक्स्ड में स्विच 12% से; 90% तक एलटीवी; वेतनभोगी 18-60, स्व-रोज़गार 18-65 साल; न्यूनतम आय ₹20,000 मेट्रो / ₹15,000 अन्य; Paisabazaar: प्रोसेसिंग फीस 0.50% वेतनभोगी..."
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 0.50%: ₹8,500–₹15,000 (≤₹50L) / ₹8,500–₹25,000 (>₹50L) + GST; takeover flat ₹8,500; nil for govt employees (non-DSA leads); floating BRLLR (7.90%) − 0.70% to + 1.05%",
+  "hi": "0.50% तक: ₹8,500–₹15,000 (≤₹50 लाख) / ₹8,500–₹25,000 (>₹50 लाख) + जीएसटी; टेकओवर पर फ्लैट ₹8,500; सरकारी कर्मचारियों के लिए शून्य (नॉन-डीएसए लीड); फ्लोटिंग बीआरएलएलआर (7.90%) − 0.70% से + 1.05% तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Repo-linked floating (term loan 7.35%-9.50%, OD 7.45%-9.60%); loans below Rs 35 lakh attract +1%; PF up to 0.5% (min Rs 3,000 max Rs 7,500)",
+  "hi": "रेपो-लिंक्ड फ्लोटिंग (टर्म लोन 7.35%-9.50%, ओडी 7.45%-9.60%); ₹35 लाख से कम के लोन पर +1%; प्रोसेसिंग फीस 0.5% तक (न्यूनतम ₹3,000, अधिकतम ₹7,500)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "1.25% of loan amount; hybrid fixed (37/60 months) then repo-linked floating; LTV 90%/80%/75% by ticket size; PB: up to 1.5%/Rs 10k (<=30L), 1%/Rs 15k (>30L)",
+  "hi": "लोन राशि का 1.25%; हाइब्रिड: पहले फिक्स्ड (37/60 महीने), फिर रेपो-लिंक्ड फ्लोटिंग; लोन राशि के अनुसार एलटीवी 90%/80%/75%; PB: 1.5%/₹10 हज़ार तक (<=30 लाख), 1%/₹15 हज़ार (>30 लाख)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.50% of loan amount (min Rs 5,000, max Rs 10,000) + GST; repo/MCLR-linked; 0.50% concession for women borrowers; LTV up to 90%; SIB Loan Referral Partner programme",
+  "hi": "लोन राशि का 0.50% (न्यूनतम ₹5,000, अधिकतम ₹10,000) + जीएसटी; रेपो/एमसीएलआर-लिंक्ड; महिला उधारकर्ताओं के लिए 0.50% रियायत; एलटीवी 90% तक; SIB Loan Referral Partner प्रोग्राम"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Login fee up to Rs 4,000 + PF nil-1.00% + admin fee 0.25%-2.00% depending on scheme, all + GST; RLLR 5.25% w.e.f. 01-Jan-2026",
+  "hi": "लॉगिन फीस ₹4,000 तक + प्रोसेसिंग फीस शून्य-1.00% + एडमिन फीस 0.25%-2.00% (स्कीम के अनुसार), सभी पर + जीएसटी; आरएलएलआर 5.25% (01-जनवरी-2026 से प्रभावी)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Maha Super Housing Loan: 0.25% of loan amt + GST (periodic full waivers, last stated to 31.12.2025). ROI RLLR-1.05% = 7.00% (CIBIL 800+ salaried) to RLLR+1.10% = 9.15% (<600), RLLR 8.05%; non-salaried ~0.10% higher; women/defence 0.05% concession",
+  "hi": "Maha Super Housing Loan: लोन राशि का 0.25% + जीएसटी (समय-समय पर पूरी छूट, पिछली बार 31.12.2025 तक बताई गई)। ब्याज दर आरएलएलआर-1.05% = 7.00% (CIBIL 800+ वेतनभोगी) से आरएलएलआर+1.10% = 9.15% (<600) तक, आरएलएलआर 8.05%; गैर-वेतनभोगी के लिए ~0.10% ज़्यादा; महिलाओं/रक्षा कर्मियों को 0.05% रियायत"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.50% (min ₹1,500, max ₹10,000) + GST; 50% waiver till 30-Sep-2026; full waiver for SB Premium Payroll takeovers till 30-Sep-2026; no upper loan limit (72x gross monthly salary); entry age <60",
+  "hi": "0.50% (न्यूनतम ₹1,500, अधिकतम ₹10,000) + जीएसटी; 30-सितंबर-2026 तक 50% छूट; SB Premium Payroll टेकओवर पर 30-सितंबर-2026 तक पूरी छूट; लोन की कोई ऊपरी सीमा नहीं (सकल मासिक वेतन का 72 गुना); आवेदन के समय उम्र <60"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Cent Home Loan: 0.50% of loan amt, min Rs2,500 max Rs20,000 + GST - FULL WAIVER till 31.12.2026. ROI RBLR-1.05% to RBLR+0.50% (RBLR 8.25%, updated 31.08.2026) by CIC score; tenure up to 30 yrs / age 75",
+  "hi": "Cent Home Loan: लोन राशि का 0.50%, न्यूनतम ₹2,500, अधिकतम ₹20,000 + जीएसटी - 31.12.2026 तक पूरी छूट। ब्याज दर आरबीएलआर-1.05% से आरबीएलआर+0.50% तक (आरबीएलआर 8.25%, 31.08.2026 को अपडेट), सीआईसी स्कोर के अनुसार; अवधि 30 साल तक / 75 की उम्र तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 0.50% of loan or ₹3,000 whichever higher + taxes; floating = Repo 5.25% + 2.50%-7.95% for salaried & self-employed; Paisabazaar: Rs 15 lakh-Rs 10 crore, age 18-70, min income Rs 10,000 pm",
+  "hi": "लोन का 0.50% तक या ₹3,000, जो भी ज़्यादा हो + टैक्स; फ्लोटिंग = रेपो 5.25% + 2.50%-7.95% (वेतनभोगी और स्व-रोज़गार दोनों के लिए); Paisabazaar: ₹15 लाख-₹10 करोड़, उम्र 18-70, न्यूनतम आय ₹10,000 प्रति माह"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.5% of loan + taxes on special rates (schedule says up to 2%); floating slabs 8.50%-9.80% valid till 30-Sep-2026; fixed 8.90%-11.20%; loans up to ₹10 crore",
+  "hi": "स्पेशल रेट पर लोन का 0.5% + टैक्स (शुल्क सूची में 2% तक); फ्लोटिंग स्लैब 8.50%-9.80%, 30-सितंबर-2026 तक मान्य; फिक्स्ड 8.90%-11.20%; ₹10 करोड़ तक के लोन"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 3% of sanctioned amount + GST; salaried from 8.85% / self-employed from 9.25%; Wishfin: salaried 21-60 (3 yrs exp), self-employed 23-70",
+  "hi": "मंज़ूर राशि का 3% तक + जीएसटी; वेतनभोगी 8.85% से / स्व-रोज़गार 9.25% से; Wishfin: वेतनभोगी 21-60 (3 साल अनुभव), स्व-रोज़गार 23-70"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "IB Home Loan (residents): flat Rs1,500 + GST up to Rs25 lakh; Rs2,500 (Rs25-75 lakh); Rs5,000 above Rs75 lakh (w.e.f. 02.01.2025). ROI 7.15-8.55% (rate card 10.09.2026); Home Loan Plus 7.65-8.75%; BankBazaar quotes PF 0.23%; age 18-70",
+  "hi": "IB Home Loan (निवासी): ₹25 लाख तक फ्लैट ₹1,500 + जीएसटी; ₹2,500 (₹25-75 लाख); ₹75 लाख से ऊपर ₹5,000 (02.01.2025 से प्रभावी)। ब्याज दर 7.15-8.55% (रेट कार्ड 10.09.2026); Home Loan Plus 7.65-8.75%; BankBazaar के अनुसार प्रोसेसिंग फीस 0.23%; उम्र 18-70"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Subhagruha: ROI RLLR-linked by CIC score, 7.20% (CIC-1 >=800 salaried) to 8.30% (CIC-6 680-699 non-salaried), RLLR 8.10% w.e.f. 15.12.2025; PF 0.50% max Rs25,000 (BankBazaar); max entry age 55 (60 with co-obligant), repaid by 70",
+  "hi": "Subhagruha: ब्याज दर आरएलएलआर-लिंक्ड, सीआईसी स्कोर के अनुसार 7.20% (CIC-1 >=800 वेतनभोगी) से 8.30% (CIC-6 680-699 गैर-वेतनभोगी) तक, आरएलएलआर 8.10% (15.12.2025 से प्रभावी); प्रोसेसिंग फीस 0.50%, अधिकतम ₹25,000 (BankBazaar); आवेदन के समय अधिकतम उम्र 55 (सह-दायी के साथ 60), 70 की उम्र तक भुगतान"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Rates linked to external benchmark (5.25%) by profile/collateral; no prepayment charges on floating; salaried 24-60, self-employed professionals 24-70, non-professionals 24-65; 3 yrs experience; Wishfin: 8.25%-10.00%, PF up to 1%",
+  "hi": "दरें एक्सटर्नल बेंचमार्क (5.25%) से लिंक्ड, प्रोफ़ाइल/गिरवी के अनुसार; फ्लोटिंग पर कोई प्रीपेमेंट चार्ज नहीं; वेतनभोगी 24-60, स्व-रोज़गार प्रोफ़ेशनल 24-70, नॉन-प्रोफ़ेशनल 24-65; 3 साल का अनुभव; Wishfin: 8.25%-10.00%, प्रोसेसिंग फीस 1% तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Happy Home Loan: Rs 2,500 (<= Rs 25 lakh) / Rs 5,000 (Rs 25-50 lakh) / Rs 7,500 (> Rs 50 lakh) + GST; margin 10-25%; no prepayment charges; flat-only fee; % derived",
+  "hi": "Happy Home Loan: ₹2,500 (<= ₹25 लाख) / ₹5,000 (₹25-50 लाख) / ₹7,500 (> ₹50 लाख) + जीएसटी; मार्जिन 10-25%; कोई प्रीपेमेंट चार्ज नहीं; केवल फ्लैट फीस; % की गणना की गई है"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PSB Apna Ghar: up to Rs25 lakh 0.15% min Rs1,000 max Rs3,750 + GST; Rs25-50 lakh 0.25% max Rs12,500; Rs50-75 lakh 0.25% max Rs15,000; above 0.25%. ROI PRLR 7.35% based: 7.35% (CIBIL 825+) to 10.75% (<650); Apna Ghar Premium from 7.15%; w.e.f. 16.07.2026",
+  "hi": "PSB Apna Ghar: ₹25 लाख तक 0.15%, न्यूनतम ₹1,000, अधिकतम ₹3,750 + जीएसटी; ₹25-50 लाख 0.25%, अधिकतम ₹12,500; ₹50-75 लाख 0.25%, अधिकतम ₹15,000; इससे ऊपर 0.25%। ब्याज दर पीआरएलआर 7.35% पर आधारित: 7.35% (CIBIL 825+) से 10.75% (<650) तक; Apna Ghar Premium 7.15% से; 16.07.2026 से प्रभावी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.5% of loan amt, min Rs1,500 max Rs15,000 + GST; 100% waiver for STP / 50% for offline sanctions (offer to 31.03.2026) and festive 100% waiver on processing & documentation. Floating RLLR-linked; 0.05% concession for women",
+  "hi": "लोन राशि का 0.5%, न्यूनतम ₹1,500, अधिकतम ₹15,000 + जीएसटी; एसटीपी पर 100% छूट / ऑफ़लाइन मंज़ूरी पर 50% (ऑफ़र 31.03.2026 तक) और प्रोसेसिंग व डॉक्यूमेंटेशन पर त्योहारी 100% छूट। फ्लोटिंग, आरएलएलआर-लिंक्ड; महिलाओं को 0.05% रियायत"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.50% of loan amt, max Rs15,000 + GST (Union Home). ROI by CIC score: 825+ 7.15% to 600-649 9.35% (EBLR 8.00%, w.e.f. 24.07.2026); women 5 bps lower in mid slabs; fixed-rate option 11.40-12.65%",
+  "hi": "लोन राशि का 0.50%, अधिकतम ₹15,000 + जीएसटी (Union Home)। सीआईसी स्कोर के अनुसार ब्याज दर: 825+ पर 7.15% से 600-649 पर 9.35% तक (ईबीएलआर 8.00%, 24.07.2026 से प्रभावी); बीच के स्लैब में महिलाओं के लिए 5 बेसिस पॉइंट कम; फिक्स्ड रेट विकल्प 11.40-12.65%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "1.5% or Rs 10,000 whichever higher + GST (Rs 7,500 non-refundable login fee); Khushi affordable HL 9.95%-13.60%",
+  "hi": "1.5% या ₹10,000, जो भी ज़्यादा हो + जीएसटी (₹7,500 नॉन-रिफंडेबल लॉगिन फीस); Khushi अफ़ोर्डेबल होम लोन 9.95%-13.60%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Floating by bureau score & ticket: Affordable 0.35%+GST, Prime 0.25%+GST, Premium 0.20%+GST; fixed-rate option 8.35%-10.35%; ticket up to Rs 7.5 Cr; CUB DSA programme",
+  "hi": "फ्लोटिंग, ब्यूरो स्कोर और लोन राशि के अनुसार: Affordable 0.35%+जीएसटी, Prime 0.25%+जीएसटी, Premium 0.20%+जीएसटी; फिक्स्ड रेट विकल्प 8.35%-10.35%; ₹7.5 करोड़ तक लोन; CUB डीएसए प्रोग्राम"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Min: Repo/EBR-linked, max up to 22% per schedule of charges; PF up to 2% + GST; tenure 1-20 yrs for cash-salaried/SENP, up to 30 yrs otherwise; PB: up to Rs 5 Cr, PF 1.5-2%",
+  "hi": "न्यूनतम: रेपो/ईबीआर-लिंक्ड, शुल्क सूची के अनुसार अधिकतम 22% तक; प्रोसेसिंग फीस 2% तक + जीएसटी; कैश में सैलरी पाने वालों/एसईएनपी के लिए अवधि 1-20 साल, बाकी के लिए 30 साल तक; PB: ₹5 करोड़ तक, प्रोसेसिंग फीस 1.5-2%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 1% of loan or ₹10,000 whichever higher + GST (₹5,000 upfront at login); floating Repo + 2.75%-3.85% = 8.00%-9.10% by CIBIL; fixed 14%; ASHA HL 10.15%-11.90%",
+  "hi": "लोन का 1% तक या ₹10,000, जो भी ज़्यादा हो + जीएसटी (लॉगिन के समय ₹5,000 अग्रिम); फ्लोटिंग रेपो + 2.75%-3.85% = 8.00%-9.10%, CIBIL के अनुसार; फिक्स्ड 14%; ASHA होम लोन 10.15%-11.90%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Star Home Loan (w.e.f. 01.06.2026, RBLR 8.10%): CIBIL 725+/-1/0/takeover 0.20% min Rs2,000 max Rs10,000 + GST; below 725 0.35% min Rs3,500 max Rs30,000. ROI 7.10% (840+) to 10.00% (<700)",
+  "hi": "Star Home Loan (01.06.2026 से प्रभावी, आरबीएलआर 8.10%): CIBIL 725+/-1/0/टेकओवर पर 0.20%, न्यूनतम ₹2,000, अधिकतम ₹10,000 + जीएसटी; 725 से कम पर 0.35%, न्यूनतम ₹3,500, अधिकतम ₹30,000। ब्याज दर 7.10% (840+) से 10.00% (<700) तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 2% or Rs 5,000 whichever higher + GST; fixed and floating options; LTV up to 90% below Rs 20 lakh",
+  "hi": "2% तक या ₹5,000, जो भी ज़्यादा हो + जीएसटी; फिक्स्ड और फ्लोटिंग दोनों विकल्प; ₹20 लाख से कम पर एलटीवी 90% तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.35% (min ₹2,500, max ₹15,000) + documentation ₹1,350, excl. GST; waived during PNB Utsav campaigns; CIBIL-tiered (800+: 7.25–8.75%, 600–699: 9.05–10.55%)",
+  "hi": "0.35% (न्यूनतम ₹2,500, अधिकतम ₹15,000) + डॉक्यूमेंटेशन ₹1,350, जीएसटी अलग; PNB Utsav अभियानों के दौरान माफ़; CIBIL स्कोर के अनुसार (800+: 7.25–8.75%, 600–699: 9.05–10.55%)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Processing fee described as nominal (not published as %); salaried from 7.25%, self-employed from 7.70%, doctors from 7.30%; bounce charge slabs Rs 500-10,000; PF up to 4% + GST per Paisabazaar; min tenure 5 yrs",
+  "hi": "प्रोसेसिंग फीस नाममात्र बताई गई है (% में प्रकाशित नहीं); वेतनभोगी 7.25% से, स्व-रोज़गार 7.70% से, डॉक्टर 7.30% से; बाउंस चार्ज स्लैब ₹500-10,000; Paisabazaar के अनुसार प्रोसेसिंग फीस 4% तक + जीएसटी; न्यूनतम अवधि 5 साल"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Q1 FY27 contracted range 7.15%-11.00% across Griha Prakash/Suvidha/Sugam schemes (7.15% needs CIBIL 825+); PF up to 0.50% min Rs 10,000 max Rs 50,000 + GST; tenure 30 yrs salaried / 25 yrs self-employed; no CIBIL cut-off, PF 0.25%-0.50% (Paisabazaar)",
+  "hi": "Q1 FY27 में Griha Prakash/Suvidha/Sugam स्कीमों पर अनुबंधित रेंज 7.15%-11.00% (7.15% के लिए CIBIL 825+ ज़रूरी); प्रोसेसिंग फीस 0.50% तक, न्यूनतम ₹10,000, अधिकतम ₹50,000 + जीएसटी; अवधि वेतनभोगी 30 साल / स्व-रोज़गार 25 साल; कोई CIBIL कट-ऑफ़ नहीं, प्रोसेसिंग फीस 0.25%-0.50% (Paisabazaar)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Aditya Birla Housing Finance: Prime HL 7.75% (salaried) / 8.00% (self-employed); Pragati affordable 9.75%-10.25%; Aashiyana 10.20%-10.45%; PF up to 1%; LTV up to 90%; Rs 20 lakh-10 Cr, 1-30 yrs per BankBazaar",
+  "hi": "Aditya Birla Housing Finance: Prime HL 7.75% (वेतनभोगी) / 8.00% (स्व-रोज़गार); Pragati अफ़ोर्डेबल 9.75%-10.25%; Aashiyana 10.20%-10.45%; प्रोसेसिंग फीस 1% तक; एलटीवी 90% तक; BankBazaar के अनुसार ₹20 लाख-10 करोड़, 1-30 साल"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Salaried from 7.75% p.a., self-employed from 8.20% p.a. (repo-linked floating); PF up to 3% of sanctioned amount + taxes; login fee up to Rs 5,000 incl. taxes; LTV up to 90%; min PF 0.25% + taxes",
+  "hi": "वेतनभोगी 7.75% प्रति वर्ष से, स्व-रोज़गार 8.20% प्रति वर्ष से (रेपो-लिंक्ड फ्लोटिंग); प्रोसेसिंग फीस मंज़ूर राशि का 3% तक + टैक्स; लॉगिन फीस ₹5,000 तक, टैक्स सहित; एलटीवी 90% तक; न्यूनतम प्रोसेसिंग फीस 0.25% + टैक्स"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Floating 7.50%-10.05% by CIBIL band/loan slab (salaried lowest; non-salaried +0.25-0.30%); fixed 14.75%; PF 1% + GST min Rs 10,000; LTV up to 90%",
+  "hi": "फ्लोटिंग 7.50%-10.05%, CIBIL बैंड/लोन स्लैब के अनुसार (वेतनभोगी के लिए सबसे कम; गैर-वेतनभोगी +0.25-0.30%); फिक्स्ड 14.75%; प्रोसेसिंग फीस 1% + जीएसटी, न्यूनतम ₹10,000; एलटीवी 90% तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Tata Capital Housing Finance: salaried 8.00%-13% p.a., self-employed 8.35%-13% p.a.; PF up to 3% + GST; PF Rs 5,000 salaried / Rs 10,000 self-employed per Paisabazaar",
+  "hi": "Tata Capital Housing Finance: वेतनभोगी 8.00%-13% प्रति वर्ष, स्व-रोज़गार 8.35%-13% प्रति वर्ष; प्रोसेसिंग फीस 3% तक + जीएसटी; Paisabazaar के अनुसार प्रोसेसिंग फीस वेतनभोगी ₹5,000 / स्व-रोज़गार ₹10,000"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Via IIFL Home Finance Ltd; PF up to 1.75%; PLR 16.85%; upper rate from official EMI calculator range; no prepayment penalty for individuals",
+  "hi": "IIFL Home Finance Ltd के ज़रिए; प्रोसेसिंग फीस 1.75% तक; पीएलआर 16.85%; ऊपरी दर आधिकारिक ईएमआई कैलकुलेटर की रेंज से; व्यक्तिगत उधारकर्ताओं पर कोई प्रीपेमेंट पेनल्टी नहीं"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 5% of loan amount + taxes; fixed-rate prepayment 2%; up to 90% of purchase price; max rate per quarterly disclosure",
+  "hi": "लोन राशि का 5% तक + टैक्स; फिक्स्ड रेट पर प्रीपेमेंट 2%; खरीद मूल्य का 90% तक; अधिकतम दर तिमाही डिस्क्लोज़र के अनुसार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Via SMFG Grihashakti (SMFG India Home Finance); salaried from 9.25%, self-employed from 9.75%; PF up to 3%; LTV up to 90%; Q1 FY27 housing ROI range 9.35%-16% (official); charges exclusive of GST",
+  "hi": "SMFG Grihashakti (SMFG India Home Finance) के ज़रिए; वेतनभोगी 9.25% से, स्व-रोज़गार 9.75% से; प्रोसेसिंग फीस 3% तक; एलटीवी 90% तक; Q1 FY27 हाउसिंग ब्याज दर रेंज 9.35%-16% (आधिकारिक); चार्ज जीएसटी अलग"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Housing loan (Manappuram Finance MSME/housing vertical); PF minimum 1% + applicable tax; LTV up to 80%; min bureau score 560, min clubbed income Rs 25,000 p.m. (official)",
+  "hi": "होम लोन (Manappuram Finance का एमएसएमई/हाउसिंग वर्टिकल); प्रोसेसिंग फीस न्यूनतम 1% + लागू टैक्स; एलटीवी 80% तक; न्यूनतम ब्यूरो स्कोर 560, न्यूनतम संयुक्त आय ₹25,000 प्रति माह (आधिकारिक)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Via Muthoot Homefin (India) Ltd; PF min 1.5% (salaried) / 2% (self-employed) + GST plus admin fee Rs 2,500 + Rs 6,000 + GST; RPLR 15.95%; LTV 80-90%; official Q1 FY26-27 housing range 11.25%-18%",
+  "hi": "Muthoot Homefin (India) Ltd के ज़रिए; प्रोसेसिंग फीस न्यूनतम 1.5% (वेतनभोगी) / 2% (स्व-रोज़गार) + जीएसटी, साथ में एडमिन फीस ₹2,500 + ₹6,000 + जीएसटी; आरपीएलआर 15.95%; एलटीवी 80-90%; आधिकारिक Q1 FY26-27 हाउसिंग रेंज 11.25%-18%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Affordable housing loans Rs 3-40 lakh, tenure up to 20 years; rates not published on product page; Interest rate policy Dec-2025: HL 10.5%-19% by segment; admin/PF up to 2% + GST",
+  "hi": "अफ़ोर्डेबल होम लोन ₹3-40 लाख, अवधि 20 साल तक; प्रोडक्ट पेज पर दरें प्रकाशित नहीं; ब्याज दर नीति दिसंबर-2025: होम लोन 10.5%-19%, सेगमेंट के अनुसार; एडमिन/प्रोसेसिंग फीस 2% तक + जीएसटी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Term loan 1% (min ₹8,500, max ₹1,50,000) + GST; OD 0.25–0.35%; floating BRLLR (7.90%) + 0.75% to + 3.35%; max ₹25 Cr metro / ₹10 Cr urban / ₹5 Cr semi-urban / ₹25L rural",
+  "hi": "टर्म लोन 1% (न्यूनतम ₹8,500, अधिकतम ₹1,50,000) + जीएसटी; ओडी 0.25–0.35%; फ्लोटिंग बीआरएलएलआर (7.90%) + 0.75% से + 3.35% तक; अधिकतम ₹25 करोड़ मेट्रो / ₹10 करोड़ शहरी / ₹5 करोड़ अर्ध-शहरी / ₹25 लाख ग्रामीण"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "LAP: rate page 9.65% (CIC-1) to 10.75% (CIC-6), cash credit RLLR+2.05% = 10.15%; PF 0.60% up to Rs5 lakh / 0.75% above (charge schedule); mortgage charges Rs10,000-50,000; salaried Rs30,000 pm, self-employed Rs3 lakh pa; non-individuals up to Rs200 cr",
+  "hi": "प्रॉपर्टी पर लोन: रेट पेज पर 9.65% (CIC-1) से 10.75% (CIC-6) तक, कैश क्रेडिट आरएलएलआर+2.05% = 10.15%; प्रोसेसिंग फीस ₹5 लाख तक 0.60% / इससे ऊपर 0.75% (शुल्क सूची); मॉर्गेज चार्ज ₹10,000-50,000; वेतनभोगी ₹30,000 प्रति माह, स्व-रोज़गार ₹3 लाख प्रति वर्ष; गैर-व्यक्तिगत उधारकर्ताओं के लिए ₹200 करोड़ तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Q1 FY27 Bank ROI 8.00%-12.50% (avg 9.65%), APR 8.00%-16.71%; external-benchmark linked (5.25%); MyMoneyMantra: PF up to 2%, up to Rs 20 crore, 15 yrs, age 21-70",
+  "hi": "Q1 FY27 में बैंक की ब्याज दर 8.00%-12.50% (औसत 9.65%), एपीआर 8.00%-16.71%; एक्सटर्नल बेंचमार्क से लिंक्ड (5.25%); MyMoneyMantra: प्रोसेसिंग फीस 2% तक, ₹20 करोड़ तक, 15 साल, उम्र 21-70"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 3% of loan amount; dropline OD variant available; LTV up to 80%",
+  "hi": "लोन राशि का 3% तक; ड्रॉपलाइन ओडी वेरिएंट उपलब्ध; एलटीवी 80% तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Term loan or drop-line OD up to Rs 15 crore; LTV up to 80%; DLOD tenure up to 20 years; PF 1.25% + GST; rate by CIBIL band",
+  "hi": "टर्म लोन या ड्रॉप-लाइन ओडी ₹15 करोड़ तक; एलटीवी 80% तक; डीएलओडी की अवधि 20 साल तक; प्रोसेसिंग फीस 1.25% + जीएसटी; दर CIBIL बैंड के अनुसार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "LAP: 1% of loan amt + GST. ROI RLLR+1.65% = 9.70% (750+) to 10.70% (<600); max Rs10 cr metro / Rs5 cr other; 40% margin; min annual income Rs5 lakh; repay by age 70",
+  "hi": "प्रॉपर्टी पर लोन: लोन राशि का 1% + जीएसटी। ब्याज दर आरएलएलआर+1.65% = 9.70% (750+) से 10.70% (<600) तक; अधिकतम ₹10 करोड़ मेट्रो / ₹5 करोड़ अन्य; 40% मार्जिन; न्यूनतम सालाना आय ₹5 लाख; 70 की उम्र तक भुगतान"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Cent Mortgage: 1.00% of sanctioned amt + GST, max Rs50,000; documentation Rs2,500/Rs5,000. ROI RBLR+0.40% to RBLR+4.00% (8.65-12.25%) by CIC score; max Rs1 crore rural, Rs10 crore metro/urban",
+  "hi": "Cent Mortgage: मंज़ूर राशि का 1.00% + जीएसटी, अधिकतम ₹50,000; डॉक्यूमेंटेशन ₹2,500/₹5,000। ब्याज दर आरबीएलआर+0.40% से आरबीएलआर+4.00% तक (8.65-12.25%), सीआईसी स्कोर के अनुसार; अधिकतम ₹1 करोड़ ग्रामीण, ₹10 करोड़ मेट्रो/शहरी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 2% (min Rs 5,000) + GST; DCB's core secured SME/LAP product",
+  "hi": "2% तक (न्यूनतम ₹5,000) + जीएसटी; DCB का मुख्य सिक्योर्ड एसएमई/प्रॉपर्टी पर लोन प्रोडक्ट"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Max 1% of loan, min ₹7,500 + taxes; floating Repo 5.25% + 3.05%-7.50%; fixed 11.80%-13.30%; up to 65% of property value; calculator range ₹11 lakh-₹10 crore",
+  "hi": "लोन का अधिकतम 1%, न्यूनतम ₹7,500 + टैक्स; फ्लोटिंग रेपो 5.25% + 3.05%-7.50%; फिक्स्ड 11.80%-13.30%; प्रॉपर्टी मूल्य का 65% तक; कैलकुलेटर रेंज ₹11 लाख-₹10 करोड़"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PSB Mortgage: term-loan processing 1.00% new borrower / 0.75% (5-yr) / 0.50% (20-yr relationship), min Rs500 + GST. ROI 9.10% (825+) to 13.30% (<650); term loan up to 15 yrs, OD on demand; 50% MPBF on property value",
+  "hi": "PSB Mortgage: टर्म लोन प्रोसेसिंग नए उधारकर्ता के लिए 1.00% / 0.75% (5 साल का संबंध) / 0.50% (20 साल का संबंध), न्यूनतम ₹500 + जीएसटी। ब्याज दर 9.10% (825+) से 13.30% (<650) तक; टर्म लोन 15 साल तक, ओडी ऑन-डिमांड; प्रॉपर्टी मूल्य पर 50% एमपीबीएफ"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Union Mortgage term loan: 1% of loan amt, min Rs5,000 max Rs1,00,000 + GST; SOD 0.25% max Rs1,00,000. ROI by property type & CIC: 9.05% (self-occupied residential, 800+) to 11.85% (leased commercial, <700)",
+  "hi": "Union Mortgage टर्म लोन: लोन राशि का 1%, न्यूनतम ₹5,000, अधिकतम ₹1,00,000 + जीएसटी; एसओडी 0.25%, अधिकतम ₹1,00,000। प्रॉपर्टी के प्रकार और सीआईसी के अनुसार ब्याज दर: 9.05% (खुद के रहने वाली रेसिडेंशियल, 800+) से 11.85% (लीज़ पर दी गई कमर्शियल, <700) तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Star LAP term loan: one-time 1% min Rs10,000 max Rs1,00,000 + GST; mortgage OD 1% first year then 0.25% renewal (min Rs2,500 max Rs40,000); mortgage fees Rs5,000-30,000. ROI residential 8.85% (760+) to 11.10% (<700); commercial 9.35-11.10%",
+  "hi": "Star LAP टर्म लोन: एक बार 1%, न्यूनतम ₹10,000, अधिकतम ₹1,00,000 + जीएसटी; मॉर्गेज ओडी पहले साल 1%, फिर रिन्यूअल पर 0.25% (न्यूनतम ₹2,500, अधिकतम ₹40,000); मॉर्गेज फीस ₹5,000-30,000। ब्याज दर रेसिडेंशियल 8.85% (760+) से 11.10% (<700) तक; कमर्शियल 9.35-11.10%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.50% of loan amount, min ₹5,000 + GST; ROI by collateral coverage 9.05–11.55%; max 50% of property value; salaried 1 yr service, self-employed 3 yrs in business",
+  "hi": "लोन राशि का 0.50%, न्यूनतम ₹5,000 + जीएसटी; गिरवी कवरेज के अनुसार ब्याज दर 9.05–11.55%; प्रॉपर्टी मूल्य का अधिकतम 50%; वेतनभोगी के लिए 1 साल की नौकरी, स्व-रोज़गार के लिए 3 साल का बिज़नेस"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "1% of loan amount, max ₹50,000 + tax; no prepayment penalty; LTV 65% up to ₹1 Cr, 60% above",
+  "hi": "लोन राशि का 1%, अधिकतम ₹50,000 + टैक्स; कोई प्रीपेमेंट पेनल्टी नहीं; ₹1 करोड़ तक एलटीवी 65%, इससे ऊपर 60%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 1% of loan or ₹10,000 whichever higher + GST (₹5,000 upfront); term loan floating Repo + 3.90%-5.00% (PSL 9.15%-10.00%, non-PSL 9.40%-10.25%)",
+  "hi": "लोन का 1% तक या ₹10,000, जो भी ज़्यादा हो + जीएसटी (₹5,000 अग्रिम); टर्म लोन फ्लोटिंग रेपो + 3.90%-5.00% (पीएसएल 9.15%-10.00%, नॉन-पीएसएल 9.40%-10.25%)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Same schedule as home loan: login fee up to Rs 4,000 + PF nil-1% + admin 0.25%-2% + GST; nil prepayment for individuals on floating rate; LTV 60%; tenure 1-30 yrs",
+  "hi": "होम लोन जैसी ही शुल्क सूची: लॉगिन फीस ₹4,000 तक + प्रोसेसिंग फीस शून्य-1% + एडमिन 0.25%-2% + जीएसटी; फ्लोटिंग रेट पर व्यक्तिगत उधारकर्ताओं के लिए प्रीपेमेंट चार्ज शून्य; एलटीवी 60%; अवधि 1-30 साल"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "11.00% (score >800) / 11.75% (700-800) / 12.00% (NTC); PF 0.35% up to Rs 1 crore, 0.25% above",
+  "hi": "11.00% (स्कोर >800) / 11.75% (700-800) / 12.00% (एनटीसी); प्रोसेसिंग फीस ₹1 करोड़ तक 0.35%, इससे ऊपर 0.25%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Property Power: term loan 8.30%-10.00%, overdraft 8.50%-10.50% (repo-linked); loans below Rs 35 lakh +1%; PB: up to Rs 5 Cr, 15 yrs, PF 1% (min Rs 3,000)",
+  "hi": "Property Power: टर्म लोन 8.30%-10.00%, ओवरड्राफ्ट 8.50%-10.50% (रेपो-लिंक्ड); ₹35 लाख से कम के लोन पर +1%; PB: ₹5 करोड़ तक, 15 साल, प्रोसेसिंग फीस 1% (न्यूनतम ₹3,000)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Mortgage loan PF up to 2% + taxes, admin 0.25% or ₹5,000 whichever lower; non-housing/LAP slabs 10.60%-12.25% (PSL vs non-PSL) valid till 30-Sep-2026; nil foreclosure for SMEs",
+  "hi": "मॉर्गेज लोन पर प्रोसेसिंग फीस 2% तक + टैक्स, एडमिन 0.25% या ₹5,000, जो भी कम हो; नॉन-हाउसिंग/प्रॉपर्टी पर लोन स्लैब 10.60%-12.25% (पीएसएल बनाम नॉन-पीएसएल), 30-सितंबर-2026 तक मान्य; एसएमई के लिए फोरक्लोज़र चार्ज शून्य"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Non-refundable PF up to 1%; EMI or overdraft; hybrid option fixed 39/52/65 months then Repo-linked floating; MyMoneyMantra: 9.50%-10.50%, tenure up to 15 yrs, salaried 18-60 (Rs 40,000 pm), self-employed 21-65",
+  "hi": "नॉन-रिफंडेबल प्रोसेसिंग फीस 1% तक; ईएमआई या ओवरड्राफ्ट; हाइब्रिड विकल्प: पहले फिक्स्ड 39/52/65 महीने, फिर रेपो-लिंक्ड फ्लोटिंग; MyMoneyMantra: 9.50%-10.50%, अवधि 15 साल तक, वेतनभोगी 18-60 (₹40,000 प्रति माह), स्व-रोज़गार 21-65"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.75% (max ₹1,00,000) + documentation ₹2,500 (≤₹50L) / ₹5,000 (>₹50L), excl. GST; CIBIL-tiered (800+: 9.05–11.05%); loan = lower of 65% property value or 36x gross monthly income",
+  "hi": "0.75% (अधिकतम ₹1,00,000) + डॉक्यूमेंटेशन ₹2,500 (≤₹50 लाख) / ₹5,000 (>₹50 लाख), जीएसटी अलग; CIBIL स्कोर के अनुसार (800+: 9.05–11.05%); लोन = प्रॉपर्टी मूल्य का 65% या सकल मासिक आय का 36 गुना, जो भी कम हो"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "LAP/secured business loan: min Repo/EBR, max up to 24%; PF up to 2.50% + GST",
+  "hi": "प्रॉपर्टी पर लोन/सिक्योर्ड बिज़नेस लोन: न्यूनतम रेपो/ईबीआर, अधिकतम 24% तक; प्रोसेसिंग फीस 2.50% तक + जीएसटी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "IB Mortgage/rental products: 1% of loan amt + GST (official PF schedule). ROI floating, base rate/repo linked (not itemised on rate card); take-home must exceed 40% of gross after EMI; Paisabazaar: floating 9.00-11.85%, Rs5 lakh-5 cr",
+  "hi": "IB Mortgage/रेंटल प्रोडक्ट: लोन राशि का 1% + जीएसटी (आधिकारिक प्रोसेसिंग फीस सूची)। ब्याज दर फ्लोटिंग, बेस रेट/रेपो लिंक्ड (रेट कार्ड पर अलग से नहीं दी गई); ईएमआई के बाद टेक-होम सैलरी सकल वेतन के 40% से ज़्यादा होनी चाहिए; Paisabazaar: फ्लोटिंग 9.00-11.85%, ₹5 लाख-5 करोड़"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "UCO Property Loan: 0.50% upfront, max Rs2 lakh. ROI priority 9.45% / non-priority 10.55% floating; max Rs2 cr individuals, Rs5 cr firms; salaried Rs30,000 pm metro / Rs20,000 other, non-salaried Rs4 lakh pa",
+  "hi": "UCO Property Loan: 0.50% अग्रिम, अधिकतम ₹2 लाख। ब्याज दर प्रायोरिटी 9.45% / नॉन-प्रायोरिटी 10.55% फ्लोटिंग; अधिकतम ₹2 करोड़ व्यक्तियों के लिए, ₹5 करोड़ फ़र्मों के लिए; वेतनभोगी ₹30,000 प्रति माह मेट्रो / ₹20,000 अन्य, गैर-वेतनभोगी ₹4 लाख प्रति वर्ष"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Aditya Birla Housing Finance LAP: rack rates 8.85%-17.5% p.a. by segment; up to 75% of property value; PF up to 2% of loan amount; up to Rs 75 Cr, tenure up to 20 yrs per Paisabazaar; min Rs 15 lakh per Wishfin",
+  "hi": "Aditya Birla Housing Finance प्रॉपर्टी पर लोन: रैक रेट 8.85%-17.5% प्रति वर्ष, सेगमेंट के अनुसार; प्रॉपर्टी मूल्य का 75% तक; प्रोसेसिंग फीस लोन राशि का 2% तक; Paisabazaar के अनुसार ₹75 करोड़ तक, अवधि 20 साल तक; Wishfin के अनुसार न्यूनतम ₹15 लाख"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Rs 51 lakh to Rs 25 Cr; PF up to 2% of sanction; foreclosure/part-payment up to 5% + taxes; salaried max age 60 and self-employed 75 at maturity",
+  "hi": "₹51 लाख से ₹25 करोड़; प्रोसेसिंग फीस मंज़ूर राशि का 2% तक; फोरक्लोज़र/आंशिक भुगतान 5% तक + टैक्स; लोन की मैच्योरिटी पर अधिकतम उम्र वेतनभोगी 60 और स्व-रोज़गार 75"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 3.54% of loan amount (inclusive of applicable taxes); fixed or floating; nil foreclosure for individuals/MSEs on floating rate",
+  "hi": "लोन राशि का 3.54% तक (लागू टैक्स सहित); फिक्स्ड या फ्लोटिंग; फ्लोटिंग रेट पर व्यक्तियों/एमएसई के लिए फोरक्लोज़र चार्ज शून्य"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Tenure 12-120 months (121-180 on exception); PF up to 2.36% inclusive of GST; application fee up to Rs 7,670; nil prepayment for individual floating-rate LAP; Rs 10 lakh (tier 2-4) / 20 lakh (tier 1) up to Rs 15 Cr; flat max = PF cap (Rs 7,670 was appl...",
+  "hi": "अवधि 12-120 महीने (अपवाद में 121-180); प्रोसेसिंग फीस 2.36% तक, जीएसटी सहित; एप्लीकेशन फीस ₹7,670 तक; फ्लोटिंग रेट वाले व्यक्तिगत प्रॉपर्टी पर लोन पर प्रीपेमेंट चार्ज शून्य; ₹10 लाख (टियर 2-4) / 20 लाख (टियर 1) से ₹15 करोड़ तक; फ्लैट अधिकतम = प्रोसेसिंग फीस सीमा (₹7,670 एप्लीकेशन..."
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Griha Vikas (non-housing/LAP) Q1 FY27 contracted range 8.75%-11.20%; PF 1% + taxes (aggregator); LAP rate grid starts at CIBIL 600 (Paisabazaar)",
+  "hi": "Griha Vikas (नॉन-हाउसिंग/प्रॉपर्टी पर लोन) Q1 FY27 अनुबंधित रेंज 8.75%-11.20%; प्रोसेसिंग फीस 1% + टैक्स (एग्रीगेटर); प्रॉपर्टी पर लोन की रेट ग्रिड CIBIL 600 से शुरू (Paisabazaar)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Floating 9%-17% p.a., fixed 13%-17% p.a.; PF up to 3% + GST; loan cancellation 2% or Rs 5,750; PF 1%-3% + GST, min net income Rs 15,000, 3 yrs stability per Paisabazaar",
+  "hi": "फ्लोटिंग 9%-17% प्रति वर्ष, फिक्स्ड 13%-17% प्रति वर्ष; प्रोसेसिंग फीस 3% तक + जीएसटी; लोन कैंसलेशन 2% या ₹5,750; Paisabazaar के अनुसार प्रोसेसिंग फीस 1%-3% + जीएसटी, न्यूनतम शुद्ध आय ₹15,000, 3 साल की स्थिरता"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Rs 5 lakh to Rs 7.5 Cr, tenure up to 15 years; nil foreclosure for individuals on floating rate after 12 months; Interest rate policy Dec-2025: LAP 10%-18% (S-LAP 16%-24%); admin/PF 3% + GST",
+  "hi": "₹5 लाख से ₹7.5 करोड़, अवधि 15 साल तक; फ्लोटिंग रेट पर व्यक्तियों के लिए 12 महीने बाद फोरक्लोज़र चार्ज शून्य; ब्याज दर नीति दिसंबर-2025: प्रॉपर्टी पर लोन 10%-18% (S-LAP 16%-24%); एडमिन/प्रोसेसिंग फीस 3% + जीएसटी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PF 1% + GST; LTV up to 75%; prepayment not allowed within 12 months",
+  "hi": "प्रोसेसिंग फीस 1% + जीएसटी; एलटीवी 75% तक; 12 महीने के अंदर प्रीपेमेंट की अनुमति नहीं"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "8%-18% p.a. fixed or floating; PF up to 3% of sanctioned amount + taxes; login fee up to Rs 5,000; mortgage origination up to Rs 6,000 per property",
+  "hi": "8%-18% प्रति वर्ष, फिक्स्ड या फ्लोटिंग; प्रोसेसिंग फीस मंज़ूर राशि का 3% तक + टैक्स; लॉगिन फीस ₹5,000 तक; मॉर्गेज ओरिजिनेशन फीस प्रति प्रॉपर्टी ₹6,000 तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 17% p.a.; PF up to 2% + application login fee Rs 6,000 per property + GST; LTV up to 80%; prepayment 4%; salaried min income Rs 30,000 p.m., self-employed Rs 3 lakh p.a. ITR; Flexi/dropline LAP also offered",
+  "hi": "17% प्रति वर्ष तक; प्रोसेसिंग फीस 2% तक + एप्लीकेशन लॉगिन फीस प्रति प्रॉपर्टी ₹6,000 + जीएसटी; एलटीवी 80% तक; प्रीपेमेंट 4%; वेतनभोगी की न्यूनतम आय ₹30,000 प्रति माह, स्व-रोज़गार ₹3 लाख प्रति वर्ष आईटीआर; फ्लेक्सी/ड्रॉपलाइन प्रॉपर्टी पर लोन भी उपलब्ध"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Floating 8.75%-11.05% by CIBIL band/loan slab; fixed 15.25%; PF 2% + taxes (aggregator figure); LTV up to 70%",
+  "hi": "फ्लोटिंग 8.75%-11.05%, CIBIL बैंड/लोन स्लैब के अनुसार; फिक्स्ड 15.25%; प्रोसेसिंग फीस 2% + टैक्स (एग्रीगेटर का आंकड़ा); एलटीवी 70% तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PF up to 2% + GST; RPLR 20.80%; LTV up to 70% residential / 60% commercial; legal/technical Rs 4,500-6,500 + GST; salaried 21-60, self-employed 25-65, SME vintage 2+ yrs",
+  "hi": "प्रोसेसिंग फीस 2% तक + जीएसटी; आरपीएलआर 20.80%; एलटीवी 70% तक रेसिडेंशियल / 60% कमर्शियल; लीगल/टेक्निकल ₹4,500-6,500 + जीएसटी; वेतनभोगी 21-60, स्व-रोज़गार 25-65, एसएमई विंटेज 2+ साल"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Via IIFL Home Finance Ltd (Non-home loan PLR 19.15%); PF up to 2% (LAP); rate range from official LAP EMI calculator; collateral evaluation Rs 5,000-25,000",
+  "hi": "IIFL Home Finance Ltd के ज़रिए (नॉन-होम लोन पीएलआर 19.15%); प्रोसेसिंग फीस 2% तक (प्रॉपर्टी पर लोन); दर रेंज आधिकारिक प्रॉपर्टी पर लोन ईएमआई कैलकुलेटर से; गिरवी मूल्यांकन ₹5,000-25,000"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to Rs 2 Cr, tenure up to 15 years, from 11.50% p.a.; PF up to 5% + taxes; part-payment per grid; LAP from Rs 35 lakh; CIBIL 750+, income Rs 3 lakh p.a.",
+  "hi": "₹2 करोड़ तक, अवधि 15 साल तक, 11.50% प्रति वर्ष से; प्रोसेसिंग फीस 5% तक + टैक्स; आंशिक भुगतान ग्रिड के अनुसार; प्रॉपर्टी पर लोन ₹35 लाख से; CIBIL 750+, आय ₹3 लाख प्रति वर्ष"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PF minimum 1% + applicable tax; foreclosure 2% + tax after 3 EMIs; penal 1.5% p.m.; min bureau score 560, min clubbed income Rs 25,000 p.m. (official)",
+  "hi": "प्रोसेसिंग फीस न्यूनतम 1% + लागू टैक्स; 3 ईएमआई के बाद फोरक्लोज़र 2% + टैक्स; पीनल चार्ज 1.5% प्रति माह; न्यूनतम ब्यूरो स्कोर 560, न्यूनतम संयुक्त आय ₹25,000 प्रति माह (आधिकारिक)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Fixed 10.25%-23% p.a. (advertised from 10.99%); PF up to 2.25% non-refundable; foreclosure 4% (<3 yrs) / 2%; min income ₹25,000 Kotak salary a/c, ₹30,000 others",
+  "hi": "फिक्स्ड 10.25%-23% प्रति वर्ष (विज्ञापित दर 10.99% से); प्रोसेसिंग फीस 2.25% तक, नॉन-रिफंडेबल; फोरक्लोज़र 4% (<3 साल) / 2%; न्यूनतम आय Kotak सैलरी अकाउंट वालों के लिए ₹25,000, अन्य के लिए ₹30,000"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 2% of loan + GST; fixed rate = 3Y MCLR 8.90% + 0.75%-12.80% (effective 9.60%-21.65%), advertised from 9.99%; foreclosure 3%/2%; min income ₹15,000 for Axis customers, ₹25,000 others",
+  "hi": "लोन का 2% तक + जीएसटी; फिक्स्ड रेट = 3 साल का एमसीएलआर 8.90% + 0.75%-12.80% (प्रभावी 9.60%-21.65%), विज्ञापित दर 9.99% से; फोरक्लोज़र 3%/2%; न्यूनतम आय Axis ग्राहकों के लिए ₹15,000, अन्य के लिए ₹25,000"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.50% (min ₹1,000, max ₹5,000) + GST; 50% waiver 01-Jul to 30-Sep-2026 (Retail Loan Festival); with salary tie-up RLLR (8.00%) + 1.40% to + 6.40%; Canara Budget Prime up to ₹50L, Delight up to ₹40L",
+  "hi": "0.50% (न्यूनतम ₹1,000, अधिकतम ₹5,000) + जीएसटी; 01-जुलाई से 30-सितंबर-2026 तक 50% छूट (Retail Loan Festival); सैलरी टाई-अप के साथ आरएलएलआर (8.00%) + 1.40% से + 6.40% तक; Canara Budget Prime ₹50 लाख तक, Delight ₹40 लाख तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to ₹6,500 + GST; rack 9.99%-24.00% fixed (Q1 FY27 IRR 9.97%-24.06%); up to ₹75 lakh subject to eligibility; PL insurance premium deducted from disbursal; Paisabazaar: tenure up to 5 yrs, 2 yrs work exp (1 yr current)",
+  "hi": "₹6,500 तक + जीएसटी; रैक रेट 9.99%-24.00% फिक्स्ड (Q1 FY27 आईआरआर 9.97%-24.06%); पात्रता के अधीन ₹75 लाख तक; पर्सनल लोन इंश्योरेंस प्रीमियम वितरण राशि से काटा जाता है; Paisabazaar: अवधि 5 साल तक, 2 साल का कार्य अनुभव (1 साल मौजूदा नौकरी में)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 2% + taxes; Apr-Jun 2026 range 9.99%-16.50% (mean 11.45%); foreclosure 3% (nil after 24 EMIs); salaried 20-58 yrs, self-employed 28-65 yrs",
+  "hi": "2% तक + टैक्स; अप्रैल-जून 2026 रेंज 9.99%-16.50% (औसत 11.45%); फोरक्लोज़र 3% (24 ईएमआई के बाद शून्य); वेतनभोगी 20-58 साल, स्व-रोज़गार 28-65 साल"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "IB Clean Loan (salaried): 1% max Rs10,000 + GST; nil for Govt/PSU employees. ROI Clean Loan 9.65-10.15%, IB Saral 9.35%, IB Professional 9.00-9.25%, Online Personal Loan 11.15%; up to 20x gross salary",
+  "hi": "IB Clean Loan (वेतनभोगी): 1%, अधिकतम ₹10,000 + जीएसटी; सरकारी/पीएसयू कर्मचारियों के लिए शून्य। ब्याज दर Clean Loan 9.65-10.15%, IB Saral 9.35%, IB Professional 9.00-9.25%, ऑनलाइन पर्सनल लोन 11.15%; सकल वेतन का 20 गुना तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 3.5% of loan (excl. taxes), 2% limited-period offer; online instant PL ₹30,000-₹5 lakh 12-48 months, up to ₹50 lakh via branch; salaried max 60 at maturity; CreditMantri: 10.25%-31.50%",
+  "hi": "लोन का 3.5% तक (टैक्स अलग), सीमित अवधि का ऑफ़र 2%; ऑनलाइन इंस्टेंट पर्सनल लोन ₹30,000-₹5 लाख, 12-48 महीने, ब्रांच के ज़रिए ₹50 लाख तक; वेतनभोगी की मैच्योरिटी पर अधिकतम उम्र 60; CreditMantri: 10.25%-31.50%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 1.50% (min ₹1,000, max ₹15,000) + GST; 100% waiver for defence & Platinum/Rhodium salary a/c; 50% waiver for govt employees & CIBIL ≥800; rate ceiling per BankBazaar",
+  "hi": "1.50% तक (न्यूनतम ₹1,000, अधिकतम ₹15,000) + जीएसटी; रक्षा कर्मियों और Platinum/Rhodium सैलरी अकाउंट पर 100% छूट; सरकारी कर्मचारियों और CIBIL ≥800 पर 50% छूट; अधिकतम दर BankBazaar के अनुसार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 2.50% of loan amount + GST",
+  "hi": "लोन राशि का 2.50% तक + जीएसटी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Floating, RLLR (5.25%) linked; up to 3% + GST; salaried from 9.50% (<=3 yrs) / 8.86% (>3 yrs); nil foreclosure on Rs 10 lakh+ after 12 EMIs",
+  "hi": "फ्लोटिंग, आरएलएलआर (5.25%) लिंक्ड; 3% तक + जीएसटी; वेतनभोगी 9.50% से (<=3 साल) / 8.86% से (>3 साल); ₹10 लाख+ के लोन पर 12 ईएमआई के बाद फोरक्लोज़र चार्ज शून्य"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "FedPremia; up to 3% of loan amount; fixed rate 11.75%-18.99% per bank rate card; PB digital PL: Rs 50k-5L, PF 1.5-2.5%",
+  "hi": "FedPremia; लोन राशि का 3% तक; बैंक रेट कार्ड के अनुसार फिक्स्ड रेट 11.75%-18.99%; PB डिजिटल पर्सनल लोन: ₹50 हज़ार-5 लाख, प्रोसेसिंग फीस 1.5-2.5%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "1% for salaried / 2% for self-employed; unsecured up to Rs 20-25 lakh; SIB Loan Referral Partner programme",
+  "hi": "वेतनभोगी के लिए 1% / स्व-रोज़गार के लिए 2%; अनसिक्योर्ड ₹20-25 लाख तक; SIB Loan Referral Partner प्रोग्राम"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "1–2% + GST (min ₹1,000, max ₹10,000); nil for govt employees with BoB salary a/c; floating 10.15–17.50% by category (fixed up to 18%); bank states no DSA/commission for personal loans",
+  "hi": "1–2% + जीएसटी (न्यूनतम ₹1,000, अधिकतम ₹10,000); BoB सैलरी अकाउंट वाले सरकारी कर्मचारियों के लिए शून्य; फ्लोटिंग 10.15–17.50%, श्रेणी के अनुसार (फिक्स्ड 18% तक); बैंक के अनुसार पर्सनल लोन पर कोई डीएसए/कमीशन नहीं"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Star Personal Loan: one-time 1.00% of loan amt, min Rs2,500 max Rs15,000 + GST; nil for senior citizens 60+ and differently-abled. ROI salaried/pensioner 10.85%, others 11.85%, fully secured 12.85%, clean/unsecured 13.85%",
+  "hi": "Star Personal Loan: लोन राशि का एक बार 1.00%, न्यूनतम ₹2,500, अधिकतम ₹15,000 + जीएसटी; 60+ वरिष्ठ नागरिकों और दिव्यांगों के लिए शून्य। ब्याज दर वेतनभोगी/पेंशनभोगी 10.85%, अन्य 11.85%, पूरी तरह सिक्योर्ड 12.85%, क्लीन/अनसिक्योर्ड 13.85%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Mahabank Personal Loan: 1.00% of loan amt + GST. ROI Cat A (govt/PSU, salary with BoM) RLLR+1.70% = 9.75% (800+) to 13.55% (<=680); Cat B from 10.25%, Cat C from 12.00%, professionals from 11.00%; 20x gross monthly income; tenure 60-84 months by category",
+  "hi": "Mahabank Personal Loan: लोन राशि का 1.00% + जीएसटी। ब्याज दर कैटेगरी A (सरकारी/पीएसयू, BoM में सैलरी) आरएलएलआर+1.70% = 9.75% (800+) से 13.55% (<=680) तक; कैटेगरी B 10.25% से, कैटेगरी C 12.00% से, प्रोफ़ेशनल 11.00% से; सकल मासिक आय का 20 गुना; अवधि 60-84 महीने, कैटेगरी के अनुसार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Cent Personal Loan: 1.00% of loan amt + GST (nil for defence personnel); documentation Rs270/Rs450 + GST. ROI RBLR+3.00% or +3.50% by internal risk rating; min score 700 with all 4 CICs; govt 1 yr service, private 3 yrs",
+  "hi": "Cent Personal Loan: लोन राशि का 1.00% + जीएसटी (रक्षा कर्मियों के लिए शून्य); डॉक्यूमेंटेशन ₹270/₹450 + जीएसटी। ब्याज दर आरबीएलआर+3.00% या +3.50%, आंतरिक रिस्क रेटिंग के अनुसार; सभी 4 सीआईसी में न्यूनतम स्कोर 700; सरकारी कर्मचारी 1 साल की सेवा, निजी 3 साल"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PSB Personal Loan: 0.50% + GST govt/PSU/pensioners/educational institutions/hospitals; 1.00% + GST private/MNC. ROI govt/pensioner 9.75-13.80%, private 9.85-13.90%, Veer Samarth 9.65-13.80% by CIBIL; MNC min gross salary Rs30,000 pm, 2 yrs service",
+  "hi": "PSB Personal Loan: सरकारी/पीएसयू/पेंशनभोगी/शैक्षणिक संस्थान/अस्पताल के लिए 0.50% + जीएसटी; निजी/एमएनसी के लिए 1.00% + जीएसटी। CIBIL के अनुसार ब्याज दर सरकारी/पेंशनभोगी 9.75-13.80%, निजी 9.85-13.90%, Veer Samarth 9.65-13.80%; एमएनसी में न्यूनतम सकल वेतन ₹30,000 प्रति माह, 2 साल की सेवा"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "1% of loan amount + documentation ₹270 (≤₹2L) / ₹450 (>₹2L), excl. GST; nil for defence; rates by category: defence 10.25–11.25%, govt 10.60–14.10%, corporate 11.60–16.10%; min amount per Wishfin",
+  "hi": "लोन राशि का 1% + डॉक्यूमेंटेशन ₹270 (≤₹2 लाख) / ₹450 (>₹2 लाख), जीएसटी अलग; रक्षा कर्मियों के लिए शून्य; श्रेणी के अनुसार दरें: रक्षा 10.25–11.25%, सरकारी 10.60–14.10%, कॉर्पोरेट 11.60–16.10%; न्यूनतम राशि Wishfin के अनुसार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 4% (min Rs 2,000) + GST; max ROI 30% per schedule of charges; foreclosure 5% within 12 months / 3% after",
+  "hi": "4% तक (न्यूनतम ₹2,000) + जीएसटी; शुल्क सूची के अनुसार अधिकतम ब्याज दर 30%; फोरक्लोज़र 12 महीने के अंदर 5% / उसके बाद 3%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "FIRSTmoney: 0%-3.5% of loan amount incl. GST; zero PF on select loan amounts; fixed rate; zero foreclosure charges",
+  "hi": "FIRSTmoney: लोन राशि का 0%-3.5%, जीएसटी सहित; चुनिंदा लोन राशियों पर ज़ीरो प्रोसेसिंग फीस; फिक्स्ड रेट; ज़ीरो फोरक्लोज़र चार्ज"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Clean loan: 0.40% up to Rs5 lakh, 0.50% above (aggregator). ROI Category A CIC-1 RLLR+2.15% = 10.25% to Category C CIC-6 13.65%; fixed option 14%; up to 10x gross salary; repay by age 60",
+  "hi": "क्लीन लोन: ₹5 लाख तक 0.40%, इससे ऊपर 0.50% (एग्रीगेटर)। ब्याज दर कैटेगरी A CIC-1 आरएलएलआर+2.15% = 10.25% से कैटेगरी C CIC-6 13.65% तक; फिक्स्ड विकल्प 14%; सकल वेतन का 10 गुना तक; 60 की उम्र तक भुगतान"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "UCO Cash: 0.50% of loan amt + GST (min Rs750 + GST); CIBIL charge Rs150; documentation Rs250/lakh. ROI 10.00-12.45% by CIBIL & employer type; max Rs15 lakh govt/PSU, Rs7.5 lakh others; net annual income > Rs6 lakh",
+  "hi": "UCO Cash: लोन राशि का 0.50% + जीएसटी (न्यूनतम ₹750 + जीएसटी); CIBIL चार्ज ₹150; डॉक्यूमेंटेशन ₹250/लाख। ब्याज दर 10.00-12.45%, CIBIL और नियोक्ता के प्रकार के अनुसार; अधिकतम ₹15 लाख सरकारी/पीएसयू, ₹7.5 लाख अन्य; शुद्ध सालाना आय > ₹6 लाख"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Union Personal: 1.00% of loan amt, min Rs500 max Rs7,500 + GST; nil under SRLGE (govt employees) and Union Professional/Ashiyana. ROI by CIC score: 8.90% (women professional 800+) to 12.65% (non-salaried <650)",
+  "hi": "Union Personal: लोन राशि का 1.00%, न्यूनतम ₹500, अधिकतम ₹7,500 + जीएसटी; SRLGE (सरकारी कर्मचारी) और Union Professional/Ashiyana के तहत शून्य। सीआईसी स्कोर के अनुसार ब्याज दर: 8.90% (महिला प्रोफ़ेशनल 800+) से 12.65% (गैर-वेतनभोगी <650) तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "EBLR (9.70%) + 4.75 up to 3 yrs / + 5.25 above 3 yrs; PF 1.25% min Rs 750",
+  "hi": "ईबीएलआर (9.70%) + 4.75 (3 साल तक) / + 5.25 (3 साल से ज़्यादा); प्रोसेसिंग फीस 1.25%, न्यूनतम ₹750"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Unsecured PL: 3.00% of requested amount; secured PL 0.50%; corporate PL 0.50% (min Rs 1,000) + GST; net take-home >= 25% of gross",
+  "hi": "अनसिक्योर्ड पर्सनल लोन: मांगी गई राशि का 3.00%; सिक्योर्ड पर्सनल लोन 0.50%; कॉर्पोरेट पर्सनल लोन 0.50% (न्यूनतम ₹1,000) + जीएसटी; शुद्ध टेक-होम सैलरी सकल वेतन का >= 25%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "2% deducted at disbursement; fixed rate; currently offered to existing savings/salary account customers; foreclosure 5% within 18 EMIs / 3% after",
+  "hi": "वितरण के समय 2% काटा जाता है; फिक्स्ड रेट; फ़िलहाल केवल मौजूदा सेविंग्स/सैलरी अकाउंट ग्राहकों को उपलब्ध; फोरक्लोज़र 18 ईएमआई के अंदर 5% / उसके बाद 3%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 4.13% of loan amount (inclusive of applicable taxes); Term Loan / Flexi Dropline / Flexi Hybrid variants",
+  "hi": "लोन राशि का 4.13% तक (लागू टैक्स सहित); टर्म लोन / फ्लेक्सी ड्रॉपलाइन / फ्लेक्सी हाइब्रिड वेरिएंट"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to Rs 50 lakh; loan cancellation 4% + taxes; part-prepayment nil up to 20% of disbursed amount per year else 3% + GST; foreclosure 4% + GST after 12 months; PF up to 4% per Paisabazaar",
+  "hi": "₹50 लाख तक; लोन कैंसलेशन 4% + टैक्स; हर साल वितरित राशि के 20% तक आंशिक प्रीपेमेंट पर शून्य, वरना 3% + जीएसटी; 12 महीने बाद फोरक्लोज़र 4% + जीएसटी; Paisabazaar के अनुसार प्रोसेसिंग फीस 4% तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Secured personal loan (against property) for salaried; PF 1%; part-prepayment above 25%/yr charged 2%; foreclosure 2% after 3 EMIs; score 560/income Rs 25,000 per Manappuram mortgage vertical",
+  "hi": "वेतनभोगी के लिए सिक्योर्ड पर्सनल लोन (प्रॉपर्टी पर); प्रोसेसिंग फीस 1%; सालाना 25% से ज़्यादा आंशिक प्रीपेमेंट पर 2% चार्ज; 3 ईएमआई के बाद फोरक्लोज़र 2%; Manappuram मॉर्गेज वर्टिकल के अनुसार स्कोर 560/आय ₹25,000"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 4% + applicable taxes (0%-3% quoted for select offers); foreclosure nil from own funds after 6 EMIs else 4% + taxes",
+  "hi": "4% तक + लागू टैक्स (चुनिंदा ऑफ़र पर 0%-3% बताया गया); 6 ईएमआई के बाद अपने पैसों से फोरक्लोज़र पर शून्य, वरना 4% + टैक्स"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 5% of loan amount + GST; documentation charges up to Rs 1,999; foreclosure 6.5%/4.5%",
+  "hi": "लोन राशि का 5% तक + जीएसटी; डॉक्यूमेंटेशन चार्ज ₹1,999 तक; फोरक्लोज़र 6.5%/4.5%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 4% of loan amount + applicable taxes; foreclosure up to 5% + taxes",
+  "hi": "लोन राशि का 4% तक + लागू टैक्स; फोरक्लोज़र 5% तक + टैक्स"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Instant online PL up to Rs 10 lakh, up to Rs 30 lakh overall; PF up to 4% + GST; foreclosure 2%-7%; cancellation Rs 1,000 + GST",
+  "hi": "इंस्टेंट ऑनलाइन पर्सनल लोन ₹10 लाख तक, कुल मिलाकर ₹30 लाख तक; प्रोसेसिंग फीस 4% तक + जीएसटी; फोरक्लोज़र 2%-7%; कैंसलेशन ₹1,000 + जीएसटी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 5% of loan amount + applicable taxes; pre-closure/part-payment 3% + GST; max rate per Piramal quarterly disclosure (11.99%-33.89%)",
+  "hi": "लोन राशि का 5% तक + लागू टैक्स; प्री-क्लोज़र/आंशिक भुगतान 3% + जीएसटी; अधिकतम दर Piramal के तिमाही डिस्क्लोज़र के अनुसार (11.99%-33.89%)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Salaried PL indicative range 11%-24% p.a. (all unsecured loans 10%-35%); PF up to 5.90% of sanctioned amount inclusive of GST; application fee up to Rs 3,500; documentation up to 3.54%; min income Rs 1 lakh p.a. metro",
+  "hi": "वेतनभोगी पर्सनल लोन की सांकेतिक रेंज 11%-24% प्रति वर्ष (सभी अनसिक्योर्ड लोन 10%-35%); प्रोसेसिंग फीस मंज़ूर राशि का 5.90% तक, जीएसटी सहित; एप्लीकेशन फीस ₹3,500 तक; डॉक्यूमेंटेशन 3.54% तक; मेट्रो में न्यूनतम आय ₹1 लाख प्रति वर्ष"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PF 2%-4% of loan + taxes; option of loan against 100% collateral (FD/LIC/NSC) for non-income earners",
+  "hi": "प्रोसेसिंग फीस लोन का 2%-4% + टैक्स; आय न होने वालों के लिए 100% गिरवी (एफडी/LIC/एनएससी) पर लोन का विकल्प"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Only for existing Mahindra Finance customers and Mahindra Group employees (min 2 yrs service); PF up to 3%",
+  "hi": "केवल मौजूदा Mahindra Finance ग्राहकों और Mahindra Group कर्मचारियों (न्यूनतम 2 साल की सेवा) के लिए; प्रोसेसिंग फीस 3% तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Fixed rate from 11%; PF up to 5%; foreclosure up to 4% (not within 12 months of first EMI, +2% if transferred); Interest Rate Policy PL band 11%-42%",
+  "hi": "फिक्स्ड रेट 11% से; प्रोसेसिंग फीस 5% तक; फोरक्लोज़र 4% तक (पहली ईएमआई के 12 महीने के अंदर नहीं, ट्रांसफ़र होने पर +2%); ब्याज दर नीति में पर्सनल लोन बैंड 11%-42%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Minimum 2.5% + GST deducted at disbursement; foreclosure 5% + GST; EMI bounce Rs 350",
+  "hi": "न्यूनतम 2.5% + जीएसटी, वितरण के समय काटा जाता है; फोरक्लोज़र 5% + जीएसटी; ईएमआई बाउंस ₹350"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Chola One app instant personal loan up to Rs 5 lakh; rates not published (annualised illustration 14% p.a.); age extends to 65 for existing customers; IRP Dec-2025 CholaOne D2C 10%-30%; PF 4-6% + GST",
+  "hi": "Chola One ऐप से इंस्टेंट पर्सनल लोन ₹5 लाख तक; दरें प्रकाशित नहीं (सालाना उदाहरण 14% प्रति वर्ष); मौजूदा ग्राहकों के लिए उम्र सीमा 65 तक; आईआरपी दिसंबर-2025 CholaOne D2C 10%-30%; प्रोसेसिंग फीस 4-6% + जीएसटी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Online PL via TVS Credit Saathi app up to Rs 2 lakh; PF up to 5.9% inclusive of GST; foreclosure 3.54%-7.08%; 15-day cooling period; PF flat 2.8% (Paisabazaar)",
+  "hi": "TVS Credit Saathi ऐप से ऑनलाइन पर्सनल लोन ₹2 लाख तक; प्रोसेसिंग फीस 5.9% तक, जीएसटी सहित; फोरक्लोज़र 3.54%-7.08%; 15 दिन की कूलिंग अवधि; प्रोसेसिंग फीस फ्लैट 2.8% (Paisabazaar)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Union MSME Superfast (working capital) actual ROI range Apr-Jun 2026: 8.85-11.00%; Superfast STP 9.35-9.60%. Processing charges as per MSME schedule",
+  "hi": "Union MSME Superfast (वर्किंग कैपिटल) वास्तविक ब्याज दर रेंज अप्रैल-जून 2026: 8.85-11.00%; Superfast STP 9.35-9.60%। प्रोसेसिंग चार्ज एमएसएमई शुल्क सूची के अनुसार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Canara GST: working capital cash credit on GST returns; 75% collateral; min 6 months GST filing; 75% of GST turnover routed via bank; processing per MSME service-charge schedule",
+  "hi": "Canara GST: जीएसटी रिटर्न के आधार पर वर्किंग कैपिटल कैश क्रेडिट; 75% गिरवी; न्यूनतम 6 महीने की जीएसटी फ़ाइलिंग; जीएसटी टर्नओवर का 75% बैंक के ज़रिए; प्रोसेसिंग एमएसएमई सर्विस-चार्ज सूची के अनुसार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "IOB Guarantee Plus: collateral-free MSME WC/term loan above Rs20 lakh up to Rs10 cr under CGTMSE; Mahila Samriddhi variant with PF waived up to Rs50 lakh and 0.50% ROI concession; ROI from RLLR+2.05%; PF 0.50% above Rs2 lakh (Paisabazaar)",
+  "hi": "IOB Guarantee Plus: CGTMSE के तहत ₹20 लाख से ऊपर ₹10 करोड़ तक बिना गिरवी एमएसएमई वर्किंग कैपिटल/टर्म लोन; Mahila Samriddhi वेरिएंट में ₹50 लाख तक प्रोसेसिंग फीस माफ़ और ब्याज दर में 0.50% रियायत; ब्याज दर आरएलएलआर+2.05% से; ₹2 लाख से ऊपर प्रोसेसिंग फीस 0.50% (Paisabazaar)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PNB GST Express: cash credit on GST returns (25% of 12-month GST sales); 25% concession on applicable processing charges; 75% collateral (or 50% with hybrid CGTMSE); ROI concessional linked to internal rating",
+  "hi": "PNB GST Express: जीएसटी रिटर्न के आधार पर कैश क्रेडिट (12 महीने की जीएसटी बिक्री का 25%); लागू प्रोसेसिंग चार्ज पर 25% रियायत; 75% गिरवी (या हाइब्रिड CGTMSE के साथ 50%); रियायती ब्याज दर, आंतरिक रेटिंग से लिंक्ड"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Star Laghu Udyami Samekit Loan / Star Yuva Udyami (CGTMSE-covered MSME loans); ROI and charges as per BOI MSME card rates (not published on accessible page)",
+  "hi": "Star Laghu Udyami Samekit Loan / Star Yuva Udyami (CGTMSE-कवर्ड एमएसएमई लोन); ब्याज दर और चार्ज BOI एमएसएमई कार्ड रेट के अनुसार (उपलब्ध पेज पर प्रकाशित नहीं)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 3.5% of loan amount (term loan); collateral-free up to Rs 1 crore; turnover Rs 1 crore+; MyMoneyMantra: PF 2%-3.5%",
+  "hi": "लोन राशि का 3.5% तक (टर्म लोन); ₹1 करोड़ तक बिना गिरवी; टर्नओवर ₹1 करोड़+; MyMoneyMantra: प्रोसेसिंग फीस 2%-3.5%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Collateral-free up to ₹1 crore; PF max 2% + GST (NIL for MSE up to ₹5 lakh with URC); documentation ₹3,500/₹6,000 + GST; turnover >= ₹40 lakh, 3 yrs in business, 1 yr profit; tenure up to 60 months for doctors/CAs; Paisabazaar: 9.50%-30.50%, Rs 3 lakh-...",
+  "hi": "₹1 करोड़ तक बिना गिरवी; प्रोसेसिंग फीस अधिकतम 2% + जीएसटी (यूआरसी वाले एमएसई के लिए ₹5 लाख तक शून्य); डॉक्यूमेंटेशन ₹3,500/₹6,000 + जीएसटी; टर्नओवर >= ₹40 लाख, 3 साल का बिज़नेस, 1 साल मुनाफ़ा; डॉक्टरों/सीए के लिए अवधि 60 महीने तक; Paisabazaar: 9.50%-30.50%, ₹3 लाख-..."
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Unsecured business loan (SBB): PF up to 2% + taxes; foreclosure 4%/3%/2% by seasoning; part-prepayment 2% + GST; tenure 6-60 months; rate on application; Paisabazaar 10.99% onwards up to Rs 75 lakh; BankBazaar up to 20%, age 21-65, 3 yrs vintage",
+  "hi": "अनसिक्योर्ड बिज़नेस लोन (SBB): प्रोसेसिंग फीस 2% तक + टैक्स; लोन की उम्र के अनुसार फोरक्लोज़र 4%/3%/2%; आंशिक प्रीपेमेंट 2% + जीएसटी; अवधि 6-60 महीने; दर आवेदन पर; Paisabazaar 10.99% से, ₹75 लाख तक; BankBazaar 20% तक, उम्र 21-65, 3 साल विंटेज"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 2% of loan + taxes; NIL for MSE up to ₹5 lakh with URC; up to ₹1 crore in select locations; turnover >= ₹40 lakh, 5 yrs business experience, 2 yrs profit",
+  "hi": "लोन का 2% तक + टैक्स; यूआरसी वाले एमएसई के लिए ₹5 लाख तक शून्य; चुनिंदा जगहों पर ₹1 करोड़ तक; टर्नओवर >= ₹40 लाख, 5 साल का बिज़नेस अनुभव, 2 साल मुनाफ़ा"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 2.50% (min Rs 999) + GST; no prepayment for first 6 months; foreclosure 4%/3%/2% by loan age; Wishfin: Rs 5-50 lakh, CIBIL 750+, 3 yrs vintage",
+  "hi": "2.50% तक (न्यूनतम ₹999) + जीएसटी; पहले 6 महीने प्रीपेमेंट नहीं; लोन की उम्र के अनुसार फोरक्लोज़र 4%/3%/2%; Wishfin: ₹5-50 लाख, CIBIL 750+, 3 साल विंटेज"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Unsecured business loan: ROI up to 30%; PF up to 4% + GST; foreclosure 5% within 12 months / 3% after",
+  "hi": "अनसिक्योर्ड बिज़नेस लोन: ब्याज दर 30% तक; प्रोसेसिंग फीस 4% तक + जीएसटी; फोरक्लोज़र 12 महीने के अंदर 5% / उसके बाद 3%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Business Instalment Loan: PF up to 2% + taxes; fixed 13.25%-19.25%; prepayment nil after 24 EMIs; min business vintage 3 yrs; CreditMantri: Rs 1-40 lakh, 12-60 months, age 25-65",
+  "hi": "Business Instalment Loan: प्रोसेसिंग फीस 2% तक + टैक्स; फिक्स्ड 13.25%-19.25%; 24 ईएमआई के बाद प्रीपेमेंट चार्ज शून्य; न्यूनतम बिज़नेस विंटेज 3 साल; CreditMantri: ₹1-40 लाख, 12-60 महीने, उम्र 25-65"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Business Instalment Loan: fixed 13%-22%; PF up to 3% + taxes; foreclosure up to 5.5%; turnover >= ₹1 crore, 2 yrs audited financials, positive PBDT, paid-up capital >= ₹10 lakh; BankBazaar: Rs 15 lakh onwards, 12-48 months",
+  "hi": "Business Instalment Loan: फिक्स्ड 13%-22%; प्रोसेसिंग फीस 3% तक + टैक्स; फोरक्लोज़र 5.5% तक; टर्नओवर >= ₹1 करोड़, 2 साल के ऑडिटेड वित्तीय विवरण, पॉज़िटिव पीबीडीटी, पेड-अप कैपिटल >= ₹10 लाख; BankBazaar: ₹15 लाख से, 12-48 महीने"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Max 2% of loan amount + tax, deducted at disbursal; rate at bank discretion; turnover Rs 1 crore (Rs 60 lakh receipts for professionals); 5 yrs experience, 3 yrs in same city",
+  "hi": "लोन राशि का अधिकतम 2% + टैक्स, वितरण के समय काटा जाता है; दर बैंक के विवेक पर; टर्नओवर ₹1 करोड़ (प्रोफ़ेशनल के लिए ₹60 लाख की प्राप्तियां); 5 साल का अनुभव, एक ही शहर में 3 साल"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "SME fund-based (CC/OD/TL) processing up to 2.00% + GST; micro-enterprise & Sahayata loans 1.50% + GST; PB small business loan: Rs 3-25 lakh, up to 5 yrs",
+  "hi": "एसएमई फंड-आधारित (कैश क्रेडिट/ओडी/टर्म लोन) प्रोसेसिंग 2.00% तक + जीएसटी; सूक्ष्म उद्यम और Sahayata लोन 1.50% + जीएसटी; PB स्मॉल बिज़नेस लोन: ₹3-25 लाख, 5 साल तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Simplified Small Business Loan: unified charge ₹7,500 + tax (processing, documentation, inspection, commitment, remittance); 40% min collateral; ROI EBLR-linked; 5-yr business vintage at same location",
+  "hi": "Simplified Small Business Loan: एकीकृत चार्ज ₹7,500 + टैक्स (प्रोसेसिंग, डॉक्यूमेंटेशन, निरीक्षण, कमिटमेंट, रेमिटेंस); न्यूनतम 40% गिरवी; ब्याज दर ईबीएलआर-लिंक्ड; एक ही जगह पर 5 साल का बिज़नेस विंटेज"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "UCO MSME Smart (digital): processing & documentation nil; CIBIL/NeSL charges actual. ROI UCO Float 8.05% + 2.10% = 10.15%; CGTMSE covered; 2+ yrs profitable business with ITR",
+  "hi": "UCO MSME Smart (डिजिटल): प्रोसेसिंग और डॉक्यूमेंटेशन शून्य; CIBIL/NeSL चार्ज वास्तविक। ब्याज दर UCO Float 8.05% + 2.10% = 10.15%; CGTMSE कवर्ड; आईटीआर के साथ 2+ साल से मुनाफ़े वाला बिज़नेस"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Unsecured business loan: PF 2.75%-3%; cancellation 4% + taxes; foreclosure 4% + GST after 12 months; turnover > Rs 5 lakh in last 6 months; up to Rs 1 Cr per Paisabazaar",
+  "hi": "अनसिक्योर्ड बिज़नेस लोन: प्रोसेसिंग फीस 2.75%-3%; कैंसलेशन 4% + टैक्स; 12 महीने बाद फोरक्लोज़र 4% + जीएसटी; पिछले 6 महीने में टर्नओवर > ₹5 लाख; Paisabazaar के अनुसार ₹1 करोड़ तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 3% on sanctioned amount + taxes plus documentation charge up to Rs 5,000 (<=Rs 25 lakh) / Rs 10,000 (>Rs 25 lakh); professionals from 11.25% p.a.; age 24-65, turnover Rs 80 lakh-500 Cr",
+  "hi": "मंज़ूर राशि पर 3% तक + टैक्स, साथ में डॉक्यूमेंटेशन चार्ज ₹5,000 तक (<=₹25 लाख) / ₹10,000 (>₹25 लाख); प्रोफ़ेशनल के लिए 11.25% प्रति वर्ष से; उम्र 24-65, टर्नओवर ₹80 लाख-500 करोड़"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 3% + applicable taxes; foreclosure 6% (first 6 EMIs) / 5% thereafter; min annual turnover Rs 6 lakh",
+  "hi": "3% तक + लागू टैक्स; फोरक्लोज़र 6% (पहली 6 ईएमआई) / उसके बाद 5%; न्यूनतम सालाना टर्नओवर ₹6 लाख"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Unsecured business/MSME loan; PF up to 2.75% (business loan) / up to 5% (SME loan) + GST; min turnover Rs 10 lakh p.a. and PAT Rs 2 lakh; foreclosure 3%-7%",
+  "hi": "अनसिक्योर्ड बिज़नेस/एमएसएमई लोन; प्रोसेसिंग फीस 2.75% तक (बिज़नेस लोन) / 5% तक (एसएमई लोन) + जीएसटी; न्यूनतम टर्नओवर ₹10 लाख प्रति वर्ष और पीएटी ₹2 लाख; फोरक्लोज़र 3%-7%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Unsecured business loan (12-48 months); fixed rate from 10%; PF up to 5%; foreclosure up to 4%; Rs 1 lakh-1 Cr (BankBazaar); IRP unsecured BL band 12%-42%; age 21-65, 3 yrs vintage",
+  "hi": "अनसिक्योर्ड बिज़नेस लोन (12-48 महीने); फिक्स्ड रेट 10% से; प्रोसेसिंग फीस 5% तक; फोरक्लोज़र 4% तक; ₹1 लाख-1 करोड़ (BankBazaar); आईआरपी में अनसिक्योर्ड बिज़नेस लोन बैंड 12%-42%; उम्र 21-65, 3 साल विंटेज"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 3% of loan amount + taxes; fixed or structured EMI plans",
+  "hi": "लोन राशि का 3% तक + टैक्स; फिक्स्ड या स्ट्रक्चर्ड ईएमआई प्लान"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 4.72% of loan amount (inclusive of applicable taxes); Term / Flexi Term / Flexi Hybrid variants; CGTMSE fee up to 1.18% p.a. where applicable",
+  "hi": "लोन राशि का 4.72% तक (लागू टैक्स सहित); टर्म / फ्लेक्सी टर्म / फ्लेक्सी हाइब्रिड वेरिएंट; जहां लागू हो, CGTMSE फीस 1.18% प्रति वर्ष तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Unsecured; PF up to 5% + GST (w.e.f. 01-Sep-2024); doc charges up to Rs 4,500 + GST; NACH bounce up to Rs 2,500 + GST; CreditMantri: PF 2%-5%, age 23-65, income Rs 25,000 p.m.",
+  "hi": "अनसिक्योर्ड; प्रोसेसिंग फीस 5% तक + जीएसटी (01-सितंबर-2024 से प्रभावी); डॉक्यूमेंट चार्ज ₹4,500 तक + जीएसटी; NACH बाउंस ₹2,500 तक + जीएसटी; CreditMantri: प्रोसेसिंग फीस 2%-5%, उम्र 23-65, आय ₹25,000 प्रति माह"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Unsecured; PF up to 2.5% as per sanction letter/KFS; no foreclosure within 12 months; no minimum income; 2 yrs in business",
+  "hi": "अनसिक्योर्ड; सैंक्शन लेटर/केएफएस के अनुसार प्रोसेसिंग फीस 2.5% तक; 12 महीने के अंदर फोरक्लोज़र नहीं; कोई न्यूनतम आय नहीं; 2 साल का बिज़नेस"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Consumer & Small Enterprise Loans (CSEL): unsecured loans up to Rs 35 lakh; rates not published; IRP Dec-2025 CSEL business 10%-30%, PF up to 2.5% + GST; 12-60 months",
+  "hi": "Consumer & Small Enterprise Loans (CSEL): ₹35 लाख तक अनसिक्योर्ड लोन; दरें प्रकाशित नहीं; आईआरपी दिसंबर-2025 CSEL बिज़नेस 10%-30%, प्रोसेसिंग फीस 2.5% तक + जीएसटी; 12-60 महीने"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Individuals Rs 1 lakh-7.5 lakh, non-individuals >7.5 lakh-30 lakh; PF up to 5.90% inclusive of GST; documentation up to 3.54%; flat max = PF cap (Rs 3,500 was application fee)",
+  "hi": "व्यक्ति ₹1 लाख-7.5 लाख, गैर-व्यक्तिगत >7.5 लाख-30 लाख; प्रोसेसिंग फीस 5.90% तक, जीएसटी सहित; डॉक्यूमेंटेशन 3.54% तक; फ्लैट अधिकतम = प्रोसेसिंग फीस सीमा (₹3,500 एप्लीकेशन फीस थी)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Unsecured Business Loan Rs 5-30 lakh (UBL+ Rs 15-30 lakh); PF up to 5% + taxes; prepayment 5% + taxes; range per MSME unsecured quarterly disclosure",
+  "hi": "अनसिक्योर्ड बिज़नेस लोन ₹5-30 लाख (UBL+ ₹15-30 लाख); प्रोसेसिंग फीस 5% तक + टैक्स; प्रीपेमेंट 5% + टैक्स; रेंज एमएसएमई अनसिक्योर्ड तिमाही डिस्क्लोज़र के अनुसार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Business Instalment Loan (unsecured); PF up to 2% + GST; rate not published; rate 8.5%-20% and CIBIL 700 per BuddyLoan",
+  "hi": "Business Instalment Loan (अनसिक्योर्ड); प्रोसेसिंग फीस 2% तक + जीएसटी; दर प्रकाशित नहीं; BuddyLoan के अनुसार दर 8.5%-20% और CIBIL 700"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Retail/mid-corporate business loans up to Rs 20 lakh; PF up to 5.9% inclusive of GST; foreclosure 4%; penal 24% p.a.; Interest Rate Policy business loan band 7%-36%",
+  "hi": "रिटेल/मिड-कॉर्पोरेट बिज़नेस लोन ₹20 लाख तक; प्रोसेसिंग फीस 5.9% तक, जीएसटी सहित; फोरक्लोज़र 4%; पीनल चार्ज 24% प्रति वर्ष; ब्याज दर नीति में बिज़नेस लोन बैंड 7%-36%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "MSME Prime Plus: 50% concession on processing/upfront & documentation charges; ROI RLLR+BSP (8.10%) + 0.80% (PNB-A1) to + 7.40% (PNB-B3) for >₹20L–<₹5 Cr; margin 15–25%; relaxed collateral",
+  "hi": "MSME Prime Plus: प्रोसेसिंग/अपफ्रंट और डॉक्यूमेंटेशन चार्ज पर 50% रियायत; >₹20 लाख–<₹5 करोड़ के लिए ब्याज दर आरएलएलआर+बीएसपी (8.10%) + 0.80% (PNB-A1) से + 7.40% (PNB-B3) तक; मार्जिन 15–25%; गिरवी में ढील"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "MSME term loans: BRLLR (7.90%) + SP (0.25%) to + 2.70% up to ₹25L; above ₹25L CMR-based BRLLR + 0.30% to BRLLR+SP + 7.45% (up to ₹7.5 Cr); processing per MSME schedule",
+  "hi": "एमएसएमई टर्म लोन: ₹25 लाख तक बीआरएलएलआर (7.90%) + एसपी (0.25%) से + 2.70% तक; ₹25 लाख से ऊपर सीएमआर-आधारित बीआरएलएलआर + 0.30% से बीआरएलएलआर+एसपी + 7.45% तक (₹7.5 करोड़ तक); प्रोसेसिंग एमएसएमई शुल्क सूची के अनुसार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Cent Business (GST-registered traders/manufacturers; TL/OD; 25% margin; Udyam reqd). MSME processing: waived up to Rs1 lakh, 0.25% Rs1-10 lakh, 0.25-0.35% above by rating + GST. ROI RBLR-based, not itemised; Paisabazaar MSME range 7.80-12.40%",
+  "hi": "Cent Business (जीएसटी-रजिस्टर्ड व्यापारी/निर्माता; टर्म लोन/ओडी; 25% मार्जिन; उद्यम रजिस्ट्रेशन ज़रूरी)। एमएसएमई प्रोसेसिंग: ₹1 लाख तक माफ़, ₹1-10 लाख पर 0.25%, इससे ऊपर रेटिंग के अनुसार 0.25-0.35% + जीएसटी। ब्याज दर आरबीएलआर-आधारित, अलग से नहीं दी गई; Paisabazaar एमएसएमई रेंज 7.80-12.40%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Asset Backed Loan: drop-line OD upfront fee 1% of limit (max ₹10 lakh); ROI EBLR-linked (EBR = repo + 2.65%) for MSMEs; 25% margin; up to ₹50 Cr case-to-case",
+  "hi": "Asset Backed Loan: ड्रॉप-लाइन ओडी पर अपफ्रंट फीस लिमिट का 1% (अधिकतम ₹10 लाख); एमएसएमई के लिए ब्याज दर ईबीएलआर-लिंक्ड (ईबीआर = रेपो + 2.65%); 25% मार्जिन; केस-दर-केस ₹50 करोड़ तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Secured MSME facilities: up to Repo (5.25%) + 6.0% non-PSL (CGTMSE-backed up to Repo + 6.50%); PF up to 2% + taxes; SME credit limits up to ₹15 crore; Paisabazaar: term loans up to 7 yrs; Insta secured OD from 10.75%",
+  "hi": "सिक्योर्ड एमएसएमई सुविधाएं: नॉन-पीएसएल पर रेपो (5.25%) + 6.0% तक (CGTMSE-समर्थित पर रेपो + 6.50% तक); प्रोसेसिंग फीस 2% तक + टैक्स; एसएमई क्रेडिट लिमिट ₹15 करोड़ तक; Paisabazaar: टर्म लोन 7 साल तक; Insta सिक्योर्ड ओडी 10.75% से"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Business Banking term loans/working capital (SOC dated 01-01-2026): ROI up to 18%, PF up to 3%, renewal up to 1%; Emerging Enterprises up to 22% / PF up to 5%",
+  "hi": "बिज़नेस बैंकिंग टर्म लोन/वर्किंग कैपिटल (01-01-2026 की शुल्क सूची): ब्याज दर 18% तक, प्रोसेसिंग फीस 3% तक, रिन्यूअल 1% तक; Emerging Enterprises 22% तक / प्रोसेसिंग फीस 5% तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Long-term business loans for self-employed/MSME (basis ITR/GST/banking conduct): PF up to 2% + taxes; foreclosure 4%/3%/2% by seasoning; rate on application; BankBazaar term loans 11.05%-12.05%; CreditMantri ceiling 18%, tenure up to 10 yrs",
+  "hi": "स्व-रोज़गार/एमएसएमई के लिए लंबी अवधि के बिज़नेस लोन (आईटीआर/जीएसटी/बैंकिंग रिकॉर्ड के आधार पर): प्रोसेसिंग फीस 2% तक + टैक्स; लोन की उम्र के अनुसार फोरक्लोज़र 4%/3%/2%; दर आवेदन पर; BankBazaar टर्म लोन 11.05%-12.05%; CreditMantri अधिकतम 18%, अवधि 10 साल तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Star Equipment Express / Star Asset Backed Loan (secured MSME term loans); ROI and processing as per BOI MSME card rates (not published on accessible page)",
+  "hi": "Star Equipment Express / Star Asset Backed Loan (सिक्योर्ड एमएसएमई टर्म लोन); ब्याज दर और प्रोसेसिंग BOI एमएसएमई कार्ड रेट के अनुसार (उपलब्ध पेज पर प्रकाशित नहीं)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "MSME term loans RLLR (8.00%) + 1.30% to + 1.55% (≤₹2L) and risk-based + 1.40% to + 6.00% (₹2L–₹2 Cr); 0.50% concession for women entrepreneurs; 0.25% for CGTMSE-covered (card w.e.f. 01-Apr-2026)",
+  "hi": "एमएसएमई टर्म लोन आरएलएलआर (8.00%) + 1.30% से + 1.55% तक (≤₹2 लाख) और रिस्क-आधारित + 1.40% से + 6.00% तक (₹2 लाख–₹2 करोड़); महिला उद्यमियों को 0.50% रियायत; CGTMSE-कवर्ड को 0.25% (कार्ड 01-अप्रैल-2026 से प्रभावी)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "MSME/SME term loans (EasyEMI SME, machinery & equipment finance); PF up to 2%, NIL for MSE up to ₹5 lakh with URC; pricing on application; Indicative machinery/term loan rates 10.25%-13.75%",
+  "hi": "एमएसएमई/एसएमई टर्म लोन (EasyEMI SME, मशीनरी और इक्विपमेंट फाइनेंस); प्रोसेसिंग फीस 2% तक, यूआरसी वाले एमएसई के लिए ₹5 लाख तक शून्य; दरें आवेदन पर; मशीनरी/टर्म लोन की सांकेतिक दरें 10.25%-13.75%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Machinery/equipment loan up to Rs 10 crore (up to Rs 3 crore without additional collateral); 1-10 year tenure; PF typically 2%-3.5% + GST (as per IDFC business loan)",
+  "hi": "मशीनरी/इक्विपमेंट लोन ₹10 करोड़ तक (अतिरिक्त गिरवी के बिना ₹3 करोड़ तक); अवधि 1-10 साल; प्रोसेसिंग फीस आमतौर पर 2%-3.5% + जीएसटी (IDFC बिज़नेस लोन के अनुसार)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "MSME term loans for expansion/capex; business vintage 3 yrs, profitable 2 yrs, turnover ₹1-250 crore; decision 14 days (<₹25 lakh) / 45 days; Paisabazaar (IndusInd business loans): 13%-22% fixed, PF up to 3% + taxes, age 25-70",
+  "hi": "विस्तार/पूंजीगत खर्च के लिए एमएसएमई टर्म लोन; बिज़नेस विंटेज 3 साल, 2 साल से मुनाफ़े में, टर्नओवर ₹1-250 करोड़; फ़ैसला 14 दिन में (<₹25 लाख) / 45 दिन में; Paisabazaar (IndusInd बिज़नेस लोन): 13%-22% फिक्स्ड, प्रोसेसिंग फीस 3% तक + टैक्स, उम्र 25-70"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PSB Vyapar Loan (OD/dropline/term loan, property-backed, 35% margin): 1% of loan amt, min Rs2,000 + GST. ROI 9.15-11.30% (PRLR-linked); term loan up to 10 yrs",
+  "hi": "PSB Vyapar Loan (ओडी/ड्रॉपलाइन/टर्म लोन, प्रॉपर्टी-आधारित, 35% मार्जिन): लोन राशि का 1%, न्यूनतम ₹2,000 + जीएसटी। ब्याज दर 9.15-11.30% (पीआरएलआर-लिंक्ड); टर्म लोन 10 साल तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "MSE funded exposure (MSME rate page 21.12.2023): up to Rs25 lakh MCLR+1.15% = 9.85%; Rs25 lakh-1 cr MCLR+2.15% = 10.85%; above Rs1 cr 10.60-11.85%; CGTMSE mandatory up to Rs1 cr; PF nil to Rs5L, 0.50% to Rs10L, 0.25-0.40% above +GST (Paisabazaar)",
+  "hi": "एमएसई फंडेड एक्सपोज़र (एमएसएमई रेट पेज 21.12.2023): ₹25 लाख तक एमसीएलआर+1.15% = 9.85%; ₹25 लाख-1 करोड़ एमसीएलआर+2.15% = 10.85%; ₹1 करोड़ से ऊपर 10.60-11.85%; ₹1 करोड़ तक CGTMSE अनिवार्य; प्रोसेसिंग फीस ₹5 लाख तक शून्य, ₹10 लाख तक 0.50%, इससे ऊपर 0.25-0.40% +जीएसटी (Paisabazaar)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Union Equipment Finance actual ROI range Apr-Jun 2026: 8.00-10.50% (EBLR + spread; term-loan tenor premium 0.10-1.00% above Rs25 lakh)",
+  "hi": "Union Equipment Finance वास्तविक ब्याज दर रेंज अप्रैल-जून 2026: 8.00-10.50% (ईबीएलआर + स्प्रेड; ₹25 लाख से ऊपर टर्म लोन अवधि प्रीमियम 0.10-1.00%)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "SME secured term loans / equipment finance Rs 10 lakh to Rs 20 Cr; equipment finance tenure 12-60 months; business must be profitable for last 3 financial years; IRP Dec-2025 SME term loan 10%-17%, equipment finance 9.5%-19%; PF up to 2% + GST",
+  "hi": "एसएमई सिक्योर्ड टर्म लोन / इक्विपमेंट फाइनेंस ₹10 लाख से ₹20 करोड़; इक्विपमेंट फाइनेंस की अवधि 12-60 महीने; बिज़नेस पिछले 3 वित्त वर्षों से मुनाफ़े में होना चाहिए; आईआरपी दिसंबर-2025 एसएमई टर्म लोन 10%-17%, इक्विपमेंट फाइनेंस 9.5%-19%; प्रोसेसिंग फीस 2% तक + जीएसटी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Machinery Loan Rs 5 lakh to Rs 10 Cr; PF up to 2% + taxes; foreclosure/part-payment 4% + taxes",
+  "hi": "मशीनरी लोन ₹5 लाख से ₹10 करोड़; प्रोसेसिंग फीस 2% तक + टैक्स; फोरक्लोज़र/आंशिक भुगतान 4% + टैक्स"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Secured MSME business loan (12-84 months) from 10% fixed; PF up to 5%; foreclosure up to 4%; up to Rs 10 Cr; IRP secured BL/SME band 10%-28%; age 21-65, 3 yrs vintage",
+  "hi": "सिक्योर्ड एमएसएमई बिज़नेस लोन (12-84 महीने) 10% फिक्स्ड से; प्रोसेसिंग फीस 5% तक; फोरक्लोज़र 4% तक; ₹10 करोड़ तक; आईआरपी में सिक्योर्ड बिज़नेस लोन/एसएमई बैंड 10%-28%; उम्र 21-65, 3 साल विंटेज"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Secured Business Loan: 10%-18.25% p.a., PF up to 3.54% incl. taxes; Machinery Loan: 14%-23.50% p.a., up to Rs 80 lakh, up to 96 months, PF up to 4.72% incl. taxes; SBL min salary Rs 24,000/month",
+  "hi": "सिक्योर्ड बिज़नेस लोन: 10%-18.25% प्रति वर्ष, प्रोसेसिंग फीस 3.54% तक, टैक्स सहित; मशीनरी लोन: 14%-23.50% प्रति वर्ष, ₹80 लाख तक, 96 महीने तक, प्रोसेसिंग फीस 4.72% तक, टैक्स सहित; सिक्योर्ड बिज़नेस लोन के लिए न्यूनतम वेतन ₹24,000/माह"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Machinery Loan Rs 10 lakh to Rs 3 Cr, LTV up to 85%, disbursed to OEM; PF as per schedule of charges; SME finance from 14% p.a. (Paisabazaar); PF up to 3% + GST (MyMoneyMantra)",
+  "hi": "मशीनरी लोन ₹10 लाख से ₹3 करोड़, एलटीवी 85% तक, राशि सीधे ओईएम को दी जाती है; प्रोसेसिंग फीस शुल्क सूची के अनुसार; एसएमई फाइनेंस 14% प्रति वर्ष से (Paisabazaar); प्रोसेसिंग फीस 3% तक + जीएसटी (MyMoneyMantra)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Enterprise Business Loan (secured, for MSMEs) up to Rs 1 Cr; indicative rate 10%-36% p.a. (8.75%-19% for property-backed EBL); PF up to 2.36% inclusive of GST; application fee up to Rs 7,670; flat max = PF cap (Rs 7,670 was application fee)",
+  "hi": "Enterprise Business Loan (सिक्योर्ड, एमएसएमई के लिए) ₹1 करोड़ तक; सांकेतिक दर 10%-36% प्रति वर्ष (प्रॉपर्टी-आधारित EBL के लिए 8.75%-19%); प्रोसेसिंग फीस 2.36% तक, जीएसटी सहित; एप्लीकेशन फीस ₹7,670 तक; फ्लैट अधिकतम = प्रोसेसिंग फीस सीमा (₹7,670 एप्लीकेशन फीस थी)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Machinery Loan: Rs 0.40 lakh to Rs 1 Cr, from 16% p.a.; PF as per business loan schedule up to 3% + taxes",
+  "hi": "मशीनरी लोन: ₹0.40 लाख से ₹1 करोड़, 16% प्रति वर्ष से; प्रोसेसिंग फीस बिज़नेस लोन शुल्क सूची के अनुसार 3% तक + टैक्स"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Secured MSME business loan (collateral required); PF min 1% + tax; LTV up to 80%; min tenure 12 months (official); score 560/income Rs 25,000 per mortgage vertical",
+  "hi": "सिक्योर्ड एमएसएमई बिज़नेस लोन (गिरवी ज़रूरी); प्रोसेसिंग फीस न्यूनतम 1% + टैक्स; एलटीवी 80% तक; न्यूनतम अवधि 12 महीने (आधिकारिक); मॉर्गेज वर्टिकल के अनुसार स्कोर 560/आय ₹25,000"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Secured Business Loan up to Rs 35 lakh from 8.9% p.a.; PF up to 5% + taxes; max per MSME secured quarterly disclosure",
+  "hi": "सिक्योर्ड बिज़नेस लोन ₹35 लाख तक, 8.9% प्रति वर्ष से; प्रोसेसिंग फीस 5% तक + टैक्स; अधिकतम दर एमएसएमई सिक्योर्ड तिमाही डिस्क्लोज़र के अनुसार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Machinery term loan: finances up to 80% of new machinery cost; PF up to 2% + GST; EMI calculator range Rs 1 lakh-25 lakh",
+  "hi": "मशीनरी टर्म लोन: नई मशीनरी की लागत का 80% तक फाइनेंस; प्रोसेसिंग फीस 2% तक + जीएसटी; ईएमआई कैलकुलेटर रेंज ₹1 लाख-25 लाख"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Flexi Hybrid Term Loan: interest-only EMIs up to 36 months then principal+interest; PF up to 4.13% incl. taxes; Flexi fee up to 0.472% of dropline limit in initial tenure",
+  "hi": "फ्लेक्सी हाइब्रिड टर्म लोन: 36 महीने तक केवल ब्याज वाली ईएमआई, फिर मूलधन+ब्याज; प्रोसेसिंग फीस 4.13% तक, टैक्स सहित; शुरुआती अवधि में फ्लेक्सी फीस ड्रॉपलाइन लिमिट का 0.472% तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Flexi Personal Loan: pre-approved credit line, interest only on amount withdrawn; self-employed min turnover Rs 5 lakh p.a.; CIBIL 750+ recommended; up to Rs 50 lakh, from 10.99% p.a.; PF as per PL schedule",
+  "hi": "फ्लेक्सी पर्सनल लोन: प्री-अप्रूव्ड क्रेडिट लाइन, केवल निकाली गई राशि पर ब्याज; स्व-रोज़गार के लिए न्यूनतम टर्नओवर ₹5 लाख प्रति वर्ष; CIBIL 750+ की सलाह; ₹50 लाख तक, 10.99% प्रति वर्ष से; प्रोसेसिंग फीस पर्सनल लोन शुल्क सूची के अनुसार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Personal Loan Hybrid Term Loan (dropline): amount stays fixed 1 yr for 60/72-month tenures and 2 yrs for 84/96-month tenures then drops monthly; interest only on utilised amount; PF as per PL schedule (up to 5% + GST); tenures 60/72/84/96 months; PL ra...",
+  "hi": "पर्सनल लोन हाइब्रिड टर्म लोन (ड्रॉपलाइन): 60/72 महीने की अवधि में राशि 1 साल और 84/96 महीने की अवधि में 2 साल तक स्थिर रहती है, फिर हर महीने घटती है; केवल इस्तेमाल की गई राशि पर ब्याज; प्रोसेसिंग फीस पर्सनल लोन शुल्क सूची के अनुसार (5% तक + जीएसटी); अवधि 60/72/84/96 महीने; पर्सनल लोन द..."
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Nil processing fee all categories; ROI as applicable to MSME sector; collateral-free with CGTMSE; nil pre-closure charges; Tarun Plus to ₹20L for repeat borrowers",
+  "hi": "सभी श्रेणियों में प्रोसेसिंग फीस शून्य; ब्याज दर एमएसएमई सेक्टर पर लागू दर के अनुसार; CGTMSE के साथ बिना गिरवी; प्री-क्लोज़र चार्ज शून्य; दोबारा लोन लेने वालों के लिए Tarun Plus ₹20 लाख तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PMMY: WC/TL nil up to Rs5 lakh; TL 1% of sanctioned limit Rs5-20 lakh; WC above Rs5 lakh 0.35% p.a. ROI formula RLLR+2.25%+BSS 0.50% (up to Rs10 lakh) / RLLR+2.00%+BSS (Rs10-20 lakh); page cites RLLR 9.05% (=11.80/11.55%), current RLLR 8.05%",
+  "hi": "PMMY: ₹5 लाख तक वर्किंग कैपिटल/टर्म लोन पर शून्य; ₹5-20 लाख के टर्म लोन पर मंज़ूर लिमिट का 1%; ₹5 लाख से ऊपर वर्किंग कैपिटल पर 0.35% प्रति वर्ष। ब्याज दर फ़ॉर्मूला आरएलएलआर+2.25%+बीएसएस 0.50% (₹10 लाख तक) / आरएलएलआर+2.00%+बीएसएस (₹10-20 लाख); पेज पर आरएलएलआर 9.05% बताया गया (=11.80/11.55%), मौजूदा आरएलएलआर 8.05%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Shishu & Kishore: nil; Tarun: 0.25% per lakh (min ₹500); margin nil ≤₹25k, 15–25% above; term loan 5–7 yrs; ROI per MSME RLLR card; Tarun Plus to ₹20L",
+  "hi": "Shishu और Kishore: शून्य; Tarun: प्रति लाख 0.25% (न्यूनतम ₹500); ≤₹25 हज़ार पर मार्जिन शून्य, इससे ऊपर 15–25%; टर्म लोन 5–7 साल; ब्याज दर एमएसएमई आरएलएलआर कार्ड के अनुसार; Tarun Plus ₹20 लाख तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PMMY Shishu (DLOD up to ₹50k), Kishor (₹50k-₹5 lakh), Tarun (₹5-10 lakh), Tarun Plus (up to ₹20 lakh); collateral-free OD/DLOD; rate as per scheme guidelines",
+  "hi": "PMMY Shishu (डीएलओडी ₹50 हज़ार तक), Kishor (₹50 हज़ार-₹5 लाख), Tarun (₹5-10 लाख), Tarun Plus (₹20 लाख तक); बिना गिरवी ओडी/डीएलओडी; दर स्कीम दिशानिर्देशों के अनुसार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PMMY Shishu/Kishore/Tarun/Tarun Plus (up to Rs20 lakh): ROI RLLR (8.10%) for loans up to Rs50,000, MSME card rate above; term loan max 5 yrs; processing as per extant guidelines; CGTMSE/CGFMU covered",
+  "hi": "PMMY Shishu/Kishore/Tarun/Tarun Plus (₹20 लाख तक): ₹50,000 तक के लोन पर ब्याज दर आरएलएलआर (8.10%), इससे ऊपर एमएसएमई कार्ड रेट; टर्म लोन अधिकतम 5 साल; प्रोसेसिंग मौजूदा दिशानिर्देशों के अनुसार; CGTMSE/CGFMU कवर्ड"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PSB PMMY Shishu/Kishore/Tarun/Tarun Plus (up to Rs20 lakh): ROI MSME funded exposure up to Rs10 lakh 9.90-10.90% (PRLR 7.35% w.e.f. 16.07.2026); WC 1 yr, term loan up to 7 yrs",
+  "hi": "PSB PMMY Shishu/Kishore/Tarun/Tarun Plus (₹20 लाख तक): ₹10 लाख तक के एमएसएमई फंडेड एक्सपोज़र पर ब्याज दर 9.90-10.90% (पीआरएलआर 7.35%, 16.07.2026 से प्रभावी); वर्किंग कैपिटल 1 साल, टर्म लोन 7 साल तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "ROI RLLR+BSP (8.10%) + 1.65–1.90% up to ₹50k, + 2.15–2.40% above ₹50k; margin nil for Shishu; collateral-free up to ₹10L; 7 yrs incl. 3-month moratorium; Tarun Plus to ₹20L",
+  "hi": "ब्याज दर आरएलएलआर+बीएसपी (8.10%) + 1.65–1.90% ₹50 हज़ार तक, + 2.15–2.40% ₹50 हज़ार से ऊपर; Shishu के लिए मार्जिन शून्य; ₹10 लाख तक बिना गिरवी; 3 महीने के मोरेटोरियम सहित 7 साल; Tarun Plus ₹20 लाख तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PMMY Shishu up to ₹50,000 / Kishore ₹50,001-₹5 lakh / Tarun ₹5,00,001-₹10 lakh; collateral-free fund-based facility; rate as per scheme",
+  "hi": "PMMY Shishu ₹50,000 तक / Kishore ₹50,001-₹5 लाख / Tarun ₹5,00,001-₹10 लाख; बिना गिरवी फंड-आधारित सुविधा; दर स्कीम के अनुसार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PMMY Shishu/Kishore/Tarun via BOI; ROI as per bank guidelines (not published on accessible page); collateral-free",
+  "hi": "BOI के ज़रिए PMMY Shishu/Kishore/Tarun; ब्याज दर बैंक दिशानिर्देशों के अनुसार (उपलब्ध पेज पर प्रकाशित नहीं); बिना गिरवी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Cent Mudra Term Loan Digital: nil up to Rs5 lakh; 0.25% + GST above Rs5 lakh; documentation Rs2,500 above Rs2 lakh. ROI 9.95% (<=3 yrs), 10.15% (3-5 yrs), 10.25% (5-7 yrs) quoted on RBLR 9.00%; CGTMSE covered",
+  "hi": "Cent Mudra Term Loan Digital: ₹5 लाख तक शून्य; ₹5 लाख से ऊपर 0.25% + जीएसटी; ₹2 लाख से ऊपर डॉक्यूमेंटेशन ₹2,500। ब्याज दर 9.95% (<=3 साल), 10.15% (3-5 साल), 10.25% (5-7 साल), आरबीएलआर 9.00% के आधार पर; CGTMSE कवर्ड"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PMMY Shishu up to ₹50,000 / Kishor ₹50,000-₹5 lakh / Tarun ₹5-10 lakh; page lists 19%-21% fixed; non-farm enterprises; CreditMantri: nil processing charges, tenure 1-5 yrs",
+  "hi": "PMMY Shishu ₹50,000 तक / Kishor ₹50,000-₹5 लाख / Tarun ₹5-10 लाख; पेज पर 19%-21% फिक्स्ड दिया गया है; गैर-कृषि उद्यम; CreditMantri: प्रोसेसिंग चार्ज शून्य, अवधि 1-5 साल"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PMMY Shishu/Kishore/Tarun via Indian Bank (incl. custom-hiring units); ROI per repo-based MSME rate card (PDF behind bot-check, not extracted); Paisabazaar: Mudra 10.80% (to Rs2L) / 11.45% (Rs2-10L); TL up to 6 yrs",
+  "hi": "Indian Bank के ज़रिए PMMY Shishu/Kishore/Tarun (कस्टम-हायरिंग यूनिट सहित); ब्याज दर रेपो-आधारित एमएसएमई रेट कार्ड के अनुसार (PDF बॉट-चेक के पीछे, निकाला नहीं जा सका); Paisabazaar: मुद्रा 10.80% (₹2 लाख तक) / 11.45% (₹2-10 लाख); टर्म लोन 6 साल तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Shishu & Kishore: nil; Tarun: 0.50% + tax; margin nil ≤₹50k, 20% above; ROI EBLR-linked (agri page quotes EBLR + 3.25%); Tarun Plus up to ₹20L for repeat borrowers; tenure 5 yrs ≤₹5L, 7 yrs above",
+  "hi": "Shishu और Kishore: शून्य; Tarun: 0.50% + टैक्स; ≤₹50 हज़ार पर मार्जिन शून्य, इससे ऊपर 20%; ब्याज दर ईबीएलआर-लिंक्ड (एग्री पेज पर ईबीएलआर + 3.25%); दोबारा लोन लेने वालों के लिए Tarun Plus ₹20 लाख तक; अवधि ≤₹5 लाख पर 5 साल, इससे ऊपर 7 साल"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Shishu/Kishore/Tarun Mudra: processing nil. ROI Shishu Float+1.10% = 9.15%, STP Kishore/Tarun Float+1.35% = 9.40%, Kishore Float+2.10% = 10.15% (UCO Float 8.05%); Udyam reqd",
+  "hi": "Shishu/Kishore/Tarun मुद्रा: प्रोसेसिंग शून्य। ब्याज दर Shishu Float+1.10% = 9.15%, एसटीपी Kishore/Tarun Float+1.35% = 9.40%, Kishore Float+2.10% = 10.15% (UCO Float 8.05%); उद्यम रजिस्ट्रेशन ज़रूरी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Union Mudra (Shishu/Kishore/Tarun) actual ROI range Apr-Jun 2026: 8.00-12.25%; Mudra STP Shishu 9.75%, Kishore/Tarun STP 10.00-11.00%. Collateral-free",
+  "hi": "Union Mudra (Shishu/Kishore/Tarun) वास्तविक ब्याज दर रेंज अप्रैल-जून 2026: 8.00-12.25%; मुद्रा एसटीपी Shishu 9.75%, Kishore/Tarun एसटीपी 10.00-11.00%। बिना गिरवी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "IB Vehicle Loan (new car): flat Rs1,200 + GST (w.e.f. 17.11.2025). ROI 7.55-8.85%; Eco Vahan 7.55-8.75%; used car 9.55-11.65% (PF 1% max Rs10,000, max 72 months)",
+  "hi": "IB Vehicle Loan (नई कार): फ्लैट ₹1,200 + जीएसटी (17.11.2025 से प्रभावी)। ब्याज दर 7.55-8.85%; Eco Vahan 7.55-8.75%; यूज़्ड कार 9.55-11.65% (प्रोसेसिंग फीस 1%, अधिकतम ₹10,000, अधिकतम 72 महीने)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "CreditMantri: PF Rs 5,000 (<=10L) / 7,500 / 10,000 (>25L) + GST; 10.25%-12.25%; salaried 21-58, self-employed 21-65; 2 yrs experience",
+  "hi": "CreditMantri: प्रोसेसिंग फीस ₹5,000 (<=10 लाख) / 7,500 / 10,000 (>25 लाख) + जीएसटी; 10.25%-12.25%; वेतनभोगी 21-58, स्व-रोज़गार 21-65; 2 साल का अनुभव"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Flat ₹1,500 + GST (≤₹10L), ₹2,000 + GST (>₹10L); ₹500 + GST for govt/PSU employees; nil under Baroda Direct/Yoddha; floating BRLLR − 0.30% to BRLLR+SP + 3.15%, fixed 8.50–11.20%",
+  "hi": "फ्लैट ₹1,500 + जीएसटी (≤₹10 लाख), ₹2,000 + जीएसटी (>₹10 लाख); सरकारी/पीएसयू कर्मचारियों के लिए ₹500 + जीएसटी; Baroda Direct/Yoddha के तहत शून्य; फ्लोटिंग बीआरएलएलआर − 0.30% से बीआरएलएलआर+एसपी + 3.15% तक, फिक्स्ड 8.50–11.20%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Cent Vehicle 4W: 0.50% min Rs2,000 max Rs20,000 + GST - full waiver till 31.12.2026. ROI RBLR-0.60% to RBLR+1.05% (7.65-9.30%) by CIC score; co-borrower needed above age 60",
+  "hi": "Cent Vehicle 4W: 0.50%, न्यूनतम ₹2,000, अधिकतम ₹20,000 + जीएसटी - 31.12.2026 तक पूरी छूट। ब्याज दर आरबीएलआर-0.60% से आरबीएलआर+1.05% तक (7.65-9.30%), सीआईसी स्कोर के अनुसार; 60 से ज़्यादा उम्र पर सह-उधारकर्ता ज़रूरी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 5% of loan amount; zero foreclosure on floating-rate loans; tenure up to 10 years; BankBazaar: floating 9.60%-10.50%, fixed up to 13.50%, new-car PF up to Rs 10,000",
+  "hi": "लोन राशि का 5% तक; फ्लोटिंग रेट लोन पर ज़ीरो फोरक्लोज़र चार्ज; अवधि 10 साल तक; BankBazaar: फ्लोटिंग 9.60%-10.50%, फिक्स्ड 13.50% तक, नई कार पर प्रोसेसिंग फीस ₹10,000 तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Union Miles: flat Rs1,000 + GST for 4-wheeler. New 4W ROI 7.60% (CIC 825+) to 10.00% (<650); used 4W (<=3 yrs, max Rs20 lakh) 11.60-11.70%; Green vehicle from 7.50%",
+  "hi": "Union Miles: 4-व्हीलर के लिए फ्लैट ₹1,000 + जीएसटी। नए 4-व्हीलर पर ब्याज दर 7.60% (सीआईसी 825+) से 10.00% (<650) तक; यूज़्ड 4-व्हीलर (<=3 साल पुराना, अधिकतम ₹20 लाख) 11.60-11.70%; ग्रीन वाहन 7.50% से"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "New/used car loans under vehicle finance; pricing not published on product page; BB: new car up to 17%, used up to 26%; 6-60 months; PF 2% new/3% used",
+  "hi": "व्हीकल फाइनेंस के तहत नई/यूज़्ड कार लोन; प्रोडक्ट पेज पर दरें प्रकाशित नहीं; BB: नई कार 17% तक, यूज़्ड 26% तक; 6-60 महीने; प्रोसेसिंग फीस नई पर 2%/यूज़्ड पर 3%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 2% of loan + GST; documentation ₹700 + GST; 1Y MCLR 8.90% + 0%-2.80%; up to 100% on-road funding; salaried max 60 at maturity, self-employed max 75; BankBazaar: PF Rs 3,500-12,000, 8.95%-11.75%",
+  "hi": "लोन का 2% तक + जीएसटी; डॉक्यूमेंटेशन ₹700 + जीएसटी; 1 साल का एमसीएलआर 8.90% + 0%-2.80%; ऑन-रोड कीमत की 100% तक फंडिंग; मैच्योरिटी पर अधिकतम उम्र वेतनभोगी 60, स्व-रोज़गार 75; BankBazaar: प्रोसेसिंग फीस ₹3,500-12,000, 8.95%-11.75%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 4% of loan amount + GST; new & used cars; up to 90% of on-road price; fixed-rate foreclosure 4%, nil on floating",
+  "hi": "लोन राशि का 4% तक + जीएसटी; नई और यूज़्ड कार; ऑन-रोड कीमत का 90% तक; फिक्स्ड रेट पर फोरक्लोज़र 4%, फ्लोटिंग पर शून्य"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Maha Super Car Loan: PF 0.25% min Rs1,000 max Rs15,000 +GST (nil for EVs; service-charge page). ROI RLLR-0.60% = 7.45% (CIBIL 800+ salaried) to 10.65% (<600), non-salaried higher, page range 7.45-12.00%; 0.25% concession for HL/corporate salary customers",
+  "hi": "Maha Super Car Loan: प्रोसेसिंग फीस 0.25%, न्यूनतम ₹1,000, अधिकतम ₹15,000 +जीएसटी (ईवी के लिए शून्य; सर्विस-चार्ज पेज)। ब्याज दर आरएलएलआर-0.60% = 7.45% (CIBIL 800+ वेतनभोगी) से 10.65% (<600) तक, गैर-वेतनभोगी के लिए ज़्यादा, पेज पर रेंज 7.45-12.00%; होम लोन/कॉर्पोरेट सैलरी ग्राहकों को 0.25% रियायत"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.25% (min ₹1,000, max ₹5,000) + GST; 50% waiver 01-Jul to 30-Sep-2026; new cars RLLR-linked 7.50–10.70% (EV from 7.45%); used cars up to 60M, max ₹50L; no upper limit for new vehicles",
+  "hi": "0.25% (न्यूनतम ₹1,000, अधिकतम ₹5,000) + जीएसटी; 01-जुलाई से 30-सितंबर-2026 तक 50% छूट; नई कार आरएलएलआर-लिंक्ड 7.50–10.70% (ईवी 7.45% से); यूज़्ड कार 60 महीने तक, अधिकतम ₹50 लाख; नए वाहनों के लिए कोई ऊपरी सीमा नहीं"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "EBLR + 4.75 (<3 yrs) / +5.00 (3-4 yrs) / +5.25 (4-5 yrs); PF 1.25% min Rs 750",
+  "hi": "ईबीएलआर + 4.75 (<3 साल) / +5.00 (3-4 साल) / +5.25 (4-5 साल); प्रोसेसिंग फीस 1.25%, न्यूनतम ₹750"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "New car fixed 7.90%-9.00%; used car / loan against car 10.15%-14.00% (used tenure up to 60 months); PF not published; take-home Rs 20k after EMIs",
+  "hi": "नई कार फिक्स्ड 7.90%-9.00%; यूज़्ड कार / कार पर लोन 10.15%-14.00% (यूज़्ड कार की अवधि 60 महीने तक); प्रोसेसिंग फीस प्रकाशित नहीं; ईएमआई के बाद टेक-होम सैलरी ₹20 हज़ार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "New car PF up to ₹8,500 + GST; 8.40% onwards for tenure >36 months, 10.25% onwards for <36 months (eff. 01-Jun-2026); up to 100% on-road funding; BankBazaar: PF up to 2% + GST",
+  "hi": "नई कार पर प्रोसेसिंग फीस ₹8,500 तक + जीएसटी; >36 महीने की अवधि पर 8.40% से, <36 महीने पर 10.25% से (01-जून-2026 से प्रभावी); ऑन-रोड कीमत की 100% तक फंडिंग; BankBazaar: प्रोसेसिंग फीस 2% तक + जीएसटी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Pushpaka 4W: ROI 7.60% (CIC-1) to 8.60% (CIC-6); processing charges as applicable, fully waived for electric vehicles; up to 90% of cost; 2 yrs service/business; Pushpaka PF 0.50% min Rs500 max Rs5,000 (charge schedule)",
+  "hi": "Pushpaka 4W: ब्याज दर 7.60% (CIC-1) से 8.60% (CIC-6) तक; प्रोसेसिंग चार्ज लागू दर के अनुसार, इलेक्ट्रिक वाहनों के लिए पूरी तरह माफ़; लागत का 90% तक; 2 साल की नौकरी/बिज़नेस; Pushpaka प्रोसेसिंग फीस 0.50%, न्यूनतम ₹500, अधिकतम ₹5,000 (शुल्क सूची)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 100% of on-road price, tenure up to 7 years; rates per profile; BankBazaar: 8%-21%, age 23-60/65, income Rs 2.5 lakh pa, 3 yrs exp; PF 2%-3%",
+  "hi": "ऑन-रोड कीमत का 100% तक, अवधि 7 साल तक; दरें प्रोफ़ाइल के अनुसार; BankBazaar: 8%-21%, उम्र 23-60/65, आय ₹2.5 लाख प्रति वर्ष, 3 साल का अनुभव; प्रोसेसिंग फीस 2%-3%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Financed by Kotak Mahindra Prime Ltd: processing 3% of loan + documentation ₹7,500; foreclosure 5.21%/3%; rate depends on profile/segment/tenure; BankBazaar: 7.70%-25%, age 21-60/65, min income Rs 15,000, 1 yr employment",
+  "hi": "Kotak Mahindra Prime Ltd द्वारा फाइनेंस: प्रोसेसिंग लोन का 3% + डॉक्यूमेंटेशन ₹7,500; फोरक्लोज़र 5.21%/3%; दर प्रोफ़ाइल/सेगमेंट/अवधि पर निर्भर; BankBazaar: 7.70%-25%, उम्र 21-60/65, न्यूनतम आय ₹15,000, 1 साल की नौकरी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PSB Apna Vahan 4W: 0.25% of loan amt, min Rs1,000 max Rs15,000 + GST; pre-owned 0.35% min Rs1,000 max Rs25,000. ROI new 4W 7.60% (825+) to 14.05% (<650), E-Apna Vahan STP from 7.55% (min CIBIL 700); pre-owned 9.75-16.00% (max Rs75 lakh, 60 months)",
+  "hi": "PSB Apna Vahan 4W: लोन राशि का 0.25%, न्यूनतम ₹1,000, अधिकतम ₹15,000 + जीएसटी; प्री-ओन्ड पर 0.35%, न्यूनतम ₹1,000, अधिकतम ₹25,000। ब्याज दर नए 4-व्हीलर पर 7.60% (825+) से 14.05% (<650) तक, E-Apna Vahan STP 7.55% से (न्यूनतम CIBIL 700); प्री-ओन्ड 9.75-16.00% (अधिकतम ₹75 लाख, 60 महीने)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.25% (min ₹1,000, max ₹1,500) excl. GST; no documentation charge; CIBIL-tiered (750+: 7.60–8.70%); margin 10–15% on-road",
+  "hi": "0.25% (न्यूनतम ₹1,000, अधिकतम ₹1,500), जीएसटी अलग; कोई डॉक्यूमेंटेशन चार्ज नहीं; CIBIL स्कोर के अनुसार (750+: 7.60–8.70%); ऑन-रोड कीमत पर मार्जिन 10–15%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Fixed rate; salaried up to Rs 30 lakh, self-employed up to Rs 1 crore; up to 90% on-road funding; pre-owned car loan up to Rs 30 lakh; rate/PF not published by bank or aggregators",
+  "hi": "फिक्स्ड रेट; वेतनभोगी ₹30 लाख तक, स्व-रोज़गार ₹1 करोड़ तक; ऑन-रोड कीमत की 90% तक फंडिंग; प्री-ओन्ड कार लोन ₹30 लाख तक; दर/प्रोसेसिंग फीस बैंक या एग्रीगेटर ने प्रकाशित नहीं की"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.25% of loan amount or Rs 5,000 whichever is less; up to 90% of on-road price; SIB Loan Referral Partner programme",
+  "hi": "लोन राशि का 0.25% या ₹5,000, जो भी कम हो; ऑन-रोड कीमत का 90% तक; SIB Loan Referral Partner प्रोग्राम"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Flat ₹500 (≤₹5L), ₹1,000 (₹5–10L), ₹1,500 (>₹10L) + GST for salaried; up to 100% on-road funding; no foreclosure charge after 2 yrs",
+  "hi": "वेतनभोगी के लिए फ्लैट ₹500 (≤₹5 लाख), ₹1,000 (₹5–10 लाख), ₹1,500 (>₹10 लाख) + जीएसटी; ऑन-रोड कीमत की 100% तक फंडिंग; 2 साल बाद कोई फोरक्लोज़र चार्ज नहीं"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "1% of loan amt, max Rs1,500; festive 100% waiver of processing & documentation on car loans. New car 8.35% (w.e.f. 17.08.2026); pre-owned 9.15% (certified dealer, max Rs15 lakh) to 9.65% (max Rs5 lakh, 60 months)",
+  "hi": "लोन राशि का 1%, अधिकतम ₹1,500; कार लोन पर प्रोसेसिंग और डॉक्यूमेंटेशन में त्योहारी 100% छूट। नई कार 8.35% (17.08.2026 से प्रभावी); प्री-ओन्ड 9.15% (सर्टिफ़ाइड डीलर, अधिकतम ₹15 लाख) से 9.65% (अधिकतम ₹5 लाख, 60 महीने) तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Rs 3,000 up to Rs 10 lakh; Rs 7,500 above Rs 10 lakh; new car 84 months, used car 60 months; flat-only fee; % derived",
+  "hi": "₹10 लाख तक ₹3,000; ₹10 लाख से ऊपर ₹7,500; नई कार 84 महीने, यूज़्ड कार 60 महीने; केवल फ्लैट फीस; % की गणना की गई है"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Star Vehicle Loan 4W: 0.15% min Rs1,000 max Rs5,000 + GST (CIBIL 725+); e-vehicles 50% concession. New 4W ROI 7.60% (840+) to 10.00% (<700); 2nd-hand vehicles 10.40-10.50%",
+  "hi": "Star Vehicle Loan 4W: 0.15%, न्यूनतम ₹1,000, अधिकतम ₹5,000 + जीएसटी (CIBIL 725+); ई-वाहनों पर 50% रियायत। नए 4-व्हीलर पर ब्याज दर 7.60% (840+) से 10.00% (<700) तक; सेकंड-हैंड वाहन 10.40-10.50%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 0.5% of loan, min ₹3,500 max ₹8,000; NIL for MSE loans up to ₹5 lakh with URC; rack 9% onwards, Bank IRR Apr-Jun 2026 7.60%-14.00%; up to 100% on-road funding, EV tenure up to 96 months",
+  "hi": "लोन का 0.5% तक, न्यूनतम ₹3,500, अधिकतम ₹8,000; यूआरसी वाले एमएसई लोन पर ₹5 लाख तक शून्य; रैक रेट 9% से, बैंक आईआरआर अप्रैल-जून 2026 7.60%-14.00%; ऑन-रोड कीमत की 100% तक फंडिंग, ईवी के लिए अवधि 96 महीने तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "New Car Loan: up to 12.25% p.a., Rs 1 lakh-10 Cr, 12-96 months; Used Car Loan: 10%-18.25% p.a., Rs 1 lakh-2.5 Cr, 12-84 months; PF up to 2.95% incl. taxes for both",
+  "hi": "नई कार लोन: 12.25% प्रति वर्ष तक, ₹1 लाख-10 करोड़, 12-96 महीने; यूज़्ड कार लोन: 10%-18.25% प्रति वर्ष, ₹1 लाख-2.5 करोड़, 12-84 महीने; दोनों पर प्रोसेसिंग फीस 2.95% तक, टैक्स सहित"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "New car loan up to Rs 5 Cr from 9.49% p.a.; foreclosure 6%/5% of principal outstanding; min annual income Rs 3 lakh; PF up to 2.95% of loan amount; CIBIL 700+",
+  "hi": "नई कार लोन ₹5 करोड़ तक, 9.49% प्रति वर्ष से; फोरक्लोज़र बकाया मूलधन का 6%/5%; न्यूनतम सालाना आय ₹3 लाख; प्रोसेसिंग फीस लोन राशि का 2.95% तक; CIBIL 700+"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "New car loans from Rs 1 lakh with up to 100% on-road funding; pre-owned car loans tenure up to 5 years; pre-closure 5% (7-12 months) + GST; IRP Dec-2025 new car 9%-20%, admin/PF 0.5%-2.5% + GST; age 21-75, gross income Rs 2 lakh p.a. (BankBazaar)",
+  "hi": "नई कार लोन ₹1 लाख से, ऑन-रोड कीमत की 100% तक फंडिंग; प्री-ओन्ड कार लोन की अवधि 5 साल तक; प्री-क्लोज़र 5% (7-12 महीने) + जीएसटी; आईआरपी दिसंबर-2025 नई कार 9%-20%, एडमिन/प्रोसेसिंग फीस 0.5%-2.5% + जीएसटी; उम्र 21-75, सकल आय ₹2 लाख प्रति वर्ष (BankBazaar)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "New, used and refinance car loans; up to 100% funding; PF up to 3.54% inclusive of GST; documentation up to Rs 2,500 or 3.54% whichever higher; sourced via dealers/agents per HDB disclosure",
+  "hi": "नई, यूज़्ड और रीफ़ाइनेंस कार लोन; 100% तक फंडिंग; प्रोसेसिंग फीस 3.54% तक, जीएसटी सहित; डॉक्यूमेंटेशन ₹2,500 तक या 3.54%, जो भी ज़्यादा हो; HDB डिस्क्लोज़र के अनुसार डीलर/एजेंट के ज़रिए सोर्स किए जाते हैं"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "New car up to 25% p.a. / used car up to 24% p.a.; PF 3% of loan + documentation Rs 7,500 (both non-refundable, + GST); up to 100% on-road (new) / 90% (used); salaried max age 60 at maturity, self-employed 65",
+  "hi": "नई कार 25% प्रति वर्ष तक / यूज़्ड कार 24% प्रति वर्ष तक; प्रोसेसिंग फीस लोन का 3% + डॉक्यूमेंटेशन ₹7,500 (दोनों नॉन-रिफंडेबल, + जीएसटी); ऑन-रोड कीमत का 100% तक (नई) / 90% (यूज़्ड); मैच्योरिटी पर अधिकतम उम्र वेतनभोगी 60, स्व-रोज़गार 65"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "New and pre-owned car loans, funding up to 100% of ex-showroom value; rates location/profile based, not published; GST extra on fees; tenure 12-60 months, min age 21 (BankBazaar); rate/PF not published - typical values",
+  "hi": "नई और प्री-ओन्ड कार लोन, एक्स-शोरूम कीमत की 100% तक फंडिंग; दरें जगह/प्रोफ़ाइल पर आधारित, प्रकाशित नहीं; फीस पर जीएसटी अलग; अवधि 12-60 महीने, न्यूनतम उम्र 21 (BankBazaar); दर/प्रोसेसिंग फीस प्रकाशित नहीं - सामान्य आंकड़े"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "New/used car loans via vehicle loan vertical; rate card not published online; Interest Rate Policy car loan band 14%-32%, processing/appraisal capped at 1%",
+  "hi": "व्हीकल लोन वर्टिकल के ज़रिए नई/यूज़्ड कार लोन; रेट कार्ड ऑनलाइन प्रकाशित नहीं; ब्याज दर नीति में कार लोन बैंड 14%-32%, प्रोसेसिंग/अप्रेज़ल अधिकतम 1%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "New/used car loans (used up to 90% of value); rate card not published online - branch quote; via Muthoot Money from Rs 1 lakh; age 18-70, salaried Rs 96,000 p.a., 1 yr vintage (official)",
+  "hi": "नई/यूज़्ड कार लोन (यूज़्ड पर कीमत का 90% तक); रेट कार्ड ऑनलाइन प्रकाशित नहीं - ब्रांच से कोटेशन; Muthoot Money के ज़रिए ₹1 लाख से; उम्र 18-70, वेतनभोगी ₹96,000 प्रति वर्ष, 1 साल विंटेज (आधिकारिक)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Used car loan; up to 95% funding; PF max 5.9% inclusive of GST; rate range from official EMI calculator; foreclosure 5.5%-6.5%; no-income-proof option; CIBIL 750+ per official FAQ",
+  "hi": "यूज़्ड कार लोन; 95% तक फंडिंग; प्रोसेसिंग फीस अधिकतम 5.9%, जीएसटी सहित; दर रेंज आधिकारिक ईएमआई कैलकुलेटर से; फोरक्लोज़र 5.5%-6.5%; बिना आय प्रमाण का विकल्प; आधिकारिक सवाल-जवाब के अनुसार CIBIL 750+"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Pre-owned car loan Rs 2-75 lakh; PF up to 2% inclusive of taxes; foreclosure 4% + taxes; salaried 3-6 months in current job (12-24 months total)",
+  "hi": "प्री-ओन्ड कार लोन ₹2-75 लाख; प्रोसेसिंग फीस 2% तक, टैक्स सहित; फोरक्लोज़र 4% + टैक्स; वेतनभोगी मौजूदा नौकरी में 3-6 महीने (कुल 12-24 महीने)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "New car: from 9% up to Rs 25 lakh / 120 months / PF up to 3%; used car: 18-26% up to Rs 50 lakh / 60 months / PF up to 4% + GST",
+  "hi": "नई कार: 9% से, ₹25 लाख तक / 120 महीने / प्रोसेसिंग फीस 3% तक; यूज़्ड कार: 18-26%, ₹50 लाख तक / 60 महीने / प्रोसेसिंग फीस 4% तक + जीएसटी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Pre-owned car loan up to Rs 25 lakh, up to 90% of car value; PF up to 5% + taxes; range per used car loan quarterly disclosure; min annual income Rs 2.5 lakh",
+  "hi": "प्री-ओन्ड कार लोन ₹25 लाख तक, कार की कीमत का 90% तक; प्रोसेसिंग फीस 5% तक + टैक्स; रेंज यूज़्ड कार लोन तिमाही डिस्क्लोज़र के अनुसार; न्यूनतम सालाना आय ₹2.5 लाख"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Used car loan only; up to 85% of car value; max Rs 10 lakh; IRP used non-commercial vehicle band 10%-36%; PF up to 5% (all products)",
+  "hi": "केवल यूज़्ड कार लोन; कार की कीमत का 85% तक; अधिकतम ₹10 लाख; आईआरपी में यूज़्ड नॉन-कमर्शियल वाहन बैंड 10%-36%; प्रोसेसिंग फीस 5% तक (सभी प्रोडक्ट)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Vehicle value <= Rs 2 lakh: 1% (min Rs 1,000); Rs 2-10 lakh: Rs 3,000; > Rs 10 lakh: Rs 7,500; margin 10-15%; ROI 10-15% per product page",
+  "hi": "वाहन की कीमत <= ₹2 लाख: 1% (न्यूनतम ₹1,000); ₹2-10 लाख: ₹3,000; > ₹10 लाख: ₹7,500; मार्जिन 10-15%; प्रोडक्ट पेज के अनुसार ब्याज दर 10-15%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PF up to 4% of loan + documentation ₹500 + RC ₹600 + GST; Q1 FY27 disbursed range 17%-18%; pre-approved flat PF ₹1,500",
+  "hi": "प्रोसेसिंग फीस लोन का 4% तक + डॉक्यूमेंटेशन ₹500 + आरसी ₹600 + जीएसटी; Q1 FY27 में वितरित लोन की रेंज 17%-18%; प्री-अप्रूव्ड पर फ्लैट प्रोसेसिंग फीस ₹1,500"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Mahabank Vehicle Loan (2W): 0.50% of loan amt, min Rs500 max Rs5,000 + GST. ROI RLLR+3.15% = 11.20% (750+) to 14.05% (<600); super bikes Rs5-25 lakh; 15% margin; income Rs2.5 lakh pa salaried / Rs3 lakh others",
+  "hi": "Mahabank Vehicle Loan (2-व्हीलर): लोन राशि का 0.50%, न्यूनतम ₹500, अधिकतम ₹5,000 + जीएसटी। ब्याज दर आरएलएलआर+3.15% = 11.20% (750+) से 14.05% (<600) तक; सुपर बाइक ₹5-25 लाख; 15% मार्जिन; आय वेतनभोगी ₹2.5 लाख प्रति वर्ष / अन्य ₹3 लाख"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Part-prepayment 5% (13-24 months) / 3% (after 24 months); BankBazaar: up to Rs 25 lakh, 5 yrs, 85% funding, documentation Rs 499, age 18+, CIBIL 750; rate on request",
+  "hi": "आंशिक प्रीपेमेंट 5% (13-24 महीने) / 3% (24 महीने बाद); BankBazaar: ₹25 लाख तक, 5 साल, 85% फंडिंग, डॉक्यूमेंटेशन ₹499, उम्र 18+, CIBIL 750; दर अनुरोध पर"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 2% (min Rs 500); zero PF campaigns on select schemes; premium bikes from 8.5%, other segments from 15.99%/18.99%; up to 95% financing; BankBazaar: 8.50%-18.99%, max age 65",
+  "hi": "2% तक (न्यूनतम ₹500); चुनिंदा स्कीमों पर ज़ीरो प्रोसेसिंग फीस अभियान; प्रीमियम बाइक 8.5% से, अन्य सेगमेंट 15.99%/18.99% से; 95% तक फाइनेंस; BankBazaar: 8.50%-18.99%, अधिकतम उम्र 65"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 2.5% of loan + GST; documentation ₹750 + GST; ROI 11%-25% by model (15%-25% on MCLR table); super bike loans from ₹1 lakh up to 60 months; min income ₹1.44 lakh p.a.",
+  "hi": "लोन का 2.5% तक + जीएसटी; डॉक्यूमेंटेशन ₹750 + जीएसटी; ब्याज दर 11%-25%, मॉडल के अनुसार (एमसीएलआर तालिका में 15%-25%); सुपर बाइक लोन ₹1 लाख से, 60 महीने तक; न्यूनतम आय ₹1.44 लाख प्रति वर्ष"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "bob Green Wheel (EV): flat ₹750 + GST (≤₹10L), ₹1,000 + GST (>₹10L), ROI 7.60–11.15%; standard two-wheeler BRLLR + 4.25% (~12.15%), BankBazaar shows 12.65–13.65%, 2% fee min ₹250 + GST",
+  "hi": "bob Green Wheel (ईवी): फ्लैट ₹750 + जीएसटी (≤₹10 लाख), ₹1,000 + जीएसटी (>₹10 लाख), ब्याज दर 7.60–11.15%; सामान्य टू व्हीलर बीआरएलएलआर + 4.25% (~12.15%), BankBazaar पर 12.65–13.65%, 2% फीस, न्यूनतम ₹250 + जीएसटी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Two-wheeler/old vehicle: 1.0% of loan amt, min Rs1,000 max Rs5,000 + GST; 50% concession for e-vehicles. ROI RBLR+2.15% salaried (10.25%) / +2.25% non-salaried (10.35%)",
+  "hi": "टू व्हीलर/पुराना वाहन: लोन राशि का 1.0%, न्यूनतम ₹1,000, अधिकतम ₹5,000 + जीएसटी; ई-वाहनों पर 50% रियायत। ब्याज दर आरबीएलआर+2.15% वेतनभोगी (10.25%) / +2.25% गैर-वेतनभोगी (10.35%)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Vehicle loan processing 0.25% (min ₹1,000, max ₹5,000) + GST; 50% waiver till 30-Sep-2026; ROI by credit risk grade 10.10–15.00% (RLLR 8.00% w.e.f. 12-Mar-2026)",
+  "hi": "व्हीकल लोन प्रोसेसिंग 0.25% (न्यूनतम ₹1,000, अधिकतम ₹5,000) + जीएसटी; 30-सितंबर-2026 तक 50% छूट; क्रेडिट रिस्क ग्रेड के अनुसार ब्याज दर 10.10–15.00% (आरएलएलआर 8.00%, 12-मार्च-2026 से प्रभावी)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Cent Vehicle 2W: 0.50% min Rs500 max Rs2,000 + GST. ROI RBLR+2.00% to RBLR+3.10% (10.25-11.35%) by CIC score; min gross annual income Rs1.80 lakh",
+  "hi": "Cent Vehicle 2W: 0.50%, न्यूनतम ₹500, अधिकतम ₹2,000 + जीएसटी। ब्याज दर आरबीएलआर+2.00% से आरबीएलआर+3.10% तक (10.25-11.35%), सीआईसी स्कोर के अनुसार; न्यूनतम सकल सालाना आय ₹1.80 लाख"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 2.5% of loan amount + documentation up to 2.25%; NIL PF for MSE loans up to ₹5 lakh with URC; rack from 14.50%, IRR Apr-Jun 2026 9.99%-25.02%",
+  "hi": "लोन राशि का 2.5% तक + डॉक्यूमेंटेशन 2.25% तक; यूआरसी वाले एमएसई लोन पर ₹5 लाख तक प्रोसेसिंग फीस शून्य; रैक रेट 14.50% से, आईआरआर अप्रैल-जून 2026 9.99%-25.02%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Two-wheeler: 1% of loan amt, max Rs10,000 + GST. ROI 8.90-10.40%; margin 25-30%",
+  "hi": "टू व्हीलर: लोन राशि का 1%, अधिकतम ₹10,000 + जीएसटी। ब्याज दर 8.90-10.40%; मार्जिन 25-30%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Two-wheeler: ROI 10.85% (CIC-1) to 14.15% (CIC-6); up to 90% of cost; processing waived for electric 2-wheelers; Pushpaka PF 0.50% min Rs500 max Rs5,000 (charge schedule)",
+  "hi": "टू व्हीलर: ब्याज दर 10.85% (CIC-1) से 14.15% (CIC-6) तक; लागत का 90% तक; इलेक्ट्रिक 2-व्हीलर पर प्रोसेसिंग माफ़; Pushpaka प्रोसेसिंग फीस 0.50%, न्यूनतम ₹500, अधिकतम ₹5,000 (शुल्क सूची)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 95% on-road funding; PF up to 1.5% + taxes; up to 60 months for high-end/super bikes; min gross salary ₹10,000; BankBazaar: 24% p.a., 21-60/65, income Rs 10,000",
+  "hi": "ऑन-रोड कीमत की 95% तक फंडिंग; प्रोसेसिंग फीस 1.5% तक + टैक्स; हाई-एंड/सुपर बाइक के लिए 60 महीने तक; न्यूनतम सकल वेतन ₹10,000; BankBazaar: 24% प्रति वर्ष, 21-60/65, आय ₹10,000"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.50% (min ₹500, max ₹1,000) excl. GST; PNB Saarthi up to ₹1.5L (₹10L for superbikes ≥200cc); salaried 10.85–11.85%, others 11.35–12.35%",
+  "hi": "0.50% (न्यूनतम ₹500, अधिकतम ₹1,000), जीएसटी अलग; PNB Saarthi ₹1.5 लाख तक (≥200cc सुपरबाइक के लिए ₹10 लाख); वेतनभोगी 10.85–11.85%, अन्य 11.35–12.35%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Union Miles: flat Rs500 + GST for 2-wheeler. New 2W ROI EBLR+3.10% = 11.10% (CIC 700+) / 11.20% (<700); Green 2W 10.90-11.00%",
+  "hi": "Union Miles: 2-व्हीलर के लिए फ्लैट ₹500 + जीएसटी। नए 2-व्हीलर पर ब्याज दर ईबीएलआर+3.10% = 11.10% (सीआईसी 700+) / 11.20% (<700); ग्रीन 2-व्हीलर 10.90-11.00%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 4% (new) / up to 2% (select) and up to 4% for used vehicles; up to 100% of ex-showroom price; foreclosure 5% within 12 months / 4% after; ROI up to 28%; tenure 6-60 months",
+  "hi": "4% तक (नया) / 2% तक (चुनिंदा) और यूज़्ड वाहनों पर 4% तक; एक्स-शोरूम कीमत का 100% तक; फोरक्लोज़र 12 महीने के अंदर 5% / उसके बाद 4%; ब्याज दर 28% तक; अवधि 6-60 महीने"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 5% of loan amount + taxes; up to 95% funding; age 18 with co-applicant",
+  "hi": "लोन राशि का 5% तक + टैक्स; 95% तक फंडिंग; सह-आवेदक के साथ उम्र 18"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Fixed rate 12.60%-16.00%; BB: 17% (<500cc) / 12.5% superbike; take-home Rs 20k",
+  "hi": "फिक्स्ड रेट 12.60%-16.00%; BB: 17% (<500cc) / सुपरबाइक 12.5%; टेक-होम सैलरी ₹20 हज़ार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PSB Apna Vahan 2W: 0.25% of loan amt, min Rs1,000 + GST; waived for staff/pensioners. ROI 11.10% (825+) to 15.40% (<650); 10% margin (nil for govt salary a/c holders)",
+  "hi": "PSB Apna Vahan 2W: लोन राशि का 0.25%, न्यूनतम ₹1,000 + जीएसटी; स्टाफ़/पेंशनभोगियों के लिए माफ़। ब्याज दर 11.10% (825+) से 15.40% (<650) तक; 10% मार्जिन (सरकारी सैलरी अकाउंट वालों के लिए शून्य)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "EBLR + 4.75 (<3 yrs) / +5.25 (>3 yrs); PF 1.25% min Rs 750; CM: up to Rs 3.5L or 10x income, 36 months",
+  "hi": "ईबीएलआर + 4.75 (<3 साल) / +5.25 (>3 साल); प्रोसेसिंग फीस 1.25%, न्यूनतम ₹750; CM: ₹3.5 लाख तक या आय का 10 गुना, 36 महीने"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "3% of loan amount + GST; 50% waiver for salary package customers; EV gets 0.50% rate concession; rate range per BankBazaar",
+  "hi": "लोन राशि का 3% + जीएसटी; सैलरी पैकेज ग्राहकों के लिए 50% छूट; ईवी पर ब्याज दर में 0.50% रियायत; दर रेंज BankBazaar के अनुसार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "1% of loan amt, min Rs500. Max Rs60,000 standard (Rs1 lakh premium bikes); ROI 9.00-10.25% by CIBIL; salaried 21-55 yrs, non-salaried 21-60",
+  "hi": "लोन राशि का 1%, न्यूनतम ₹500। अधिकतम ₹60,000 सामान्य (प्रीमियम बाइक के लिए ₹1 लाख); CIBIL के अनुसार ब्याज दर 9.00-10.25%; वेतनभोगी 21-55 साल, गैर-वेतनभोगी 21-60"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Interest rate up to 24.25% p.a. depending on profile; salaried max age 60 and non-salaried 70 at application; PF up to 5% incl. taxes",
+  "hi": "प्रोफ़ाइल के अनुसार ब्याज दर 24.25% प्रति वर्ष तक; आवेदन के समय अधिकतम उम्र वेतनभोगी 60 और गैर-वेतनभोगी 70; प्रोसेसिंग फीस 5% तक, टैक्स सहित"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PF up to 3% of loan amount or Rs 7,500 whichever lower + taxes (superbikes cap Rs 12,000); up to 100% of on-road price",
+  "hi": "प्रोसेसिंग फीस लोन राशि का 3% तक या ₹7,500, जो भी कम हो + टैक्स (सुपरबाइक पर सीमा ₹12,000); ऑन-रोड कीमत का 100% तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 32% p.a.; PF 6% of loan + documentation Rs 4,000 + GST; up to 95-100% of on-road price; premium bikes Rs 1.5-15 lakh up to 85% LTV; from 10% p.a. (BankBazaar)",
+  "hi": "32% प्रति वर्ष तक; प्रोसेसिंग फीस लोन का 6% + डॉक्यूमेंटेशन ₹4,000 + जीएसटी; ऑन-रोड कीमत का 95-100% तक; प्रीमियम बाइक ₹1.5-15 लाख, 85% एलटीवी तक; 10% प्रति वर्ष से (BankBazaar)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 4% + applicable taxes; documentation up to Rs 1,999; 12.5% p.a. is a flat-rate figure and varies by product/profile",
+  "hi": "4% तक + लागू टैक्स; डॉक्यूमेंटेशन ₹1,999 तक; 12.5% प्रति वर्ष फ्लैट रेट का आंकड़ा है और प्रोडक्ट/प्रोफ़ाइल के अनुसार बदलता है"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 100% of bike value; rates/fees not published on product page; IRP Dec-2025: 2W 15%-28%, admin/PF 0.75%-5% + GST, sourcing fee Rs 500-2,500",
+  "hi": "बाइक की कीमत का 100% तक; प्रोडक्ट पेज पर दरें/फीस प्रकाशित नहीं; आईआरपी दिसंबर-2025: 2-व्हीलर 15%-28%, एडमिन/प्रोसेसिंग फीस 0.75%-5% + जीएसटी, सोर्सिंग फीस ₹500-2,500"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 95% of on-road price; max Rs 5 lakh; PF up to 5.90% inclusive of GST; application fee up to Rs 500; min take-home Rs 10,000 (salaried) / ITR Rs 1.2 lakh (self-employed); flat max = PF cap (Rs 500 was application fee)",
+  "hi": "ऑन-रोड कीमत का 95% तक; अधिकतम ₹5 लाख; प्रोसेसिंग फीस 5.90% तक, जीएसटी सहित; एप्लीकेशन फीस ₹500 तक; न्यूनतम टेक-होम सैलरी ₹10,000 (वेतनभोगी) / आईटीआर ₹1.2 लाख (स्व-रोज़गार); फ्लैट अधिकतम = प्रोसेसिंग फीस सीमा (₹500 एप्लीकेशन फीस थी)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Schedule of charges: PF Rs 0-8,500 (inclusive of GST); doc charges Rs 0-5,000; ROI up to 38-40% for EV/used/Harley variants",
+  "hi": "शुल्क सूची: प्रोसेसिंग फीस ₹0-8,500 (जीएसटी सहित); डॉक्यूमेंट चार्ज ₹0-5,000; ईवी/यूज़्ड/Harley वेरिएंट पर ब्याज दर 38-40% तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 80% LTV on new two-wheelers; rate from 10% (aggregator); students 18+ with parent co-borrower; rate ceiling/PF not published - typical values",
+  "hi": "नए टू व्हीलर पर 80% तक एलटीवी; दर 10% से (एग्रीगेटर); 18+ छात्र, माता-पिता सह-उधारकर्ता के साथ; अधिकतम दर/प्रोसेसिंग फीस प्रकाशित नहीं - सामान्य आंकड़े"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Vehicle loan vertical offers two-wheeler finance; rate card not published online; IRP 2W band 15%-32%; group 2W scheme: 12-60 months, PF 2% incl GST, age 21-65",
+  "hi": "व्हीकल लोन वर्टिकल टू व्हीलर फाइनेंस देता है; रेट कार्ड ऑनलाइन प्रकाशित नहीं; आईआरपी में 2-व्हीलर बैंड 15%-32%; ग्रुप 2-व्हीलर स्कीम: 12-60 महीने, प्रोसेसिंग फीस 2%, जीएसटी सहित, उम्र 21-65"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Muthoot Finance vehicle loan (two-wheeler, up to 100% funding); rate card not published online - branch quote; 11% onwards, 1 yr job vintage (CreditMantri); age 18-70, Rs 96,000 p.a. (official); 2-yr tenure",
+  "hi": "Muthoot Finance व्हीकल लोन (टू व्हीलर, 100% तक फंडिंग); रेट कार्ड ऑनलाइन प्रकाशित नहीं - ब्रांच से कोटेशन; 11% से, 1 साल की नौकरी (CreditMantri); उम्र 18-70, ₹96,000 प्रति वर्ष (आधिकारिक); 2 साल की अवधि"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 95% of on-road price; PF up to 5%; EV loans capped at 36 months; unorganised-sector applicants need co-applicant; Rs 10,000-2 lakh; IRP new 2W band 10%-30%; CIBIL 600+, income Rs 10,000 p.m., 1 yr job",
+  "hi": "ऑन-रोड कीमत का 95% तक; प्रोसेसिंग फीस 5% तक; ईवी लोन अधिकतम 36 महीने; असंगठित क्षेत्र के आवेदकों के लिए सह-आवेदक ज़रूरी; ₹10,000-2 लाख; आईआरपी में नए 2-व्हीलर का बैंड 10%-30%; CIBIL 600+, आय ₹10,000 प्रति माह, 1 साल की नौकरी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 95% funding of on-road price; official page lists processing/admin/documentation fees but no amounts; rate range per aggregator; SoC: PF max 8.85% new / 5.9% used incl GST; age 18-65; 1 yr vintage",
+  "hi": "ऑन-रोड कीमत की 95% तक फंडिंग; आधिकारिक पेज पर प्रोसेसिंग/एडमिन/डॉक्यूमेंटेशन फीस का ज़िक्र है लेकिन राशि नहीं; दर रेंज एग्रीगेटर के अनुसार; शुल्क सूची: प्रोसेसिंग फीस अधिकतम 8.85% नया / 5.9% यूज़्ड, जीएसटी सहित; उम्र 18-65; 1 साल विंटेज"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "1% of loan amount; fixed ROI by LTV (≤50%: 12.25% to 80–85%: 14.50%); margin 15% agri / 20% agri-commercial / 30% Tatkal; Tatkal tenure 60M, others 72M; min 2.5 acres (nil for Tatkal)",
+  "hi": "लोन राशि का 1%; एलटीवी के अनुसार फिक्स्ड ब्याज दर (≤50%: 12.25% से 80–85%: 14.50% तक); मार्जिन 15% कृषि / 20% कृषि-कमर्शियल / 30% Tatkal; Tatkal की अवधि 60 महीने, अन्य 72 महीने; न्यूनतम 2.5 एकड़ (Tatkal के लिए शून्य)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Farm mechanisation term loan for tractors/implements; ROI as per BOI agri card rates (not published on accessible page)",
+  "hi": "ट्रैक्टर/कृषि उपकरणों के लिए कृषि यंत्रीकरण टर्म लोन; ब्याज दर BOI कृषि कार्ड रेट के अनुसार (उपलब्ध पेज पर प्रकाशित नहीं)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Farm mechanisation: ROI 1-yr MCLR (9.00%, 25.07.2026) + BSS 0.50% + 1.00% = 10.50% (new tractor to Rs10L), +2.00% above Rs10L, +3.00% second-hand = 12.50%; agri TL PF nil to Rs5L, 1% above; margin nil to Rs2L, 15-40% above; 5-9 yrs",
+  "hi": "कृषि यंत्रीकरण: ब्याज दर 1 साल का एमसीएलआर (9.00%, 25.07.2026) + बीएसएस 0.50% + 1.00% = 10.50% (₹10 लाख तक नया ट्रैक्टर), ₹10 लाख से ऊपर +2.00%, सेकंड-हैंड पर +3.00% = 12.50%; कृषि टर्म लोन पर प्रोसेसिंग फीस ₹5 लाख तक शून्य, इससे ऊपर 1%; मार्जिन ₹2 लाख तक शून्य, इससे ऊपर 15-40%; 5-9 साल"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Small tractors (≤30 HP) RLLR (8.00%) + 0.25% to + 0.75% by risk grade (agri card w.e.f. 01-Apr-2025); margin nil ≤₹2L, 15–25% above; min 6 acres irrigated (≤35 HP) / 8 acres (>35 HP); repayment 5–9 yrs",
+  "hi": "छोटे ट्रैक्टर (≤30 एचपी) आरएलएलआर (8.00%) + 0.25% से + 0.75% तक, रिस्क ग्रेड के अनुसार (कृषि कार्ड 01-अप्रैल-2025 से प्रभावी); मार्जिन ≤₹2 लाख पर शून्य, इससे ऊपर 15–25%; न्यूनतम 6 एकड़ सिंचित ज़मीन (≤35 एचपी) / 8 एकड़ (>35 एचपी); भुगतान 5–9 साल"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Cent Farm Machinery Scheme: margin nil up to Rs1 lakh, 20% above; repayment 5-9 yrs incl. up to 12 months moratorium; ROI as applicable to agri farm credit (not itemised)",
+  "hi": "Cent Farm Machinery Scheme: ₹1 लाख तक मार्जिन शून्य, इससे ऊपर 20%; भुगतान 5-9 साल, 12 महीने तक के मोरेटोरियम सहित; ब्याज दर कृषि फ़ार्म क्रेडिट पर लागू दर के अनुसार (अलग से नहीं दी गई)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Tractor/farm machinery term loan: margin nil up to Rs2 lakh, 10% above (5% with full collateral); repayment 9 yrs (18 half-yearly instalments) for tractors, 7 yrs power tillers; ROI per agri rate card",
+  "hi": "ट्रैक्टर/कृषि मशीनरी टर्म लोन: ₹2 लाख तक मार्जिन शून्य, इससे ऊपर 10% (पूरी गिरवी के साथ 5%); ट्रैक्टर के लिए भुगतान 9 साल (18 छमाही किस्तें), पावर टिलर के लिए 7 साल; ब्याज दर कृषि रेट कार्ड के अनुसार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Farm Mechanisation Scheme: need-based loan net of margin; repayment 7–9 yrs half-yearly/yearly; min 2.5 acres perennially irrigated land; second-hand tractor max ₹2L; ROI per agri advances card (MCLR-linked)",
+  "hi": "Farm Mechanisation Scheme: मार्जिन घटाकर ज़रूरत के आधार पर लोन; भुगतान 7–9 साल, छमाही/सालाना; न्यूनतम 2.5 एकड़ बारहमासी सिंचित ज़मीन; सेकंड-हैंड ट्रैक्टर पर अधिकतम ₹2 लाख; ब्याज दर कृषि एडवांस कार्ड के अनुसार (एमसीएलआर-लिंक्ड)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "1.50% of loan amount; ROI 1-yr MCLR (8.70% w.e.f. 15-Sep-2026) + 3.60% (collateral >100%) to + 4.35% (no collateral); margin 25%; min 2 acres land; CIBIL >650 or no history",
+  "hi": "लोन राशि का 1.50%; ब्याज दर 1 साल का एमसीएलआर (8.70%, 15-सितंबर-2026 से प्रभावी) + 3.60% (गिरवी >100%) से + 4.35% (बिना गिरवी) तक; मार्जिन 25%; न्यूनतम 2 एकड़ ज़मीन; CIBIL >650 या कोई क्रेडिट हिस्ट्री नहीं"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Tractor: 85% of investment financed (15% margin); repayment 9 yrs tractors / 7 yrs power tillers; min 8 acres irrigated land; ROI as per extant bank guidelines (not published)",
+  "hi": "ट्रैक्टर: निवेश का 85% फाइनेंस (15% मार्जिन); भुगतान ट्रैक्टर के लिए 9 साल / पावर टिलर के लिए 7 साल; न्यूनतम 8 एकड़ सिंचित ज़मीन; ब्याज दर बैंक के मौजूदा दिशानिर्देशों के अनुसार (प्रकाशित नहीं)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Farm mechanisation (tractor/power tiller/harvester): 1-yr MCLR+1.20% (up to Rs2 lakh) / MCLR+3.70% (above Rs2 lakh); 1-yr MCLR 8.80% w.e.f. 21.08.2026. Margin nil up to Rs1.6 lakh, 15% above",
+  "hi": "कृषि यंत्रीकरण (ट्रैक्टर/पावर टिलर/हार्वेस्टर): 1 साल का एमसीएलआर+1.20% (₹2 लाख तक) / एमसीएलआर+3.70% (₹2 लाख से ऊपर); 1 साल का एमसीएलआर 8.80% (21.08.2026 से प्रभावी)। ₹1.6 लाख तक मार्जिन शून्य, इससे ऊपर 15%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Tractor & loan-against-tractor under Agri/vehicle finance; Agri Banking SOC: ROI up to 18%, PF up to 3%; quarterly/half-yearly instalments possible",
+  "hi": "एग्री/व्हीकल फाइनेंस के तहत ट्रैक्टर लोन और ट्रैक्टर पर लोन; एग्री बैंकिंग शुल्क सूची: ब्याज दर 18% तक, प्रोसेसिंग फीस 3% तक; तिमाही/छमाही किस्तें संभव"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "New tractor PF up to 2% + GST (used tractor up to 2.5%); valuation ₹200-650 + GST; repayment monthly/quarterly/half-yearly up to 5 years; Tractorgyan: 17.50%-20%, age 18-75, 3 acres land",
+  "hi": "नए ट्रैक्टर पर प्रोसेसिंग फीस 2% तक + जीएसटी (यूज़्ड ट्रैक्टर पर 2.5% तक); वैल्यूएशन ₹200-650 + जीएसटी; भुगतान मासिक/तिमाही/छमाही, 5 साल तक; Tractorgyan: 17.50%-20%, उम्र 18-75, 3 एकड़ ज़मीन"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PF 2% of loan + documentation charges + GST; monthly/quarterly/half-yearly instalments; permanent house required; amounts/tenure per bank calculator; Tractorgyan: 13%-21.25% p.a.",
+  "hi": "प्रोसेसिंग फीस लोन का 2% + डॉक्यूमेंटेशन चार्ज + जीएसटी; मासिक/तिमाही/छमाही किस्तें; स्थायी मकान ज़रूरी; राशि/अवधि बैंक कैलकुलेटर के अनुसार; Tractorgyan: 13%-21.25% प्रति वर्ष"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Tractor & farm equipment finance offered; rates and fees on application; Tractorgyan: investment TL 10.10%-15.25%, PF 1% + tax, age 18-70, 2 acres land",
+  "hi": "ट्रैक्टर और कृषि उपकरण फाइनेंस उपलब्ध; दरें और फीस आवेदन पर; Tractorgyan: निवेश टर्म लोन 10.10%-15.25%, प्रोसेसिंग फीस 1% + टैक्स, उम्र 18-70, 2 एकड़ ज़मीन"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "New tractor: 1% of sanctioned amount; used tractor (Rs 1-5.5 lakh, 1-5 yrs, tractor age up to 15 yrs): 2%; New tractor 12%-16%, used 16%-20%; age 18-65 at maturity",
+  "hi": "नया ट्रैक्टर: मंज़ूर राशि का 1%; यूज़्ड ट्रैक्टर (₹1-5.5 लाख, 1-5 साल, ट्रैक्टर 15 साल तक पुराना): 2%; नया ट्रैक्टर 12%-16%, यूज़्ड 16%-20%; मैच्योरिटी पर उम्र 18-65"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 2% of loan + GST; NIL for MSE up to ₹5 lakh with URC; up to 90% of tractor cost, 70% on implements; EMI monthly/quarterly/half-yearly; Tractorgyan: 9.95%-23.80%, age 18-60, farmer income Rs 1 lakh pa",
+  "hi": "लोन का 2% तक + जीएसटी; यूआरसी वाले एमएसई के लिए ₹5 लाख तक शून्य; ट्रैक्टर की लागत का 90% तक, कृषि उपकरणों पर 70%; ईएमआई मासिक/तिमाही/छमाही; Tractorgyan: 9.95%-23.80%, उम्र 18-60, किसान की आय ₹1 लाख प्रति वर्ष"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Tractor finance offered (rural lending); rates/fees not published on product page; sourced via Bajaj Finserv tractor finance DSA program; New tractor loan Rs 1-35 lakh, 12-85 months, up to 20.25% p.a., PF up to 3% incl. taxes, age 18-80",
+  "hi": "ट्रैक्टर फाइनेंस उपलब्ध (ग्रामीण लेंडिंग); प्रोडक्ट पेज पर दरें/फीस प्रकाशित नहीं; Bajaj Finserv ट्रैक्टर फाइनेंस डीएसए प्रोग्राम के ज़रिए सोर्स; नया ट्रैक्टर लोन ₹1-35 लाख, 12-85 महीने, 20.25% प्रति वर्ष तक, प्रोसेसिंग फीस 3% तक, टैक्स सहित, उम्र 18-80"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PF up to 4% of sanctioned amount + GST; funding up to 90% of tractor price; repayment aligned to harvest cycles; EMI calculator range Rs 1 lakh-25 lakh (official)",
+  "hi": "प्रोसेसिंग फीस मंज़ूर राशि का 4% तक + जीएसटी; ट्रैक्टर की कीमत की 90% तक फंडिंग; भुगतान फ़सल चक्र के अनुसार; ईएमआई कैलकुलेटर रेंज ₹1 लाख-25 लाख (आधिकारिक)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Tractor loans offered with flexible tenure; rates/fees not published on product page; IRP Dec-2025: new tractor 12%-28%, admin/PF 0.25%-2% + GST, sourcing fee Rs 1,000-2,500",
+  "hi": "लचीली अवधि के साथ ट्रैक्टर लोन उपलब्ध; प्रोडक्ट पेज पर दरें/फीस प्रकाशित नहीं; आईआरपी दिसंबर-2025: नया ट्रैक्टर 12%-28%, एडमिन/प्रोसेसिंग फीस 0.25%-2% + जीएसटी, सोर्सिंग फीस ₹1,000-2,500"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "New tractor & implement: PF up to 1% of loan amount or Rs 30,000 whichever lower + taxes; fixed rate 10%-19% p.a.; sanction based on land holding; min loan Rs 1 lakh; no specific credit score",
+  "hi": "नया ट्रैक्टर और कृषि उपकरण: प्रोसेसिंग फीस लोन राशि का 1% तक या ₹30,000, जो भी कम हो + टैक्स; फिक्स्ड रेट 10%-19% प्रति वर्ष; मंज़ूरी ज़मीन के आधार पर; न्यूनतम लोन ₹1 लाख; कोई तय क्रेडिट स्कोर नहीं"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PF up to 2.36% inclusive of GST; documentation 3.54% or Rs 2,500 whichever higher; monthly/quarterly/half-yearly EMIs; max Rs 10 lakh new / Rs 7 lakh used tractor",
+  "hi": "प्रोसेसिंग फीस 2.36% तक, जीएसटी सहित; डॉक्यूमेंटेशन 3.54% या ₹2,500, जो भी ज़्यादा हो; मासिक/तिमाही/छमाही ईएमआई; अधिकतम ₹10 लाख नया / ₹7 लाख यूज़्ड ट्रैक्टर"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 90% funding; PF up to 5.9% inclusive of GST; foreclosure 5%-6%; age 18-60 agri / 21-55 commercial; no-income-document scheme; loan Rs 30,000-5 lakh (official page)",
+  "hi": "90% तक फंडिंग; प्रोसेसिंग फीस 5.9% तक, जीएसटी सहित; फोरक्लोज़र 5%-6%; उम्र 18-60 कृषि / 21-55 कमर्शियल; बिना आय दस्तावेज़ वाली स्कीम; लोन ₹30,000-5 लाख (आधिकारिक पेज)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Gold loan schemes offered (official site blocked automated access; pricing not captured); PB: 9.25-14.80%; Rs 5k-10Cr; up to 3 yrs; PF 0.25%; SIB Loan Referral Partner programme",
+  "hi": "गोल्ड लोन स्कीमें उपलब्ध (आधिकारिक साइट ने ऑटोमेटेड एक्सेस ब्लॉक किया; दरें दर्ज नहीं हो सकीं); PB: 9.25-14.80%; ₹5 हज़ार-10 करोड़; 3 साल तक; प्रोसेसिंग फीस 0.25%; SIB Loan Referral Partner प्रोग्राम"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 2% + taxes plus valuation charges; Q4 FY26 range 8.55%-16.50% (minimum rate 8.75% p.a. quoted in FAQ); loans up to ₹3 crore",
+  "hi": "2% तक + टैक्स, साथ में वैल्यूएशन चार्ज; Q4 FY26 रेंज 8.55%-16.50% (सवाल-जवाब में न्यूनतम दर 8.75% प्रति वर्ष बताई गई); ₹3 करोड़ तक के लोन"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Jewel loan term loans of 3/6/12 months; PF Rs 200 (<= Rs 50k) sliding to Rs 2,000 (> Rs 3 lakh)",
+  "hi": "3/6/12 महीने के ज्वेल लोन टर्म लोन; प्रोसेसिंग फीस ₹200 (<= ₹50 हज़ार) से बढ़कर ₹2,000 (> ₹3 लाख) तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Gold loan schemes offered; official page blocked at time of research, pricing not captured; PB: floating 8.89-9.59%, fixed 9.79-21.5%; PF 0.25%-1% (min Rs 350-500); Rs 1k-1.5Cr; 1-3 yrs",
+  "hi": "गोल्ड लोन स्कीमें उपलब्ध; रिसर्च के समय आधिकारिक पेज ब्लॉक था, दरें दर्ज नहीं हो सकीं; PB: फ्लोटिंग 8.89-9.59%, फिक्स्ड 9.79-21.5%; प्रोसेसिंग फीस 0.25%-1% (न्यूनतम ₹350-500); ₹1 हज़ार-1.5 करोड़; 1-3 साल"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PF 2% of loan + GST; credit appraisal ₹500-₹2,000 + GST; Smart Choice scheme 0.88% p.m. fixed for >₹8 lakh & >12 months; co-borrower if age <27 or >70",
+  "hi": "प्रोसेसिंग फीस लोन का 2% + जीएसटी; क्रेडिट अप्रेज़ल ₹500-₹2,000 + जीएसटी; Smart Choice स्कीम >₹8 लाख और >12 महीने के लिए 0.88% प्रति माह फिक्स्ड; उम्र <27 या >70 होने पर सह-उधारकर्ता ज़रूरी"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PF nil up to Rs 25,000; Rs 100 up to Rs 1 lakh; Rs 300 above Rs 1 lakh; LTV up to 84%; foreclosure 1.5% within 90 days; tenure 6-36 months; age 18-75",
+  "hi": "₹25,000 तक प्रोसेसिंग फीस शून्य; ₹1 लाख तक ₹100; ₹1 लाख से ऊपर ₹300; एलटीवी 84% तक; 90 दिन के अंदर फोरक्लोज़र 1.5%; अवधि 6-36 महीने; उम्र 18-75"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Maha Gold Loan: nil up to Rs3 lakh; Rs500 (3-5 lakh); Rs1,000 (5-10 lakh); Rs1,500 (10-20 lakh); Rs2,000 above Rs20 lakh; no documentation/inspection charges. ROI 8.50% (slab up to Rs10 lakh) to 9.25% (up to Rs2.5 lakh); bullet 12 months, EMI 24 months",
+  "hi": "Maha Gold Loan: ₹3 लाख तक शून्य; ₹500 (3-5 लाख); ₹1,000 (5-10 लाख); ₹1,500 (10-20 लाख); ₹20 लाख से ऊपर ₹2,000; कोई डॉक्यूमेंटेशन/निरीक्षण चार्ज नहीं। ब्याज दर 8.50% (₹10 लाख तक का स्लैब) से 9.25% (₹2.5 लाख तक); बुलेट 12 महीने, ईएमआई 24 महीने"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PF max 0.25% + appraiser fee max 0.25% (nil for priority-sector loans up to Rs 50,000); bullet repayment up to 12 months; Gold Plus OD available; LTV per RBI",
+  "hi": "प्रोसेसिंग फीस अधिकतम 0.25% + अप्रेज़र फीस अधिकतम 0.25% (₹50,000 तक के प्रायोरिटी-सेक्टर लोन पर शून्य); 12 महीने तक बुलेट भुगतान; Gold Plus ओडी उपलब्ध; एलटीवी RBI के अनुसार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PF up to 1% of loan; valuation ₹500 (up to ₹2 lakh) / ₹750; discount for women & agriculturists; no income proof up to ₹20 lakh; BankBazaar: 10.38%-15.50%, 3-24 months, age 18-70",
+  "hi": "प्रोसेसिंग फीस लोन का 1% तक; वैल्यूएशन ₹500 (₹2 लाख तक) / ₹750; महिलाओं और किसानों को छूट; ₹20 लाख तक आय प्रमाण की ज़रूरत नहीं; BankBazaar: 10.38%-15.50%, 3-24 महीने, उम्र 18-70"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Loan against gold ornaments offered; pricing not published on product page; Rs 25,001-1 Cr; 3-12 months; LTV 75%; age 18-65 salaried/70 SE; MMM: 10.65-15.5%, PF Rs 100 + tax",
+  "hi": "सोने के गहनों पर लोन उपलब्ध; प्रोडक्ट पेज पर दरें प्रकाशित नहीं; ₹25,001-1 करोड़; 3-12 महीने; एलटीवी 75%; उम्र 18-65 वेतनभोगी/70 स्व-रोज़गार; MMM: 10.65-15.5%, प्रोसेसिंग फीस ₹100 + टैक्स"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.50% (min ₹500) for ₹50k–2L; 0.30% (min ₹1,000) for ₹2–25L; 0.25% above ₹25L; all + GST. 12M bullet 9.15%, EMI/OD 10.10% (w.e.f. 16-Jun-2026)",
+  "hi": "₹50 हज़ार–2 लाख पर 0.50% (न्यूनतम ₹500); ₹2–25 लाख पर 0.30% (न्यूनतम ₹1,000); ₹25 लाख से ऊपर 0.25%; सभी पर + जीएसटी। 12 महीने बुलेट 9.15%, ईएमआई/ओडी 10.10% (16-जून-2026 से प्रभावी)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 1% of disbursement; foreclosure 3% on outstanding principal; OD variant with 0.25% commitment fee on unutilised limit; from 9.45% w.e.f. 01-Jun-2026; 6-36 months; up to Rs 80L (EMI) / 25L (bullet)",
+  "hi": "वितरण राशि का 1% तक; बकाया मूलधन पर फोरक्लोज़र 3%; ओडी वेरिएंट में बिना इस्तेमाल की गई लिमिट पर 0.25% कमिटमेंट फीस; 01-जून-2026 से 9.45% से शुरू; 6-36 महीने; ₹80 लाख (ईएमआई) / 25 लाख (बुलेट) तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.82%-1.67% p.m. (annualised); PF up to 1%; bullet scheme max Rs 20 lakh, EMI scheme min Rs 2 lakh",
+  "hi": "0.82%-1.67% प्रति माह (सालाना आधार पर); प्रोसेसिंग फीस 1% तक; बुलेट स्कीम अधिकतम ₹20 लाख, ईएमआई स्कीम न्यूनतम ₹2 लाख"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Cent Gold Loan: nil up to Rs5 lakh; 0.30% + GST max Rs5,000 above Rs5 lakh (valid to 31.03.2027). ROI RBLR+0.25% = 8.50%; LTV 68-78%; no min CIC score",
+  "hi": "Cent Gold Loan: ₹5 लाख तक शून्य; ₹5 लाख से ऊपर 0.30% + जीएसटी, अधिकतम ₹5,000 (31.03.2027 तक मान्य)। ब्याज दर आरबीएलआर+0.25% = 8.50%; एलटीवी 68-78%; कोई न्यूनतम सीआईसी स्कोर नहीं"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Nil processing fee up to ₹3L (BankBazaar); ROI BRLLR (7.90%) + 0.75% demand/EMI, + 0.85% OD, or fixed 9.00% p.a.",
+  "hi": "₹3 लाख तक प्रोसेसिंग फीस शून्य (BankBazaar); ब्याज दर बीआरएलएलआर (7.90%) + 0.75% डिमांड/ईएमआई, + 0.85% ओडी, या फिक्स्ड 9.00% प्रति वर्ष"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.30% (min ₹250, max ₹3,000) + GST for Swarna Loan/OD/Monthly Interest; Swarna Express 0.15% (min ₹125, max ₹1,500); ROI RLLR (8.00%) + 0.95%; 12-month bullet repayment",
+  "hi": "Swarna Loan/OD/Monthly Interest के लिए 0.30% (न्यूनतम ₹250, अधिकतम ₹3,000) + जीएसटी; Swarna Express 0.15% (न्यूनतम ₹125, अधिकतम ₹1,500); ब्याज दर आरएलएलआर (8.00%) + 0.95%; 12 महीने का बुलेट भुगतान"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Max 1% of disbursal + taxes; valuation ₹350-₹1,500 per packet; Bank IRR Jan-Mar 2026 9.00%-19.00% (advertised from 11.91%); MSE loans up to ₹5 lakh PF exempt with URC",
+  "hi": "वितरण राशि का अधिकतम 1% + टैक्स; वैल्यूएशन प्रति पैकेट ₹350-₹1,500; बैंक आईआरआर जनवरी-मार्च 2026 9.00%-19.00% (विज्ञापित दर 11.91% से); यूआरसी वाले एमएसई लोन पर ₹5 लाख तक प्रोसेसिंग फीस से छूट"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Jewel loan: 0.20% max Rs150 + GST up to Rs3 lakh, max Rs500 + GST above; nil for agri. ROI JL Others/Gold Loan Card/Suvidha RLLR+0.80% = 8.90%, Swarna Lakshmi (women, max Rs5 lakh) RLLR+0.70% = 8.80%; EMI-based JL fixed 11%; LTV up to 75%",
+  "hi": "ज्वेल लोन: ₹3 लाख तक 0.20%, अधिकतम ₹150 + जीएसटी, इससे ऊपर अधिकतम ₹500 + जीएसटी; कृषि के लिए शून्य। ब्याज दर JL Others/Gold Loan Card/Suvidha आरएलएलआर+0.80% = 8.90%, Swarna Lakshmi (महिलाएं, अधिकतम ₹5 लाख) आरएलएलआर+0.70% = 8.80%; ईएमआई-आधारित ज्वेल लोन फिक्स्ड 11%; एलटीवी 75% तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PSB Gold Loan (demand/OD/term): ROI consumption 9.30% (up to Rs5 lakh) / 9.20% (Rs5-50 lakh); MSME income-generating 8.95-9.05%; silver 11.50-11.90%; max Rs50 lakh per borrower incl. top-up; processing per service-charge schedule",
+  "hi": "PSB Gold Loan (डिमांड/ओडी/टर्म): ब्याज दर उपभोग के लिए 9.30% (₹5 लाख तक) / 9.20% (₹5-50 लाख); एमएसएमई आय-उत्पादक 8.95-9.05%; चांदी 11.50-11.90%; टॉप-अप सहित प्रति उधारकर्ता अधिकतम ₹50 लाख; प्रोसेसिंग सर्विस-चार्ज सूची के अनुसार"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Non-agri gold loan: 0.50% of limit, max Rs1,000 + GST. Union Swarna Shakti (retail) EBLR+1.30% to +1.65% (EBLR 8.00%); MSME Gold Loan Plus 8.60-8.95%; agri gold at 1-yr MCLR based rates, max Rs25 lakh",
+  "hi": "गैर-कृषि गोल्ड लोन: लिमिट का 0.50%, अधिकतम ₹1,000 + जीएसटी। Union Swarna Shakti (रिटेल) ईबीएलआर+1.30% से +1.65% तक (ईबीएलआर 8.00%); MSME Gold Loan Plus 8.60-8.95%; कृषि गोल्ड लोन 1 साल के एमसीएलआर पर आधारित दरों पर, अधिकतम ₹25 लाख"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Gold loan / gold loan OD offered; schedule of charges published as PDF; pricing not captured; SOC Jan 2026: PF up to 1% + GST, valuation Rs 750, gold deposit Rs 500, foreclosure 1%; CreditMantri: 9%-15%, Rs 25,000-50 lakh, 3-36 months, age 18-65",
+  "hi": "गोल्ड लोन / गोल्ड लोन ओडी उपलब्ध; शुल्क सूची PDF के रूप में प्रकाशित; दरें दर्ज नहीं हो सकीं; शुल्क सूची जनवरी 2026: प्रोसेसिंग फीस 1% तक + जीएसटी, वैल्यूएशन ₹750, गोल्ड डिपॉज़िट ₹500, फोरक्लोज़र 1%; CreditMantri: 9%-15%, ₹25,000-50 लाख, 3-36 महीने, उम्र 18-65"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 1.5% of sanctioned amount + taxes; foreclosure 2% within 6 months (nil after); no foreclosure for MSME",
+  "hi": "मंज़ूर राशि का 1.5% तक + टैक्स; 6 महीने के अंदर फोरक्लोज़र 2% (उसके बाद शून्य); एमएसएमई के लिए कोई फोरक्लोज़र चार्ज नहीं"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "IB Jewel Loan (non-priority): processing fee NIL; appraiser charges extra. ROI 8.50-8.80% (rate card 10.09.2026); bullet repayment up to 12 months (max Rs35 lakh), EMI up to 35 months; LTV up to 70%",
+  "hi": "IB Jewel Loan (नॉन-प्रायोरिटी): प्रोसेसिंग फीस शून्य; अप्रेज़र चार्ज अलग से। ब्याज दर 8.50-8.80% (रेट कार्ड 10.09.2026); बुलेट भुगतान 12 महीने तक (अधिकतम ₹35 लाख), ईएमआई 35 महीने तक; एलटीवी 70% तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Retail: nil up to Rs25,000, slab Rs250-800 up to Rs5 lakh, 0.25% max Rs4,000 above. ROI retail UCO Float-0.05% (40% margin) to +0.15% (30% margin), UCO Float 8.05%; MSME Float-0.25%; aggregators quote 8.90-9.40%. Max Rs35 lakh/scheme, Rs1 cr overall",
+  "hi": "रिटेल: ₹25,000 तक शून्य, ₹5 लाख तक स्लैब ₹250-800, इससे ऊपर 0.25%, अधिकतम ₹4,000। ब्याज दर रिटेल UCO Float-0.05% (40% मार्जिन) से +0.15% (30% मार्जिन) तक, UCO Float 8.05%; एमएसएमई Float-0.25%; एग्रीगेटर के अनुसार 8.90-9.40%। अधिकतम ₹35 लाख/स्कीम, कुल ₹1 करोड़"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Star Gold Loan: processing fee up to Rs1,500; appraiser charges borne by borrower. ROI MSME/OPS 8.35%, food & agro/consumption 8.60%, agriculture 9.05%; LTV up to 85%",
+  "hi": "Star Gold Loan: प्रोसेसिंग फीस ₹1,500 तक; अप्रेज़र चार्ज उधारकर्ता देगा। ब्याज दर एमएसएमई/OPS 8.35%, फ़ूड और एग्रो/उपभोग 8.60%, कृषि 9.05%; एलटीवी 85% तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Against gold jewellery and DCB-minted coins; up to Rs 30 lakh, tenure up to 5 years; PF up to 2% + taxes; 9.55-18%",
+  "hi": "सोने के गहनों और DCB द्वारा ढाले गए सिक्कों पर; ₹30 लाख तक, अवधि 5 साल तक; प्रोसेसिंग फीस 2% तक + टैक्स; 9.55-18%"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.30% + GST or ₹500 + GST whichever higher; appraiser ₹5/1000 (min ₹500, max ₹1,200); ROI RLLR (8.10%) + 0.85% up to ₹10L, + 0.90% above; 12M bullet or 36M EMI",
+  "hi": "0.30% + जीएसटी या ₹500 + जीएसटी, जो भी ज़्यादा हो; अप्रेज़र ₹5/1000 (न्यूनतम ₹500, अधिकतम ₹1,200); ब्याज दर आरएलएलआर (8.10%) + 0.85% ₹10 लाख तक, इससे ऊपर + 0.90%; 12 महीने बुलेट या 36 महीने ईएमआई"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Rs 5,000 to Rs 5 Cr; PF up to 2%; credit appraisal fee Rs 25 for loans below Rs 2.5 lakh; bullet or interest-only repayment",
+  "hi": "₹5,000 से ₹5 करोड़; प्रोसेसिंग फीस 2% तक; ₹2.5 लाख से कम के लोन पर क्रेडिट अप्रेज़ल फीस ₹25; बुलेट या केवल-ब्याज भुगतान"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Scheme-wise: base 22-24% p.a. with rebates for monthly interest payment giving effective 10.5%-14%; LTV 75-85%; nominal processing/valuation charges + GST; svc charge Rs 50/loan or 0.15% (Rs 100-1,000) South, MEI 0.60%; age 21+",
+  "hi": "स्कीम के अनुसार: बेस 22-24% प्रति वर्ष, मासिक ब्याज भुगतान पर छूट से प्रभावी दर 10.5%-14%; एलटीवी 75-85%; नाममात्र प्रोसेसिंग/वैल्यूएशन चार्ज + जीएसटी; सर्विस चार्ज ₹50/लोन या 0.15% (₹100-1,000) दक्षिण, MEI 0.60%; उम्र 21+"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PF 0.20% of loan amount (inclusive of taxes); tenure 1 day to 12 months; LTV up to 85% for loans up to Rs 2.5 lakh; interest payable monthly/bi-monthly/quarterly/half-yearly/annually",
+  "hi": "प्रोसेसिंग फीस लोन राशि का 0.20% (टैक्स सहित); अवधि 1 दिन से 12 महीने; ₹2.5 लाख तक के लोन पर एलटीवी 85% तक; ब्याज मासिक/द्विमासिक/तिमाही/छमाही/सालाना देय"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PF capped at 5%; LTV up to 85%; auction charges up to Rs 3,500; doc charges up to Rs 3,000; no foreclosure charges",
+  "hi": "प्रोसेसिंग फीस अधिकतम 5%; एलटीवी 85% तक; नीलामी चार्ज ₹3,500 तक; डॉक्यूमेंट चार्ज ₹3,000 तक; कोई फोरक्लोज़र चार्ज नहीं"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Schemes MT+5 / SA+1 / DS: 9.90%-24% base by repayment frequency (26.82% annualised); PF Rs 25 + tax; insurance Rs 25; loans above Rs 1.5 Cr need special approval (up to Rs 5 Cr); LTV up to 85%; normal tenure 3-12 months (Interest Rate Policy)",
+  "hi": "स्कीमें MT+5 / SA+1 / DS: भुगतान की आवृत्ति के अनुसार बेस 9.90%-24% (सालाना आधार पर 26.82%); प्रोसेसिंग फीस ₹25 + टैक्स; इंश्योरेंस ₹25; ₹1.5 करोड़ से ऊपर के लोन के लिए विशेष मंज़ूरी ज़रूरी (₹5 करोड़ तक); एलटीवी 85% तक; सामान्य अवधि 3-12 महीने (ब्याज दर नीति)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Loans from Rs 5,000; maximum based on up to 1 kg gold; no CIBIL or income proof required; rates vary by scheme; IRP Dec-2025: 10.9%-24% p.a. by tenor; admin fee up to 0.3% + GST, sourcing Rs 100; tenures 3/6/12 months",
+  "hi": "₹5,000 से लोन; अधिकतम राशि 1 किलो तक सोने के आधार पर; CIBIL या आय प्रमाण की ज़रूरत नहीं; दरें स्कीम के अनुसार अलग; आईआरपी दिसंबर-2025: अवधि के अनुसार 10.9%-24% प्रति वर्ष; एडमिन फीस 0.3% तक + जीएसटी, सोर्सिंग ₹100; अवधि 3/6/12 महीने"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Multiple schemes (Sahaj, Sampann, Shikhar etc.); PF up to 0.50% of loan amount as per scheme + taxes; standard tenure 12 months with rebates for early repayment; PF starts at zero per scheme",
+  "hi": "कई स्कीमें (Sahaj, Sampann, Shikhar आदि); स्कीम के अनुसार प्रोसेसिंग फीस लोन राशि का 0.50% तक + टैक्स; सामान्य अवधि 12 महीने, जल्दी भुगतान पर छूट; स्कीम के अनुसार प्रोसेसिंग फीस शून्य से शुरू"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PF as per scheme, capped at 2% of loan amount + taxes; LTV up to 85%; foreclosure within 30 days up to 1%; safe custody Rs 5/gram/month; no income proof or credit score required",
+  "hi": "प्रोसेसिंग फीस स्कीम के अनुसार, लोन राशि का अधिकतम 2% + टैक्स; एलटीवी 85% तक; 30 दिन के अंदर फोरक्लोज़र 1% तक; सेफ़ कस्टडी ₹5/ग्राम/माह; आय प्रमाण या क्रेडिट स्कोर की ज़रूरत नहीं"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Up to 75% of gold value or Rs 50 lakh whichever lower; PF up to 5.90% inclusive of GST; valuation charge up to Rs 1,180",
+  "hi": "सोने के मूल्य का 75% तक या ₹50 लाख, जो भी कम हो; प्रोसेसिंग फीस 5.90% तक, जीएसटी सहित; वैल्यूएशन चार्ज ₹1,180 तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Suvarna Raksha gold loan; PF minimum Rs 100 or up to 0.15% of loan amount + GST; no prepayment charges; EMI / interest-only / bullet plans",
+  "hi": "Suvarna Raksha गोल्ड लोन; प्रोसेसिंग फीस न्यूनतम ₹100 या लोन राशि का 0.15% तक + जीएसटी; कोई प्रीपेमेंट चार्ज नहीं; ईएमआई / केवल-ब्याज / बुलेट प्लान"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "0.81% p.m. onward (9.72%-27% p.a.); PF up to 2% exclusive of GST; MTM Rs 500; auction Rs 1,500; LTV up to 75%; max Rs 10 lakh (CreditMantri); PF Rs 0 onwards by scheme (BankBazaar)",
+  "hi": "0.81% प्रति माह से (9.72%-27% प्रति वर्ष); प्रोसेसिंग फीस 2% तक, जीएसटी अलग; एमटीएम ₹500; नीलामी ₹1,500; एलटीवी 75% तक; अधिकतम ₹10 लाख (CreditMantri); स्कीम के अनुसार प्रोसेसिंग फीस ₹0 से (BankBazaar)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Nil joining/annual fee on most cards (VISA Corporate ₹250 joining, ₹400 add-on annual), excl. GST; finance charge 2% p.m. secured, 2.5% p.m. others; min annual income ₹1L (Classic) to ₹10L (MasterCard World)",
+  "hi": "ज़्यादातर कार्ड पर जॉइनिंग/सालाना फीस शून्य (VISA Corporate जॉइनिंग ₹250, ऐड-ऑन सालाना ₹400), जीएसटी अलग; फाइनेंस चार्ज सिक्योर्ड पर 2% प्रति माह, अन्य पर 2.5% प्रति माह; न्यूनतम सालाना आय ₹1 लाख (Classic) से ₹10 लाख (MasterCard World) तक"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Joining ₹0–₹9,000 & annual ₹0–₹7,500 + GST by variant (Classic/Platinum nil; RuPay Select ₹750; Millennial ₹999; Luxura metal ₹9,000/₹7,500); finance charge 2.95% p.m. (1.5% p.m. FD-backed); min income ₹2.5L–₹7.5L p.a.",
+  "hi": "वेरिएंट के अनुसार जॉइनिंग ₹0–₹9,000 और सालाना ₹0–₹7,500 + जीएसटी (Classic/Platinum शून्य; RuPay Select ₹750; Millennial ₹999; Luxura मेटल ₹9,000/₹7,500); फाइनेंस चार्ज 2.95% प्रति माह (एफडी-आधारित पर 1.5% प्रति माह); न्यूनतम आय ₹2.5 लाख–₹7.5 लाख प्रति वर्ष"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Revolving credit 3.75% p.m. (45% p.a.); annual fee Rs 0 (LIT/ixigo/NOMO lifetime-free) to Rs 7,999 (Zenith), Zenith+ Rs 4,999, Vetta Rs 2,999, Altura Rs 199; spend-based waivers; EMI: Xpress EMI 1%, loan on card 2%; age 21-60",
+  "hi": "रिवॉल्विंग क्रेडिट 3.75% प्रति माह (45% प्रति वर्ष); सालाना फीस ₹0 (LIT/ixigo/NOMO लाइफटाइम फ्री) से ₹7,999 (Zenith) तक, Zenith+ ₹4,999, Vetta ₹2,999, Altura ₹199; खर्च के आधार पर छूट; ईएमआई: Xpress EMI 1%, कार्ड पर लोन 2%; उम्र 21-60"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Wide card range from lifetime-free (e.g. Freecharge, Ace variants) to premium; joining/annual fees vary per card + GST; see individual card fee pages; Paisabazaar: joining Rs 0 (Neo/Freecharge) to Rs 50,000 (top-tier) + taxes; finance charge up to 3.6%...",
+  "hi": "लाइफटाइम फ्री (जैसे Freecharge, Ace वेरिएंट) से प्रीमियम तक कार्ड की बड़ी रेंज; जॉइनिंग/सालाना फीस हर कार्ड के अनुसार अलग + जीएसटी; हर कार्ड का फीस पेज देखें; Paisabazaar: जॉइनिंग ₹0 (Neo/Freecharge) से ₹50,000 (टॉप-टियर) तक + टैक्स; फाइनेंस चार्ज 3.6% तक..."
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "BOBCARD: joining/annual fee nil to ₹2,499 + taxes by variant (Eterna ₹2,499, Premier ₹1,000, several lifetime-free); finance charge 3.25–3.75% p.m.; annual fee waivers on spend milestones",
+  "hi": "BOBCARD: वेरिएंट के अनुसार जॉइनिंग/सालाना फीस शून्य से ₹2,499 + टैक्स तक (Eterna ₹2,499, Premier ₹1,000, कई लाइफटाइम फ्री); फाइनेंस चार्ज 3.25–3.75% प्रति माह; खर्च के लक्ष्य पूरे होने पर सालाना फीस में छूट"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Annual fee: RuPay Platinum nil; Visa Gold/Navy/Platinum Privilege Rs600; TAJ Premium Rs800; Visa Gold International Rs1,500; India Card fee waived on Rs20,000 spend. Revolving interest 1.70% pm (2.5% pm if overdue); up to 51 days interest-free",
+  "hi": "सालाना फीस: RuPay Platinum शून्य; Visa Gold/Navy/Platinum Privilege ₹600; TAJ Premium ₹800; Visa Gold International ₹1,500; India Card पर ₹20,000 खर्च करने पर फीस माफ़। रिवॉल्विंग ब्याज 1.70% प्रति माह (बकाया होने पर 2.5% प्रति माह); 51 दिन तक ब्याज-मुक्त"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "BoM-SBI co-branded cards (SimplySAVE / PRIME / ELITE) issued by SBI Card; legacy BoM cards migrated; fees and finance charges as per SBI Card schedule (not on BoM page); BankBazaar: joining/annual Rs499 (SBI Card) / Rs2,999 (Platinum); finance 3.35% pm",
+  "hi": "SBI Card द्वारा जारी BoM-SBI को-ब्रांडेड कार्ड (SimplySAVE / PRIME / ELITE); पुराने BoM कार्ड माइग्रेट किए गए; फीस और फाइनेंस चार्ज SBI Card शुल्क सूची के अनुसार (BoM पेज पर नहीं); BankBazaar: जॉइनिंग/सालाना ₹499 (SBI Card) / ₹2,999 (Platinum); फाइनेंस चार्ज 3.35% प्रति माह"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Co-branded SBI cards: Simply SAVE Rs499 (reversed from 2nd year on spend), PRIME Rs2,999, ELITE Rs4,999 annual; finance charges as per SBI Card; finance charge up to 3.35% pm (40.2% pa) per SBI Card",
+  "hi": "को-ब्रांडेड SBI कार्ड: Simply SAVE ₹499 (दूसरे साल से खर्च के आधार पर वापस), PRIME ₹2,999, ELITE ₹4,999 सालाना; फाइनेंस चार्ज SBI Card के अनुसार; SBI Card के अनुसार फाइनेंस चार्ज 3.35% प्रति माह तक (40.2% प्रति वर्ष)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Joining/annual fee ₹500 (MoneyBack) to ₹12,500 (Infinia) + taxes, several LTF cards; finance charge 1.99%-3.75% p.m.",
+  "hi": "जॉइनिंग/सालाना फीस ₹500 (MoneyBack) से ₹12,500 (Infinia) तक + टैक्स, कई लाइफटाइम फ्री कार्ड; फाइनेंस चार्ज 1.99%-3.75% प्रति माह"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Platinum Chip / Amazon Pay lifetime free; Coral joining & annual ₹500 + GST (waived on ₹1.5 lakh spend); premium cards (Sapphiro, Rubyx, Emeralde) higher; finance charge up to 3.75% p.m.; Paisabazaar: joining up to Rs 20,000 (premium); finance charge 3...",
+  "hi": "Platinum Chip / Amazon Pay लाइफटाइम फ्री; Coral जॉइनिंग और सालाना ₹500 + जीएसटी (₹1.5 लाख खर्च पर माफ़); प्रीमियम कार्ड (Sapphiro, Rubyx, Emeralde) पर ज़्यादा; फाइनेंस चार्ज 3.75% प्रति माह तक; Paisabazaar: जॉइनिंग ₹20,000 तक (प्रीमियम); फाइनेंस चार्ज 3..."
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Dynamic APR from 0.75% p.m. (8.5%-9% p.a.) rising with risk profile; joining/annual fee Rs 0 (Classic/Millennia/Select/Wealth lifetime-free) to Rs 12,500 (top-tier metal card); Paisabazaar: 0.71%-3.99% p.m. (8.5%-47.88% p.a.); FIRST Private joining Rs...",
+  "hi": "डायनेमिक एपीआर 0.75% प्रति माह (8.5%-9% प्रति वर्ष) से, रिस्क प्रोफ़ाइल के साथ बढ़ता है; जॉइनिंग/सालाना फीस ₹0 (Classic/Millennia/Select/Wealth लाइफटाइम फ्री) से ₹12,500 (टॉप-टियर मेटल कार्ड) तक; Paisabazaar: 0.71%-3.99% प्रति माह (8.5%-47.88% प्रति वर्ष); FIRST Private जॉइनिंग ₹..."
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Finance charge 1.79%-3.95% p.m.; several LTF cards; premium cards joining up to ₹1,00,000 and annual up to ₹25,000 with spend-based waivers; Paisabazaar: age 18-75",
+  "hi": "फाइनेंस चार्ज 1.79%-3.95% प्रति माह; कई लाइफटाइम फ्री कार्ड; प्रीमियम कार्ड पर जॉइनिंग ₹1,00,000 तक और सालाना ₹25,000 तक, खर्च के आधार पर छूट; Paisabazaar: उम्र 18-75"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "KVB Platinum/Honour: 3.25% p.m. (39% p.a.); Corporate 2.95% p.m.; co-branded Karur Vysya SBI Gold card annual fee Rs 499; EMI/BT PF Rs 300 or 1%; SBI co-brand Gold 499/Platinum 2999/Signature 4999; income 4L+ p.a.",
+  "hi": "KVB Platinum/Honour: 3.25% प्रति माह (39% प्रति वर्ष); Corporate 2.95% प्रति माह; को-ब्रांडेड Karur Vysya SBI Gold कार्ड की सालाना फीस ₹499; ईएमआई/बैलेंस ट्रांसफ़र प्रोसेसिंग फीस ₹300 या 1%; SBI को-ब्रांड Gold 499/Platinum 2999/Signature 4999; आय 4 लाख+ प्रति वर्ष"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "League LTF; Cashback+ joining ₹0 / annual ₹750; Air+ ₹999; Zen ₹1,500; premium cards higher; business card 1.99% p.m.; Paisabazaar: APR up to 3.99% p.m.; annual fee up to Rs 25,000 + taxes",
+  "hi": "League लाइफटाइम फ्री; Cashback+ जॉइनिंग ₹0 / सालाना ₹750; Air+ ₹999; Zen ₹1,500; प्रीमियम कार्ड पर ज़्यादा; बिज़नेस कार्ड 1.99% प्रति माह; Paisabazaar: एपीआर 3.99% प्रति माह तक; सालाना फीस ₹25,000 तक + टैक्स"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "PSB-SBI co-branded: Simply SAVE joining/annual Rs499 + tax; PRIME Rs2,999; ELITE Rs4,999 (annual from year 2, reversed on spend Rs1-5 lakh); finance charges as per SBI Card; finance charge up to 3.35% pm (40.2% pa) per SBI Card",
+  "hi": "PSB-SBI को-ब्रांडेड: Simply SAVE जॉइनिंग/सालाना ₹499 + टैक्स; PRIME ₹2,999; ELITE ₹4,999 (सालाना फीस साल 2 से, ₹1-5 लाख खर्च पर वापस); फाइनेंस चार्ज SBI Card के अनुसार; SBI Card के अनुसार फाइनेंस चार्ज 3.35% प्रति माह तक (40.2% प्रति वर्ष)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Annual fee Rs 499-Rs 1,500 on most cards (waived on Rs 1.5-2.75 lakh annual spends); premium card Rs 12,500 (waived on Rs 10 lakh spends); cash advance 2.5%; finance charge up to 3.99% p.m. (47.88% p.a.); EMI PF 1.5% or Rs 150; age 21-65",
+  "hi": "ज़्यादातर कार्ड पर सालाना फीस ₹499-₹1,500 (₹1.5-2.75 लाख सालाना खर्च पर माफ़); प्रीमियम कार्ड ₹12,500 (₹10 लाख खर्च पर माफ़); कैश एडवांस 2.5%; फाइनेंस चार्ज 3.99% प्रति माह तक (47.88% प्रति वर्ष); ईएमआई प्रोसेसिंग फीस 1.5% या ₹150; उम्र 21-65"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "SBI Card: annual/renewal fee ₹0–₹9,999 + taxes by variant (SimplySAVE ₹499, ELITE ₹4,999, AURUM ₹9,999); finance charge up to 3.75% p.m. (45% p.a.), 2.75% p.m. on secured/Defence cards",
+  "hi": "SBI Card: वेरिएंट के अनुसार सालाना/रिन्यूअल फीस ₹0–₹9,999 + टैक्स (SimplySAVE ₹499, ELITE ₹4,999, AURUM ₹9,999); फाइनेंस चार्ज 3.75% प्रति माह तक (45% प्रति वर्ष), सिक्योर्ड/Defence कार्ड पर 2.75% प्रति माह"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Annual fee: VISA Gold/RuPay Platinum Rs350, VISA Platinum Rs450, RuPay Select/Uni-Carbon Rs550 (Uni-Carbon joining Rs499), VISA Signature Rs1,999 (+GST); joining fee nil on others; waived on annual spend Rs30k-2.7L. Cash advance 2.5% pm",
+  "hi": "सालाना फीस: VISA Gold/RuPay Platinum ₹350, VISA Platinum ₹450, RuPay Select/Uni-Carbon ₹550 (Uni-Carbon जॉइनिंग ₹499), VISA Signature ₹1,999 (+जीएसटी); अन्य पर जॉइनिंग फीस शून्य; ₹30 हज़ार-2.7 लाख सालाना खर्च पर माफ़। कैश एडवांस 2.5% प्रति माह"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Annual fee Rs 0 (lifetime-free entry cards) to Rs 2,499 on mainstream cards (RESERV/premium higher); finance charge 2.99%-3.99% p.m.; Paisabazaar: Marquee joining Rs 50,000; age 21-60; min income Rs 20,000 pm",
+  "hi": "सालाना फीस ₹0 (लाइफटाइम फ्री एंट्री कार्ड) से ₹2,499 तक मुख्य कार्ड पर (RESERV/प्रीमियम पर ज़्यादा); फाइनेंस चार्ज 2.99%-3.99% प्रति माह; Paisabazaar: Marquee जॉइनिंग ₹50,000; उम्र 21-60; न्यूनतम आय ₹20,000 प्रति माह"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "RuPay Classic/Platinum/Select: no joining/annual fee; VISA Platinum AMC Rs250 + GST (waived on Rs60,000 spend); VISA Signature Rs750 + GST (waived on Rs1 lakh spend). APR 30% p.a.; limits RuPay Rs10k-5L, VISA Rs51k-5L",
+  "hi": "RuPay Classic/Platinum/Select: कोई जॉइनिंग/सालाना फीस नहीं; VISA Platinum एएमसी ₹250 + जीएसटी (₹60,000 खर्च पर माफ़); VISA Signature ₹750 + जीएसटी (₹1 लाख खर्च पर माफ़)। एपीआर 30% प्रति वर्ष; लिमिट RuPay ₹10 हज़ार-5 लाख, VISA ₹51 हज़ार-5 लाख"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "IB RuPay Platinum/Select/Classic: joining nil; annual Rs250 from 2nd year, waived on Rs50,000 annual spend. Finance charge 1.66% pm; secured variants against FD (min Rs25,000, limit up to 90% of FD)",
+  "hi": "IB RuPay Platinum/Select/Classic: जॉइनिंग शून्य; दूसरे साल से सालाना ₹250, ₹50,000 सालाना खर्च पर माफ़। फाइनेंस चार्ज 1.66% प्रति माह; एफडी पर सिक्योर्ड वेरिएंट (न्यूनतम ₹25,000, लिमिट एफडी का 90% तक)"
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Aditya Birla Capital AU Small Finance Bank co-branded cards: ABC Flex, Nxt, Pro and Biz variants; fees per AU SFB schedule (not published on ABC page); ABC Flex/Nxt lifetime free, Pro Rs 999 + taxes annual, Biz Rs 49/month; EMI conversion on spends abo...",
+  "hi": "Aditya Birla Capital AU Small Finance Bank को-ब्रांडेड कार्ड: ABC Flex, Nxt, Pro और Biz वेरिएंट; फीस AU SFB शुल्क सूची के अनुसार (ABC पेज पर प्रकाशित नहीं); ABC Flex/Nxt लाइफटाइम फ्री, Pro ₹999 + टैक्स सालाना, Biz ₹49/माह; ईएमआई कन्वर्ज़न, ... से ऊपर के खर्च पर..."
+ },
+ {
+  "field": "processing_fee_note",
+  "en": "Bajaj Finserv DBS Bank SuperCard co-brand: annual fee Rs 499 (5X) to Rs 4,999 (10X Plus Signature) + GST; finance charges 3.5%-4% p.m. (42%-48% p.a.); first-year fee waivers on select variants; EMI conversion fee 2% (min Rs 249) + GST, tenures 3-24 mon...",
+  "hi": "Bajaj Finserv DBS Bank SuperCard को-ब्रांड: सालाना फीस ₹499 (5X) से ₹4,999 (10X Plus Signature) तक + जीएसटी; फाइनेंस चार्ज 3.5%-4% प्रति माह (42%-48% प्रति वर्ष); चुनिंदा वेरिएंट पर पहले साल की फीस माफ़; ईएमआई कन्वर्ज़न फीस 2% (न्यूनतम ₹249) + जीएसटी, अवधि 3-24 महीने..."
+ }
+]

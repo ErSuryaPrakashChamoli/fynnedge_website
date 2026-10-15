@@ -13,9 +13,9 @@ enum EligibilityStatus: string implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::Eligible => 'Eligible',
-            self::NotEligible => 'Not eligible',
-            self::Conditional => 'Conditional',
+            self::Eligible => __('Eligible'),
+            self::NotEligible => __('Not eligible'),
+            self::Conditional => __('Conditional'),
         };
     }
 }

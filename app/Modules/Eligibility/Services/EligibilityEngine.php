@@ -12,6 +12,7 @@ use App\Modules\Customers\Services\ProfileNormalizer;
 use App\Modules\Eligibility\DataTransferObjects\EligibilityEvaluation;
 use App\Modules\Eligibility\Enums\EligibilityStatus;
 use App\Modules\Eligibility\Models\EligibilityResult;
+use App\Modules\Eligibility\Models\EligibilityRule;
 use App\Modules\Eligibility\Models\Employer;
 use App\Modules\Eligibility\Models\EmployerRating;
 use App\Modules\Journey\Models\JourneySession;
@@ -137,8 +138,13 @@ class EligibilityEngine
 
         $result->reasons()->delete();
 
+        $englishMessages = $this->englishCustomerMessages($evaluation->reasons);
+
         foreach ($evaluation->reasons as $reason) {
-            $result->reasons()->create($reason);
+            $result->reasons()->create([
+                ...$reason,
+                'customer_message' => $englishMessages->get($reason['eligibility_rule_id'], $reason['customer_message']),
+            ]);
         }
 
         $this->analytics->track(
@@ -149,6 +155,23 @@ class EligibilityEngine
         );
 
         return $result->load(['reasons', 'lenderProduct.lender']);
+    }
+
+    /**
+     * The rules' English customer messages, keyed by rule id. The evaluation carries
+     * them in the visitor's language (EligibilityRule::customer_message is translated),
+     * but a stored reason is read by admins, so it always keeps the English; the
+     * results page translates it again at display time (EligibilityResultReason::visitorMessage()).
+     *
+     * @param  array<int, array{eligibility_rule_id: int, customer_message: ?string}>  $reasons
+     * @return Collection<int, ?string>
+     */
+    private function englishCustomerMessages(array $reasons): Collection
+    {
+        return EligibilityRule::query()
+            ->whereKey(array_column($reasons, 'eligibility_rule_id'))
+            ->get(['id', 'customer_message'])
+            ->mapWithKeys(fn (EligibilityRule $rule): array => [$rule->id => $rule->getRawOriginal('customer_message')]);
     }
 
     /**

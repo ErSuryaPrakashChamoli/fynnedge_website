@@ -48,7 +48,7 @@ class LoanMegaMenu
         $products = LoanProduct::query()
             ->published()
             ->whereIn('category', self::CATEGORY_ORDER)
-            ->with(['landingPages' => fn ($query) => $query->published()->orderBy('sort_order')->select(['id', 'loan_product_id', 'group', 'title', 'slug', 'city'])])
+            ->with(['landingPages' => fn ($query) => $query->published()->orderBy('sort_order')->select(['id', 'loan_product_id', 'group', 'title', 'title_hi', 'slug', 'city', 'city_hi'])])
             ->get()
             ->keyBy(fn (LoanProduct $product) => $product->category->value);
 

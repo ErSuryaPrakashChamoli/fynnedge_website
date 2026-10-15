@@ -105,7 +105,7 @@ new class extends Component
 
         $this->validate([
             'mobileNumber' => ['required', 'regex:'.MobileNumber::PATTERN],
-        ], [], ['mobileNumber' => 'mobile number']);
+        ], [], ['mobileNumber' => __('mobile number')]);
 
         try {
             $challenge = $action->handle($this->mobileNumber, MobileOtpPurpose::CreditScoreCheck, request()->ip());
@@ -116,7 +116,7 @@ new class extends Component
         }
 
         if ($challenge->status === MobileOtpStatus::Failed) {
-            $this->addError($this->step === 'otp' ? 'otpCode' : 'mobileNumber', 'We could not send a verification code right now. Please try again shortly.');
+            $this->addError($this->step === 'otp' ? 'otpCode' : 'mobileNumber', __('We could not send a verification code right now. Please try again shortly.'));
 
             return;
         }
@@ -147,7 +147,7 @@ new class extends Component
         if (! $result->isVerified()) {
             $this->addError('otpCode', $result === MobileOtpVerificationResult::AttemptsExhausted
                 ? $result->message()
-                : 'That code is incorrect or has expired. You can resend a new one.');
+                : __('That code is incorrect or has expired. You can resend a new one.'));
 
             return;
         }
@@ -175,9 +175,9 @@ new class extends Component
             'panNumber' => ['required', 'regex:/^[A-Z]{5}[0-9]{4}[A-Z]$/'],
             'consent' => ['accepted'],
         ], [
-            'dateOfBirth.before' => 'You must be at least 18 years old.',
-            'panNumber.regex' => 'Enter a valid PAN (e.g. ABCDE1234F).',
-            'consent.accepted' => 'Please provide consent to continue.',
+            'dateOfBirth.before' => __('You must be at least 18 years old.'),
+            'panNumber.regex' => __('Enter a valid PAN (e.g. ABCDE1234F).'),
+            'consent.accepted' => __('Please provide consent to continue.'),
         ]);
 
         // The verification is spent on exactly one check — re-submitting, or a
@@ -186,7 +186,7 @@ new class extends Component
 
         if (! $challenge?->consumeFor($this->verifiedMobileNumber, MobileOtpPurpose::CreditScoreCheck)) {
             $this->restart();
-            $this->addError('mobileNumber', 'Your verification has expired. Please verify your mobile number again.');
+            $this->addError('mobileNumber', __('Your verification has expired. Please verify your mobile number again.'));
 
             return;
         }
@@ -220,54 +220,54 @@ new class extends Component
     @if ($step === 'mobile')
         <div class="flex items-center gap-2.5 bg-accent-soft px-6 py-3 text-sm text-accent-strong">
             <svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 shrink-0" aria-hidden="true"><path d="M10 2a6 6 0 0 0-6 6c0 4-2 5.5-2 5.5h16S16 12 16 8a6 6 0 0 0-6-6ZM8.5 16a1.5 1.5 0 0 0 3 0h-3Z" /></svg>
-            Check your free {{ $this->bureauLabel }} score in under 2 minutes
+            {{ __('Check your free :bureau score in under 2 minutes', ['bureau' => $this->bureauLabel]) }}
         </div>
     @endif
 
     <div class="p-6 sm:p-7">
-        <x-ui.stepper :steps="['Mobile number', 'Verify OTP', 'Your details', 'Your score']" :current="$this->stepIndex" />
+        <x-ui.stepper :steps="[__('Mobile number'), __('Verify OTP'), __('Your details'), __('Your score')]" :current="$this->stepIndex" />
 
         <div class="mt-7">
             @if ($step === 'mobile')
-                <p class="font-display text-xl font-semibold text-ink">Let's get started</p>
+                <p class="font-display text-xl font-semibold text-ink">{{ __('Let\'s get started') }}</p>
                 <div class="mt-4 flex flex-col gap-4">
                     <div>
-                        <label for="mobileNumber" class="text-sm font-medium text-ink">Mobile number</label>
+                        <label for="mobileNumber" class="text-sm font-medium text-ink">{{ __('Mobile number') }}</label>
                         <input
                             id="mobileNumber"
                             type="tel"
                             inputmode="numeric"
                             maxlength="10"
-                            placeholder="10-digit mobile number"
+                            placeholder="{{ __('10-digit mobile number') }}"
                             wire:model="mobileNumber"
                             class="mt-1.5 w-full rounded-lg border border-line-strong bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
                         >
                         @error('mobileNumber')
                             <p class="mt-1 text-xs text-warn">{{ $message }}</p>
                         @else
-                            <p class="mt-1.5 text-xs text-ink-faint">You'll receive an OTP on this number.</p>
+                            <p class="mt-1.5 text-xs text-ink-faint">{{ __('You\'ll receive an OTP on this number.') }}</p>
                         @enderror
                     </div>
                     <p class="text-xs text-ink-faint">
-                        By continuing, you agree to FynnEdge's <a href="{{ route('terms') }}" class="underline hover:text-ink">Terms</a> and <a href="{{ route('privacy-policy') }}" class="underline hover:text-ink">Privacy Policy</a>.
+                        {!! __('By continuing, you agree to FynnEdge\'s <a href=":terms_url" class="underline hover:text-ink">Terms</a> and <a href=":privacy_policy_url" class="underline hover:text-ink">Privacy Policy</a>.', ['terms_url' => e(route('terms')), 'privacy_policy_url' => e(route('privacy-policy'))]) !!}
                     </p>
                     <x-ui.button wire:click="sendOtp" wire:loading.attr="disabled" class="w-full justify-center">
-                        Get Free {{ $this->bureauLabel }} Score
+                        {{ __('Get Free :bureau Score', ['bureau' => $this->bureauLabel]) }}
                         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8h10m0 0-4-4m4 4-4 4" /></svg>
                     </x-ui.button>
                     <p class="flex items-center justify-center gap-1.5 text-xs text-ink-faint">
                         <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 text-pass" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4L8 11.6l6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd" /></svg>
-                        Demo mode — see a sample score instantly, no real bureau pull
+                        {{ __('Demo mode — see a sample score instantly, no real bureau pull') }}
                     </p>
                 </div>
             @elseif ($step === 'otp')
-                <p class="font-display text-xl font-semibold text-ink">Verify your number</p>
+                <p class="font-display text-xl font-semibold text-ink">{{ __('Verify your number') }}</p>
                 <div class="mt-4 flex flex-col gap-4">
                     <p class="text-sm text-ink-muted">
-                        We've sent a {{ $this->otpLength }}-digit code by SMS to <span class="font-medium text-ink">+91 {{ $this->maskedMobileNumber }}</span>. It may take a moment to arrive.
+                        {!! __('We\'ve sent a :length-digit code by SMS to <span class="font-medium text-ink">+91 :number</span>. It may take a moment to arrive.', ['length' => e($this->otpLength), 'number' => e($this->maskedMobileNumber)]) !!}
                     </p>
                     <div>
-                        <label for="otpCode" class="text-sm font-medium text-ink">Enter the {{ $this->otpLength }}-digit code</label>
+                        <label for="otpCode" class="text-sm font-medium text-ink">{{ __('Enter the :length-digit code', ['length' => $this->otpLength]) }}</label>
                         <input
                             id="otpCode"
                             type="text"
@@ -285,17 +285,17 @@ new class extends Component
                         wire:key="otp-resend-{{ $otpChallengeId }}"
                         x-data="otpResendCountdown(@js($resendAfterSeconds))"
                     >
-                        <x-ui.button wire:click="verifyOtp" wire:loading.attr="disabled">Verify &amp; continue</x-ui.button>
+                        <x-ui.button wire:click="verifyOtp" wire:loading.attr="disabled">{{ __('Verify & continue') }}</x-ui.button>
                         <x-ui.button wire:click="resendOtp" wire:loading.attr="disabled" ::disabled="resendIn > 0" variant="ghost" size="sm">
-                            <span x-text="resendIn > 0 ? `Resend code in ${resendIn}s` : 'Resend code'">Resend code</span>
+                            <span x-text="resendIn > 0 ? @js(__('Resend code in :time')).replace(':time', `${resendIn}s`) : @js(__('Resend code'))">{{ __('Resend code') }}</span>
                         </x-ui.button>
                     </div>
                 </div>
             @elseif ($step === 'details')
-                <p class="font-display text-xl font-semibold text-ink">A few last details</p>
+                <p class="font-display text-xl font-semibold text-ink">{{ __('A few last details') }}</p>
                 <div class="mt-4 flex flex-col gap-4">
                     <div>
-                        <label for="fullName" class="text-sm font-medium text-ink">Full name (as per PAN)</label>
+                        <label for="fullName" class="text-sm font-medium text-ink">{{ __('Full name (as per PAN)') }}</label>
                         <input
                             id="fullName"
                             type="text"
@@ -308,7 +308,7 @@ new class extends Component
                         x-data="{ raw: isoToDateInputDigits(@js($dateOfBirth)) }"
                         x-init="$refs.dateOfBirthDisplay.value = formatDateInput(raw)"
                     >
-                        <label for="dateOfBirth" class="text-sm font-medium text-ink">Date of birth</label>
+                        <label for="dateOfBirth" class="text-sm font-medium text-ink">{{ __('Date of birth') }}</label>
                         {{-- A masked dd/mm/yyyy text input rather than <input type="date"> — the
                              native picker's displayed format follows the browser/OS locale (e.g.
                              MM/DD/YYYY on a US-locale browser), which doesn't match what Indian
@@ -336,7 +336,7 @@ new class extends Component
                         @error('dateOfBirth') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label for="panNumber" class="text-sm font-medium text-ink">PAN number</label>
+                        <label for="panNumber" class="text-sm font-medium text-ink">{{ __('PAN number') }}</label>
                         <input
                             id="panNumber"
                             type="text"
@@ -351,29 +351,29 @@ new class extends Component
                     <label class="flex items-start gap-2.5 text-sm text-ink-muted">
                         <input type="checkbox" wire:model="consent" class="mt-0.5 rounded border-line-strong text-accent focus:ring-accent/30">
                         <span>
-                            By submitting this form, you have read and agree to the
-                            <a href="{{ route('credit-report-terms') }}" target="_blank" rel="noopener" class="text-accent underline">Credit Report Terms of Use</a>,
-                            <a href="{{ route('terms') }}" target="_blank" rel="noopener" class="text-accent underline">Terms of Use</a>
-                            &amp;
-                            <a href="{{ route('privacy-policy') }}" target="_blank" rel="noopener" class="text-accent underline">Privacy Policy</a>.
+                            {!! __('By submitting this form, you have read and agree to the <a href=":credit_report_terms_url" target="_blank" rel="noopener" class="text-accent underline">Credit Report Terms of Use</a>, <a href=":terms_url" target="_blank" rel="noopener" class="text-accent underline">Terms of Use</a> &amp; <a href=":privacy_policy_url" target="_blank" rel="noopener" class="text-accent underline">Privacy Policy</a>.', [
+                                'credit_report_terms_url' => e(route('credit-report-terms')),
+                                'terms_url' => e(route('terms')),
+                                'privacy_policy_url' => e(route('privacy-policy')),
+                            ]) !!}
                         </span>
                     </label>
                     @error('consent') <p class="text-xs text-warn">{{ $message }}</p> @enderror
                     <x-ui.button wire:click="submitDetails" wire:loading.attr="disabled" class="w-full justify-center">
-                        Check my score
+                        {{ __('Check my score') }}
                     </x-ui.button>
                 </div>
             @else
                 <div class="flex flex-col items-center gap-5 py-2 text-center">
-                    <x-ui.badge tone="warn">Demo score — not your real credit report</x-ui.badge>
+                    <x-ui.badge tone="warn">{{ __('Demo score — not your real credit report') }}</x-ui.badge>
                     <div>
-                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Your {{ $this->bureauLabel }} score</p>
+                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Your :bureau score', ['bureau' => $this->bureauLabel]) }}</p>
                         <p class="mt-1 font-display text-5xl font-semibold text-accent">{{ $resultScore }}</p>
                     </div>
                     <p class="max-w-sm text-sm text-ink-muted">
-                        This is a sample score for demonstration purposes — {{ $this->bureauLabel }} isn't connected yet, so this figure isn't pulled from a real credit bureau and shouldn't be relied on.
+                        {{ __('This is a sample score for demonstration purposes — :bureau isn\'t connected yet, so this figure isn\'t pulled from a real credit bureau and shouldn\'t be relied on.', ['bureau' => $this->bureauLabel]) }}
                     </p>
-                    <x-ui.button wire:click="restart" variant="secondary" size="sm">Check another number</x-ui.button>
+                    <x-ui.button wire:click="restart" variant="secondary" size="sm">{{ __('Check another number') }}</x-ui.button>
                 </div>
             @endif
         </div>

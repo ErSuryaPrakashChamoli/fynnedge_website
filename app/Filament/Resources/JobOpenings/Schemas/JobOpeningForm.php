@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\JobOpenings\Schemas;
 
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HindiTranslationSection;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -25,6 +26,11 @@ class JobOpeningForm
                     ->options(PublishStatus::class)
                     ->default(PublishStatus::Draft)
                     ->required(),
+                HindiTranslationSection::make([
+                    TextInput::make('title_hi')
+                        ->label('Title (Hindi)')
+                        ->columnSpanFull(),
+                ]),
             ]);
     }
 }

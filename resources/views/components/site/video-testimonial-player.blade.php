@@ -1,14 +1,15 @@
 {{--
-    The one video player on the page, shared by every video testimonial card
-    and the floating bubble: they dispatch `open-video-testimonial` with
-    VideoTestimonial::playerData(), and this plays it with sound.
+    The one video player on the page, shared by every video testimonial card,
+    the floating bubble and every social media video card: they dispatch
+    `open-video-testimonial` with playerData() (see HasPlayableVideo), and
+    this plays it with sound.
 
     The <video>/<iframe> is created inside x-if only when opened and destroyed
     on close, so nothing downloads until a visitor asks for it and closing
     really stops playback. YouTube plays through youtube-nocookie.com, which
     SecurityHeaders allows in frame-src.
 --}}
-@if (\App\Support\Testimonials\VideoTestimonials::forCurrentPage()->isNotEmpty())
+@if (\App\Support\Testimonials\VideoTestimonials::forCurrentPage()->isNotEmpty() || \App\Support\SocialVideos\SocialVideos::forCurrentPage()->isNotEmpty())
     <div
         x-data="{
             open: false,
@@ -40,7 +41,7 @@
             x-transition.opacity.duration.200ms
             role="dialog"
             aria-modal="true"
-            :aria-label="video ? video.title : 'Video testimonial'"
+            :aria-label="video ? video.title : @js(__('Video testimonial'))"
             @click.self="hide()"
             class="fixed inset-0 z-60 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm sm:p-10"
         >
@@ -49,7 +50,7 @@
                     x-ref="close"
                     type="button"
                     @click="hide()"
-                    aria-label="Close video"
+                    aria-label="{{ __('Close video') }}"
                     class="mb-3 flex h-10 w-10 items-center justify-center self-end rounded-full bg-white/15 text-white transition hover:bg-white/25 focus-visible:outline-2 focus-visible:outline-white"
                 >
                     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5" aria-hidden="true"><path stroke-linecap="round" d="M5 5l10 10M15 5 5 15" /></svg>

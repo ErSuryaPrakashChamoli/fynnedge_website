@@ -30,19 +30,19 @@ enum ApplicationStatus: string implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::Draft => 'Draft',
-            self::LenderSelected => 'Lender selected',
-            self::DocumentsPending => 'Documents pending',
-            self::DocumentsSubmitted => 'Documents submitted',
-            self::Submitted => 'Submitted',
-            self::UnderReview => 'Under review',
-            self::Sanctioned => 'Sanctioned',
-            self::AgreementPending => 'Agreement pending',
-            self::DisbursalProcessing => 'Disbursal processing',
-            self::Disbursed => 'Disbursed',
-            self::Rejected => 'Rejected',
-            self::Withdrawn => 'Withdrawn',
-            self::Cancelled => 'Cancelled',
+            self::Draft => __('Draft'),
+            self::LenderSelected => __('Lender selected'),
+            self::DocumentsPending => __('Documents pending'),
+            self::DocumentsSubmitted => __('Documents submitted'),
+            self::Submitted => __('Submitted'),
+            self::UnderReview => __('Under review'),
+            self::Sanctioned => __('Sanctioned'),
+            self::AgreementPending => __('Agreement pending'),
+            self::DisbursalProcessing => __('Disbursal processing'),
+            self::Disbursed => __('Disbursed'),
+            self::Rejected => __('Rejected'),
+            self::Withdrawn => __('Withdrawn'),
+            self::Cancelled => __('Cancelled'),
         };
     }
 }

@@ -52,7 +52,7 @@ class RateHealthOverview extends StatsOverviewWidget
             ->orderedForDisplay()
             ->get()
             ->reject(fn (LoanProduct $product) => RateBook::headlineFor($product) !== null)
-            ->pluck('name');
+            ->values();
 
         $listUrl = LenderProductRateResource::getUrl('index');
 
@@ -78,9 +78,18 @@ class RateHealthOverview extends StatsOverviewWidget
                 ->color($expired > 0 ? 'danger' : ($expiringSoon > 0 ? 'warning' : 'success'))
                 ->url("{$listUrl}?tab=expired"),
             Stat::make('Loan types with no verified rate', $productsWithoutRate->count())
-                ->description($productsWithoutRate->isEmpty() ? 'Every published loan type has a "from X%" headline' : $productsWithoutRate->implode(', '))
+                ->description($productsWithoutRate->isEmpty() ? 'Every published loan type has a "from X%" headline' : $productsWithoutRate->pluck('name')->implode(', '))
                 ->descriptionIcon(Heroicon::OutlinedNoSymbol)
-                ->color($productsWithoutRate->isEmpty() ? 'success' : 'danger'),
+                ->color($productsWithoutRate->isEmpty() ? 'success' : 'danger')
+                ->url(match ($productsWithoutRate->count()) {
+                    // Nothing missing: show what is live. One loan type: its rates.
+                    0 => "{$listUrl}?tab=live",
+                    1 => LenderProductRateResource::getUrl('index', [
+                        'tab' => 'all',
+                        'filters' => ['loan_product' => ['value' => $productsWithoutRate->first()->id]],
+                    ]),
+                    default => "{$listUrl}?tab=attention",
+                }),
         ];
     }
 }

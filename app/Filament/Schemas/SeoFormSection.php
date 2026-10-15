@@ -153,6 +153,16 @@ class SeoFormSection
                         },
                     ])
                     ->columnSpanFull(),
+                HindiTranslationSection::make([
+                    TextInput::make('title_hi')
+                        ->label('SEO title (Hindi)')
+                        ->maxLength(self::MAX_LENGTH)
+                        ->columnSpanFull(),
+                    TextInput::make('description_hi')
+                        ->label('Meta description (Hindi)')
+                        ->maxLength(self::MAX_LENGTH)
+                        ->columnSpanFull(),
+                ]),
             ]);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Support\Rates;
 
+use App\Support\Localization\SiteLocale;
+
 /**
  * Rate figures inside admin-written copy, kept in step with RateBook.
  *
@@ -25,7 +27,8 @@ final class RateText
 
     /**
      * A token, plus a full stop straight after it — the rendered phrase already
-     * ends in "p.a." or "per month.", and "p.a.." is not a sentence.
+     * ends in "p.a." or "per month.", and "p.a.." is not a sentence. Hindi copy
+     * keeps the same "." after a token; render() turns it into a "।".
      */
     private const TOKEN = '/\[(rate|rate-range):([a-z0-9-]+)\](\.(?!\d))?/';
 
@@ -33,10 +36,14 @@ final class RateText
      * A percentage presented as an interest rate: "10.49% p.a.", "9.99%
      * onwards", "interest from 8.5%", "starting at 9.99%", "loans from 9.99%",
      * "@ 10.5%". Deliberately not a bare "from 1%", which is usually a fee,
-     * and never part of a longer number such as "100%".
+     * and never part of a longer number such as "100%". The same claims in
+     * Hindi ("10.49% प्रति वर्ष", "9.99% से शुरू", "ब्याज दर 8.5%") count too:
+     * Hindi copy and Hindi fee notes are shown to visitors just the same.
      */
-    private const LITERAL_CLAIM = '/(?<![\d.])\d{1,2}(?:\.\d{1,2})?\s?%\*?\s*(?:p\.?\s?a\b|p\.?\s?m\b|per\s+(?:annum|month|year)|onwards|interest|rate\b|roi\b|apr\b)'
-        .'|(?:interest(?:\s+rates?)?|rates?|roi|apr|starting\s+(?:at|from)|loans?\s+from|@)\s*(?:of|at|from|is|:)?\s*\*?\s*(?<![\d.])\d{1,2}(?:\.\d{1,2})?\s?%/i';
+    private const LITERAL_CLAIM = '/(?<![\d.])\d{1,2}(?:\.\d{1,2})?\s?%\*?\s*(?:p\.?\s?a\b|p\.?\s?m\b|per\s+(?:annum|month|year)|onwards|interest|rate\b|roi\b|apr\b'
+        .'|प्रति\s*(?:वर्ष|साल|माह|महीना)|सालाना|वार्षिक|से\s+शुरू|ब्याज|दर)'
+        .'|(?:interest(?:\s+rates?)?|rates?|roi|apr|starting\s+(?:at|from)|loans?\s+from|@'
+        .'|ब्याज(?:\s+दर(?:ें)?)?|दर(?:ें)?|सालाना|वार्षिक)\s*(?:of|at|from|is|:|का|की|के|है)?\s*\*?\s*(?<![\d.])\d{1,2}(?:\.\d{1,2})?\s?%/iu';
 
     /**
      * Comparison and aggregator sites — never a source, and never something
@@ -73,15 +80,24 @@ final class RateText
             $headline = RateBook::headlineForSlug($match[2]);
 
             $phrase = match (true) {
-                $headline === null => self::FALLBACK,
+                $headline === null => __(self::FALLBACK),
                 $match[1] === 'rate' => $headline->fromLabel(),
-                default => "at lenders' published rates of {$headline->rangeLabel()}",
+                default => __("at lenders' published rates of :range", ['range' => $headline->rangeLabel()]),
             };
 
-            $fullStop = $match[3] ?? '';
+            $fullStop = ($match[3] ?? '') === '' ? '' : self::fullStop();
 
             return str_ends_with($phrase, '.') ? $phrase : $phrase.$fullStop;
         }, $text);
+    }
+
+    /**
+     * The sentence-ending mark in the visitor's language: Hindi ends a sentence
+     * with a purna viram (।), so a token closing a Hindi sentence ends with one.
+     */
+    private static function fullStop(): string
+    {
+        return SiteLocale::current() === 'hi' ? '।' : '.';
     }
 
     /**

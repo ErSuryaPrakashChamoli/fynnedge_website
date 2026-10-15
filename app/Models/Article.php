@@ -6,6 +6,7 @@ use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use App\Models\Concerns\Publishable;
 use App\Models\Concerns\Seoable;
 use Database\Factories\ArticleFactory;
@@ -17,11 +18,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['title', 'slug', 'excerpt', 'image_path', 'image_alt', 'body', 'category', 'status', 'show_on_home', 'published_at', 'expires_at'])]
+#[Fillable(['title', 'slug', 'excerpt', 'image_path', 'image_alt', 'body', 'category', 'status', 'show_on_home', 'published_at', 'expires_at', 'title_hi', 'excerpt_hi', 'image_alt_hi', 'body_hi'])]
 class Article extends Model
 {
     /** @use HasFactory<ArticleFactory> */
-    use Auditable, HasFactory, HasPublicId, Publishable, Seoable, SoftDeletes;
+    use Auditable, HasFactory, HasPublicId, HasTranslations, Publishable, Seoable, SoftDeletes;
 
     protected function casts(): array
     {
@@ -84,5 +85,18 @@ class Article extends Model
         $query->where(function (Builder $query) use ($category) {
             $query->where('category', $category)->orWhereNull('category');
         })->orderByRaw('category is null');
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'title',
+            'excerpt',
+            'image_alt',
+            'body',
+        ];
     }
 }

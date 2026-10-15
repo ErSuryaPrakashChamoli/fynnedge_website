@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use Database\Factories\NavigationLinkFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -18,11 +19,11 @@ use Illuminate\Support\Facades\Route as RouteFacade;
  * navigation (header mega-menus, footer Company/Legal columns) — never a
  * replacement for it. See .ai/rules for why those stay hardcoded.
  */
-#[Fillable(['label', 'url', 'route_name', 'is_external', 'location', 'parent_id', 'sort_order', 'is_active'])]
+#[Fillable(['label', 'url', 'route_name', 'is_external', 'location', 'parent_id', 'sort_order', 'is_active', 'label_hi'])]
 class NavigationLink extends Model
 {
     /** @use HasFactory<NavigationLinkFactory> */
-    use Auditable, HasFactory, HasPublicId;
+    use Auditable, HasFactory, HasPublicId, HasTranslations;
 
     protected function casts(): array
     {
@@ -64,5 +65,15 @@ class NavigationLink extends Model
         }
 
         return $this->url;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'label',
+        ];
     }
 }

@@ -6,6 +6,7 @@ use App\Enums\EmploymentType;
 use App\Enums\LenderStatus;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use App\Modules\Applications\Models\LenderProductDocumentRequirement;
 use App\Modules\Eligibility\Enums\EligibilityRuleSetStatus;
 use App\Modules\Eligibility\Models\EligibilityRuleSet;
@@ -26,11 +27,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'processing_fee_flat_amount_min', 'processing_fee_flat_amount_max', 'processing_fee_gst_extra',
     'min_age', 'max_age', 'min_credit_score', 'min_monthly_income',
     'min_employment_vintage_months', 'employment_types', 'status',
+    'processing_fee_note_hi',
 ])]
 class LenderProduct extends Model
 {
     /** @use HasFactory<LenderProductFactory> */
-    use Auditable, HasFactory, HasPublicId;
+    use Auditable, HasFactory, HasPublicId, HasTranslations;
 
     /**
      * An offer's status decides whether its rates may show, so any change to
@@ -81,12 +83,12 @@ class LenderProduct extends Model
         $amount = match (true) {
             $flatMin !== null && $flatMax !== null && (float) $flatMin === (float) $flatMax => '₹'.number_format((float) $flatMin),
             $flatMin !== null && $flatMax !== null => '₹'.number_format((float) $flatMin).'–₹'.number_format((float) $flatMax),
-            $flatMax !== null => 'Up to ₹'.number_format((float) $flatMax),
-            $flatMin !== null => 'From ₹'.number_format((float) $flatMin),
+            $flatMax !== null => __('Up to :amount', ['amount' => '₹'.number_format((float) $flatMax)]),
+            $flatMin !== null => __('From :amount', ['amount' => '₹'.number_format((float) $flatMin)]),
             $min !== null && $max !== null && (float) $min === (float) $max => "{$min}%",
             $min !== null && $max !== null => "{$min}%–{$max}%",
-            $max !== null => "Up to {$max}%",
-            $min !== null => "From {$min}%",
+            $max !== null => __('Up to :amount', ['amount' => "{$max}%"]),
+            $min !== null => __('From :amount', ['amount' => "{$min}%"]),
             default => null,
         };
 
@@ -94,7 +96,7 @@ class LenderProduct extends Model
             return null;
         }
 
-        return $this->processing_fee_gst_extra ? "{$amount} + GST" : $amount;
+        return $this->processing_fee_gst_extra ? __(':amount + GST', ['amount' => $amount]) : $amount;
     }
 
     /**
@@ -120,22 +122,22 @@ class LenderProduct extends Model
     {
         return array_values(array_filter([
             $this->min_age || $this->max_age
-                ? 'Age '.($this->min_age ?? '—').'–'.($this->max_age ?? '—').' yrs'
+                ? __('Age :min–:max yrs', ['min' => $this->min_age ?? '—', 'max' => $this->max_age ?? '—'])
                 : null,
             $this->min_monthly_income
-                ? 'Min. income ₹'.number_format((float) $this->min_monthly_income).'/mo'
+                ? __('Min. income :amount/mo', ['amount' => '₹'.number_format((float) $this->min_monthly_income)])
                 : null,
             $this->min_credit_score
-                ? "Credit score {$this->min_credit_score}+"
+                ? __('Credit score :score+', ['score' => $this->min_credit_score])
                 : null,
             $this->min_employment_vintage_months
-                ? number_format($this->min_employment_vintage_months).'+ months in current employment/business'
+                ? __(':months+ months in current employment/business', ['months' => number_format($this->min_employment_vintage_months)])
                 : null,
             $this->employment_types
                 ? collect($this->employment_types)
                     ->map(fn (string $value) => EmploymentType::tryFrom($value)?->getLabel())
                     ->filter()
-                    ->implode(' or ')
+                    ->implode(__(' or '))
                 : null,
         ]));
     }
@@ -208,5 +210,15 @@ class LenderProduct extends Model
     public function documentRequirements(): HasMany
     {
         return $this->hasMany(LenderProductDocumentRequirement::class)->orderBy('order');
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'processing_fee_note',
+        ];
     }
 }

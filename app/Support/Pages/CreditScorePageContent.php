@@ -4,6 +4,8 @@ namespace App\Support\Pages;
 
 use App\Models\Setting;
 use App\Modules\CreditScore\Enums\BureauName;
+use App\Support\Localization\Phrasebook;
+use App\Support\Localization\SiteLocale;
 
 /**
  * Everything on the /credit-score/{bureau} pages an admin can reword (Admin →
@@ -21,6 +23,11 @@ use App\Modules\CreditScore\Enums\BureauName;
  * rather than rendering empty. Lists differ on purpose — a list that was never
  * saved shows the defaults, but a saved empty list means the admin removed
  * every item, so that block is hidden.
+ *
+ * Hindi visitors get the admin's Hindi wording for that bureau page (a second
+ * Setting, `credit_score_page.cibil_hi`, same shape), and every field left
+ * blank there is the English translated through lang/hi.json — so a page
+ * nobody has touched is fully Hindi. See Phrasebook::localize().
  *
  * Not here by design: the OTP/details/result steps of the check form itself,
  * and the list of bureaus (BureauName).
@@ -48,6 +55,14 @@ class CreditScorePageContent
     public static function settingKey(BureauName $bureau): string
     {
         return self::SETTING_KEY.'.'.$bureau->value;
+    }
+
+    /**
+     * Where this bureau page's Hindi wording is stored.
+     */
+    public static function hindiSettingKey(BureauName $bureau): string
+    {
+        return self::settingKey($bureau).'_hi';
     }
 
     /**
@@ -86,7 +101,8 @@ class CreditScorePageContent
 
     /**
      * The bureau's saved content laid over the defaults, field by field, with
-     * `{bureau}` still in place — what the admin form edits.
+     * `{bureau}` still in place — what the admin form edits. In the visitor's
+     * language (always English in the admin panel).
      *
      * @return array{
      *     meta_title: string,
@@ -114,7 +130,44 @@ class CreditScorePageContent
             };
         }
 
-        return $content;
+        if (! SiteLocale::isTranslating()) {
+            return $content;
+        }
+
+        // A list the English copy hides stays hidden in Hindi too.
+        $hindi = array_filter(
+            self::hindi($bureau),
+            fn (mixed $value, string $key): bool => ! is_array($value) || $content[$key] !== [],
+            ARRAY_FILTER_USE_BOTH,
+        );
+
+        return Phrasebook::localize($content, $hindi);
+    }
+
+    /**
+     * The admin's own Hindi wording for this bureau page: only the fields
+     * filled in, cleaned the same way as the English. What the admin form's
+     * Hindi tab edits.
+     *
+     * @return array<string, string|array<int, array<string, string>>>
+     */
+    public static function hindi(BureauName $bureau): array
+    {
+        $saved = Setting::get(self::hindiSettingKey($bureau));
+        $saved = is_array($saved) ? $saved : [];
+        $hindi = [];
+
+        foreach (self::defaults() as $key => $default) {
+            $value = $saved[$key] ?? null;
+
+            if (is_array($default) && is_array($value)) {
+                $hindi[$key] = self::cleanItems($value, self::REQUIRED_ITEM_KEYS[$key] ?? []);
+            } elseif (is_string($default) && is_scalar($value) && filled($value)) {
+                $hindi[$key] = trim((string) $value);
+            }
+        }
+
+        return array_filter($hindi, fn (mixed $value): bool => $value !== []);
     }
 
     /**

@@ -17,7 +17,7 @@ class SubmitApplication
     public function handle(Application $application): array
     {
         if (! $application->hasAllRequiredDocuments()) {
-            return ['Please upload every required document before submitting.'];
+            return [__('Please upload every required document before submitting.')];
         }
 
         $application->update([

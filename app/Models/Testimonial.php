@@ -6,6 +6,7 @@ use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use App\Models\Concerns\Publishable;
 use Database\Factories\TestimonialFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -18,11 +19,15 @@ use Illuminate\Support\Facades\Storage;
 #[Fillable([
     'customer_name', 'role_location', 'loan_category', 'rating',
     'quote', 'avatar_path', 'avatar_alt', 'sort_order', 'status', 'published_at', 'expires_at',
+    'customer_name_hi',
+    'role_location_hi',
+    'quote_hi',
+    'avatar_alt_hi',
 ])]
 class Testimonial extends Model
 {
     /** @use HasFactory<TestimonialFactory> */
-    use Auditable, HasFactory, HasPublicId, Publishable, SoftDeletes;
+    use Auditable, HasFactory, HasPublicId, HasTranslations, Publishable, SoftDeletes;
 
     protected function casts(): array
     {
@@ -49,5 +54,18 @@ class Testimonial extends Model
     public function avatarUrl(): ?string
     {
         return $this->avatar_path ? Storage::disk('public')->url($this->avatar_path) : null;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'customer_name',
+            'role_location',
+            'quote',
+            'avatar_alt',
+        ];
     }
 }

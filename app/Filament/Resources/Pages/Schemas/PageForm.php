@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Pages\Schemas;
 
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Filament\Schemas\SeoFormSection;
 use App\Models\Page;
 use App\Support\Seo\Sitemap;
@@ -66,6 +67,15 @@ class PageForm
                 RichEditor::make('body'),
 
                 SeoFormSection::make(),
+
+                HindiTranslationSection::make([
+                    TextInput::make('title_hi')
+                        ->label('Title (Hindi)'),
+                    TextInput::make('excerpt_hi')
+                        ->label('Excerpt (Hindi)')
+                        ->maxLength(240),
+                    HindiTranslationSection::richEditor('body_hi', 'Body (Hindi)'),
+                ]),
             ]);
     }
 }

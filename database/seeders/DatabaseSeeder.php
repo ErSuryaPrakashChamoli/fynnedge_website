@@ -142,5 +142,8 @@ class DatabaseSeeder extends Seeder
         $this->call(FaqSeeder::class);
         $this->call(TestimonialSeeder::class);
         $this->call(NewsletterSeeder::class);
+
+        // Last: it translates the content every seeder above created.
+        $this->call(HindiContentSeeder::class);
     }
 }

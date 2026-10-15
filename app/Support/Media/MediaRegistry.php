@@ -11,6 +11,7 @@ use App\Models\LoanProduct;
 use App\Models\MarketingSection;
 use App\Models\PromoBar;
 use App\Models\SeoMeta;
+use App\Models\SocialVideo;
 use App\Models\Testimonial;
 use App\Models\VideoTestimonial;
 
@@ -86,6 +87,23 @@ final class MediaRegistry
                 directory: 'video-testimonial-photos',
                 altField: 'customer_photo_alt',
                 recordLabelField: 'customer_name',
+                withTrashed: true,
+            ),
+            MediaFieldDefinition::forModel(
+                modelClass: SocialVideo::class,
+                label: 'Social Media Video',
+                pathField: 'video_path',
+                directory: 'social-videos',
+                recordLabelField: 'title',
+                withTrashed: true,
+            ),
+            MediaFieldDefinition::forModel(
+                modelClass: SocialVideo::class,
+                label: 'Social Media Video Cover',
+                pathField: 'poster_path',
+                directory: 'social-video-covers',
+                altField: 'poster_alt',
+                recordLabelField: 'title',
                 withTrashed: true,
             ),
             MediaFieldDefinition::forModel(

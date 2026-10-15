@@ -3,10 +3,12 @@
 namespace App\Filament\Resources\LenderProductRates\Schemas;
 
 use App\Enums\LenderStatus;
+use App\Enums\RateSourceType;
 use App\Enums\RateType;
 use App\Enums\RateUnit;
 use App\Enums\RateVerificationStatus;
 use App\Enums\RepaymentMethod;
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\LenderProduct;
 use App\Models\LenderProductRate;
 use App\Models\LoanProduct;
@@ -174,18 +176,30 @@ class LenderProductRateForm
                     ]),
 
                 Section::make('Evidence')
-                    ->description('Every public rate must be traceable to the lender\'s own published rate schedule. Comparison sites (BankBazaar, Paisabazaar…) are not evidence.')
+                    ->description('Every public rate should be traceable to the lender\'s own published rate schedule. Use a comparison site (Paisabazaar, IndiaLends…) only when the lender\'s own site cannot be read: choose "Third-party" and name the site — the website then shows the rate as "As listed on …", never as verified, and it stays in Needs attention until confirmed with the lender.')
                     ->columns(2)
                     ->columnSpanFull()
                     ->components([
+                        Select::make('source_type')
+                            ->label('Source type')
+                            ->options(RateSourceType::class)
+                            ->default(RateSourceType::Official->value)
+                            ->required()
+                            ->live(),
+                        TextInput::make('source_name')
+                            ->label('Source name')
+                            ->maxLength(255)
+                            ->required(fn (Get $get): bool => self::isThirdParty($get('source_type')))
+                            ->placeholder(fn (Get $get): string => self::isThirdParty($get('source_type')) ? 'e.g. Paisabazaar' : 'e.g. HDFC Bank — Personal loan rates')
+                            ->helperText(fn (Get $get): ?string => self::isThirdParty($get('source_type')) ? 'Shown on the website: "As listed on {name}".' : null),
                         TextInput::make('source_url')
-                            ->label('Official source link')
+                            ->label('Source link')
                             ->url()
                             ->maxLength(2048)
                             ->live(onBlur: true)
                             ->rule(fn (): Closure => function (string $attribute, mixed $value, Closure $fail): void {
                                 if (filled($value) && ! RatePublicationRules::isOfficialSourceUrl($value)) {
-                                    $fail('Use the full https:// link to the lender\'s own page.');
+                                    $fail('Use the full https:// link to the page that states the rate.');
                                 }
                             })
                             ->columnSpanFull(),
@@ -204,7 +218,7 @@ class LenderProductRateForm
                             ->default(RateVerificationStatus::Unverified->value)
                             ->required()
                             ->live()
-                            ->helperText('Choose "Verified" only after you have read the rate on the lender\'s own website on the date above.'),
+                            ->helperText('Choose "Verified" only after you have read the rate on the source above, on the date above.'),
                     ]),
 
                 Section::make('Customer-facing notes')
@@ -249,10 +263,32 @@ class LenderProductRateForm
                             'effective_from' => $get('effective_from'),
                             'effective_until' => $get('effective_until'),
                             'source_url' => $get('source_url'),
+                            'source_type' => $get('source_type'),
+                            'source_name' => $get('source_name'),
                             'last_verified_at' => $get('last_verified_at'),
                             'verification_status' => $get('verification_status'),
                         ])),
                     ]),
+
+                HindiTranslationSection::make([
+                    TextInput::make('variant_hi')
+                        ->label('Product variant (Hindi)')
+                        ->maxLength(500),
+                    TextInput::make('borrower_segment_hi')
+                        ->label('Only for these borrowers (Hindi)')
+                        ->maxLength(500),
+                    TextInput::make('promo_label_hi')
+                        ->label('Offer name (Hindi)')
+                        ->maxLength(500),
+                    Textarea::make('eligibility_notes_hi')
+                        ->label('Who gets this rate (Hindi)')
+                        ->rows(2)
+                        ->maxLength(750),
+                    Textarea::make('disclaimer_hi')
+                        ->label('Disclaimer (Hindi)')
+                        ->rows(2)
+                        ->maxLength(750),
+                ])->columns(2),
             ]);
     }
 
@@ -277,6 +313,11 @@ class LenderProductRateForm
                 $offer->id => $offer->lender?->name.($offer->status === LenderStatus::Inactive ? ' (inactive offer)' : ''),
             ])
             ->all();
+    }
+
+    private static function isThirdParty(mixed $sourceType): bool
+    {
+        return ($sourceType instanceof RateSourceType ? $sourceType : RateSourceType::tryFrom((string) $sourceType)) === RateSourceType::ThirdParty;
     }
 
     private static function unit(Get $get): RateUnit

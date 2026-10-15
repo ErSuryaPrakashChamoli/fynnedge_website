@@ -3,6 +3,7 @@
 namespace App\Modules\Journey\Models;
 
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use App\Modules\Journey\Models\Concerns\EvaluatesCondition;
 use Database\Factories\JourneyStepFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -11,11 +12,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['journey_definition_id', 'key', 'title', 'description', 'order', 'condition_rules'])]
+#[Fillable(['journey_definition_id', 'key', 'title', 'description', 'order', 'condition_rules', 'title_hi', 'description_hi'])]
 class JourneyStep extends Model
 {
     /** @use HasFactory<JourneyStepFactory> */
-    use EvaluatesCondition, HasFactory, HasPublicId;
+    use EvaluatesCondition, HasFactory, HasPublicId, HasTranslations;
 
     protected static function newFactory(): JourneyStepFactory
     {
@@ -45,5 +46,16 @@ class JourneyStep extends Model
     public function fields(): HasMany
     {
         return $this->hasMany(JourneyStepField::class)->orderBy('order');
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'title',
+            'description',
+        ];
     }
 }

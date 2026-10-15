@@ -14,10 +14,10 @@ enum LandingPageGroup: string implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::ByAmount => 'By Amount',
-            self::ByType => 'By Type',
-            self::ByNeed => 'By Need',
-            self::ByLocation => 'By Location',
+            self::ByAmount => __('By Amount'),
+            self::ByType => __('By Type'),
+            self::ByNeed => __('By Need'),
+            self::ByLocation => __('By Location'),
         };
     }
 }

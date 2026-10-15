@@ -1,6 +1,10 @@
 <?php
 
 use App\Support\Calculators\FlexiHybridTenure;
+use Tests\TestCase;
+
+// The labels go through __() (the site is bilingual), which needs the translator.
+pest()->extend(TestCase::class);
 
 it('derives each lender\'s initial + subsequent structure from its min/max/initial tenure', function (int $min, int $max, int $initial, array $expected) {
     expect(FlexiHybridTenure::options($min, $max, $initial))->toBe($expected);

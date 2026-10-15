@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\EligibilityRuleSets\RelationManagers;
 
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Modules\Eligibility\Enums\RuleLogic;
 use App\Modules\Eligibility\Enums\RuleOperator;
 use App\Modules\Eligibility\Enums\RulePriority;
@@ -85,6 +86,14 @@ class RulesRelationManager extends RelationManager
                     ->columns(4)
                     ->addActionLabel('Add condition')
                     ->columnSpanFull(),
+
+                HindiTranslationSection::make([
+                    TextInput::make('label_hi')
+                        ->label('Label (Hindi)'),
+                    TextInput::make('customer_message_hi')
+                        ->label('Customer-facing message (Hindi)')
+                        ->columnSpanFull(),
+                ]),
             ]);
     }
 

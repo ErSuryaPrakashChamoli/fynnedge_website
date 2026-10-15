@@ -1,8 +1,8 @@
 @props([
     'embedded' => false,
-    'eyebrow' => 'Video testimonials',
-    'heading' => 'Real customers. Real stories.',
-    'intro' => 'Hear it straight from borrowers who found the right loan with FynnEdge.',
+    'eyebrow' => __('Video testimonials'),
+    'heading' => __('Real customers. Real stories.'),
+    'intro' => __('Hear it straight from borrowers who found the right loan with FynnEdge.'),
 ])
 
 {{--
@@ -68,10 +68,10 @@
             </div>
 
             <div x-show="! (atStart && atEnd)" x-cloak class="flex gap-2">
-                <button type="button" @click="scroll(-1)" :disabled="atStart" aria-label="Previous videos" class="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-sm transition hover:border-accent hover:text-accent disabled:pointer-events-none disabled:opacity-40">
+                <button type="button" @click="scroll(-1)" :disabled="atStart" aria-label="{{ __('Previous videos') }}" class="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-sm transition hover:border-accent hover:text-accent disabled:pointer-events-none disabled:opacity-40">
                     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-4 w-4" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m12.5 15-5-5 5-5" /></svg>
                 </button>
-                <button type="button" @click="scroll(1)" :disabled="atEnd" aria-label="More videos" class="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-sm transition hover:border-accent hover:text-accent disabled:pointer-events-none disabled:opacity-40">
+                <button type="button" @click="scroll(1)" :disabled="atEnd" aria-label="{{ __('More videos') }}" class="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-sm transition hover:border-accent hover:text-accent disabled:pointer-events-none disabled:opacity-40">
                     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-4 w-4" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m7.5 15 5-5-5-5" /></svg>
                 </button>
             </div>
@@ -127,7 +127,7 @@
                                 @pointerenter="if ($event.pointerType === 'mouse') { startPreview(); }"
                                 @pointerleave="stopPreview()"
                             @endif
-                            aria-label="Play {{ $testimonial->customer_name }}'s video testimonial"
+                            aria-label="{{ __("Play :name's video testimonial", ['name' => $testimonial->customer_name]) }}"
                             class="group relative block aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-accent to-accent-strong focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white"
                         >
                             <span class="absolute inset-0 flex items-center justify-center font-display text-6xl font-semibold text-white/20" aria-hidden="true">
@@ -185,7 +185,7 @@
                                 <span class="flex h-6 w-6 items-center justify-center rounded-full bg-accent text-white" aria-hidden="true">
                                     <svg viewBox="0 0 20 20" fill="currentColor" class="ml-0.5 h-3 w-3"><path d="M6 4l10 6-10 6z" /></svg>
                                 </span>
-                                Watch {{ Str::before($testimonial->customer_name, ' ') }}&rsquo;s story
+                                {!! __('Watch :name&rsquo;s story', ['name' => e(Str::before($testimonial->customer_name, ' '))]) !!}
                             </button>
 
                             <div class="mt-3 flex items-center gap-3 border-t border-line pt-3">
@@ -202,7 +202,7 @@
                                             {{ Str::upper(Str::substr($testimonial->customer_name, 0, 1)) }}
                                         </span>
                                     @endif
-                                    <span class="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-pass text-white ring-2 ring-surface" title="Verified customer">
+                                    <span class="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-pass text-white ring-2 ring-surface" title="{{ __('Verified customer') }}">
                                         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="3" class="h-2.5 w-2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m5 10.5 3 3 7-7" /></svg>
                                     </span>
                                 </span>
@@ -215,7 +215,7 @@
                             </div>
 
                             @if ($testimonial->rating)
-                                <div class="mt-2.5 flex gap-0.5 text-warn" role="img" aria-label="Rated {{ $testimonial->rating }} out of 5">
+                                <div class="mt-2.5 flex gap-0.5 text-warn" role="img" aria-label="{{ __('Rated :rating out of 5', ['rating' => $testimonial->rating]) }}">
                                     @for ($i = 1; $i <= 5; $i++)
                                         <svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 {{ $i > $testimonial->rating ? 'text-line-strong' : '' }}" aria-hidden="true">
                                             <path d="M10 1.5l2.6 5.4 5.9.8-4.3 4.2 1 5.9L10 15l-5.2 2.8 1-5.9L1.5 7.7l5.9-.8L10 1.5Z" />

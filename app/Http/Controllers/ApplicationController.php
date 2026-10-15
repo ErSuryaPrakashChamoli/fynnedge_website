@@ -23,7 +23,7 @@ class ApplicationController extends Controller
         $application = $action->handle($eligibilityResult);
 
         if (! $application) {
-            return back()->with('status', 'This lender is not currently available for that profile.');
+            return back()->with('status', __('This lender is not currently available for that profile.'));
         }
 
         return redirect()->route('applications.show', $application);
@@ -91,10 +91,10 @@ class ApplicationController extends Controller
         }
 
         if ($uploadedCount === 0) {
-            return back()->withErrors(['documents' => 'Choose at least one file before uploading.']);
+            return back()->withErrors(['documents' => __('Choose at least one file before uploading.')]);
         }
 
-        return redirect()->route('applications.show', $application)->with('status', 'Documents uploaded.');
+        return redirect()->route('applications.show', $application)->with('status', __('Documents uploaded.'));
     }
 
     /**
@@ -109,7 +109,7 @@ class ApplicationController extends Controller
 
         $action->handle($document);
 
-        return redirect()->route('applications.show', $application)->with('status', 'Document removed.');
+        return redirect()->route('applications.show', $application)->with('status', __('Document removed.'));
     }
 
     public function submit(Application $application, SubmitApplication $action): RedirectResponse
@@ -120,6 +120,6 @@ class ApplicationController extends Controller
             return back()->with('status', $errors[0]);
         }
 
-        return redirect()->route('applications.show', $application)->with('status', 'Application submitted — we\'ll be in touch shortly.');
+        return redirect()->route('applications.show', $application)->with('status', __('Application submitted — we\'ll be in touch shortly.'));
     }
 }

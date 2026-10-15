@@ -24,10 +24,10 @@
                 <table class="w-full min-w-[42rem] text-left text-sm">
                     <thead class="bg-surface-2 text-xs font-semibold uppercase tracking-wide text-ink-faint">
                         <tr>
-                            <th class="whitespace-nowrap px-5 py-3">Level</th>
-                            <th class="whitespace-nowrap px-5 py-3">Turn-around Time</th>
-                            <th class="px-5 py-3">Name &amp; Designation</th>
-                            <th class="px-5 py-3">Contact</th>
+                            <th class="whitespace-nowrap px-5 py-3">{{ __('Level') }}</th>
+                            <th class="whitespace-nowrap px-5 py-3">{{ __('Turn-around Time') }}</th>
+                            <th class="px-5 py-3">{{ __('Name & Designation') }}</th>
+                            <th class="px-5 py-3">{{ __('Contact') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-line">
@@ -36,18 +36,18 @@
                                 <td class="whitespace-nowrap px-5 py-4 align-top font-medium text-ink">{{ $level->level }}</td>
                                 <td class="whitespace-nowrap px-5 py-4 align-top text-ink-muted">{{ $level->turnaround_time }}</td>
                                 <td class="px-5 py-4 align-top">
-                                    <p class="text-ink">Name: <span class="font-semibold">{{ $level->contact_name }}</span></p>
-                                    <p class="mt-1 text-ink-muted">Designation: {{ $level->designation }}</p>
+                                    <p class="text-ink">{{ __('Name:') }} <span class="font-semibold">{{ $level->contact_name }}</span></p>
+                                    <p class="mt-1 text-ink-muted">{{ __('Designation:') }} {{ $level->designation }}</p>
                                 </td>
                                 <td class="px-5 py-4 align-top text-ink-muted">
                                     @if ($level->address)
-                                        <p>Address: {{ $level->address }}</p>
+                                        <p>{{ __('Address:') }} {{ $level->address }}</p>
                                     @endif
                                     @if ($level->phone)
-                                        <p class="mt-1">Phone: <span class="font-semibold text-ink">{{ $level->phone }}</span></p>
+                                        <p class="mt-1">{{ __('Phone:') }} <span class="font-semibold text-ink">{{ $level->phone }}</span></p>
                                     @endif
                                     @if ($level->email)
-                                        <p class="mt-1">Email: <a href="mailto:{{ $level->email }}" class="text-accent">{{ $level->email }}</a></p>
+                                        <p class="mt-1">{{ __('Email:') }} <a href="mailto:{{ $level->email }}" class="text-accent">{{ $level->email }}</a></p>
                                     @endif
                                 </td>
                             </tr>

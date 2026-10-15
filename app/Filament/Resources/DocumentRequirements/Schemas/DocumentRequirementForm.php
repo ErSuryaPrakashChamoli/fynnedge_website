@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\DocumentRequirements\Schemas;
 
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\LenderProduct;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -42,6 +43,11 @@ class DocumentRequirementForm
                     ->default(1),
                 TextInput::make('notes')
                     ->columnSpanFull(),
+                HindiTranslationSection::make([
+                    TextInput::make('notes_hi')
+                        ->label('Notes (Hindi)')
+                        ->columnSpanFull(),
+                ]),
             ]);
     }
 }

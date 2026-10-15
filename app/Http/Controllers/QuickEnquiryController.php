@@ -95,8 +95,8 @@ class QuickEnquiryController extends Controller
             'otp_code' => ['nullable', "digits:{$length}"],
             'source' => ['nullable', 'string', 'max:40'],
         ], [
-            'otp_challenge_id.required' => 'Please request a verification code first.',
-            'otp_code.digits' => "Please enter the {$length}-digit code we sent you.",
+            'otp_challenge_id.required' => __('Please request a verification code first.'),
+            'otp_code.digits' => __('Please enter the :length-digit code we sent you.', ['length' => $length]),
         ]);
 
         $challenge = MobileOtpChallenge::findForVerification($validated['otp_challenge_id'], $validated['phone'], MobileOtpPurpose::LoanEnquiry);
@@ -112,7 +112,7 @@ class QuickEnquiryController extends Controller
                 $this->rejectCode($result);
             }
         } elseif ($challenge->status !== MobileOtpStatus::Verified) {
-            throw ValidationException::withMessages(['otp_code' => "Please enter the {$length}-digit code we sent you."]);
+            throw ValidationException::withMessages(['otp_code' => __('Please enter the :length-digit code we sent you.', ['length' => $length])]);
         }
 
         // Redeeming the challenge and writing the lead succeed or fail together,
@@ -156,8 +156,8 @@ class QuickEnquiryController extends Controller
             'website' => ['prohibited'],
             ...$extraRules,
         ], [
-            'phone.required' => 'Please enter a valid 10-digit mobile number.',
-            'phone.regex' => 'Please enter a valid 10-digit mobile number.',
+            'phone.required' => __('Please enter a valid 10-digit mobile number.'),
+            'phone.regex' => __('Please enter a valid 10-digit mobile number.'),
             ...$extraMessages,
         ]);
     }
@@ -177,7 +177,7 @@ class QuickEnquiryController extends Controller
 
         if ($challenge->status === MobileOtpStatus::Failed) {
             throw ValidationException::withMessages([
-                'phone' => 'We could not send a verification code right now. Please try again shortly.',
+                'phone' => __('We could not send a verification code right now. Please try again shortly.'),
             ]);
         }
 

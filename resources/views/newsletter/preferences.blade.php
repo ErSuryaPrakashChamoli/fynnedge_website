@@ -1,11 +1,11 @@
 @php $status = session('newsletterStatus'); @endphp
 
-<x-layouts.app title="Email preferences" robots="noindex, nofollow">
+<x-layouts.app :title="__('Email preferences')" robots="noindex, nofollow">
     <section class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-        <x-ui.breadcrumbs :trail="['Email preferences' => null]" />
+        <x-ui.breadcrumbs :trail="[__('Email preferences') => null]" />
 
-        <h1 class="mt-6 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Email preferences</h1>
-        <p class="mt-3 text-ink-muted">Choose what {{ $subscriber->email }} receives. Untick everything to stop all emails.</p>
+        <h1 class="mt-6 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">{{ __('Email preferences') }}</h1>
+        <p class="mt-3 text-ink-muted">{{ __('Choose what :email receives. Untick everything to stop all emails.', ['email' => $subscriber->email]) }}</p>
 
         @if ($status)
             <x-ui.alert class="mt-5" tone="pass">{{ $status }}</x-ui.alert>
@@ -33,9 +33,9 @@
             </div>
 
             <div class="mt-6 flex flex-wrap items-center gap-3">
-                <x-ui.button type="submit">Save preferences</x-ui.button>
+                <x-ui.button type="submit">{{ __('Save preferences') }}</x-ui.button>
                 <a href="{{ route('newsletter.unsubscribe', ['token' => $token]) }}" class="text-sm text-ink-muted underline transition-colors hover:text-ink">
-                    Unsubscribe from everything
+                    {{ __('Unsubscribe from everything') }}
                 </a>
             </div>
         </form>

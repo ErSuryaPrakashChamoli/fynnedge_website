@@ -10,6 +10,8 @@ class CityOptions
      * an "Other" fallback so an unlisted city never blocks the user; this is a convenience
      * list, not the source of truth.
      *
+     * Labels are translated (Hindi visitors see "मुंबई"); values never are.
+     *
      * @return array<int, array{value: string, label: string}>
      */
     public static function all(): array
@@ -58,7 +60,7 @@ class CityOptions
             'Ambala', 'Morbi', 'Fatehpur', 'Rae Bareli', 'Khora', 'Chittoor', 'Bhusawal',
         ])
             ->unique()
-            ->map(fn (string $name) => ['value' => $name, 'label' => $name])
+            ->map(fn (string $name) => ['value' => $name, 'label' => __($name)])
             ->values()
             ->all();
     }

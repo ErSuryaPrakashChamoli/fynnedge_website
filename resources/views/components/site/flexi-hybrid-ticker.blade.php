@@ -35,14 +35,14 @@
 @if ($loanProduct)
     @php
         $tickerText = $marketing?->description;
-        $ctaLabel = $marketing?->cta_label ?: 'Apply Now';
+        $ctaLabel = $marketing?->cta_label ?: __('Apply Now');
         $ctaUrl = $marketing?->cta_url ?: (Route::has('loans.apply') ? route('loans.apply', $loanProduct) : null);
     @endphp
     <div class="flexi-hybrid-panel relative overflow-hidden border-b border-line bg-surface">
         <div class="mx-auto flex max-w-7xl items-center gap-3 px-4 py-2.5 sm:gap-5 sm:px-6 lg:px-8">
             <span class="hidden shrink-0 items-center gap-1.5 rounded-full bg-accent-soft px-3 py-1 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent sm:inline-flex">
                 <svg viewBox="0 0 20 20" fill="currentColor" class="h-3 w-3" aria-hidden="true"><path d="M10 1.5l2.6 5.4 5.9.8-4.3 4.2 1 5.9L10 15l-5.2 2.8 1-5.9L1.5 7.7l5.9-.8L10 1.5Z" /></svg>
-                {{ $marketing?->heading ?: 'Our Specialty' }}
+                {{ $marketing?->heading ?: __('Our Specialty') }}
             </span>
 
             <div class="relative min-w-0 flex-1 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_4%,black_96%,transparent)]">
@@ -54,7 +54,7 @@
                                     @if ($tickerText)
                                         {{ $tickerText }}
                                     @else
-                                        Flexi Hybrid Term Loan <span class="text-ink-faint">(Overdraft)</span>
+                                        {{ __('Flexi Hybrid Term Loan') }} <span class="text-ink-faint">{{ __('(Overdraft)') }}</span>
                                         <span class="text-accent">—</span>
                                         Bajaj Finance <span class="text-ink-faint">//</span> Tata Capital <span class="text-ink-faint">//</span> Aditya Birla Finance <span class="text-ink-faint">//</span> Piramal Finance
                                     @endif

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\LoanProducts\Schemas;
 
 use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Filament\Schemas\HtmlBodyEditor;
 use App\Filament\Schemas\SeoFormSection;
 use App\Models\LoanProduct;
@@ -157,6 +158,38 @@ class LoanProductForm
                     ]),
 
                 SeoFormSection::make(),
+
+                HindiTranslationSection::make([
+                    TextInput::make('name_hi')
+                        ->label('Name (Hindi)'),
+                    TextInput::make('summary_hi')
+                        ->label('Summary (Hindi)')
+                        ->maxLength(240),
+                    TextInput::make('marketing_headline_hi')
+                        ->label('Marketing headline (Hindi)')
+                        ->maxLength(500),
+                    TagsInput::make('benefits_hi')
+                        ->label('Benefits (Hindi)'),
+                    TextInput::make('cta_label_hi')
+                        ->label('Primary button label (Hindi)')
+                        ->maxLength(500),
+                    TextInput::make('image_alt_hi')
+                        ->label('Image alt text (Hindi)')
+                        ->maxLength(500),
+                    ...HtmlBodyEditor::make('body_hi', label: 'Body (Hindi)'),
+                    TagsInput::make('features_hi')
+                        ->label('Features (Hindi)'),
+                    TagsInput::make('eligibility_points_hi')
+                        ->label('Eligibility points (Hindi)'),
+                    TagsInput::make('documents_required_hi')
+                        ->label('Documents required (Hindi)'),
+                    TagsInput::make('process_steps_hi')
+                        ->label('Process steps (Hindi)'),
+                    TextInput::make('interest_rate_note_hi')
+                        ->label('Calculator rate note (Hindi)')
+                        ->rule(fn () => RateText::rule()),
+                    HindiTranslationSection::richEditor('calculator_explanation_hi', 'EMI calculation explanation (Hindi)'),
+                ]),
             ]);
     }
 }

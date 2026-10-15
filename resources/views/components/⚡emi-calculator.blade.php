@@ -139,7 +139,7 @@ new class extends Component
         $first = $this->monthDate($monthsInYear[0]['month']);
         $last = $this->monthDate(end($monthsInYear)['month']);
 
-        return $first->isSameMonth($last) ? $first->format('M Y') : "{$first->format('M Y')} – {$last->format('M Y')}";
+        return $first->isSameMonth($last) ? $first->translatedFormat('M Y') : "{$first->translatedFormat('M Y')} – {$last->translatedFormat('M Y')}";
     }
 
     #[Computed]
@@ -190,7 +190,7 @@ new class extends Component
         $product = $this->product;
         $fallbackBody = $product?->calculator_explanation ?: ($product?->summary ? '<p>'.e($product->summary).'</p>' : null);
 
-        return CalculatorPage::aboutFor('emi/'.$this->category, 'About the '.$this->preset['label'], $fallbackBody);
+        return CalculatorPage::aboutFor('emi/'.$this->category, __('About the :name', ['name' => $this->preset['label']]), $fallbackBody);
     }
 
     /**
@@ -414,10 +414,10 @@ new class extends Component
         }
 
         $preset = $this->preset;
-        [$min, $max, $label] = match ($property) {
-            'principal' => [$preset['min_amount'], $preset['max_amount'], 'loan amount'],
-            'annualRate' => [$preset['min_rate'], $preset['max_rate'], 'interest rate'],
-            'tenureYears' => [$preset['min_years'], $preset['max_years'], 'tenure'],
+        [$min, $max, $message] = match ($property) {
+            'principal' => [$preset['min_amount'], $preset['max_amount'], __("Adjusted the loan amount to stay within :loan's allowed range.", ['loan' => $preset['label']])],
+            'annualRate' => [$preset['min_rate'], $preset['max_rate'], __("Adjusted the interest rate to stay within :loan's allowed range.", ['loan' => $preset['label']])],
+            'tenureYears' => [$preset['min_years'], $preset['max_years'], __("Adjusted the tenure to stay within :loan's allowed range.", ['loan' => $preset['label']])],
         };
 
         $value = $this->{$property} ?? null;
@@ -425,7 +425,7 @@ new class extends Component
         if ($value === null || $value < $min || $value > $max) {
             $clamped = max($min, min($max, $value ?? $min));
             $this->{$property} = $property === 'tenureYears' ? (int) $clamped : (float) $clamped;
-            $this->addError($property, "Adjusted the {$label} to stay within {$this->preset['label']}'s allowed range.");
+            $this->addError($property, $message);
 
             return;
         }
@@ -436,7 +436,7 @@ new class extends Component
 ?>
 
 <div>
-    <div class="flex flex-wrap gap-2" role="tablist" aria-label="Loan type">
+    <div class="flex flex-wrap gap-2" role="tablist" aria-label="{{ __('Loan type') }}">
         {{-- On /calculators/emi/{category} each loan type is its own page (own headline, intro, About, and the Flexi Hybrid calculator), so the tabs link there instead of switching in place. --}}
         @foreach ($this->categories as $option)
             @if ($placementRoute === 'calculators.emi')
@@ -474,7 +474,7 @@ new class extends Component
         <div class="flex flex-col gap-6">
             <div>
                 <div class="flex items-baseline justify-between gap-3">
-                    <label for="principal" class="text-sm font-medium text-ink">Loan amount</label>
+                    <label for="principal" class="text-sm font-medium text-ink">{{ __('Loan amount') }}</label>
                     <div class="flex items-center gap-1 font-mono text-sm text-ink-muted">
                         ₹
                         <input
@@ -495,21 +495,21 @@ new class extends Component
                 </div>
                 <input
                     type="range"
-                    aria-label="Loan amount"
+                    aria-label="{{ __('Loan amount') }}"
                     min="{{ $this->preset['min_amount'] }}"
                     max="{{ $this->preset['max_amount'] }}"
                     step="{{ max((int) (($this->preset['max_amount'] - $this->preset['min_amount']) / 200), 1000) }}"
                     wire:model.live="principal"
                     class="mt-2 w-full accent-accent"
                 >
-                <p class="mt-1 text-xs text-ink-faint" x-text="numberToIndianWords(String($wire.principal)) + ' Rupees only'"></p>
-                <p class="mt-1 text-xs text-ink-faint">Maximum loan amount: ₹{{ $this->formatAmount($this->preset['max_amount']) }}</p>
+                <p class="mt-1 text-xs text-ink-faint" x-text="numberToIndianWords(String($wire.principal)) + @js(' '.__('Rupees only'))"></p>
+                <p class="mt-1 text-xs text-ink-faint">{{ __('Maximum loan amount: ₹:amount', ['amount' => $this->formatAmount($this->preset['max_amount'])]) }}</p>
                 @error('principal') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
 
             <div>
                 <div class="flex items-baseline justify-between gap-3">
-                    <label for="annualRate" class="text-sm font-medium text-ink">Interest rate (p.a.)</label>
+                    <label for="annualRate" class="text-sm font-medium text-ink">{{ __('Interest rate (p.a.)') }}</label>
                     <div class="flex items-center gap-1 font-mono text-sm text-ink-muted">
                         <input
                             id="annualRate"
@@ -531,7 +531,7 @@ new class extends Component
                 </div>
                 <input
                     type="range"
-                    aria-label="Interest rate"
+                    aria-label="{{ __('Interest rate') }}"
                     min="{{ $this->preset['min_rate'] }}"
                     max="{{ $this->preset['max_rate'] }}"
                     step="0.1"
@@ -540,9 +540,9 @@ new class extends Component
                 >
                 <p class="mt-1 text-xs text-ink-faint">
                     @if ($this->preset['published_rate_range'] ?? null)
-                        Lenders' published rates for {{ $this->preset['label'] }}: {{ $this->preset['published_rate_range'] }}.
+                        {!! __("Lenders' published rates for :loan: :range.", ['loan' => e($this->preset['label']), 'range' => e($this->preset['published_rate_range'])]) !!}
                     @else
-                        Set the rate you have been offered — {{ $this->preset['label'] }} rates vary by lender.
+                        {{ __('Set the rate you have been offered — :loan rates vary by lender.', ['loan' => $this->preset['label']]) }}
                     @endif
                     {{ $this->preset['rate_note'] }}
                 </p>
@@ -551,7 +551,7 @@ new class extends Component
 
             <div>
                 <div class="flex items-baseline justify-between gap-3">
-                    <label for="tenureYears" class="text-sm font-medium text-ink">Tenure</label>
+                    <label for="tenureYears" class="text-sm font-medium text-ink">{{ __('Tenure') }}</label>
                     <div class="flex items-center gap-1 font-mono text-sm text-ink-muted">
                         <input
                             id="tenureYears"
@@ -568,68 +568,68 @@ new class extends Component
                             x-on:keydown.enter.prevent="$el.blur()"
                             class="w-16 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                         >
-                        {{ Str::plural('year', $tenureYears) }}
+                        {{ $tenureYears === 1 ? __('year') : __('years') }}
                     </div>
                 </div>
                 <input
                     type="range"
-                    aria-label="Tenure in years"
+                    aria-label="{{ __('Tenure in years') }}"
                     min="{{ $this->preset['min_years'] }}"
                     max="{{ $this->preset['max_years'] }}"
                     step="1"
                     wire:model.live="tenureYears"
                     class="mt-2 w-full accent-accent"
                 >
-                <p class="mt-1 text-xs text-ink-faint">Maximum tenure: {{ $this->preset['max_years'] }} {{ Str::plural('year', $this->preset['max_years']) }} ({{ $this->preset['max_years'] * 12 }} months)</p>
+                <p class="mt-1 text-xs text-ink-faint">{{ __('Maximum tenure: :years :unit (:months months)', ['years' => $this->preset['max_years'], 'unit' => $this->preset['max_years'] === 1 ? __('year') : __('years'), 'months' => $this->preset['max_years'] * 12]) }}</p>
                 @error('tenureYears') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
         </div>
 
         <div class="flex flex-col justify-center gap-5 rounded-2xl border border-line bg-surface-2 p-7">
             <div>
-                <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Monthly EMI</p>
+                <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Monthly EMI') }}</p>
                 <p class="mt-1 font-display text-4xl font-semibold text-accent">₹{{ $this->formatAmount($this->result['emi']) }}</p>
             </div>
             <div class="grid grid-cols-2 gap-4 border-t border-line pt-5">
                 <div>
-                    <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Total interest</p>
+                    <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Total interest') }}</p>
                     <p class="mt-1 text-lg font-medium text-ink">₹{{ $this->formatAmount($this->result['total_interest']) }}</p>
                 </div>
                 <div>
-                    <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Total payment</p>
+                    <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Total payment') }}</p>
                     <p class="mt-1 text-lg font-medium text-ink">₹{{ $this->formatAmount($this->result['total_payment']) }}</p>
                 </div>
             </div>
-            <p class="text-xs text-ink-faint">Indicative only — your actual EMI depends on the lender's exact rate and terms at sanction.</p>
+            <p class="text-xs text-ink-faint">{!! __("Indicative only — your actual EMI depends on the lender's exact rate and terms at sanction.") !!}</p>
         </div>
     </div>
 
     @if ($this->schedule !== [])
         <div class="mt-10 grid gap-8 lg:grid-cols-[auto_1fr]">
             <div class="flex flex-col items-center gap-4 lg:items-start">
-                <p class="font-display text-lg font-semibold text-ink">Principal vs. interest</p>
+                <p class="font-display text-lg font-semibold text-ink">{{ __('Principal vs. interest') }}</p>
                 <div
                     class="h-40 w-40 shrink-0 rounded-full"
                     style="background: conic-gradient(var(--color-accent) 0% {{ $this->principalPercent }}%, var(--color-warn) {{ $this->principalPercent }}% 100%)"
                     role="img"
-                    aria-label="{{ $this->principalPercent }}% principal, {{ $this->interestPercent }}% interest"
+                    aria-label="{{ __(':principal% principal, :interest% interest', ['principal' => $this->principalPercent, 'interest' => $this->interestPercent]) }}"
                 ></div>
                 <ul class="flex flex-col gap-2 text-sm">
                     <li class="flex items-center gap-2">
                         <span class="h-2.5 w-2.5 shrink-0 rounded-full bg-accent"></span>
-                        <span class="text-ink-muted">Principal</span>
+                        <span class="text-ink-muted">{{ __('Principal') }}</span>
                         <span class="font-mono font-medium text-ink">{{ $this->principalPercent }}%</span>
                     </li>
                     <li class="flex items-center gap-2">
                         <span class="h-2.5 w-2.5 shrink-0 rounded-full bg-warn"></span>
-                        <span class="text-ink-muted">Interest</span>
+                        <span class="text-ink-muted">{{ __('Interest') }}</span>
                         <span class="font-mono font-medium text-ink">{{ $this->interestPercent }}%</span>
                     </li>
                 </ul>
             </div>
 
             <div>
-                <p class="font-display text-lg font-semibold text-ink">Principal &amp; interest paid per year</p>
+                <p class="font-display text-lg font-semibold text-ink">{{ __('Principal & interest paid per year') }}</p>
                 <div class="mt-4 flex items-end gap-1.5 overflow-x-auto border-b border-line pb-1" style="min-height: 12rem">
                     @php
                         $maxYearTotal = max(1, ...array_map(fn ($row) => $row['principal_paid'] + $row['interest_paid'], $this->schedule));
@@ -641,7 +641,7 @@ new class extends Component
                             $principalShare = $yearTotal > 0 ? $row['principal_paid'] / $yearTotal * 100 : 0;
                             $interestShare = 100 - $principalShare;
                         @endphp
-                        <div class="flex w-8 shrink-0 flex-col items-center gap-1.5" title="{{ $this->yearLabel($this->monthsByYear[$row['year']]) }}: ₹{{ $this->formatAmount($row['principal_paid']) }} principal, ₹{{ $this->formatAmount($row['interest_paid']) }} interest">
+                        <div class="flex w-8 shrink-0 flex-col items-center gap-1.5" title="{{ __(':period: ₹:principal principal, ₹:interest interest', ['period' => $this->yearLabel($this->monthsByYear[$row['year']]), 'principal' => $this->formatAmount($row['principal_paid']), 'interest' => $this->formatAmount($row['interest_paid'])]) }}">
                             <div class="flex w-full flex-col justify-end overflow-hidden rounded-t" style="height: 10rem">
                                 <div style="height: {{ $barHeight }}%" class="flex w-full flex-col justify-end overflow-hidden">
                                     <div class="w-full bg-warn" style="height: {{ $interestShare }}%"></div>
@@ -652,20 +652,20 @@ new class extends Component
                         </div>
                     @endforeach
                 </div>
-                <p class="mt-2 text-xs text-ink-faint">Time on the x-axis, amount repaid on the y-axis — early on leans toward interest, later on toward principal.</p>
+                <p class="mt-2 text-xs text-ink-faint">{{ __('Time on the x-axis, amount repaid on the y-axis — early on leans toward interest, later on toward principal.') }}</p>
             </div>
         </div>
 
         <div class="mt-10">
-            <p class="font-display text-lg font-semibold text-ink">Full breakdown, starting this month</p>
-            <p class="mt-1 text-xs text-ink-faint">Assumes your first EMI falls this month — click a period to see every month within it.</p>
+            <p class="font-display text-lg font-semibold text-ink">{{ __('Full breakdown, starting this month') }}</p>
+            <p class="mt-1 text-xs text-ink-faint">{{ __('Assumes your first EMI falls this month — click a period to see every month within it.') }}</p>
             <div class="mt-4 rounded-xl border border-line">
                 <div class="hidden border-b border-line bg-surface-2 px-4 py-2.5 text-left text-xs font-medium text-ink-muted sm:grid sm:grid-cols-[2rem_1fr_1fr_1fr_1fr]">
                     <span></span>
-                    <span>Period</span>
-                    <span class="text-right">Principal paid</span>
-                    <span class="text-right">Interest paid</span>
-                    <span class="text-right">Total paid</span>
+                    <span>{{ __('Period') }}</span>
+                    <span class="text-right">{{ __('Principal paid') }}</span>
+                    <span class="text-right">{{ __('Interest paid') }}</span>
+                    <span class="text-right">{{ __('Total paid') }}</span>
                 </div>
                 @foreach ($this->schedule as $row)
                     <details class="group border-b border-line last:border-0 odd:bg-surface even:bg-surface-2/50">
@@ -677,13 +677,13 @@ new class extends Component
                             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5 text-ink-faint transition-transform group-open:rotate-90"><path stroke-linecap="round" stroke-linejoin="round" d="M7 4l6 6-6 6" /></svg>
                             <span class="font-medium text-ink">{{ $this->yearLabel($this->monthsByYear[$row['year']]) }}</span>
                             <span class="col-start-2 flex items-baseline justify-between gap-3 font-mono text-ink sm:col-start-auto sm:block sm:text-right">
-                                <span class="font-sans text-xs font-normal text-ink-faint sm:hidden">Principal paid</span>₹{{ $this->formatAmount($row['principal_paid']) }}
+                                <span class="font-sans text-xs font-normal text-ink-faint sm:hidden">{{ __('Principal paid') }}</span>₹{{ $this->formatAmount($row['principal_paid']) }}
                             </span>
                             <span class="col-start-2 flex items-baseline justify-between gap-3 font-mono text-ink sm:col-start-auto sm:block sm:text-right">
-                                <span class="font-sans text-xs font-normal text-ink-faint sm:hidden">Interest paid</span>₹{{ $this->formatAmount($row['interest_paid']) }}
+                                <span class="font-sans text-xs font-normal text-ink-faint sm:hidden">{{ __('Interest paid') }}</span>₹{{ $this->formatAmount($row['interest_paid']) }}
                             </span>
                             <span class="col-start-2 flex items-baseline justify-between gap-3 font-mono text-ink-muted sm:col-start-auto sm:block sm:text-right">
-                                <span class="font-sans text-xs font-normal text-ink-faint sm:hidden">Total paid</span>₹{{ $this->formatAmount($row['total_paid']) }}
+                                <span class="font-sans text-xs font-normal text-ink-faint sm:hidden">{{ __('Total paid') }}</span>₹{{ $this->formatAmount($row['total_paid']) }}
                             </span>
                         </summary>
 
@@ -695,17 +695,17 @@ new class extends Component
                             <table class="w-full whitespace-nowrap text-xs">
                                 <thead>
                                     <tr class="text-left text-ink-faint">
-                                        <th class="py-1.5 pr-3 font-medium">Month</th>
-                                        <th class="py-1.5 pr-3 text-right font-medium">Principal paid</th>
-                                        <th class="py-1.5 pr-3 text-right font-medium">Interest paid</th>
-                                        <th class="py-1.5 pr-3 text-right font-medium">Total paid</th>
-                                        <th class="py-1.5 text-right font-medium">Balance remaining</th>
+                                        <th class="py-1.5 pr-3 font-medium">{{ __('Month') }}</th>
+                                        <th class="py-1.5 pr-3 text-right font-medium">{{ __('Principal paid') }}</th>
+                                        <th class="py-1.5 pr-3 text-right font-medium">{{ __('Interest paid') }}</th>
+                                        <th class="py-1.5 pr-3 text-right font-medium">{{ __('Total paid') }}</th>
+                                        <th class="py-1.5 text-right font-medium">{{ __('Balance remaining') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($this->monthsByYear[$row['year']] as $monthRow)
                                         <tr class="border-t border-line/60">
-                                            <td class="py-1.5 pr-3 text-ink-muted">{{ $this->monthDate($monthRow['month'])->format('M Y') }}</td>
+                                            <td class="py-1.5 pr-3 text-ink-muted">{{ $this->monthDate($monthRow['month'])->translatedFormat('M Y') }}</td>
                                             <td class="py-1.5 pr-3 text-right font-mono text-ink">₹{{ $this->formatAmount($monthRow['principal_paid']) }}</td>
                                             <td class="py-1.5 pr-3 text-right font-mono text-ink">₹{{ $this->formatAmount($monthRow['interest_paid']) }}</td>
                                             <td class="py-1.5 pr-3 text-right font-mono text-ink-muted">₹{{ $this->formatAmount($monthRow['total_paid']) }}</td>
@@ -719,7 +719,7 @@ new class extends Component
                 @endforeach
 
                 <div class="border-t border-line bg-surface-2 px-4 py-2.5 text-xs text-ink-faint">
-                    Balance remaining after the last month of each period shown above.
+                    {{ __('Balance remaining after the last month of each period shown above.') }}
                 </div>
             </div>
         </div>
@@ -738,17 +738,17 @@ new class extends Component
 
             <div class="mt-10 grid gap-8 lg:grid-cols-2">
                 <div>
-                    <h3 class="font-display text-lg font-semibold text-ink">Find your ideal Tenure</h3>
+                    <h3 class="font-display text-lg font-semibold text-ink">{{ __('Find your ideal Tenure') }}</h3>
                     <p class="mt-1 text-xs text-ink-faint">
-                        Pick 3 tenures to compare — same ₹{{ $this->formatAmount($this->principal) }} at {{ number_format($this->annualRate, 2) }}% each time.
+                        {{ __('Pick 3 tenures to compare — same ₹:amount at :rate% each time.', ['amount' => $this->formatAmount($this->principal), 'rate' => number_format($this->annualRate, 2)]) }}
                     </p>
                     <div class="mt-4 overflow-x-auto rounded-xl border border-line">
                         <table class="w-full text-sm">
                             <thead>
                                 <tr class="border-b border-line bg-surface-2 text-left text-xs text-ink-muted">
-                                    <th class="px-3 py-2 font-medium">Tenure</th>
-                                    <th class="px-3 py-2 text-right font-medium">EMI</th>
-                                    <th class="px-3 py-2 text-right font-medium">Total interest</th>
+                                    <th class="px-3 py-2 font-medium">{{ __('Tenure') }}</th>
+                                    <th class="px-3 py-2 text-right font-medium">{{ __('EMI') }}</th>
+                                    <th class="px-3 py-2 text-right font-medium">{{ __('Total interest') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -757,11 +757,11 @@ new class extends Component
                                         <td class="px-3 py-2 text-ink">
                                             <select
                                                 wire:model.live="compareTenureYears.{{ $index }}"
-                                                aria-label="Tenure option {{ $index + 1 }}"
+                                                aria-label="{{ __('Tenure option :number', ['number' => $index + 1]) }}"
                                                 class="rounded-md border border-line-strong bg-surface px-2 py-1 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                                             >
                                                 @foreach ($this->tenureOptions as $option)
-                                                    <option value="{{ $option }}">{{ $option }} {{ Str::plural('year', $option) }}</option>
+                                                    <option value="{{ $option }}">{{ $option }} {{ $option === 1 ? __('year') : __('years') }}</option>
                                                 @endforeach
                                             </select>
                                         </td>
@@ -775,17 +775,17 @@ new class extends Component
                 </div>
 
                 <div>
-                    <h3 class="font-display text-lg font-semibold text-ink">Compare Rates &amp; Savings</h3>
+                    <h3 class="font-display text-lg font-semibold text-ink">{{ __('Compare Rates & Savings') }}</h3>
                     <p class="mt-1 text-xs text-ink-faint">
-                        Pick 3 rates to compare — same ₹{{ $this->formatAmount($this->principal) }} over {{ $this->tenureYears }} {{ Str::plural('year', $this->tenureYears) }} each time.
+                        {{ __('Pick 3 rates to compare — same ₹:amount over :years :unit each time.', ['amount' => $this->formatAmount($this->principal), 'years' => $this->tenureYears, 'unit' => $this->tenureYears === 1 ? __('year') : __('years')]) }}
                     </p>
                     <div class="mt-4 overflow-x-auto rounded-xl border border-line">
                         <table class="w-full text-sm">
                             <thead>
                                 <tr class="border-b border-line bg-surface-2 text-left text-xs text-ink-muted">
-                                    <th class="px-3 py-2 font-medium">Rate</th>
-                                    <th class="px-3 py-2 text-right font-medium">EMI</th>
-                                    <th class="px-3 py-2 text-right font-medium">Total interest</th>
+                                    <th class="px-3 py-2 font-medium">{{ __('Rate') }}</th>
+                                    <th class="px-3 py-2 text-right font-medium">{{ __('EMI') }}</th>
+                                    <th class="px-3 py-2 text-right font-medium">{{ __('Total interest') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -794,7 +794,7 @@ new class extends Component
                                         <td class="px-3 py-2 text-ink">
                                             <select
                                                 wire:model.live="compareRates.{{ $index }}"
-                                                aria-label="Rate option {{ $index + 1 }}"
+                                                aria-label="{{ __('Rate option :number', ['number' => $index + 1]) }}"
                                                 class="rounded-md border border-line-strong bg-surface px-2 py-1 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                                             >
                                                 @foreach ($this->rateOptions as $option)
@@ -814,16 +814,16 @@ new class extends Component
 
             <div class="mt-10 flex flex-wrap gap-3">
                 @if ($this->eligibilityUrl)
-                    <x-ui.button tag="a" :href="$this->eligibilityUrl" size="lg">Check Your Eligibility</x-ui.button>
+                    <x-ui.button tag="a" :href="$this->eligibilityUrl" size="lg">{{ __('Check Your Eligibility') }}</x-ui.button>
                 @endif
                 @if ($this->applyUrl)
-                    <x-ui.button tag="a" :href="$this->applyUrl" variant="secondary" size="lg">Apply for this loan</x-ui.button>
+                    <x-ui.button tag="a" :href="$this->applyUrl" variant="secondary" size="lg">{{ __('Apply for this loan') }}</x-ui.button>
                 @endif
             </div>
 
             @if ($this->relatedArticles->isNotEmpty())
                 <div class="mt-12">
-                    <h3 class="font-display text-lg font-semibold text-ink">Guides related to {{ $this->preset['label'] }}</h3>
+                    <h3 class="font-display text-lg font-semibold text-ink">{{ __('Guides related to :loan', ['loan' => $this->preset['label']]) }}</h3>
                     <div class="mt-4 grid gap-4 sm:grid-cols-3">
                         @foreach ($this->relatedArticles as $article)
                             <a href="{{ route('resources.show', $article) }}" class="group">
@@ -840,7 +840,7 @@ new class extends Component
             @endif
 
             @if ($this->faqs->isNotEmpty())
-                <x-site.faq-accordion :faqs="$this->faqs" :heading="$this->preset['label'].' EMI — frequently asked questions'" />
+                <x-site.faq-accordion :faqs="$this->faqs" :heading="__(':loan EMI — frequently asked questions', ['loan' => $this->preset['label']])" />
                 <x-site.faq-json-ld :faqs="$this->faqs" />
             @endif
         </div>

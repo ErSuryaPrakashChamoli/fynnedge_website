@@ -1,18 +1,17 @@
-<x-layouts.app :title="'FAQs'" description="Answers to common questions about how FynnEdge works, eligibility checks, and applying for a loan." handles-faqs>
+<x-layouts.app :title="__('FAQs')" :description="__('Answers to common questions about how FynnEdge works, eligibility checks, and applying for a loan.')" handles-faqs>
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
-        <x-ui.breadcrumbs :trail="['FAQs' => null]" />
+        <x-ui.breadcrumbs :trail="[__('FAQs') => null]" />
 
         <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            Frequently asked questions
+            {{ __('Frequently asked questions') }}
         </h1>
         <p data-reveal="up" class="mt-3 text-lg text-ink-muted">
-            Answers to common questions about how FynnEdge works. Have a question about a specific loan
-            product? Check that product's page, or <a href="{{ route('contact') }}" class="text-accent underline underline-offset-2">get in touch</a>.
+            {!! __("Answers to common questions about how FynnEdge works. Have a question about a specific loan product? Check that product's page, or <a href=\":url\" class=\"text-accent underline underline-offset-2\">get in touch</a>.", ['url' => e(route('contact'))]) !!}
         </p>
 
         @if ($faqs->isEmpty())
             <x-ui.alert tone="accent" class="mt-10">
-                FAQs are being added. Check back shortly.
+                {{ __('FAQs are being added. Check back shortly.') }}
             </x-ui.alert>
         @else
             <div class="mt-10 flex flex-col divide-y divide-line border-y border-line">

@@ -53,7 +53,7 @@ new class extends Component
 
             if ($rate === null || $rate < 0 || $rate > 100) {
                 $this->rate = max(0.0, min(100.0, (float) $rate));
-                $this->addError('rate', 'Adjusted the GST rate to stay between 0% and 100%.');
+                $this->addError('rate', __('Adjusted the GST rate to stay between 0% and 100%.'));
 
                 return;
             }
@@ -71,7 +71,7 @@ new class extends Component
 
         if ($amount === null || $amount < 0) {
             $this->amount = 0.0;
-            $this->addError('amount', $amount === null ? 'Please enter an amount.' : 'The amount can\'t be negative.');
+            $this->addError('amount', $amount === null ? __('Please enter an amount.') : __("The amount can't be negative."));
 
             return;
         }
@@ -82,7 +82,7 @@ new class extends Component
 ?>
 
 <div>
-    <div class="flex flex-wrap gap-2" role="tablist" aria-label="GST direction">
+    <div class="flex flex-wrap gap-2" role="tablist" aria-label="{{ __('GST direction') }}">
         <button
             type="button"
             role="tab"
@@ -94,7 +94,7 @@ new class extends Component
                 'bg-surface-2 text-ink-muted hover:text-ink' => $mode !== 'add',
             ])
         >
-            Add GST
+            {{ __('Add GST') }}
         </button>
         <button
             type="button"
@@ -107,7 +107,7 @@ new class extends Component
                 'bg-surface-2 text-ink-muted hover:text-ink' => $mode !== 'remove',
             ])
         >
-            Remove GST
+            {{ __('Remove GST') }}
         </button>
     </div>
 
@@ -115,7 +115,7 @@ new class extends Component
         <div class="flex flex-col gap-6">
             <div>
                 <label for="amount" class="text-sm font-medium text-ink">
-                    {{ $mode === 'remove' ? 'Amount (GST inclusive)' : 'Amount (GST exclusive)' }}
+                    {{ $mode === 'remove' ? __('Amount (GST inclusive)') : __('Amount (GST exclusive)') }}
                 </label>
                 <div class="mt-2 flex items-center gap-1 font-mono text-sm text-ink-muted">
                     ₹
@@ -133,12 +133,12 @@ new class extends Component
                         class="w-full rounded-md border border-line-strong bg-surface px-2 py-1.5 text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                     >
                 </div>
-                <p class="mt-1 text-xs text-ink-faint" x-text="numberToIndianWords(String($wire.amount)) + ' Rupees only'"></p>
+                <p class="mt-1 text-xs text-ink-faint" x-text="numberToIndianWords(String($wire.amount)) + @js(' '.__('Rupees only'))"></p>
                 @error('amount') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
 
             <div>
-                <label class="text-sm font-medium text-ink">GST rate</label>
+                <label class="text-sm font-medium text-ink">{{ __('GST rate') }}</label>
                 <div class="mt-2 flex flex-wrap gap-2">
                     @foreach ($this->rateSlabs() as $slab)
                         <button
@@ -168,10 +168,10 @@ new class extends Component
                         x-on:input="onInput()"
                         x-on:blur="commit()"
                         x-on:keydown.enter.prevent="$el.blur()"
-                        aria-label="Custom GST rate"
+                        aria-label="{{ __('Custom GST rate') }}"
                         class="w-20 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                     >
-                    % (or enter a custom rate)
+                    % {{ __('(or enter a custom rate)') }}
                 </div>
             </div>
         </div>
@@ -179,7 +179,7 @@ new class extends Component
         <div class="flex flex-col justify-center gap-5 rounded-2xl border border-line bg-surface-2 p-7">
             <div>
                 <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">
-                    {{ $mode === 'remove' ? 'Base amount (before GST)' : 'Total amount (with GST)' }}
+                    {{ $mode === 'remove' ? __('Base amount (before GST)') : __('Total amount (with GST)') }}
                 </p>
                 <p class="mt-1 font-display text-4xl font-semibold text-accent">
                     ₹{{ $this->formatAmount($mode === 'remove' ? $this->result['base_amount'] : $this->result['total_amount']) }}
@@ -187,15 +187,15 @@ new class extends Component
             </div>
             <div class="grid grid-cols-3 gap-4 border-t border-line pt-5">
                 <div>
-                    <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">CGST</p>
+                    <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('CGST') }}</p>
                     <p class="mt-1 text-lg font-medium text-ink">₹{{ $this->formatAmount($this->result['cgst']) }}</p>
                 </div>
                 <div>
-                    <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">SGST</p>
+                    <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('SGST') }}</p>
                     <p class="mt-1 text-lg font-medium text-ink">₹{{ $this->formatAmount($this->result['sgst']) }}</p>
                 </div>
                 <div>
-                    <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Total GST</p>
+                    <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Total GST') }}</p>
                     <p class="mt-1 text-lg font-medium text-ink">₹{{ $this->formatAmount($this->result['gst_amount']) }}</p>
                 </div>
             </div>

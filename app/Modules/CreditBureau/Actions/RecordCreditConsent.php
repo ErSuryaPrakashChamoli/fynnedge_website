@@ -19,7 +19,8 @@ class RecordCreditConsent
             [
                 'pan_number' => $panNumber,
                 'date_of_birth' => $dateOfBirth,
-                'purpose' => "{$session->loanProduct->name} eligibility check",
+                // English whatever the visitor's language: this is the consent record admins read.
+                'purpose' => "{$session->loanProduct->getRawOriginal('name')} eligibility check",
                 'terms_version' => config('services.credit_bureau.terms_version', 'v1'),
                 'ip_address' => $ipAddress,
                 'status' => ConsentStatus::Given,

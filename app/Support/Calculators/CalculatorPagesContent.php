@@ -4,6 +4,8 @@ namespace App\Support\Calculators;
 
 use App\Enums\LoanCategory;
 use App\Models\Setting;
+use App\Support\Localization\Phrasebook;
+use App\Support\Localization\SiteLocale;
 
 /**
  * The heading copy on /calculators and every calculator page an admin can
@@ -18,6 +20,11 @@ use App\Models\Setting;
  * read exactly as built, and a blank field falls back to its default rather
  * than rendering empty.
  *
+ * Hindi visitors get the admin's Hindi wording (a second Setting,
+ * `calculator_pages_hi`, same shape), and every field left blank there is the
+ * English translated through lang/hi.json — so a page nobody has touched is
+ * fully Hindi, `{loan}` becoming the Hindi loan name. See Phrasebook::localize().
+ *
  * Not here by design: the "About this calculator" body (Content → Calculator
  * Pages for FD/SIP/Daily SIP/GST, the Loan Product's calculator explanation
  * for loan calculators) and the calculator links themselves (CalculatorCatalog).
@@ -25,6 +32,8 @@ use App\Models\Setting;
 class CalculatorPagesContent
 {
     public const SETTING_KEY = 'calculator_pages';
+
+    public const HINDI_SETTING_KEY = self::SETTING_KEY.'_hi';
 
     public const LOAN_PLACEHOLDER = '{loan}';
 
@@ -89,7 +98,8 @@ class CalculatorPagesContent
 
     /**
      * The saved content laid over the defaults, field by field, with
-     * `{loan}` still in place — what the admin form edits.
+     * `{loan}` still in place — what the admin form edits. In the visitor's
+     * language (always English in the admin panel).
      *
      * @return array<string, array<string, string>>
      */
@@ -98,7 +108,7 @@ class CalculatorPagesContent
         $saved = Setting::get(self::SETTING_KEY);
         $saved = is_array($saved) ? $saved : [];
 
-        return collect(self::defaults())
+        $content = collect(self::defaults())
             ->map(fn (array $fields, string $page): array => collect($fields)
                 ->map(function (string $default, string $field) use ($saved, $page): string {
                     $value = is_array($saved[$page] ?? null) ? ($saved[$page][$field] ?? null) : null;
@@ -107,10 +117,42 @@ class CalculatorPagesContent
                 })
                 ->all())
             ->all();
+
+        if (! SiteLocale::isTranslating()) {
+            return $content;
+        }
+
+        $hindi = self::hindi();
+
+        return collect($content)
+            ->map(fn (array $fields, string $page): array => Phrasebook::localize($fields, $hindi[$page] ?? []))
+            ->all();
     }
 
     /**
-     * One page's resolved copy, with `{loan}` replaced by the loan category's name.
+     * The admin's own Hindi wording, page by page: only the fields filled in.
+     * What the admin form's Hindi tab edits.
+     *
+     * @return array<string, array<string, string>>
+     */
+    public static function hindi(): array
+    {
+        $saved = Setting::get(self::HINDI_SETTING_KEY);
+        $saved = is_array($saved) ? $saved : [];
+
+        return collect(self::defaults())
+            ->map(fn (array $fields, string $page): array => collect($fields)
+                ->map(fn (string $default, string $field): mixed => is_array($saved[$page] ?? null) ? ($saved[$page][$field] ?? null) : null)
+                ->filter(fn (mixed $value): bool => is_scalar($value) && filled($value))
+                ->map(fn (mixed $value): string => trim((string) $value))
+                ->all())
+            ->filter()
+            ->all();
+    }
+
+    /**
+     * One page's resolved copy, with `{loan}` replaced by the loan category's
+     * name in the visitor's language.
      *
      * @return array<string, string>
      */
@@ -122,8 +164,10 @@ class CalculatorPagesContent
             return $fields;
         }
 
+        $loanName = Phrasebook::translate($category->getLabel());
+
         return array_map(
-            fn (string $text): string => str_ireplace(self::LOAN_PLACEHOLDER, $category->getLabel(), $text),
+            fn (string $text): string => str_ireplace(self::LOAN_PLACEHOLDER, $loanName, $text),
             $fields,
         );
     }

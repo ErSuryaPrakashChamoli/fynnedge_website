@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Banners\Schemas;
 use App\Enums\BannerHorizontalAlignment;
 use App\Enums\BannerVerticalAlignment;
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\Banner;
 use App\Support\Rates\RateText;
 use Filament\Forms\Components\ColorPicker;
@@ -113,6 +114,22 @@ class BannerForm
                     ->visible(fn (callable $get) => $get('status') === PublishStatus::Published->value),
                 DateTimePicker::make('expires_at')
                     ->helperText('Optional. The banner stops appearing publicly after this time.'),
+                HindiTranslationSection::make([
+                    TextInput::make('image_alt_hi')
+                        ->label('Image alt text (Hindi)')
+                        ->columnSpanFull(),
+                    TextInput::make('heading_hi')
+                        ->label('Heading (Hindi)')
+                        ->rule(fn () => RateText::rule())
+                        ->helperText('Rates use [rate:loan-slug] here too, never a typed number.')
+                        ->columnSpanFull(),
+                    TextInput::make('subtitle_hi')
+                        ->label('Subtitle (Hindi)')
+                        ->rule(fn () => RateText::rule())
+                        ->columnSpanFull(),
+                    TextInput::make('cta_label_hi')
+                        ->label('Button label (Hindi)'),
+                ]),
             ]);
     }
 }

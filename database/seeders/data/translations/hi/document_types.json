@@ -1,0 +1,47 @@
+[
+ {
+  "field": "label",
+  "en": "Address Proof",
+  "hi": "पते का प्रमाण"
+ },
+ {
+  "field": "label",
+  "en": "Bank Statement",
+  "hi": "बैंक स्टेटमेंट"
+ },
+ {
+  "field": "label",
+  "en": "Payslip",
+  "hi": "सैलरी स्लिप"
+ },
+ {
+  "field": "label",
+  "en": "Photograph",
+  "hi": "फ़ोटो"
+ },
+ {
+  "field": "label",
+  "en": "Income Tax Returns",
+  "hi": "इनकम टैक्स रिटर्न"
+ },
+ {
+  "field": "label",
+  "en": "Property Documents",
+  "hi": "प्रॉपर्टी के दस्तावेज़"
+ },
+ {
+  "field": "label",
+  "en": "PAN Card",
+  "hi": "पैन कार्ड"
+ },
+ {
+  "field": "label",
+  "en": "Aadhaar Card",
+  "hi": "आधार कार्ड"
+ },
+ {
+  "field": "label",
+  "en": "Other",
+  "hi": "अन्य"
+ }
+]

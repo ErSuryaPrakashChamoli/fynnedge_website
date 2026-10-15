@@ -3,7 +3,7 @@
     $eligibleCount = $results->filter(fn ($result) => $result->status->value === 'eligible')->count();
 @endphp
 
-<x-layouts.app title="Your Eligibility Results" robots="noindex, nofollow">
+<x-layouts.app :title="__('Your Eligibility Results')" robots="noindex, nofollow">
     <section class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
         <div class="text-center">
             <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-pass-soft">
@@ -12,26 +12,27 @@
 
             <h1 class="mt-6 text-balance font-display text-2xl font-semibold text-ink sm:text-3xl">
                 @if ($results->isEmpty())
-                    Thanks — we've got your details
+                    {{ __('Thanks — we\'ve got your details') }}
                 @elseif ($eligibleCount > 0)
-                    You may be eligible with {{ $eligibleCount }} {{ Str::plural('lender', $eligibleCount) }}
+                    {{ $eligibleCount === 1
+                        ? __('You may be eligible with :count lender', ['count' => $eligibleCount])
+                        : __('You may be eligible with :count lenders', ['count' => $eligibleCount]) }}
                 @else
-                    Here's how you matched up
+                    {{ __('Here\'s how you matched up') }}
                 @endif
             </h1>
             <p class="mt-3 text-ink-muted">
-                For your <strong class="text-ink">{{ $session->loanProduct->name }}</strong> application.
+                {!! __('For your <strong class="text-ink">:product</strong> application.', ['product' => e($session->loanProduct->name)]) !!}
             </p>
         </div>
 
         <x-ui.alert tone="accent" class="mt-8">
-            Eligibility results are indicative and subject to each lender's own verification,
-            documentation and final underwriting.
+            {{ __('Eligibility results are indicative and subject to each lender\'s own verification, documentation and final underwriting.') }}
         </x-ui.alert>
 
         @if ($results->isEmpty())
             <p class="mt-8 text-center text-sm text-ink-muted">
-                No lenders are configured for this product yet — our team will follow up once we've matched you.
+                {{ __('No lenders are configured for this product yet — our team will follow up once we\'ve matched you.') }}
             </p>
         @else
             <div class="mt-10 flex flex-col gap-5">
@@ -42,7 +43,7 @@
                     // shown when no eligible result has one, since "lowest of one unknown"
                     // isn't a claim.
                     $recommendedId = optional($results->first(
-                        fn ($result) => $result->status->value === 'eligible' && RateBook::quoteFor($result->lender_product_id) !== null,
+                        fn ($result) => $result->status->value === 'eligible' && RateBook::officialQuoteFor($result->lender_product_id) !== null,
                     ))->id;
                 @endphp
                 @foreach ($results as $result)
@@ -53,9 +54,12 @@
                                 <div>
                                     <p class="font-display text-lg font-semibold text-ink">{{ $result->lenderProduct->lender->name }}</p>
                                     @if ($quote = RateBook::quoteFor($result->lender_product_id))
-                                        <p class="font-mono text-xs text-ink-faint">Rate from {{ $quote->startingLabel() }} {{ $quote->unit->suffix() }}</p>
+                                        <p class="font-mono text-xs text-ink-faint">{{ __('Rate from :rate :unit', ['rate' => $quote->startingLabel(), 'unit' => $quote->unit->suffix()]) }}</p>
+                                        @unless ($quote->isOfficial())
+                                            <p class="text-[0.68rem] text-warn">{{ $quote->verifiedLabel() }} · {{ __('confirm with :lender', ['lender' => $result->lenderProduct->lender->name]) }}</p>
+                                        @endunless
                                     @else
-                                        <p class="font-mono text-xs text-ink-faint">Rate confirmed by the lender</p>
+                                        <p class="font-mono text-xs text-ink-faint">{{ __('Rate confirmed by the lender') }}</p>
                                     @endif
                                 </div>
                             </div>
@@ -64,13 +68,13 @@
                                     {{ $result->status->getLabel() }}
                                 </x-ui.badge>
                                 @if ($result->id === $recommendedId)
-                                    <x-ui.badge tone="accent">Recommended</x-ui.badge>
+                                    <x-ui.badge tone="accent">{{ __('Recommended') }}</x-ui.badge>
                                 @endif
                             </div>
                         </div>
 
                         @if ($result->id === $recommendedId)
-                            <p class="mt-3 text-xs text-ink-faint">Lowest interest rate among the lenders you're eligible with.</p>
+                            <p class="mt-3 text-xs text-ink-faint">{{ __('Lowest interest rate among the lenders you\'re eligible with.') }}</p>
                         @endif
 
                         @php
@@ -93,7 +97,7 @@
                                         @else
                                             <svg viewBox="0 0 20 20" fill="currentColor" class="mt-0.5 h-4 w-4 shrink-0 text-warn" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-11.25a.75.75 0 0 0-1.5 0v4a.75.75 0 0 0 1.5 0v-4ZM10 15a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" /></svg>
                                         @endif
-                                        <span class="text-ink-muted">{{ $reason->customer_message ?? $reason->label }}</span>
+                                        <span class="text-ink-muted">{{ $reason->visitorMessage() ?? $reason->label }}</span>
                                     </li>
                                 @endforeach
                             </ul>
@@ -102,7 +106,7 @@
                         @if ($result->status->value === 'eligible')
                             <form method="POST" action="{{ route('applications.select', $result) }}" class="mt-4">
                                 @csrf
-                                <x-ui.button type="submit" size="sm">Continue with {{ $result->lenderProduct->lender->name }}</x-ui.button>
+                                <x-ui.button type="submit" size="sm">{{ __('Continue with :lender', ['lender' => $result->lenderProduct->lender->name]) }}</x-ui.button>
                             </form>
                         @endif
                     </x-ui.card>
@@ -112,7 +116,7 @@
 
         <div class="mt-10 text-center">
             <x-ui.button tag="a" :href="route('home')" variant="secondary">
-                Back to home
+                {{ __('Back to home') }}
             </x-ui.button>
         </div>
     </section>

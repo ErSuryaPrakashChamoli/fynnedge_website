@@ -16,7 +16,7 @@
 @if ($lender->logoUrl())
     <img
         src="{{ $lender->logoUrl() }}"
-        alt="{{ $lender->name }} logo"
+        alt="{{ __(':lender logo', ['lender' => $lender->name]) }}"
         {{ $attributes->class('shrink-0 rounded-full border border-line bg-white object-contain p-1.5 '.$sizeClass) }}
     >
 @else

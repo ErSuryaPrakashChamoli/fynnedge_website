@@ -64,6 +64,8 @@ final class RateAuditCsv
             'Evidence' => $rate?->verification_status?->getLabel(),
             'Needs re-verification' => $rate === null ? null : ($rate->needsReverification() ? 'Yes' : 'No'),
             'Last checked' => $rate?->last_verified_at?->toDateString(),
+            'Source type' => $rate?->source_type?->getLabel(),
+            'Source name' => $rate?->source_name,
             'Source URL' => $rate?->source_url,
             'Source says' => $rate?->source_notes,
             'Processing fee' => $offer === null ? null : collect([$offer->processingFeeDisplay(), $offer->processing_fee_note])->filter()->implode(' — '),

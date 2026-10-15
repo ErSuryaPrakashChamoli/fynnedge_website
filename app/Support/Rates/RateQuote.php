@@ -2,6 +2,7 @@
 
 namespace App\Support\Rates;
 
+use App\Enums\RateSourceType;
 use App\Enums\RateType;
 use App\Enums\RateUnit;
 use App\Enums\RepaymentMethod;
@@ -34,6 +35,8 @@ final readonly class RateQuote
         public ?string $eligibilityNotes,
         public ?string $disclaimer,
         public ?string $sourceUrl,
+        public RateSourceType $sourceType,
+        public ?string $sourceName,
         public CarbonImmutable $lastVerifiedAt,
         public bool $featured,
         public int $displayPriority,
@@ -89,19 +92,31 @@ final readonly class RateQuote
             return null;
         }
 
-        $label = filled($this->promoLabel) ? "{$this->promoLabel}: " : 'Offer: ';
+        return __(':label: :rate :unit until :date', [
+            'label' => filled($this->promoLabel) ? $this->promoLabel : __('Offer'),
+            'rate' => RateFormat::percent($this->promoRate),
+            'unit' => $this->unit->suffix(),
+            'date' => $this->promoEndsAt->timezone(RateBook::TIMEZONE)->translatedFormat('j M Y'),
+        ]);
+    }
 
-        return $label.RateFormat::percent($this->promoRate)." {$this->unit->suffix()} until "
-            .$this->promoEndsAt->timezone(RateBook::TIMEZONE)->format('j M Y');
+    public function isOfficial(): bool
+    {
+        return $this->sourceType === RateSourceType::Official;
     }
 
     /**
-     * "Rate verified 13 Oct 2026" — when FynnEdge last checked the figure
-     * against the lender's own published schedule.
+     * "Rate verified 13 Oct 2026" for a rate checked against the lender's own
+     * schedule; "As listed on Paisabazaar, 14 Oct 2026" for a third-party one,
+     * which is never described as verified.
      */
     public function verifiedLabel(): string
     {
-        return 'Rate verified '.$this->lastVerifiedAt->format('j M Y');
+        $date = $this->lastVerifiedAt->translatedFormat('j M Y');
+
+        return $this->isOfficial()
+            ? __('Rate verified :date', ['date' => $date])
+            : __('As listed on :source, :date', ['source' => $this->sourceName ?: __('a comparison site'), 'date' => $date]);
     }
 
     /**

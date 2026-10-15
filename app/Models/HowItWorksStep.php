@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\PublishStatus;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use Database\Factories\HowItWorksStepFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,11 +21,11 @@ use Illuminate\Support\Facades\Storage;
  * toggle" pattern as Faq/Banner/CompanyPhoto, since scheduling ahead of time
  * for a handful of static process steps isn't a genuine business need.
  */
-#[Fillable(['title', 'description', 'icon_path', 'sort_order', 'status'])]
+#[Fillable(['title', 'description', 'icon_path', 'sort_order', 'status', 'title_hi', 'description_hi'])]
 class HowItWorksStep extends Model
 {
     /** @use HasFactory<HowItWorksStepFactory> */
-    use Auditable, HasFactory, HasPublicId;
+    use Auditable, HasFactory, HasPublicId, HasTranslations;
 
     protected function casts(): array
     {
@@ -41,5 +42,16 @@ class HowItWorksStep extends Model
     public function iconUrl(): ?string
     {
         return $this->icon_path ? Storage::disk('public')->url($this->icon_path) : null;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'title',
+            'description',
+        ];
     }
 }

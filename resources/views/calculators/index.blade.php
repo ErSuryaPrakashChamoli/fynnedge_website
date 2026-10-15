@@ -1,6 +1,6 @@
 <x-layouts.app :title="$content['meta_title']" :description="$content['meta_description']" :robots="$robots">
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
-        <x-ui.breadcrumbs :trail="['Calculators' => null]" />
+        <x-ui.breadcrumbs :trail="[__('Calculators') => null]" />
 
         <h1 data-reveal="up" class="mt-5 max-w-2xl text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             {{ $content['heading'] }}

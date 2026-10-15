@@ -1,13 +1,12 @@
-<x-layouts.app title="Contact" description="Get in touch with FynnEdge Advisory." page-type="ContactPage">
+<x-layouts.app :title="__('Contact')" :description="__('Get in touch with FynnEdge Advisory.')" page-type="ContactPage">
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
-        <x-ui.breadcrumbs :trail="['Contact' => null]" />
+        <x-ui.breadcrumbs :trail="[__('Contact') => null]" />
 
         <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            Talk to us
+            {{ __('Talk to us') }}
         </h1>
         <p data-reveal="up" class="mt-3 text-ink-muted text-justify hyphens-auto">
-            Questions about a loan product, your eligibility, or an existing application — send us a message
-            and we'll get back to you.
+            {{ __("Questions about a loan product, your eligibility, or an existing application — send us a message and we'll get back to you.") }}
         </p>
 
         @if (session('status'))
@@ -41,12 +40,12 @@
             @submit="guardSubmit($event)"
         >
             @csrf
-            <x-ui.input name="name" label="Name" required class="sm:col-span-1" />
-            <x-ui.input name="email" type="email" label="Email" required class="sm:col-span-1" />
+            <x-ui.input name="name" :label="__('Name')" required class="sm:col-span-1" />
+            <x-ui.input name="email" type="email" :label="__('Email')" required class="sm:col-span-1" />
 
             @php($phoneError = $errors->first('phone'))
             <div class="flex flex-col gap-1.5 sm:col-span-2">
-                <label for="phone" class="text-sm font-medium text-ink">Phone (optional)</label>
+                <label for="phone" class="text-sm font-medium text-ink">{{ __('Phone (optional)') }}</label>
                 <div class="flex flex-col gap-2 sm:flex-row">
                     <div
                         @class([
@@ -63,7 +62,7 @@
                             inputmode="numeric"
                             autocomplete="tel-national"
                             maxlength="16"
-                            placeholder="10-digit mobile number"
+                            placeholder="{{ __('10-digit mobile number') }}"
                             value="{{ old('phone') }}"
                             aria-describedby="phone-help"
                             class="w-full min-w-0 bg-transparent px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none"
@@ -81,11 +80,11 @@
                         x-on:click="sendCode"
                         ::disabled="loading || resendIn > 0"
                     >
-                        <span x-text="loading && ! sent ? 'Sending…' : (resendIn > 0 ? `Resend in ${resendIn}s` : (sent ? 'Resend code' : 'Send code'))">Send code</span>
+                        <span x-text="loading && ! sent ? @js(__('Sending…')) : (resendIn > 0 ? @js(__('Resend in :time')).replace(':time', `${resendIn}s`) : (sent ? @js(__('Resend code')) : @js(__('Send code'))))">{{ __('Send code') }}</span>
                     </x-ui.button>
                     <span x-show="verified" x-cloak class="flex shrink-0 items-center gap-1.5 rounded-full bg-pass-soft px-4 py-2.5 text-sm font-medium text-pass">
                         <svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4L8 11.6l6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd" /></svg>
-                        Verified
+                        {{ __('Verified') }}
                     </span>
                 </div>
 
@@ -94,24 +93,24 @@
 
                 <div x-show="sent && ! verified" x-cloak class="mt-1 flex flex-col gap-2 rounded-lg border border-line bg-surface-2 p-3">
                     <p class="text-xs text-ink-muted">
-                        Enter the {{ $otpLength }}-digit code we sent by SMS to <span class="font-medium text-ink">+91 <span x-text="maskedPhone"></span></span>. It may take a moment to arrive.
+                        {{ __('Enter the :length-digit code we sent by SMS to', ['length' => $otpLength]) }} <span class="font-medium text-ink">+91 <span x-text="maskedPhone"></span></span>{{ __('. It may take a moment to arrive.') }}
                     </p>
                     <div class="flex flex-wrap gap-2">
-                        <label for="contact-otp" class="sr-only">{{ $otpLength }}-digit verification code</label>
+                        <label for="contact-otp" class="sr-only">{{ __(':length-digit verification code', ['length' => $otpLength]) }}</label>
                         <input
                             type="text"
                             id="contact-otp"
                             inputmode="numeric"
                             autocomplete="one-time-code"
                             maxlength="{{ $otpLength }}"
-                            placeholder="{{ $otpLength }}-digit code"
+                            placeholder="{{ __(':length-digit code', ['length' => $otpLength]) }}"
                             class="w-36 rounded-lg border border-line-strong bg-surface px-3 py-2 font-mono text-sm tracking-[0.3em] text-ink placeholder:font-sans placeholder:tracking-normal placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
                             x-model="otpCode"
                             @input="onOtpInput"
                             @keydown.enter.prevent="verifyCode"
                         >
-                        <x-ui.button type="button" size="sm" x-on:click="verifyCode" ::disabled="loading || otpCode.length !== otpLength">Verify</x-ui.button>
-                        <x-ui.button type="button" size="sm" variant="ghost" x-on:click="changeNumber">Change number</x-ui.button>
+                        <x-ui.button type="button" size="sm" x-on:click="verifyCode" ::disabled="loading || otpCode.length !== otpLength">{{ __('Verify') }}</x-ui.button>
+                        <x-ui.button type="button" size="sm" variant="ghost" x-on:click="changeNumber">{{ __('Change number') }}</x-ui.button>
                     </div>
                 </div>
 
@@ -121,16 +120,16 @@
                     @endif
                     <span x-show="error" x-text="error" x-cloak></span>
                     <span x-show="! error" @if ($phoneError) x-cloak @endif>
-                        <span x-show="! verified">Add a mobile number and we'll text you a code to confirm it, or leave it blank and we'll reply by email.</span>
-                        <span x-show="verified" x-cloak>Number confirmed. We'll call you on it.</span>
+                        <span x-show="! verified">{{ __("Add a mobile number and we'll text you a code to confirm it, or leave it blank and we'll reply by email.") }}</span>
+                        <span x-show="verified" x-cloak>{{ __("Number confirmed. We'll call you on it.") }}</span>
                     </span>
                 </p>
             </div>
 
-            <x-ui.textarea name="message" label="Message" rows="5" required class="sm:col-span-2" :value="$prefillMessage" />
+            <x-ui.textarea name="message" :label="__('Message')" rows="5" required class="sm:col-span-2" :value="$prefillMessage" />
 
             <div class="sm:col-span-2">
-                <x-ui.button type="submit">Send message</x-ui.button>
+                <x-ui.button type="submit">{{ __('Send message') }}</x-ui.button>
             </div>
         </form>
 

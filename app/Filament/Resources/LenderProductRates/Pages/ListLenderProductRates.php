@@ -3,12 +3,15 @@
 namespace App\Filament\Resources\LenderProductRates\Pages;
 
 use App\Enums\RateStatus;
+use App\Filament\Imports\LenderProductRateImporter;
 use App\Filament\Resources\LenderProductRates\LenderProductRateResource;
 use App\Filament\Widgets\RateHealthOverview;
 use App\Models\LenderProductRate;
 use App\Support\Rates\RateAuditCsv;
+use App\Support\Rates\RateVerificationSheet;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
+use Filament\Actions\ImportAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Support\Icons\Heroicon;
@@ -23,6 +26,23 @@ class ListLenderProductRates extends ListRecords
     {
         return [
             CreateAction::make()->label('New rate'),
+            // Bulk verification round trip: download the rates in view, fill in
+            // each row's evidence, upload it back (optionally publishing).
+            Action::make('downloadVerificationSheet')
+                ->label('Download verification sheet')
+                ->icon(Heroicon::OutlinedDocumentArrowDown)
+                ->color('gray')
+                ->action(fn (): StreamedResponse => RateVerificationSheet::download(
+                    $this->getFilteredSortedTableQuery() ?? LenderProductRate::query(),
+                )),
+            ImportAction::make('uploadVerifiedRates')
+                ->label('Upload verified rates')
+                ->icon(Heroicon::OutlinedDocumentArrowUp)
+                ->color('primary')
+                ->importer(LenderProductRateImporter::class)
+                ->modalDescription('Upload the verification sheet with each row\'s lender link, the sentence that states the rate and the date you checked it. Rows that fail a check are skipped and can be downloaded with the reason.')
+                ->visible(fn (): bool => (bool) auth()->user()?->can('create', LenderProductRate::class))
+                ->chunkSize(500),
             Action::make('exportCsv')
                 ->label('Export CSV')
                 ->icon(Heroicon::OutlinedArrowDownTray)

@@ -20,11 +20,11 @@ enum RepaymentMethod: string implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::ReducingBalance => 'Reducing balance (EMI)',
-            self::Flat => 'Flat rate',
-            self::RevolvingCredit => 'Revolving credit (card)',
-            self::Overdraft => 'Overdraft / dropline',
-            self::HybridInterestOnlyThenEmi => 'Interest-only, then EMI (hybrid)',
+            self::ReducingBalance => __('Reducing balance (EMI)'),
+            self::Flat => __('Flat rate'),
+            self::RevolvingCredit => __('Revolving credit (card)'),
+            self::Overdraft => __('Overdraft / dropline'),
+            self::HybridInterestOnlyThenEmi => __('Interest-only, then EMI (hybrid)'),
         };
     }
 }

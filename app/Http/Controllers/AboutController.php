@@ -32,7 +32,7 @@ class AboutController extends Controller
             'page' => $page,
             'content' => AboutPageContent::resolve(),
             'companyPhotos' => CompanyPhoto::query()->published()->orderBy('sort_order')->get(),
-            'founderName' => Setting::get('founder_name'),
+            'founderName' => Setting::localized('founder_name'),
             'founderPhotoUrl' => $founderPhotoPath ? Storage::disk('public')->url($founderPhotoPath) : null,
         ]);
     }

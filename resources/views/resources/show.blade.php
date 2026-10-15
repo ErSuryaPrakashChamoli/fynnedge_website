@@ -1,8 +1,8 @@
 <x-layouts.app :title="$article->seoTitle()" :description="$article->seoDescription()" :canonical="$article->seoCanonicalUrl()" :og-image="$article->seoOgImageUrl() ?? $article->imageUrl()" :social="$article->seoSocial()" :robots="$article->seoRobots()" :structured-data="$article->seoStructuredData()" :page-type="$article->seoPageType()" :schema-template="$article->seoSchemaTemplate()" og-type="article">
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
-        <x-ui.breadcrumbs :trail="['Resources' => route('resources.index'), $article->title => null]" />
+        <x-ui.breadcrumbs :trail="[__('Resources') => route('resources.index'), $article->title => null]" />
 
-        <p class="mt-5 font-mono text-xs text-ink-faint">{{ $article->publishedOn()->format('d M Y') }}</p>
+        <p class="mt-5 font-mono text-xs text-ink-faint">{{ $article->publishedOn()->translatedFormat('d M Y') }}</p>
         <h1 data-reveal="up" class="mt-3 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             {{ $article->title }}
         </h1>
@@ -30,8 +30,8 @@
             class="mt-12"
             source="blog"
             :source-url="route('resources.show', $article, absolute: false)"
-            heading="Enjoyed this article?"
-            description="Get practical financial insights, loan tips and useful money guidance from FynnEdge directly in your inbox."
+            :heading="__('Enjoyed this article?')"
+            :description="__('Get practical financial insights, loan tips and useful money guidance from FynnEdge directly in your inbox.')"
         />
 
         <script type="application/ld+json">

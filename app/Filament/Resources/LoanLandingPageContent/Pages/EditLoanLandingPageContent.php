@@ -28,6 +28,7 @@ class EditLoanLandingPageContent extends EditRecord
         return [
             'title', 'excerpt', 'body', 'cta_label',
             'status', 'published_at', 'expires_at',
+            'title_hi', 'excerpt_hi', 'body_hi', 'cta_label_hi',
         ];
     }
 

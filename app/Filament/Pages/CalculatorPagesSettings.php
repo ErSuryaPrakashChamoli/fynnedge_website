@@ -13,7 +13,10 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Callout;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Arr;
@@ -26,6 +29,10 @@ use Illuminate\Support\Arr;
  * The "About this calculator" body is edited elsewhere: Content → Calculator
  * Pages (FD, SIP, Daily SIP, GST) or each Loan Product's calculator
  * explanation (EMI, Eligibility, Prepayment).
+ *
+ * The Hindi tab edits the same wording for Hindi visitors, saved beside it as
+ * `calculator_pages_hi`. A blank Hindi field shows the built-in Hindi (the
+ * English looked up in lang/hi.json), which its placeholder previews.
  *
  * The "Search engine indexing" section is saved separately through
  * CalculatorIndexing, so resetting the wording never changes which pages
@@ -75,13 +82,24 @@ class CalculatorPagesSettings extends Page
 
     public function form(Schema $schema): Schema
     {
-        $defaults = CalculatorPagesContent::defaults();
-
         return $schema
             ->statePath('data')
             ->components([
                 $this->indexingSection(),
-                ...$this->wordingSections($defaults),
+                Tabs::make('Language')
+                    ->columnSpanFull()
+                    ->tabs([
+                        Tab::make('English')
+                            ->components($this->wordingSections(hindi: false)),
+                        Tab::make('हिन्दी (Hindi)')
+                            ->statePath('hi')
+                            ->components([
+                                Callout::make('What Hindi visitors read')
+                                    ->description('Leave a field blank to use the built-in Hindi shown in grey. {loan} works here too and becomes the Hindi loan name.')
+                                    ->info(),
+                                ...$this->wordingSections(hindi: true),
+                            ]),
+                    ]),
             ]);
     }
 
@@ -104,44 +122,52 @@ class CalculatorPagesSettings extends Page
     }
 
     /**
-     * @param  array<string, array<string, string>>  $defaults
+     * Each page's fields, once per language. The Hindi copy previews the
+     * built-in Hindi of what the page says now and allows a little more
+     * length (Hindi needs more characters than English).
+     *
      * @return array<int, Section>
      */
-    private function wordingSections(array $defaults): array
+    private function wordingSections(bool $hindi): array
     {
+        $defaults = CalculatorPagesContent::defaults();
+        $english = CalculatorPagesContent::resolve();
+        $placeholder = fn (string $page, string $field): string => $hindi ? self::builtInHindi($english[$page][$field]) : $defaults[$page][$field];
+        $length = fn (int $english): int => $hindi ? (int) ceil($english * 1.5) : $english;
+
         return collect(self::SECTIONS)
             ->map(fn (array $section, string $page): Section => Section::make($section[0])
-                ->description($section[1].' Leave a field blank to use its default wording.')
+                ->description($hindi ? null : $section[1].' Leave a field blank to use its default wording.')
                 ->collapsible()
                 ->collapsed($page !== 'index')
                 ->columns(2)
                 ->components(array_values(array_filter([
                     TextInput::make("{$page}.heading")
                         ->label('Headline')
-                        ->maxLength(100)
-                        ->placeholder($defaults[$page]['heading']),
+                        ->maxLength($length(100))
+                        ->placeholder($placeholder($page, 'heading')),
                     isset($defaults[$page]['about_heading'])
                         ? TextInput::make("{$page}.about_heading")
                             ->label('"About" section heading')
-                            ->maxLength(100)
-                            ->placeholder($defaults[$page]['about_heading'])
+                            ->maxLength($length(100))
+                            ->placeholder($placeholder($page, 'about_heading'))
                             ->helperText('Above the loan explanation lower down the page.')
                         : null,
                     Textarea::make("{$page}.description")
                         ->label('Introduction')
                         ->rows(2)
-                        ->maxLength(300)
-                        ->placeholder($defaults[$page]['description'])
+                        ->maxLength($length(300))
+                        ->placeholder($placeholder($page, 'description'))
                         ->columnSpanFull(),
                     TextInput::make("{$page}.meta_title")
                         ->label('Page title (browser tab & search results)')
-                        ->maxLength(70)
-                        ->placeholder($defaults[$page]['meta_title']),
+                        ->maxLength($length(70))
+                        ->placeholder($placeholder($page, 'meta_title')),
                     Textarea::make("{$page}.meta_description")
                         ->label('Meta description')
                         ->rows(2)
-                        ->maxLength(160)
-                        ->placeholder($defaults[$page]['meta_description']),
+                        ->maxLength($length(160))
+                        ->placeholder($placeholder($page, 'meta_description')),
                 ]))))
             ->values()
             ->all();
@@ -152,6 +178,7 @@ class CalculatorPagesSettings extends Page
         $state = $this->form->getState();
 
         CalculatorIndexing::save(Arr::pull($state, 'indexing', []));
+        Setting::set(CalculatorPagesContent::HINDI_SETTING_KEY, Arr::pull($state, 'hi', []));
         Setting::set(CalculatorPagesContent::SETTING_KEY, $state);
 
         Notification::make()->title('Calculator pages saved')->success()->send();
@@ -160,6 +187,7 @@ class CalculatorPagesSettings extends Page
     public function resetToDefaults(): void
     {
         Setting::set(CalculatorPagesContent::SETTING_KEY, null);
+        Setting::set(CalculatorPagesContent::HINDI_SETTING_KEY, null);
 
         $this->fillForm();
 
@@ -171,7 +199,19 @@ class CalculatorPagesSettings extends Page
         $this->form->fill([
             ...CalculatorPagesContent::resolve(),
             'indexing' => CalculatorIndexing::formState(),
+            'hi' => CalculatorPagesContent::hindi(),
         ]);
+    }
+
+    /**
+     * What a Hindi visitor reads for this English text while the Hindi field
+     * is blank (`{loan}` still in place).
+     */
+    private static function builtInHindi(string $english): string
+    {
+        $hindi = __($english, [], 'hi');
+
+        return is_string($hindi) ? $hindi : $english;
     }
 
     /**
@@ -188,7 +228,7 @@ class CalculatorPagesSettings extends Page
                 ->label('Reset to defaults')
                 ->color('gray')
                 ->requiresConfirmation()
-                ->modalDescription('Every wording field on this page goes back to the built-in text. Search engine indexing is not changed. This cannot be undone.')
+                ->modalDescription('Every wording field on this page, English and Hindi, goes back to the built-in text. Search engine indexing is not changed. This cannot be undone.')
                 ->action('resetToDefaults'),
             Action::make('save')
                 ->label('Save')

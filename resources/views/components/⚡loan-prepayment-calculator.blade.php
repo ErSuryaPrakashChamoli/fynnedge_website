@@ -73,10 +73,10 @@ new class extends Component
 
         $parts = [];
         if ($years > 0) {
-            $parts[] = $years.' '.Str::plural('year', $years);
+            $parts[] = $years === 1 ? __(':count year', ['count' => $years]) : __(':count years', ['count' => $years]);
         }
         if ($remainingMonths > 0 || $parts === []) {
-            $parts[] = $remainingMonths.' '.Str::plural('month', $remainingMonths);
+            $parts[] = $remainingMonths === 1 ? __(':count month', ['count' => $remainingMonths]) : __(':count months', ['count' => $remainingMonths]);
         }
 
         return implode(' ', $parts);
@@ -97,7 +97,7 @@ new class extends Component
 
             if ($value === null || $value < 0 || $value > $max) {
                 $this->prepaymentAmount = max(0.0, min($max, $value ?? 0.0));
-                $this->addError('prepaymentAmount', 'Adjusted the prepayment amount to stay within the outstanding principal.');
+                $this->addError('prepaymentAmount', __('Adjusted the prepayment amount to stay within the outstanding principal.'));
 
                 return;
             }
@@ -107,10 +107,10 @@ new class extends Component
             return;
         }
 
-        [$min, $max, $label] = match ($property) {
-            'outstandingPrincipal' => [$preset['min_amount'], $preset['max_amount'], 'outstanding principal'],
-            'annualRate' => [$preset['min_rate'], $preset['max_rate'], 'interest rate'],
-            'remainingTenureYears' => [$preset['min_years'], $preset['max_years'], 'remaining tenure'],
+        [$min, $max, $message] = match ($property) {
+            'outstandingPrincipal' => [$preset['min_amount'], $preset['max_amount'], __("Adjusted the outstanding principal to stay within :loan's allowed range.", ['loan' => $preset['label']])],
+            'annualRate' => [$preset['min_rate'], $preset['max_rate'], __("Adjusted the interest rate to stay within :loan's allowed range.", ['loan' => $preset['label']])],
+            'remainingTenureYears' => [$preset['min_years'], $preset['max_years'], __("Adjusted the remaining tenure to stay within :loan's allowed range.", ['loan' => $preset['label']])],
         };
 
         $value = $this->{$property} ?? null;
@@ -118,7 +118,7 @@ new class extends Component
         if ($value === null || $value < $min || $value > $max) {
             $clamped = max($min, min($max, $value ?? $min));
             $this->{$property} = $property === 'remainingTenureYears' ? (int) $clamped : (float) $clamped;
-            $this->addError($property, "Adjusted the {$label} to stay within {$preset['label']}'s allowed range.");
+            $this->addError($property, $message);
 
             return;
         }
@@ -129,7 +129,7 @@ new class extends Component
 ?>
 
 <div>
-    <div class="flex flex-wrap gap-2" role="tablist" aria-label="Prepayment goal">
+    <div class="flex flex-wrap gap-2" role="tablist" aria-label="{{ __('Prepayment goal') }}">
         <button
             type="button"
             role="tab"
@@ -141,7 +141,7 @@ new class extends Component
                 'bg-surface-2 text-ink-muted hover:text-ink' => $mode !== 'reduce_tenure',
             ])
         >
-            Reduce tenure
+            {{ __('Reduce tenure') }}
         </button>
         <button
             type="button"
@@ -154,7 +154,7 @@ new class extends Component
                 'bg-surface-2 text-ink-muted hover:text-ink' => $mode !== 'reduce_emi',
             ])
         >
-            Reduce EMI
+            {{ __('Reduce EMI') }}
         </button>
     </div>
 
@@ -162,7 +162,7 @@ new class extends Component
         <div class="flex flex-col gap-6">
             <div>
                 <div class="flex items-baseline justify-between gap-3">
-                    <label for="outstandingPrincipal" class="text-sm font-medium text-ink">Outstanding principal</label>
+                    <label for="outstandingPrincipal" class="text-sm font-medium text-ink">{{ __('Outstanding principal') }}</label>
                     <div class="flex items-center gap-1 font-mono text-sm text-ink-muted">
                         ₹
                         <input
@@ -183,20 +183,20 @@ new class extends Component
                 </div>
                 <input
                     type="range"
-                    aria-label="Outstanding principal"
+                    aria-label="{{ __('Outstanding principal') }}"
                     min="{{ $this->preset['min_amount'] }}"
                     max="{{ $this->preset['max_amount'] }}"
                     step="{{ max((int) (($this->preset['max_amount'] - $this->preset['min_amount']) / 200), 1000) }}"
                     wire:model.live="outstandingPrincipal"
                     class="mt-2 w-full accent-accent"
                 >
-                <p class="mt-1 text-xs text-ink-faint" x-text="numberToIndianWords(String($wire.outstandingPrincipal)) + ' Rupees only'"></p>
+                <p class="mt-1 text-xs text-ink-faint" x-text="numberToIndianWords(String($wire.outstandingPrincipal)) + @js(' '.__('Rupees only'))"></p>
                 @error('outstandingPrincipal') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
 
             <div>
                 <div class="flex items-baseline justify-between gap-3">
-                    <label for="annualRate" class="text-sm font-medium text-ink">Interest rate (p.a.)</label>
+                    <label for="annualRate" class="text-sm font-medium text-ink">{{ __('Interest rate (p.a.)') }}</label>
                     <div class="flex items-center gap-1 font-mono text-sm text-ink-muted">
                         <input
                             id="annualRate"
@@ -218,7 +218,7 @@ new class extends Component
                 </div>
                 <input
                     type="range"
-                    aria-label="Interest rate"
+                    aria-label="{{ __('Interest rate') }}"
                     min="{{ $this->preset['min_rate'] }}"
                     max="{{ $this->preset['max_rate'] }}"
                     step="0.1"
@@ -230,7 +230,7 @@ new class extends Component
 
             <div>
                 <div class="flex items-baseline justify-between gap-3">
-                    <label for="remainingTenureYears" class="text-sm font-medium text-ink">Remaining tenure</label>
+                    <label for="remainingTenureYears" class="text-sm font-medium text-ink">{{ __('Remaining tenure') }}</label>
                     <div class="flex items-center gap-1 font-mono text-sm text-ink-muted">
                         <input
                             id="remainingTenureYears"
@@ -247,12 +247,12 @@ new class extends Component
                             x-on:keydown.enter.prevent="$el.blur()"
                             class="w-16 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                         >
-                        {{ Str::plural('year', $remainingTenureYears) }}
+                        {{ $remainingTenureYears === 1 ? __('year') : __('years') }}
                     </div>
                 </div>
                 <input
                     type="range"
-                    aria-label="Remaining tenure in years"
+                    aria-label="{{ __('Remaining tenure in years') }}"
                     min="{{ $this->preset['min_years'] }}"
                     max="{{ $this->preset['max_years'] }}"
                     step="1"
@@ -264,7 +264,7 @@ new class extends Component
 
             <div>
                 <div class="flex items-baseline justify-between gap-3">
-                    <label for="prepaymentAmount" class="text-sm font-medium text-ink">Prepayment (lumpsum)</label>
+                    <label for="prepaymentAmount" class="text-sm font-medium text-ink">{{ __('Prepayment (lumpsum)') }}</label>
                     <div class="flex items-center gap-1 font-mono text-sm text-ink-muted">
                         ₹
                         <input
@@ -285,45 +285,45 @@ new class extends Component
                 </div>
                 <input
                     type="range"
-                    aria-label="Prepayment amount"
+                    aria-label="{{ __('Prepayment amount') }}"
                     min="0"
                     max="{{ $outstandingPrincipal }}"
                     step="{{ max((int) ($outstandingPrincipal / 200), 1000) }}"
                     wire:model.live="prepaymentAmount"
                     class="mt-2 w-full accent-accent"
                 >
-                <p class="mt-1 text-xs text-ink-faint" x-text="numberToIndianWords(String($wire.prepaymentAmount)) + ' Rupees only'"></p>
+                <p class="mt-1 text-xs text-ink-faint" x-text="numberToIndianWords(String($wire.prepaymentAmount)) + @js(' '.__('Rupees only'))"></p>
                 @error('prepaymentAmount') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
         </div>
 
         <div class="flex flex-col justify-center gap-5 rounded-2xl border border-line bg-surface-2 p-7">
             <div>
-                <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Interest saved</p>
+                <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Interest saved') }}</p>
                 <p class="mt-1 font-display text-4xl font-semibold text-accent">₹{{ $this->formatAmount($this->result['interest_saved']) }}</p>
             </div>
             <div class="grid grid-cols-2 gap-4 border-t border-line pt-5">
                 @if ($mode === 'reduce_tenure')
                     <div>
-                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">New tenure</p>
+                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('New tenure') }}</p>
                         <p class="mt-1 text-lg font-medium text-ink">{{ $this->formatYearsAndMonths($this->result['new_tenure_months']) }}</p>
                     </div>
                     <div>
-                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Tenure reduced by</p>
+                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Tenure reduced by') }}</p>
                         <p class="mt-1 text-lg font-medium text-ink">{{ $this->formatYearsAndMonths($this->result['tenure_reduced_months']) }}</p>
                     </div>
                 @else
                     <div>
-                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">New EMI</p>
+                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('New EMI') }}</p>
                         <p class="mt-1 text-lg font-medium text-ink">₹{{ $this->formatAmount($this->result['new_emi']) }}</p>
                     </div>
                     <div>
-                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Original EMI</p>
+                        <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Original EMI') }}</p>
                         <p class="mt-1 text-lg font-medium text-ink">₹{{ $this->formatAmount($this->result['original_emi']) }}</p>
                     </div>
                 @endif
             </div>
-            <p class="text-xs text-ink-faint">Indicative only — check with your lender for any prepayment charges before making a lumpsum payment.</p>
+            <p class="text-xs text-ink-faint">{{ __('Indicative only — check with your lender for any prepayment charges before making a lumpsum payment.') }}</p>
         </div>
     </div>
 </div>

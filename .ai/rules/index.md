@@ -30,6 +30,8 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Support/Pages/CreditScorePageContent.php,app/Filament/Pages/CreditScorePageSettings.php,resources/views/credit-score/show.blade.php | .ai/rules/credit-score.md |
 | resources/views/components/site/promo-bar.blade.php,resources/js/app.js,resources/css/app.css | .ai/rules/css.md |
 | resources/views/emails/**,resources/views/components/emails/** | .ai/rules/emails.md |
+| resources/views/**,app/Http/Controllers/**,app/Support/**,app/Enums/**,lang/** | .ai/rules/enums.md |
+| app/Filament/**,database/migrations/** | .ai/rules/filament-migrations.md |
 | app/Support/Pages/AboutPageContent.php,app/Filament/Pages/AboutPageSettings.php,resources/views/about.blade.php | .ai/rules/filament-pages-views.md |
 | app/Support/Media/**,app/Filament/Pages/MediaGovernance.php | .ai/rules/filament-pages.md |
 | app/Filament/Resources/**/Schemas/*Form.php | .ai/rules/filament-resources-schemas.md |
@@ -44,9 +46,12 @@ Before planning or editing, find the row whose globs match the file's path and r
 | resources/views/components/⚡*.blade.php,resources/js/app.js | .ai/rules/js.md |
 | app/Support/Seo/**,resources/views/components/layouts/app.blade.php,public/robots.txt,resources/views/sitemap.blade.php | .ai/rules/layouts-views.md |
 | app/Filament/Schemas/SeoFormSection.php,app/Models/SeoMeta.php,app/Models/Concerns/Seoable.php,resources/views/components/layouts/app.blade.php | .ai/rules/layouts.md |
+| app/Filament/Imports/**,app/Filament/Resources/LenderProductRates/** | .ai/rules/lender-product-rates.md |
 | app/Filament/Resources/Faqs/**,app/Filament/Resources/LoanProducts/** | .ai/rules/loan-products.md |
 | app/Support/Seo/**,app/Filament/Pages/Settings.php,resources/views/loans/** | .ai/rules/loans.md |
+| database/seeders/**,app/Support/Localization/**,app/Models/Setting.php | .ai/rules/localization-models.md |
 | app/Http/Middleware/SecurityHeaders.php | .ai/rules/middleware.md |
+| app/Models/**,app/Modules/**/Models/*.php,database/migrations/**,app/Filament/** | .ai/rules/migrations-filament.md |
 | database/migrations/** | .ai/rules/migrations.md |
 | app/Modules/MobileOtp/** | .ai/rules/mobile-otp.md |
 | app/Support/Seo/Sitemap.php,app/Models/PageSeo.php,app/Filament/Schemas/SeoFormSection.php | .ai/rules/models-filament-schemas.md |
@@ -54,6 +59,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Support/Loans/LoanMegaMenu.php,resources/views/components/site/header.blade.php,app/Models/LoanLandingPage.php,database/seeders/LoanLocationPageSeeder.php | .ai/rules/models-seeders.md |
 | app/Filament/Resources/Articles/**,app/Models/Article.php,resources/views/home.blade.php | .ai/rules/models-views.md |
 | app/Modules/**/Models/*.php | .ai/rules/models.md |
+| app/Http/Controllers/**,app/Modules/**,resources/js/app.js | .ai/rules/modules-js.md |
 | app/Models/**,app/Modules/**/Models/*.php | .ai/rules/modules-models.md |
 | app/Http/Controllers/RobotsController.php,app/Http/Controllers/SitemapController.php,app/Support/Seo/SearchEngineIndexing.php,docker/nginx/nginx.conf | .ai/rules/nginx.md |
 | app/Enums/FaqPlacement.php,app/Support/Faqs/**,app/Filament/Resources/PageFaqs/**,resources/views/components/site/page-faqs.blade.php | .ai/rules/page-faqs-views-components-site.md |
@@ -80,11 +86,14 @@ Before planning or editing, find the row whose globs match the file's path and r
 | database/seeders/FlexiHybridTermLoanSeeder.php,database/seeders/JourneySeeder.php | .ai/rules/seeders-seeders.md |
 | database/seeders/**, database/seeders/LegalPageSeeder.php | .ai/rules/seeders.md |
 | app/Support/Seo/SearchEngineIndexing.php,config/seo.php,app/Filament/Pages/SeoAnalytics.php | .ai/rules/seo-filament-pages.md |
+| resources/views/components/site/header.blade.php,resources/views/components/site/language-switch.blade.php,resources/css/app.css | .ai/rules/site-css.md |
 | app/Models/PromoBar.php,app/Filament/Resources/PromoBars/**,app/Filament/Resources/Banners/**,app/Filament/Resources/LenderProducts/**,resources/views/loans/**,resources/views/components/site/faq-*.blade.php,database/seeders/LoanLandingPageSeeder.php | .ai/rules/site-seeders.md |
 | app/Models/MarketingSection.php,app/Models/NavigationLink.php,resources/views/home.blade.php,resources/views/components/site/footer.blade.php,resources/views/components/site/flexi-hybrid-ticker.blade.php | .ai/rules/site-views-components-site.md |
 | app/Http/Controllers/QuickEnquiryPageController.php,app/Modules/Enquiries/Concerns/ValidatesLoanEnquiries.php,resources/views/components/site/loan-enquiry-form.blade.php,resources/views/quick-enquiry.blade.php | .ai/rules/site-views.md |
-| resources/views/components/site/nav-link.blade.php, resources/views/components/site/banner-carousel.blade.php, resources/views/components/site/header.blade.php, resources/views/components/site/testimonials.blade.php | .ai/rules/site.md |
+| resources/views/components/site/nav-link.blade.php, resources/views/components/site/banner-carousel.blade.php, resources/views/components/site/header.blade.php, resources/views/components/site/testimonials.blade.php, resources/views/components/site/social-videos.blade.php | .ai/rules/site.md |
+| app/Models/SocialVideo.php,app/Support/SocialVideos/**,app/Filament/Resources/SocialVideos/**,resources/views/components/site/social-videos.blade.php | .ai/rules/social-videos-views-components-site.md |
 | app/Support/Rates/**,app/Models/LenderProductRate.php,app/Models/LenderProduct.php,app/Models/LoanProduct.php,resources/views/components/site/lender-comparison-table.blade.php,resources/views/components/site/loan-enquiry*.blade.php,app/Support/Calculators/LoanCalculatorPreset.php | .ai/rules/support-calculators.md |
+| app/Support/Rates/** | .ai/rules/support-rates.md |
 | app/Filament/Resources/**/Tables/*.php | .ai/rules/tables.md |
 | tests/** | .ai/rules/tests.md |
 | resources/css/**,resources/views/**,app/Support/Theme/**,app/Filament/Pages/Settings.php | .ai/rules/theme-filament-pages.md |

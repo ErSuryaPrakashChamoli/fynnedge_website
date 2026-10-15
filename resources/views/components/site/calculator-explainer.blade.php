@@ -1,9 +1,9 @@
 @props([
-    'heading' => 'About this calculator',
+    'heading' => __('About this calculator'),
     'body' => null,
     'eligibilityUrl' => null,
     'applyUrl' => null,
-    'applyLabel' => 'Apply for this loan',
+    'applyLabel' => __('Apply for this loan'),
 ])
 
 @if ($body || $eligibilityUrl || $applyUrl)
@@ -18,7 +18,7 @@
         @if ($eligibilityUrl || $applyUrl)
             <div class="mt-8 flex flex-wrap gap-3">
                 @if ($eligibilityUrl)
-                    <x-ui.button tag="a" :href="$eligibilityUrl" size="lg">Check Your Eligibility</x-ui.button>
+                    <x-ui.button tag="a" :href="$eligibilityUrl" size="lg">{{ __('Check Your Eligibility') }}</x-ui.button>
                 @endif
                 @if ($applyUrl)
                     <x-ui.button tag="a" :href="$applyUrl" variant="secondary" size="lg">{{ $applyLabel }}</x-ui.button>

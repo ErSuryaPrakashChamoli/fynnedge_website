@@ -4,6 +4,7 @@ paths:
   - resources/views/components/site/banner-carousel.blade.php
   - resources/views/components/site/header.blade.php
   - resources/views/components/site/testimonials.blade.php
+  - resources/views/components/site/social-videos.blade.php
 ---
 
 # Site
@@ -26,3 +27,10 @@ The menu also closes on Escape, on a click outside, and on resize to lg or wider
 
 ## Written testimonials are a scroll-snap row with arrows, not a grid
 x-site.testimonials renders ALL published testimonials as one horizontal snap-scroll row (`data-testimonial-card`, 1 card at ~85% on phones, 2 at sm, 3 at lg) with previous/next arrow buttons that Alpine hides when the row already fits (same atStart/atEnd pattern as x-site.video-testimonials). Never cap the query at 3 or switch back to a wrapping grid: the user asked (2026-09-17) for more than three testimonials with left/right arrows. Pinned by tests/Feature/TestimonialCarouselTest.php.
+
+## Credit Score header menu is a champagne pill with a "Free" badge
+The user asked on 2026-10-14 for the Credit Score header item to stand out and grab attention: bold, golden champagne, with "Free" before it. On desktop it is `<x-site.nav-dropdown ... featured badge="Free">`. The mobile menu's Credit Score button copies the same markup by hand. `.nav-champagne` (app.css) is the pill: champagne gradient, gold hairline, glow, and a light sweep that reuses the promo-bar-sweep keyframe and is switched off under prefers-reduced-motion. `.nav-champagne-badge` stays gold-on-navy in both themes. The pill reads only the --color-champagne, -strong, -soft and -shine tokens, which are defined in @theme and in both dark-mode blocks. Light-mode pill text is #6f521d, which keeps AA contrast. Pale champagne such as #e6c98f fails as text on the light header, so it is used only in dark mode.
+Width trap: the 1024–1279px header is full. The pill made it overflow by 62px, so the Primary nav uses `gap-3.5 xl:gap-8` and the pill uses `px-2.5 xl:px-3`. Widening the pill or adding a nav item means measuring header overflow (scrollWidth − clientWidth of `header > div`) at 1024px again. In nav-dropdown, keep the font weight inside each conditional branch, because a base font-medium plus font-bold gives an unpredictable result. Pinned by SiteBrandingTest.
+
+## Social videos row auto-advances; advance() must measure() itself
+No cap on how many videos render (5 visible at xl, the rest scroll). Once the row overflows it moves one card every 3.5s (card width + the track's computed column-gap) and loops back to the start, pausing while mouse-hovered, focused, touched in the last 6s, in a background tab, or under prefers-reduced-motion; arrow clicks restart the timer. advance() calls measure() first — don't rely on the @scroll listener to refresh atEnd, or it can stick at the last card instead of looping. Headless Chromium --virtual-time-budget never animates behavior:'smooth' scrolls, so to verify the loop there, force behavior:'instant' in a probe script.

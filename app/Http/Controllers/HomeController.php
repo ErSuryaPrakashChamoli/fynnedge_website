@@ -45,10 +45,10 @@ class HomeController extends Controller
             'flexiHybridTicker' => MarketingSection::forPlacement('home_flexi_hybrid_ticker'),
             'quickEnquiryButtonLabel' => QuickEnquiryPageContent::resolve()['home_button_label'],
             'hero' => [
-                'eyebrow' => Setting::get('hero_eyebrow', 'FynnEdge Advisory (OPC) Pvt Ltd'),
-                'heading' => Setting::get('hero_heading', 'Simplifying loans.'),
-                'headingAccent' => Setting::get('hero_heading_accent', 'Amplifying trust.'),
-                'subheading' => Setting::get('hero_subheading', 'FynnEdge connects you with suitable banks and NBFCs for personal loans, home loans, car loans, business loans and loans against property — with clear, upfront eligibility before you apply.'),
+                'eyebrow' => Setting::localized('hero_eyebrow', 'FynnEdge Advisory (OPC) Pvt Ltd'),
+                'heading' => Setting::localized('hero_heading', 'Simplifying loans.'),
+                'headingAccent' => Setting::localized('hero_heading_accent', 'Amplifying trust.'),
+                'subheading' => Setting::localized('hero_subheading', 'FynnEdge connects you with suitable banks and NBFCs for personal loans, home loans, car loans, business loans and loans against property — with clear, upfront eligibility before you apply.'),
             ],
         ]);
     }
@@ -67,10 +67,10 @@ class HomeController extends Controller
     private function derivedHeroStats(int $lenderCount, int $loanProductCount): array
     {
         return [
-            ['value' => $lenderCount, 'label' => 'Partner banks & NBFCs'],
-            ['value' => $loanProductCount, 'label' => 'Loan products compared'],
-            ['value' => array_sum(array_map('count', CalculatorCatalog::groups())), 'label' => 'Free loan calculators'],
-            ['value' => Article::query()->published()->count(), 'label' => 'Guides & resources'],
+            ['value' => $lenderCount, 'label' => __('Partner banks & NBFCs')],
+            ['value' => $loanProductCount, 'label' => __('Loan products compared')],
+            ['value' => array_sum(array_map('count', CalculatorCatalog::groups())), 'label' => __('Free loan calculators')],
+            ['value' => Article::query()->published()->count(), 'label' => __('Guides & resources')],
         ];
     }
 }

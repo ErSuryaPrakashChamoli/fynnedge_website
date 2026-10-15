@@ -10,7 +10,7 @@
     // request" for an unset term instead of a bare dash. Its initial and
     // subsequent tenure split is shown by the hero and calculator, not here.
     $isHybrid = $loanProduct->category->isHybridRepayment();
-    $missing = $isHybrid ? 'Available on request' : '—';
+    $missing = $isHybrid ? __('Available on request') : '—';
 
     // Every rate in this chart comes from RateBook: published, verified and
     // inside its validity dates right now. An offer without one says "Check
@@ -38,7 +38,8 @@
     // offer marked "Available on request" is never guessed at. "Lowest rate"
     // only counts rates open to all borrowers, so a women-only or
     // employer-specific rate never wears it.
-    $openRates = $offers->map($quoteFor)->filter(fn ($quote) => $quote?->isForAllBorrowers())->map(fn ($quote) => $quote->startingRate());
+    // Only lenders' own rates compete for "Lowest rate"; a third-party figure is shown, never ranked.
+    $openRates = $offers->map($quoteFor)->filter(fn ($quote) => $quote?->isForAllBorrowers() && $quote->isOfficial())->map(fn ($quote) => $quote->startingRate());
     $lowestRate = $openRates->count() > 1 ? $openRates->min() : null;
     $highestAmount = $maxAmounts->count() > 1 ? $maxAmounts->max() : null;
     $longestTenure = $maxTenures->count() > 1 ? $maxTenures->max() : null;
@@ -53,8 +54,8 @@
         $inYears = ($min ?? 0) % 12 === 0 && ($max ?? 0) % 12 === 0;
 
         return $inYears
-            ? ($min / 12).'–'.($max / 12).' yrs'
-            : "{$min}–{$max} mo";
+            ? __(':count yrs', ['count' => ($min / 12).'–'.($max / 12)])
+            : __(':count mo', ['count' => "{$min}–{$max}"]);
     };
 
     $applyUrl = route('loans.apply', $loanProduct);
@@ -108,39 +109,39 @@
     >
         <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
-                <p class="font-mono text-[0.68rem] font-semibold uppercase tracking-wider text-accent">Lenders offering this product</p>
-                <h2 data-reveal="right" class="mt-1 font-display text-2xl font-semibold text-ink">Compare lenders side by side</h2>
-                <p class="mt-1 text-sm text-ink-muted">Tick up to 4 lenders to compare them head to head, or apply with any lender directly.</p>
+                <p class="font-mono text-[0.68rem] font-semibold uppercase tracking-wider text-accent">{{ __('Lenders offering this product') }}</p>
+                <h2 data-reveal="right" class="mt-1 font-display text-2xl font-semibold text-ink">{{ __('Compare lenders side by side') }}</h2>
+                <p class="mt-1 text-sm text-ink-muted">{{ __('Tick up to 4 lenders to compare them head to head, or apply with any lender directly.') }}</p>
             </div>
         </div>
 
         {{-- Headline figures across every lender in the chart. --}}
         <dl class="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line lg:grid-cols-4">
             <div class="bg-surface px-5 py-4">
-                <dt class="font-mono text-[0.65rem] uppercase tracking-wider text-ink-faint">Lenders compared</dt>
+                <dt class="font-mono text-[0.65rem] uppercase tracking-wider text-ink-faint">{{ __('Lenders compared') }}</dt>
                 <dd class="mt-1 font-display text-2xl font-semibold text-ink">{{ $offers->count() }}</dd>
             </div>
             <div class="bg-surface px-5 py-4">
-                <dt class="font-mono text-[0.65rem] uppercase tracking-wider text-ink-faint">{{ $isCard ? 'Finance charges from' : 'Rates from' }}</dt>
+                <dt class="font-mono text-[0.65rem] uppercase tracking-wider text-ink-faint">{{ $isCard ? __('Finance charges from') : __('Rates from') }}</dt>
                 @if ($headline)
                     <dd class="mt-1 font-display text-2xl font-semibold text-pass" title="{{ $headline->backingNote() }}">
                         {{ $headline->startingLabel() }}
                         <span class="font-sans text-xs font-normal text-ink-faint">{{ $headline->unit()->suffix() }}</span>
                     </dd>
                 @else
-                    <dd class="mt-1 text-sm font-semibold text-ink-muted">Check current rates</dd>
+                    <dd class="mt-1 text-sm font-semibold text-ink-muted">{{ __('Check current rates') }}</dd>
                 @endif
             </div>
             <div class="bg-surface px-5 py-4">
-                <dt class="font-mono text-[0.65rem] uppercase tracking-wider text-ink-faint">Loan up to</dt>
+                <dt class="font-mono text-[0.65rem] uppercase tracking-wider text-ink-faint">{{ __('Loan up to') }}</dt>
                 <dd class="mt-1 font-display text-2xl font-semibold text-ink">
                     {{ $maxAmounts->isNotEmpty() ? '₹'.IndianNumberFormatter::compact($maxAmounts->max()) : $missing }}
                 </dd>
             </div>
             <div class="bg-surface px-5 py-4">
-                <dt class="font-mono text-[0.65rem] uppercase tracking-wider text-ink-faint">Tenure up to</dt>
+                <dt class="font-mono text-[0.65rem] uppercase tracking-wider text-ink-faint">{{ __('Tenure up to') }}</dt>
                 <dd class="mt-1 font-display text-2xl font-semibold text-ink">
-                    {{ $maxTenures->isNotEmpty() ? ($maxTenures->max() % 12 === 0 ? ($maxTenures->max() / 12).' yrs' : $maxTenures->max().' mo') : $missing }}
+                    {{ $maxTenures->isNotEmpty() ? ($maxTenures->max() % 12 === 0 ? __(':count yrs', ['count' => $maxTenures->max() / 12]) : __(':count mo', ['count' => $maxTenures->max()])) : $missing }}
                 </dd>
             </div>
         </dl>
@@ -148,9 +149,9 @@
         {{-- Sort + filter toolbar. Server order is already "lowest rate", so
              with JS off the chart still reads best-first. --}}
         <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
-            <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Sort lenders">
-                <span class="text-xs font-medium text-ink-faint">Sort by</span>
-                @foreach (['rate' => $isCard ? 'Finance charge' : 'Interest rate', 'amount' => 'Loan amount', 'tenure' => 'Tenure', 'name' => 'A–Z'] as $key => $label)
+            <div class="flex flex-wrap items-center gap-2" role="group" aria-label="{{ __('Sort lenders') }}">
+                <span class="text-xs font-medium text-ink-faint">{{ __('Sort by') }}</span>
+                @foreach (['rate' => $isCard ? __('Finance charge') : __('Interest rate'), 'amount' => __('Loan amount'), 'tenure' => __('Tenure'), 'name' => __('A–Z')] as $key => $label)
                     <button
                         type="button"
                         x-on:click="sort = '{{ $key }}'"
@@ -161,9 +162,9 @@
                 @endforeach
             </div>
             @if ($lenderTypes->count() > 1)
-                <div x-show="! comparing" class="flex flex-wrap items-center gap-2" role="group" aria-label="Filter by lender type">
-                    <span class="text-xs font-medium text-ink-faint">Show</span>
-                    @foreach (['all' => 'All'] + $lenderTypes->mapWithKeys(fn ($type) => [$type->value => $type->getLabel()])->all() as $key => $label)
+                <div x-show="! comparing" class="flex flex-wrap items-center gap-2" role="group" aria-label="{{ __('Filter by lender type') }}">
+                    <span class="text-xs font-medium text-ink-faint">{{ __('Show') }}</span>
+                    @foreach (['all' => __('All')] + $lenderTypes->mapWithKeys(fn ($type) => [$type->value => $type->getLabel()])->all() as $key => $label)
                         <button
                             type="button"
                             x-on:click="type = '{{ $key }}'"
@@ -185,25 +186,25 @@
             class="sticky top-20 z-30 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-accent bg-surface px-5 py-3 shadow-lg"
         >
             <p class="text-sm text-ink">
-                <span class="font-semibold" x-text="selected.length + ' of ' + maxCompare + ' lenders selected'"></span>
-                <span class="text-ink-muted" x-show="selected.length < 2">— pick at least one more to compare.</span>
-                <span class="text-ink-muted" x-show="comparing">— showing only your picks.</span>
+                <span class="font-semibold" x-text="@js(__(':selected of :max lenders selected')).replace(':selected', selected.length).replace(':max', maxCompare)"></span>
+                <span class="text-ink-muted" x-show="selected.length < 2">{{ __('— pick at least one more to compare.') }}</span>
+                <span class="text-ink-muted" x-show="comparing">{{ __('— showing only your picks.') }}</span>
             </p>
             <div class="flex flex-wrap items-center gap-2">
-                <button type="button" x-on:click="clearCompare()" class="rounded-full px-3 py-1.5 text-xs font-medium text-ink-muted hover:text-ink">Clear</button>
+                <button type="button" x-on:click="clearCompare()" class="rounded-full px-3 py-1.5 text-xs font-medium text-ink-muted hover:text-ink">{{ __('Clear') }}</button>
                 <button
                     type="button"
                     x-show="comparing"
                     x-on:click="comparing = false"
                     class="rounded-full border border-line px-4 py-1.5 text-xs font-semibold text-ink hover:border-accent"
-                >Show all lenders</button>
+                >{{ __('Show all lenders') }}</button>
                 <button
                     type="button"
                     x-show="! comparing"
                     x-on:click="comparing = true"
                     x-bind:disabled="selected.length < 2"
                     class="rounded-full bg-accent px-4 py-1.5 text-xs font-semibold text-surface transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
-                >Compare selected</button>
+                >{{ __('Compare selected') }}</button>
             </div>
         </div>
 
@@ -224,13 +225,13 @@
             <table class="w-full border-collapse text-left text-sm max-md:block md:min-w-[960px]">
                 <thead class="max-md:hidden">
                     <tr class="bg-accent text-[0.68rem] font-semibold uppercase tracking-wider text-surface">
-                        <th scope="col" class="sticky left-0 z-20 bg-accent px-5 py-4">Lender</th>
-                        <th scope="col" class="px-4 py-4">{{ $isCard ? 'Finance charge' : 'Interest rate' }}</th>
-                        <th scope="col" class="px-4 py-4">Loan amount</th>
-                        <th scope="col" class="px-4 py-4">Tenure</th>
-                        <th scope="col" class="px-4 py-4">Processing fee</th>
-                        <th scope="col" class="px-4 py-4">Eligibility</th>
-                        <th scope="col" class="px-4 py-4"><span class="sr-only">Apply</span></th>
+                        <th scope="col" class="sticky left-0 z-20 bg-accent px-5 py-4">{{ __('Lender') }}</th>
+                        <th scope="col" class="px-4 py-4">{{ $isCard ? __('Finance charge') : __('Interest rate') }}</th>
+                        <th scope="col" class="px-4 py-4">{{ __('Loan amount') }}</th>
+                        <th scope="col" class="px-4 py-4">{{ __('Tenure') }}</th>
+                        <th scope="col" class="px-4 py-4">{{ __('Processing fee') }}</th>
+                        <th scope="col" class="px-4 py-4">{{ __('Eligibility') }}</th>
+                        <th scope="col" class="px-4 py-4"><span class="sr-only">{{ __('Apply') }}</span></th>
                     </tr>
                 </thead>
                 <tbody x-ref="rows" class="divide-y divide-line max-md:flex max-md:flex-col max-md:gap-3 max-md:divide-y-0">
@@ -241,7 +242,7 @@
                             $rate = $quote?->startingRate();
                             $maxAmount = $offer->max_amount !== null ? (float) $offer->max_amount : null;
                             $maxTenure = $offer->max_tenure_months;
-                            $isLowestRate = $lowestRate !== null && $quote?->isForAllBorrowers() && $rate === $lowestRate;
+                            $isLowestRate = $lowestRate !== null && $quote?->isForAllBorrowers() && $quote->isOfficial() && $rate === $lowestRate;
                             $isHighestAmount = $highestAmount !== null && $maxAmount === $highestAmount;
                             $isLongestTenure = $longestTenure !== null && (int) $maxTenure === $longestTenure;
                             $hasFeeDetails = $offer->processingFeeDisplay() !== null || filled($offer->publicFeeNote());
@@ -269,7 +270,7 @@
                         >
                             <th scope="row" class="bg-surface px-5 py-4 font-normal shadow-[inset_3px_0_0_transparent] transition-shadow group-hover:bg-accent-soft group-hover:shadow-[inset_3px_0_0_var(--color-accent)] max-md:col-span-2 max-md:bg-transparent max-md:p-0 max-md:shadow-none max-md:group-hover:bg-transparent max-md:group-hover:shadow-none md:sticky md:left-0 md:z-10 {{ $isLowestRate ? 'shadow-[inset_3px_0_0_var(--color-pass)]' : '' }}">
                                 <div class="flex items-center gap-3">
-                                    <label class="flex shrink-0 cursor-pointer items-center" title="Add to compare">
+                                    <label class="flex shrink-0 cursor-pointer items-center" title="{{ __('Add to compare') }}">
                                         <input
                                             type="checkbox"
                                             class="h-4 w-4 cursor-pointer rounded border-line-strong accent-[var(--color-accent)]"
@@ -277,7 +278,7 @@
                                             x-bind:disabled="! selected.includes('{{ $offer->id }}') && selected.length >= maxCompare"
                                             x-on:change="toggle('{{ $offer->id }}'); $event.target.checked = selected.includes('{{ $offer->id }}')"
                                         >
-                                        <span class="sr-only">Compare {{ $offer->lender->name }}</span>
+                                        <span class="sr-only">{{ __('Compare :lender', ['lender' => $offer->lender->name]) }}</span>
                                     </label>
                                     <x-ui.lender-logo :lender="$offer->lender" size="md" />
                                     <div class="min-w-0">
@@ -292,22 +293,22 @@
                                 @if ($isLowestRate || $isHighestAmount || $isLongestTenure || $quote?->featured)
                                     <div class="mt-2 flex flex-wrap gap-1">
                                         @if ($quote?->featured)
-                                            <x-ui.badge tone="accent" class="px-2! py-0.5! text-[0.58rem]!">Featured</x-ui.badge>
+                                            <x-ui.badge tone="accent" class="px-2! py-0.5! text-[0.58rem]!">{{ __('Featured') }}</x-ui.badge>
                                         @endif
                                         @if ($isLowestRate)
-                                            <x-ui.badge tone="pass" class="px-2! py-0.5! text-[0.58rem]!">Lowest rate</x-ui.badge>
+                                            <x-ui.badge tone="pass" class="px-2! py-0.5! text-[0.58rem]!">{{ __('Lowest rate') }}</x-ui.badge>
                                         @endif
                                         @if ($isHighestAmount)
-                                            <x-ui.badge tone="accent" class="px-2! py-0.5! text-[0.58rem]!">Highest amount</x-ui.badge>
+                                            <x-ui.badge tone="accent" class="px-2! py-0.5! text-[0.58rem]!">{{ __('Highest amount') }}</x-ui.badge>
                                         @endif
                                         @if ($isLongestTenure)
-                                            <x-ui.badge tone="warn" class="px-2! py-0.5! text-[0.58rem]!">Longest tenure</x-ui.badge>
+                                            <x-ui.badge tone="warn" class="px-2! py-0.5! text-[0.58rem]!">{{ __('Longest tenure') }}</x-ui.badge>
                                         @endif
                                     </div>
                                 @endif
                             </th>
                             <td class="px-4 py-4 max-md:p-0">
-                                <p class="mb-1 font-mono text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">{{ $isCard ? 'Finance charge' : 'Interest rate' }}</p>
+                                <p class="mb-1 font-mono text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">{{ $isCard ? __('Finance charge') : __('Interest rate') }}</p>
                                 @if ($quote)
                                     {{-- The lender's published product rate; a promotional
                                          rate is shown beside it as an offer, never in its place. --}}
@@ -320,29 +321,45 @@
                                     <div class="mt-2 h-1.5 w-28 max-w-full overflow-hidden rounded-full bg-surface-2" aria-hidden="true">
                                         <div class="h-full rounded-full {{ $isLowestRate ? 'bg-pass' : 'bg-accent' }}" style="width: {{ round($rateFill) }}%"></div>
                                     </div>
-                                    <p class="mt-1 text-[0.68rem] text-ink-faint">{{ $quote->unit->suffix() }}{{ $quote->rateMax === null ? ' onwards' : '' }}{{ $quote->repaymentNote() ? ' · '.$quote->repaymentNote() : '' }}</p>
+                                    <p class="mt-1 text-[0.68rem] text-ink-faint">{{ $quote->unit->suffix() }}{{ $quote->rateMax === null ? ' '.__('onwards') : '' }}{{ $quote->repaymentNote() ? ' · '.$quote->repaymentNote() : '' }}</p>
                                     @if ($quote->isPromotional())
                                         <x-ui.badge tone="accent" class="mt-1.5 whitespace-normal px-2! py-0.5! text-[0.6rem]! normal-case! tracking-normal!">{{ $quote->promotionLabel() }}</x-ui.badge>
                                     @endif
                                     @if (! $quote->isForAllBorrowers())
-                                        <p class="mt-1 text-[0.68rem] font-medium text-warn">Only for: {{ $quote->borrowerSegment }}</p>
+                                        <p class="mt-1 text-[0.68rem] font-medium text-warn">{{ __('Only for: :segment', ['segment' => $quote->borrowerSegment]) }}</p>
                                     @endif
                                     @if ($quote->eligibilityNotes || $quote->disclaimer)
                                         <p class="mt-1 max-w-56 text-[0.68rem] leading-snug text-ink-faint">{{ collect([$quote->eligibilityNotes, $quote->disclaimer])->filter()->implode(' ') }}</p>
                                     @endif
-                                    <p class="mt-1 text-[0.65rem] text-ink-faint">
-                                        {{ $quote->verifiedLabel() }}@if ($quote->sourceUrl) · <a href="{{ $quote->sourceUrl }}" target="_blank" rel="nofollow noopener noreferrer" class="underline hover:text-accent">lender's rates</a>@endif
-                                    </p>
+                                    @if ($quote->isOfficial())
+                                        <p class="mt-1 text-[0.65rem] text-ink-faint">
+                                            {{ $quote->verifiedLabel() }}@if ($quote->sourceUrl) · <a href="{{ $quote->sourceUrl }}" target="_blank" rel="nofollow noopener noreferrer" class="underline hover:text-accent">{{ __("lender's rates") }}</a>@endif
+                                        </p>
+                                    @else
+                                        {{-- Read from a comparison site, not the lender: named as such,
+                                             never called verified, and the customer is told to confirm. --}}
+                                        <p class="mt-1 max-w-56 text-[0.65rem] leading-snug text-warn" data-third-party-rate>
+                                            @if ($quote->sourceUrl)
+                                                {!! __('As listed on :source, :date', [
+                                                    'source' => '<a href="'.e($quote->sourceUrl).'" target="_blank" rel="nofollow noopener noreferrer" class="underline hover:text-accent">'.e($quote->sourceName ?: __('a comparison site')).'</a>',
+                                                    'date' => e($quote->lastVerifiedAt->translatedFormat('j M Y')),
+                                                ]) !!}
+                                            @else
+                                                {{ $quote->verifiedLabel() }}
+                                            @endif
+                                            · {{ __('confirm with :lender', ['lender' => $offer->lender->name]) }}
+                                        </p>
+                                    @endif
                                     @if ($otherQuotes)
                                         <details class="mt-1 text-xs text-ink-muted">
-                                            <summary class="cursor-pointer font-medium text-accent hover:underline">Other rates ({{ count($otherQuotes) }})</summary>
+                                            <summary class="cursor-pointer font-medium text-accent hover:underline">{{ __('Other rates (:count)', ['count' => count($otherQuotes)]) }}</summary>
                                             <ul class="mt-1 space-y-1">
                                                 @foreach ($otherQuotes as $other)
                                                     <li>
-                                                        <span class="font-medium text-ink">{{ $other->variant ?: ($other->borrowerSegment ?: 'Standard') }}:</span>
+                                                        <span class="font-medium text-ink">{{ $other->variant ?: ($other->borrowerSegment ?: __('Standard')) }}:</span>
                                                         {{ $other->rangeLabel() }}
                                                         @if ($other->variant && $other->borrowerSegment)
-                                                            <span class="text-ink-faint">(only for: {{ $other->borrowerSegment }})</span>
+                                                            <span class="text-ink-faint">{{ __('(only for: :segment)', ['segment' => $other->borrowerSegment]) }}</span>
                                                         @endif
                                                     </li>
                                                 @endforeach
@@ -350,12 +367,12 @@
                                         </details>
                                     @endif
                                 @else
-                                    <p class="text-sm font-medium text-ink-muted">Check current rates</p>
-                                    <p class="mt-1 text-[0.68rem] text-ink-faint">Rate confirmed by the lender when you apply</p>
+                                    <p class="text-sm font-medium text-ink-muted">{{ __('Check current rates') }}</p>
+                                    <p class="mt-1 text-[0.68rem] text-ink-faint">{{ __('Rate confirmed by the lender when you apply') }}</p>
                                 @endif
                             </td>
                             <td class="px-4 py-4 max-md:p-0">
-                                <p class="mb-1 font-mono text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">Loan amount</p>
+                                <p class="mb-1 font-mono text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">{{ __('Loan amount') }}</p>
                                 @if ($offer->min_amount || $offer->max_amount)
                                     <p class="font-semibold text-ink md:whitespace-nowrap">
                                         ₹{{ IndianNumberFormatter::compact((float) $offer->min_amount) }} – ₹{{ IndianNumberFormatter::compact((float) $offer->max_amount) }}
@@ -368,7 +385,7 @@
                                 @endif
                             </td>
                             <td class="whitespace-nowrap px-4 py-4 font-semibold text-ink max-md:p-0">
-                                <p class="mb-1 font-mono font-normal text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">Tenure</p>
+                                <p class="mb-1 font-mono font-normal text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">{{ __('Tenure') }}</p>
                                 @if ($tenureLabel($offer->min_tenure_months, $offer->max_tenure_months))
                                     {{ $tenureLabel($offer->min_tenure_months, $offer->max_tenure_months) }}
                                 @else
@@ -378,19 +395,19 @@
                             {{-- A card drops a cell it has nothing to say in, rather than label an empty dash. --}}
                             <td @class(['px-4 py-4 max-md:p-0 md:max-w-56', 'max-md:hidden' => ! $hasFeeDetails])>
                                 @if ($hasFeeDetails)
-                                    <p class="mb-1 font-mono text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">Processing fee</p>
+                                    <p class="mb-1 font-mono text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">{{ __('Processing fee') }}</p>
                                 @endif
                                 <p class="font-medium text-ink">{{ $offer->processingFeeDisplay() ?? $missing }}</p>
                                 @if ($offer->publicFeeNote())
                                     <details class="mt-1 text-xs text-ink-muted">
-                                        <summary class="cursor-pointer font-medium text-accent hover:underline">Fee details</summary>
+                                        <summary class="cursor-pointer font-medium text-accent hover:underline">{{ __('Fee details') }}</summary>
                                         <p class="mt-1 leading-relaxed">{{ $offer->publicFeeNote() }}</p>
                                     </details>
                                 @endif
                             </td>
                             <td @class(['px-4 py-4 max-md:col-span-2 max-md:border-t max-md:border-line max-md:p-0 max-md:pt-3 md:min-w-48', 'max-md:hidden' => ! $offer->eligibilitySummaryPoints()])>
                                 @if ($offer->eligibilitySummaryPoints())
-                                    <p class="mb-1 font-mono text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">Eligibility</p>
+                                    <p class="mb-1 font-mono text-[0.6rem] uppercase tracking-wider text-ink-faint md:hidden">{{ __('Eligibility') }}</p>
                                     <ul class="space-y-1 text-xs text-ink-muted">
                                         @foreach ($offer->eligibilitySummaryPoints() as $point)
                                             <li class="flex items-start gap-1.5">
@@ -405,7 +422,7 @@
                             </td>
                             <td class="whitespace-nowrap px-4 py-4 align-middle max-md:col-span-2 max-md:p-0">
                                 <x-ui.button tag="a" :href="$applyUrl" size="sm" class="shadow-sm transition-transform group-hover:-translate-y-0.5 max-md:w-full max-md:justify-center">
-                                    Apply Now <span aria-hidden="true">→</span>
+                                    {{ __('Apply Now') }} <span aria-hidden="true">→</span>
                                 </x-ui.button>
                             </td>
                         </tr>
@@ -416,14 +433,14 @@
 
         <div class="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-accent-soft px-5 py-4">
             <p class="text-sm text-ink">
-                <span class="font-semibold">Not sure which lender fits?</span>
-                <span class="text-ink-muted">Check your eligibility with all {{ $offers->count() }} {{ Str::plural('lender', $offers->count()) }} with a single application.</span>
+                <span class="font-semibold">{{ __('Not sure which lender fits?') }}</span>
+                <span class="text-ink-muted">{{ __('Check your eligibility with all :count :lenders with a single application.', ['count' => $offers->count(), 'lenders' => __(Str::plural('lender', $offers->count()))]) }}</span>
             </p>
-            <x-ui.button tag="a" :href="$applyUrl" size="sm">Check eligibility</x-ui.button>
+            <x-ui.button tag="a" :href="$applyUrl" size="sm">{{ __('Check eligibility') }}</x-ui.button>
         </div>
         <p class="mt-3 text-xs text-ink-faint">
-            Rates are each lender's own published figures, checked against the lender's website on the date shown.
-            The rate, amount and approval you are offered depend on the lender's assessment of your profile — FynnEdge does not guarantee approval, disbursal or any particular rate.
+            {{ __("Rates are each lender's own published figures, checked against the lender's website on the date shown.") }}
+            {{ __("The rate, amount and approval you are offered depend on the lender's assessment of your profile — FynnEdge does not guarantee approval, disbursal or any particular rate.") }}
         </p>
     </div>
 @endif

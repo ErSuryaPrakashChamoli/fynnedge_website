@@ -42,10 +42,10 @@ new class extends Component
             return;
         }
 
-        [$min, $max, $label] = match ($property) {
-            'principal' => [self::MIN_AMOUNT, self::MAX_AMOUNT, 'deposit amount'],
-            'annualRate' => [self::MIN_RATE, self::MAX_RATE, 'interest rate'],
-            'tenureYears' => [self::MIN_YEARS, self::MAX_YEARS, 'tenure'],
+        [$min, $max, $message] = match ($property) {
+            'principal' => [self::MIN_AMOUNT, self::MAX_AMOUNT, __('Adjusted the deposit amount to stay within the allowed range.')],
+            'annualRate' => [self::MIN_RATE, self::MAX_RATE, __('Adjusted the interest rate to stay within the allowed range.')],
+            'tenureYears' => [self::MIN_YEARS, self::MAX_YEARS, __('Adjusted the tenure to stay within the allowed range.')],
         };
 
         // An emptied field leaves the typed property unset — treat it as below the minimum.
@@ -54,7 +54,7 @@ new class extends Component
         if ($value === null || $value < $min || $value > $max) {
             $clamped = max($min, min($max, $value ?? $min));
             $this->{$property} = $property === 'tenureYears' ? (int) $clamped : (float) $clamped;
-            $this->addError($property, "Adjusted the {$label} to stay within the allowed range.");
+            $this->addError($property, $message);
 
             return;
         }
@@ -69,7 +69,7 @@ new class extends Component
         <div class="flex flex-col gap-6">
             <div>
                 <div class="flex items-baseline justify-between gap-3">
-                    <label for="principal" class="text-sm font-medium text-ink">Deposit amount</label>
+                    <label for="principal" class="text-sm font-medium text-ink">{{ __('Deposit amount') }}</label>
                     <div class="flex items-center gap-1 font-mono text-sm text-ink-muted">
                         ₹
                         <input
@@ -90,20 +90,20 @@ new class extends Component
                 </div>
                 <input
                     type="range"
-                    aria-label="Deposit amount"
+                    aria-label="{{ __('Deposit amount') }}"
                     min="{{ self::MIN_AMOUNT }}"
                     max="{{ self::MAX_AMOUNT }}"
                     step="1000"
                     wire:model.live="principal"
                     class="mt-2 w-full accent-accent"
                 >
-                <p class="mt-1 text-xs text-ink-faint" x-text="numberToIndianWords(String($wire.principal)) + ' Rupees only'"></p>
+                <p class="mt-1 text-xs text-ink-faint" x-text="numberToIndianWords(String($wire.principal)) + @js(' '.__('Rupees only'))"></p>
                 @error('principal') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
             </div>
 
             <div>
                 <div class="flex items-baseline justify-between gap-3">
-                    <label for="annualRate" class="text-sm font-medium text-ink">Interest rate (p.a.)</label>
+                    <label for="annualRate" class="text-sm font-medium text-ink">{{ __('Interest rate (p.a.)') }}</label>
                     <div class="flex items-center gap-1 font-mono text-sm text-ink-muted">
                         <input
                             id="annualRate"
@@ -125,7 +125,7 @@ new class extends Component
                 </div>
                 <input
                     type="range"
-                    aria-label="Interest rate"
+                    aria-label="{{ __('Interest rate') }}"
                     min="{{ self::MIN_RATE }}"
                     max="{{ self::MAX_RATE }}"
                     step="0.05"
@@ -137,7 +137,7 @@ new class extends Component
 
             <div>
                 <div class="flex items-baseline justify-between gap-3">
-                    <label for="tenureYears" class="text-sm font-medium text-ink">Tenure</label>
+                    <label for="tenureYears" class="text-sm font-medium text-ink">{{ __('Tenure') }}</label>
                     <div class="flex items-center gap-1 font-mono text-sm text-ink-muted">
                         <input
                             id="tenureYears"
@@ -154,12 +154,12 @@ new class extends Component
                             x-on:keydown.enter.prevent="$el.blur()"
                             class="w-16 rounded-md border border-line-strong bg-surface px-2 py-1 text-right text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
                         >
-                        {{ Str::plural('year', $tenureYears) }}
+                        {{ $tenureYears === 1 ? __('year') : __('years') }}
                     </div>
                 </div>
                 <input
                     type="range"
-                    aria-label="Tenure in years"
+                    aria-label="{{ __('Tenure in years') }}"
                     min="{{ self::MIN_YEARS }}"
                     max="{{ self::MAX_YEARS }}"
                     step="1"
@@ -172,20 +172,20 @@ new class extends Component
 
         <div class="flex flex-col justify-center gap-5 rounded-2xl border border-line bg-surface-2 p-7">
             <div>
-                <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Maturity value</p>
+                <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Maturity value') }}</p>
                 <p class="mt-1 font-display text-4xl font-semibold text-accent">₹{{ $this->formatAmount($this->result['maturity_value']) }}</p>
             </div>
             <div class="grid grid-cols-2 gap-4 border-t border-line pt-5">
                 <div>
-                    <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Invested amount</p>
+                    <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Invested amount') }}</p>
                     <p class="mt-1 text-lg font-medium text-ink">₹{{ $this->formatAmount($this->principal) }}</p>
                 </div>
                 <div>
-                    <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">Total interest</p>
+                    <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Total interest') }}</p>
                     <p class="mt-1 text-lg font-medium text-ink">₹{{ $this->formatAmount($this->result['total_interest']) }}</p>
                 </div>
             </div>
-            <p class="text-xs text-ink-faint">Assumes quarterly compounding, the standard convention for Indian bank fixed deposits. Actual returns depend on the bank's exact terms.</p>
+            <p class="text-xs text-ink-faint">{!! __("Assumes quarterly compounding, the standard convention for Indian bank fixed deposits. Actual returns depend on the bank's exact terms.") !!}</p>
         </div>
     </div>
 </div>

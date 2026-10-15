@@ -16,6 +16,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Validation\ValidationException;
@@ -65,6 +66,14 @@ class Settings extends Page
             'business_price_range' => Setting::get('business_price_range'),
             'founder_name' => Setting::get('founder_name'),
             'founder_photo' => Setting::get('founder_photo'),
+            'site_tagline_hi' => Setting::get('site_tagline_hi'),
+            'hero_eyebrow_hi' => Setting::get('hero_eyebrow_hi'),
+            'hero_heading_hi' => Setting::get('hero_heading_hi'),
+            'hero_heading_accent_hi' => Setting::get('hero_heading_accent_hi'),
+            'hero_subheading_hi' => Setting::get('hero_subheading_hi'),
+            'footer_disclaimer_hi' => Setting::get('footer_disclaimer_hi'),
+            'contact_address_hi' => Setting::get('contact_address_hi'),
+            'founder_name_hi' => Setting::get('founder_name_hi'),
             'social_instagram' => Setting::get('social_instagram'),
             'social_facebook' => Setting::get('social_facebook'),
             'social_whatsapp' => Setting::get('social_whatsapp'),
@@ -267,6 +276,51 @@ class Settings extends Page
                             ->helperText('JPG or PNG, up to 5MB.'),
                     ]),
 
+                Section::make('Hindi wording (हिन्दी)')
+                    ->description('What visitors who switch the site to Hindi read for the text above (saved as {key}_hi). Leave a field blank to use the built-in Hindi of the English, shown in grey — or the English itself where there is none.')
+                    ->collapsible()
+                    ->collapsed()
+                    ->columns(2)
+                    ->components([
+                        TextInput::make('site_tagline_hi')
+                            ->label('Tagline')
+                            ->maxLength(120)
+                            ->placeholder(fn (Get $get): ?string => self::builtInHindi($get('site_tagline'))),
+                        TextInput::make('founder_name_hi')
+                            ->label('Founder name')
+                            ->placeholder(fn (Get $get): ?string => self::builtInHindi($get('founder_name'))),
+                        TextInput::make('hero_eyebrow_hi')
+                            ->label('Homepage hero — eyebrow text')
+                            ->maxLength(120)
+                            ->placeholder(fn (Get $get): ?string => self::builtInHindi($get('hero_eyebrow')))
+                            ->columnSpanFull(),
+                        TextInput::make('hero_heading_hi')
+                            ->label('Homepage hero — headline')
+                            ->maxLength(90)
+                            ->placeholder(fn (Get $get): ?string => self::builtInHindi($get('hero_heading'))),
+                        TextInput::make('hero_heading_accent_hi')
+                            ->label('Homepage hero — headline (highlighted part)')
+                            ->maxLength(90)
+                            ->placeholder(fn (Get $get): ?string => self::builtInHindi($get('hero_heading_accent'))),
+                        Textarea::make('hero_subheading_hi')
+                            ->label('Homepage hero — subheading')
+                            ->maxLength(360)
+                            ->rows(2)
+                            ->placeholder(fn (Get $get): ?string => self::builtInHindi($get('hero_subheading')))
+                            ->columnSpanFull(),
+                        Textarea::make('footer_disclaimer_hi')
+                            ->label('Footer disclaimer')
+                            ->maxLength(420)
+                            ->rows(2)
+                            ->placeholder(fn (Get $get): ?string => self::builtInHindi($get('footer_disclaimer')))
+                            ->columnSpanFull(),
+                        Textarea::make('contact_address_hi')
+                            ->label('Address')
+                            ->rows(2)
+                            ->placeholder(fn (Get $get): ?string => self::builtInHindi($get('contact_address')))
+                            ->columnSpanFull(),
+                    ]),
+
                 Section::make('Social media')
                     ->description('Full links (including https://), shown as icon links in the site footer. Leave any of these blank to hide that icon.')
                     ->columns(3)
@@ -344,6 +398,21 @@ class Settings extends Page
                             ->hex(),
                     ]),
             ]);
+    }
+
+    /**
+     * What a Hindi visitor reads for this English Setting while its Hindi
+     * field is blank (see Setting::localized()).
+     */
+    private static function builtInHindi(mixed $english): ?string
+    {
+        if (! is_string($english) || blank($english)) {
+            return null;
+        }
+
+        $hindi = __($english, [], 'hi');
+
+        return is_string($hindi) ? $hindi : $english;
     }
 
     /**

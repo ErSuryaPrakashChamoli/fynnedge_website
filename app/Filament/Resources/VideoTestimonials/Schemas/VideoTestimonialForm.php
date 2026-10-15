@@ -5,6 +5,7 @@ namespace App\Filament\Resources\VideoTestimonials\Schemas;
 use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
 use App\Enums\VideoTestimonialSource;
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\VideoTestimonial;
 use App\Support\Testimonials\VideoTestimonials;
 use Closure;
@@ -151,6 +152,28 @@ class VideoTestimonialForm
                         DateTimePicker::make('expires_at')
                             ->helperText('Optional. The video stops appearing publicly after this time.'),
                     ]),
+                HindiTranslationSection::make([
+                    TextInput::make('customer_name_hi')
+                        ->label('Customer name (Hindi)')
+                        ->maxLength(500),
+                    TextInput::make('role_location_hi')
+                        ->label('Role / location (Hindi)')
+                        ->maxLength(500),
+                    TextInput::make('customer_photo_alt_hi')
+                        ->label('Customer photo alt text (Hindi)')
+                        ->maxLength(500),
+                    TextInput::make('poster_alt_hi')
+                        ->label('Cover image alt text (Hindi)'),
+                    TextInput::make('headline_hi')
+                        ->label('Headline (Hindi)')
+                        ->maxLength(120)
+                        ->columnSpanFull(),
+                    Textarea::make('quote_hi')
+                        ->label('Short quote (Hindi)')
+                        ->rows(2)
+                        ->maxLength(300)
+                        ->columnSpanFull(),
+                ])->columns(2),
             ]);
     }
 

@@ -1,4 +1,4 @@
-<x-layouts.app handles-faqs handles-video-testimonials>
+<x-layouts.app handles-faqs handles-social-videos handles-video-testimonials>
 
     <x-site.flexi-hybrid-ticker :loan-product="$flexiHybridProduct" :marketing="$flexiHybridTicker" />
 
@@ -64,10 +64,10 @@
                                 {{ $quickEnquiryButtonLabel }}
                             </x-ui.button>
                             <x-ui.button :tag="Route::has('eligibility.index') ? 'a' : 'button'" :href="Route::has('eligibility.index') ? route('eligibility.index') : null" variant="outline" size="fit">
-                                Check Your Eligibility
+                                {{ __('Check Your Eligibility') }}
                             </x-ui.button>
                             <x-ui.button tag="a" :href="route('loans.index')" variant="outline" size="fit">
-                                Explore Loan Products
+                                {{ __('Explore Loan Products') }}
                             </x-ui.button>
                         </div>
                     </div>
@@ -91,7 +91,7 @@
         <section class="border-b border-line bg-surface">
             <div data-reveal="fade" class="mx-auto max-w-7xl px-6 py-4 lg:px-8">
                 <p class="text-center font-mono text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink-faint sm:text-left">
-                    Trusted by leading banks &amp; NBFCs
+                    {{ __('Trusted by leading banks & NBFCs') }}
                 </p>
                 <div class="relative mt-3 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
                     <div class="flex w-max animate-marquee items-center gap-6 hover:[animation-play-state:paused] motion-reduce:animate-none">
@@ -129,14 +129,14 @@
         <section class="border-t border-line bg-surface">
             <div class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
                 <h2 data-reveal="up" class="max-w-xl text-balance font-display text-2xl font-semibold text-ink">
-                    What are you looking to finance?
+                    {{ __('What are you looking to finance?') }}
                 </h2>
                 <p data-reveal="up" class="mt-2 text-ink-muted text-justify hyphens-auto">
-                    Pick a product to see what's involved — or browse the full list.
+                    {{ __("Pick a product to see what's involved — or browse the full list.") }}
                 </p>
 
                 <div x-data="{ active: '{{ $loanProducts->first()->slug }}' }" class="mt-8">
-                    <div class="flex flex-wrap gap-2" role="tablist" aria-label="Loan products">
+                    <div class="flex flex-wrap gap-2" role="tablist" aria-label="{{ __('Loan products') }}">
                         @foreach ($loanProducts as $product)
                             <button
                                 type="button"
@@ -164,7 +164,7 @@
                                         @endif
                                     </div>
                                     <x-ui.button tag="a" :href="route('loans.apply', $product)" size="sm" class="shrink-0">
-                                        Check Eligibility
+                                        {{ __('Check Eligibility') }}
                                     </x-ui.button>
                                 </div>
 
@@ -180,7 +180,7 @@
                                 @endif
 
                                 <a href="{{ route('loans.show', $product) }}" class="mt-6 inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline">
-                                    View full details
+                                    {{ __('View full details') }}
                                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8h10m0 0-4-4m4 4-4 4" /></svg>
                                 </a>
                             </div>
@@ -194,18 +194,18 @@
     <section class="border-t border-line bg-surface-2">
         <div data-reveal="right" class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
             <h2 class="max-w-xl text-balance font-display text-2xl font-semibold text-ink">
-                {{ $financeCta->heading ?? 'Not sure which loan or lender fits your profile?' }}
+                {{ $financeCta->heading ?? __('Not sure which loan or lender fits your profile?') }}
             </h2>
             <p class="mt-3 text-ink-muted text-justify hyphens-auto">
-                {{ $financeCta->description ?? "Tell us about yourself and we'll identify suitable lenders — before you commit to an application." }}
+                {{ $financeCta->description ?? __("Tell us about yourself and we'll identify suitable lenders — before you commit to an application.") }}
             </p>
             @if ($financeCta?->cta_url)
                 <x-ui.button class="mt-6" tag="a" :href="$financeCta->cta_url">
-                    {{ $financeCta->cta_label ?: 'Check Your Eligibility' }}
+                    {{ $financeCta->cta_label ?: __('Check Your Eligibility') }}
                 </x-ui.button>
             @else
                 <x-ui.button class="mt-6" :tag="Route::has('eligibility.index') ? 'a' : 'button'" :href="Route::has('eligibility.index') ? route('eligibility.index') : null">
-                    Check Your Eligibility
+                    {{ __('Check Your Eligibility') }}
                 </x-ui.button>
             @endif
         </div>
@@ -213,16 +213,15 @@
 
     <section class="border-t border-line bg-surface">
         <div data-reveal="left" class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-            <h2 class="max-w-xl text-balance font-display text-2xl font-semibold text-ink">How it works</h2>
+            <h2 class="max-w-xl text-balance font-display text-2xl font-semibold text-ink">{{ __('How it works') }}</h2>
             <div class="mt-8 grid gap-10 lg:grid-cols-2">
                 @if ($howItWorksSteps->isNotEmpty())
                     <x-site.how-it-works :steps="$howItWorksSteps" />
                 @else
-                    <x-ui.stepper :steps="['Tell us about yourself', 'See lenders you\'re likely eligible for', 'Compare and apply', 'Track your application to disbursal']" :current="0" />
+                    <x-ui.stepper :steps="[__('Tell us about yourself'), __('See lenders you\'re likely eligible for'), __('Compare and apply'), __('Track your application to disbursal')]" :current="0" />
                 @endif
                 <p class="text-sm text-ink-muted lg:pt-1">
-                    One profile, matched against multiple lenders' criteria at once — instead of applying
-                    to each bank separately and hoping for the best.
+                    {{ __("One profile, matched against multiple lenders' criteria at once — instead of applying to each bank separately and hoping for the best.") }}
                 </p>
             </div>
         </div>
@@ -231,13 +230,12 @@
     <section class="border-t border-line bg-surface-2">
         <div class="mx-auto grid max-w-7xl gap-12 px-6 py-16 lg:grid-cols-[1fr_360px] lg:items-center lg:gap-16 lg:px-8">
             <div data-reveal="left">
-                <x-ui.badge tone="accent">Free score check</x-ui.badge>
+                <x-ui.badge tone="accent">{{ __('Free score check') }}</x-ui.badge>
                 <h2 class="mt-4 max-w-lg text-balance font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-                    Know your credit score before you apply
+                    {{ __('Know your credit score before you apply') }}
                 </h2>
                 <p class="mt-3 max-w-lg text-ink-muted">
-                    A quick, mobile-OTP-verified check shows where you stand with major bureaus — free, and it
-                    never affects your real credit history.
+                    {{ __('A quick, mobile-OTP-verified check shows where you stand with major bureaus — free, and it never affects your real credit history.') }}
                 </p>
 
                 <div class="mt-6 flex flex-wrap gap-3">
@@ -317,8 +315,8 @@
                     <circle cx="100" cy="100" r="3.5" style="fill: var(--color-surface)" />
                 </svg>
                 <p class="-mt-1 font-display text-3xl font-semibold text-ink" x-text="score">760</p>
-                <p class="mt-1 font-mono text-[0.65rem] uppercase tracking-wider text-ink-faint">Score — check yours free</p>
-                <p class="mt-3 whitespace-nowrap font-display text-[0.72rem] font-semibold tracking-tight text-accent">Know Your Credit. Unlock Your Possibilities.</p>
+                <p class="mt-1 font-mono text-[0.65rem] uppercase tracking-wider text-ink-faint">{{ __('Score — check yours free') }}</p>
+                <p class="mt-3 whitespace-nowrap font-display text-[0.72rem] font-semibold tracking-tight text-accent">{{ __('Know Your Credit. Unlock Your Possibilities.') }}</p>
             </x-ui.card>
         </div>
     </section>
@@ -326,12 +324,12 @@
     <section class="border-t border-line bg-surface">
         <div data-reveal="down" class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
             <div class="flex flex-wrap items-end justify-between gap-4">
-                <h2 class="max-w-xl text-balance font-display text-2xl font-semibold text-ink">{{ $emiCta->heading ?? 'Plan your EMI' }}</h2>
+                <h2 class="max-w-xl text-balance font-display text-2xl font-semibold text-ink">{{ $emiCta->heading ?? __('Plan your EMI') }}</h2>
                 <x-ui.button tag="a" :href="$emiCta->cta_url ?? route('calculators.index')" variant="secondary" size="sm">
-                    {{ $emiCta->cta_label ?? 'Open calculator' }}
+                    {{ $emiCta->cta_label ?? __('Open calculator') }}
                 </x-ui.button>
             </div>
-            <p class="mt-3 text-ink-muted text-justify hyphens-auto">{{ $emiCta->description ?? 'Estimate your monthly instalment before you apply, for any loan type.' }}</p>
+            <p class="mt-3 text-ink-muted text-justify hyphens-auto">{{ $emiCta->description ?? __('Estimate your monthly instalment before you apply, for any loan type.') }}</p>
         </div>
     </section>
 
@@ -341,11 +339,11 @@
             <div class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
                 <div data-reveal="down" class="flex flex-wrap items-end justify-between gap-4">
                     <div>
-                        <p class="font-mono text-xs font-semibold uppercase tracking-wider text-ink-faint">Guides &amp; resources</p>
-                        <h2 class="mt-2 max-w-xl text-balance font-display text-2xl font-semibold text-ink">Latest articles</h2>
+                        <p class="font-mono text-xs font-semibold uppercase tracking-wider text-ink-faint">{{ __('Guides & resources') }}</p>
+                        <h2 class="mt-2 max-w-xl text-balance font-display text-2xl font-semibold text-ink">{{ __('Latest articles') }}</h2>
                     </div>
                     <x-ui.button tag="a" :href="route('resources.index')" variant="secondary" size="sm">
-                        View all articles
+                        {{ __('View all articles') }}
                     </x-ui.button>
                 </div>
                 <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -357,21 +355,23 @@
         </section>
     @endif
 
-    {{-- Real customer videos directly before the final call to action. --}}
+    {{-- Videos from our own social media posts, then real customer videos, directly before the final call to action. --}}
+    <x-site.social-videos />
+
     <x-site.video-testimonials />
 
     <section class="border-t border-line bg-accent">
         <div data-reveal="zoom" class="mx-auto max-w-7xl px-6 py-16 text-center lg:px-8">
             <h2 class="mx-auto max-w-xl text-balance font-display text-2xl font-semibold text-white sm:text-3xl">
-                {{ $finalCta->heading ?? "Ready to see what you're eligible for?" }}
+                {{ $finalCta->heading ?? __("Ready to see what you're eligible for?") }}
             </h2>
             @if ($finalCta?->cta_url)
                 <x-ui.button class="mt-6" variant="inverse" tag="a" :href="$finalCta->cta_url">
-                    {{ $finalCta->cta_label ?: 'Check Your Eligibility' }}
+                    {{ $finalCta->cta_label ?: __('Check Your Eligibility') }}
                 </x-ui.button>
             @else
                 <x-ui.button class="mt-6" variant="inverse" :tag="Route::has('eligibility.index') ? 'a' : 'button'" :href="Route::has('eligibility.index') ? route('eligibility.index') : null">
-                    Check Your Eligibility
+                    {{ __('Check Your Eligibility') }}
                 </x-ui.button>
             @endif
         </div>

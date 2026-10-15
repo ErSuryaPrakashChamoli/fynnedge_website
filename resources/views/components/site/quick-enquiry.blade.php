@@ -55,6 +55,7 @@
     $serverChallengeId = session('quickEnquiryChallenge') ?: old('otp_challenge_id');
     $onOtpStep = (bool) $serverChallengeId;
     $otpLength = MobileOtpChallenge::codeLength();
+    $verifyHeading = __('Verify your mobile number');
 @endphp
 
 <div
@@ -72,11 +73,11 @@
     })"
 >
     <div x-show="!done">
-        <p class="font-display text-xl font-semibold text-ink sm:text-2xl" x-text="step === 'otp' ? 'Verify your mobile number' : @js($heading)">{{ $onOtpStep ? 'Verify your mobile number' : $heading }}</p>
+        <p class="font-display text-xl font-semibold text-ink sm:text-2xl" x-text="step === 'otp' ? @js($verifyHeading) : @js($heading)">{{ $onOtpStep ? $verifyHeading : $heading }}</p>
 
         <p class="mt-2 text-sm text-ink-muted sm:text-base" style="{{ $onOtpStep ? 'display:none' : '' }}" x-show="step !== 'otp'">{{ $subheading }}</p>
         <p class="mt-2 text-sm text-ink-muted sm:text-base" style="{{ $onOtpStep ? '' : 'display:none' }}" x-show="step === 'otp'">
-            Enter the {{ $otpLength }}-digit code we sent by SMS to <span class="font-medium text-ink">+91 <span x-text="phone">{{ old('phone') }}</span></span>. It may take a moment to arrive.
+            {{ __('Enter the :length-digit code we sent by SMS to', ['length' => $otpLength]) }} <span class="font-medium text-ink">+91 <span x-text="phone">{{ old('phone') }}</span></span>{{ __('. It may take a moment to arrive.') }}
         </p>
 
         @if ($serverStatus)
@@ -103,7 +104,7 @@
             </div>
 
             <div class="flex-1">
-                <label for="{{ $fieldId }}" class="sr-only">Mobile number</label>
+                <label for="{{ $fieldId }}" class="sr-only">{{ __('Mobile number') }}</label>
                 <div
                     @class([
                         'flex items-stretch overflow-hidden rounded-lg border bg-surface transition-colors focus-within:ring-2',
@@ -120,7 +121,7 @@
                         inputmode="numeric"
                         autocomplete="tel-national"
                         maxlength="16"
-                        placeholder="10-digit mobile number"
+                        placeholder="{{ __('10-digit mobile number') }}"
                         required
                         value="{{ old('phone') }}"
                         aria-describedby="{{ $fieldId }}-error"
@@ -149,7 +150,7 @@
             </div>
 
             <x-ui.button type="submit" class="shrink-0" ::disabled="loading">
-                <span x-text="loading ? 'Sending code...' : 'Send OTP'">Send OTP</span>
+                <span x-text="loading ? @js(__('Sending code...')) : @js(__('Send OTP'))">{{ __('Send OTP') }}</span>
             </x-ui.button>
         </form>
 
@@ -170,7 +171,7 @@
 
             <div class="flex flex-col gap-3 sm:flex-row sm:items-start">
                 <div class="flex-1">
-                    <label for="{{ $otpFieldId }}" class="sr-only">{{ $otpLength }}-digit verification code</label>
+                    <label for="{{ $otpFieldId }}" class="sr-only">{{ __(':length-digit verification code', ['length' => $otpLength]) }}</label>
                     <input
                         type="text"
                         id="{{ $otpFieldId }}"
@@ -178,7 +179,7 @@
                         inputmode="numeric"
                         autocomplete="one-time-code"
                         maxlength="{{ $otpLength }}"
-                        placeholder="{{ $otpLength }}-digit code"
+                        placeholder="{{ __(':length-digit code', ['length' => $otpLength]) }}"
                         required
                         aria-describedby="{{ $otpFieldId }}-error"
                         @if ($serverOtpError) aria-invalid="true" @endif
@@ -208,7 +209,7 @@
                 </div>
 
                 <x-ui.button type="submit" class="shrink-0" ::disabled="loading">
-                    <span x-text="loading ? 'Verifying...' : @js($ctaLabel)">{{ $ctaLabel }}</span>
+                    <span x-text="loading ? @js(__('Verifying...')) : @js($ctaLabel)">{{ $ctaLabel }}</span>
                 </x-ui.button>
             </div>
 
@@ -227,13 +228,13 @@
                     {{-- Single colon: this is a plain element, not a Blade component,
                          so `::` would reach Alpine verbatim and bind nothing. --}}
                     :disabled="loading || resendIn > 0"
-                    x-text="resendIn > 0 ? `Resend code in ${resendIn}s` : 'Resend code'"
-                >Resend code</button>
+                    x-text="resendIn > 0 ? @js(__('Resend code in :seconds')).replace(':seconds', resendIn + 's') : @js(__('Resend code'))"
+                >{{ __('Resend code') }}</button>
                 <a
                     href="{{ url()->current() }}"
                     class="font-medium text-accent underline-offset-2 hover:underline"
                     @click.prevent="editPhone"
-                >Change number</a>
+                >{{ __('Change number') }}</a>
             </p>
         </form>
 

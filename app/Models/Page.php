@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\PublishStatus;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use App\Models\Concerns\Publishable;
 use App\Models\Concerns\Seoable;
 use Database\Factories\PageFactory;
@@ -14,11 +15,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['title', 'slug', 'excerpt', 'body', 'status', 'published_at', 'expires_at'])]
+#[Fillable(['title', 'slug', 'excerpt', 'body', 'status', 'published_at', 'expires_at', 'title_hi', 'excerpt_hi', 'body_hi'])]
 class Page extends Model
 {
     /** @use HasFactory<PageFactory> */
-    use Auditable, HasFactory, HasPublicId, Publishable, Seoable, SoftDeletes;
+    use Auditable, HasFactory, HasPublicId, HasTranslations, Publishable, Seoable, SoftDeletes;
 
     protected function casts(): array
     {
@@ -32,5 +33,17 @@ class Page extends Model
     public function faqs(): MorphMany
     {
         return $this->morphMany(Faq::class, 'faqable')->orderBy('sort_order');
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'title',
+            'excerpt',
+            'body',
+        ];
     }
 }

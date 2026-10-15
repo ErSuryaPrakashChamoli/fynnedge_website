@@ -57,11 +57,11 @@ trait ValidatesLoanEnquiries
             // Honeypot, as on the newsletter form: a person never fills a hidden field.
             'website' => ['prohibited'],
         ], [
-            'name.required' => 'Please enter your name.',
-            'phone.required' => 'Please enter a valid 10-digit mobile number.',
-            'phone.regex' => 'Please enter a valid 10-digit mobile number.',
-            'email.email' => 'Please enter a valid email address.',
-            'loan_amount.required' => 'Please enter the loan amount you need.',
+            'name.required' => __('Please enter your name.'),
+            'phone.required' => __('Please enter a valid 10-digit mobile number.'),
+            'phone.regex' => __('Please enter a valid 10-digit mobile number.'),
+            'email.email' => __('Please enter a valid email address.'),
+            'loan_amount.required' => __('Please enter the loan amount you need.'),
             ...($range ? [
                 'loan_amount.min' => LoanEnquiryAmount::rangeMessage($range),
                 'loan_amount.max' => LoanEnquiryAmount::rangeMessage($range),

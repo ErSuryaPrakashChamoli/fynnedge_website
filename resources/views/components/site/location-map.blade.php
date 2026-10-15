@@ -2,7 +2,7 @@
     'src',
     'label',
     'viewUrl' => null,
-    'title' => 'Our location',
+    'title' => null,
 ])
 
 {{--
@@ -18,7 +18,7 @@
         allowfullscreen
         loading="lazy"
         referrerpolicy="no-referrer-when-downgrade"
-        title="{{ $title }}"
+        title="{{ $title ?? __('Our location') }}"
     ></iframe>
 
     {{-- $viewUrl is only set for a bare coordinate pin (OfficeMap::viewUrl()). A map
@@ -47,7 +47,7 @@
             target="_blank"
             rel="noopener noreferrer"
             class="absolute left-1/2 top-1/2 h-11 w-9 -translate-x-1/2 -translate-y-full cursor-pointer"
-            aria-label="Open {{ $label }} location in Google Maps"
+            aria-label="{{ __('Open :place location in Google Maps', ['place' => $label]) }}"
         ></a>
     @endif
 </div>

@@ -22,18 +22,18 @@ enum LoanCategory: string implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::PersonalLoan => 'Personal Loan',
-            self::HomeLoan => 'Home Loan',
-            self::CarLoan => 'Car Loan',
-            self::LoanAgainstProperty => 'Loan Against Property',
-            self::BusinessLoan => 'Business Loan',
-            self::CreditCard => 'Credit Card',
-            self::GoldLoan => 'Gold Loan',
-            self::TwoWheelerLoan => 'Two Wheeler Loan',
-            self::TermLoan => 'Term Loan',
-            self::TractorLoan => 'Tractor Loan',
-            self::MudraLoan => 'Mudra Loan',
-            self::FlexiHybridTermLoan => 'Flexi Hybrid Term Loan',
+            self::PersonalLoan => __('Personal Loan'),
+            self::HomeLoan => __('Home Loan'),
+            self::CarLoan => __('Car Loan'),
+            self::LoanAgainstProperty => __('Loan Against Property'),
+            self::BusinessLoan => __('Business Loan'),
+            self::CreditCard => __('Credit Card'),
+            self::GoldLoan => __('Gold Loan'),
+            self::TwoWheelerLoan => __('Two Wheeler Loan'),
+            self::TermLoan => __('Term Loan'),
+            self::TractorLoan => __('Tractor Loan'),
+            self::MudraLoan => __('Mudra Loan'),
+            self::FlexiHybridTermLoan => __('Flexi Hybrid Term Loan'),
         };
     }
 

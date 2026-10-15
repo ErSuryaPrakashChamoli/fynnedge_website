@@ -8,6 +8,7 @@ use App\Enums\PublishStatus;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPagePlacements;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasTranslations;
 use App\Models\Concerns\Publishable;
 use App\Support\Rates\RateText;
 use App\Support\Theme\SiteThemeStyles;
@@ -30,11 +31,16 @@ use Illuminate\Support\HtmlString;
     'image_path', 'image_alt', 'background_color', 'background_color_to', 'text_color', 'highlight_color',
     'cta_bg_color', 'cta_text_color', 'show_countdown', 'placements', 'excluded_placements',
     'trigger', 'trigger_value', 'device', 'reshow_after_hours', 'sort_order', 'status', 'published_at', 'expires_at',
+    'eyebrow_hi',
+    'headline_hi',
+    'rotating_messages_hi',
+    'cta_label_hi',
+    'image_alt_hi',
 ])]
 class PromoBar extends Model
 {
     /** @use HasFactory<PromoBarFactory> */
-    use Auditable, HasFactory, HasPagePlacements, HasPublicId, Publishable, SoftDeletes;
+    use Auditable, HasFactory, HasPagePlacements, HasPublicId, HasTranslations, Publishable, SoftDeletes;
 
     /**
      * Site-relative paths (never protocol-relative "//host"), http(s) URLs,
@@ -46,6 +52,7 @@ class PromoBar extends Model
     {
         return [
             'rotating_messages' => 'array',
+            'rotating_messages_hi' => 'array',
             'placements' => 'array',
             'excluded_placements' => 'array',
             'cta_opens_new_tab' => 'boolean',
@@ -195,6 +202,20 @@ class PromoBar extends Model
             'device' => ($this->device ?? PromoBarDevice::All)->value,
             'countdownEndsAt' => $this->countdownEndsAt()?->toIso8601String(),
             'messageCount' => count($this->messages()),
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatableAttributes(): array
+    {
+        return [
+            'eyebrow',
+            'headline',
+            'rotating_messages',
+            'cta_label',
+            'image_alt',
         ];
     }
 }

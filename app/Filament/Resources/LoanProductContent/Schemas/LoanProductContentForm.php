@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\LoanProductContent\Schemas;
 
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Filament\Schemas\HtmlBodyEditor;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -91,6 +92,32 @@ class LoanProductContentForm
                             ->label('Documents explanation'),
                         TagsInput::make('process_steps'),
                     ]),
+
+                HindiTranslationSection::make([
+                    TextInput::make('marketing_headline_hi')
+                        ->label('Marketing headline (Hindi)')
+                        ->maxLength(500),
+                    TextInput::make('summary_hi')
+                        ->label('Summary (Hindi)')
+                        ->maxLength(240),
+                    TagsInput::make('benefits_hi')
+                        ->label('Benefits (Hindi)'),
+                    TextInput::make('cta_label_hi')
+                        ->label('Primary button label (Hindi)')
+                        ->maxLength(500),
+                    TextInput::make('image_alt_hi')
+                        ->label('Image alt text (Hindi)')
+                        ->maxLength(500),
+                    ...HtmlBodyEditor::make('body_hi', label: 'Body (Hindi)'),
+                    TagsInput::make('features_hi')
+                        ->label('Features (Hindi)'),
+                    TagsInput::make('eligibility_points_hi')
+                        ->label('Eligibility explanation (Hindi)'),
+                    TagsInput::make('documents_required_hi')
+                        ->label('Documents explanation (Hindi)'),
+                    TagsInput::make('process_steps_hi')
+                        ->label('Process steps (Hindi)'),
+                ]),
             ]);
     }
 }

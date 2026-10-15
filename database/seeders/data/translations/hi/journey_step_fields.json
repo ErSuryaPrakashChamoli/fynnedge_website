@@ -1,0 +1,4061 @@
+[
+ {
+  "field": "help_text",
+  "en": "A 10-digit Indian mobile number, verified with an OTP.",
+  "hi": "ओटीपी से सत्यापित 10 अंकों का भारतीय मोबाइल नंबर।"
+ },
+ {
+  "field": "help_text",
+  "en": "You must be at least 21 years old.",
+  "hi": "आपकी उम्र कम से कम 21 साल होनी चाहिए।"
+ },
+ {
+  "field": "help_text",
+  "en": "Also known as the down payment.",
+  "hi": "इसे डाउन पेमेंट भी कहते हैं।"
+ },
+ {
+  "field": "help_text",
+  "en": "Used only to run your credit check, with your consent below.",
+  "hi": "इसका इस्तेमाल सिर्फ़ नीचे दी गई आपकी सहमति से आपकी क्रेडिट जांच के लिए किया जाता है।"
+ },
+ {
+  "field": "label",
+  "en": "Full name (as per PAN)",
+  "hi": "पूरा नाम (पैन के अनुसार)"
+ },
+ {
+  "field": "label",
+  "en": "Mobile number",
+  "hi": "मोबाइल नंबर"
+ },
+ {
+  "field": "label",
+  "en": "Email",
+  "hi": "ईमेल"
+ },
+ {
+  "field": "label",
+  "en": "Date of birth",
+  "hi": "जन्म तिथि"
+ },
+ {
+  "field": "label",
+  "en": "City",
+  "hi": "शहर"
+ },
+ {
+  "field": "label",
+  "en": "Employment type",
+  "hi": "रोज़गार का प्रकार"
+ },
+ {
+  "field": "label",
+  "en": "Company name",
+  "hi": "कंपनी का नाम"
+ },
+ {
+  "field": "label",
+  "en": "Designation",
+  "hi": "पद"
+ },
+ {
+  "field": "label",
+  "en": "Business name",
+  "hi": "बिज़नेस का नाम"
+ },
+ {
+  "field": "label",
+  "en": "Years in current job",
+  "hi": "मौजूदा नौकरी में कितने साल"
+ },
+ {
+  "field": "label",
+  "en": "Monthly income (₹)",
+  "hi": "मासिक आय (₹)"
+ },
+ {
+  "field": "label",
+  "en": "Other monthly income (₹, optional)",
+  "hi": "अन्य मासिक आय (₹, वैकल्पिक)"
+ },
+ {
+  "field": "label",
+  "en": "Do you have existing loan EMIs?",
+  "hi": "क्या आपकी पहले से कोई लोन ईएमआई चल रही है?"
+ },
+ {
+  "field": "label",
+  "en": "Total existing EMI amount (₹/month)",
+  "hi": "कुल मौजूदा ईएमआई राशि (₹/माह)"
+ },
+ {
+  "field": "label",
+  "en": "Loan amount required (₹)",
+  "hi": "आवश्यक लोन राशि (₹)"
+ },
+ {
+  "field": "label",
+  "en": "Purpose",
+  "hi": "उद्देश्य"
+ },
+ {
+  "field": "label",
+  "en": "Preferred tenure (months)",
+  "hi": "पसंदीदा अवधि (महीने)"
+ },
+ {
+  "field": "label",
+  "en": "I consent to FynnEdge and its lending partners checking my credit information as part of this personal loan application, and confirm I have read and agree to the Credit Report Terms of Use, Terms of Use & Privacy Policy.",
+  "hi": "मैं इस पर्सनल लोन आवेदन के तहत FynnEdge और उसके पार्टनर लेंडर को अपनी क्रेडिट जानकारी जांचने की सहमति देता/देती हूं, और पुष्टि करता/करती हूं कि मैंने क्रेडिट रिपोर्ट उपयोग की शर्तें, उपयोग की शर्तें और गोपनीयता नीति पढ़ ली हैं और मैं इनसे सहमत हूं।"
+ },
+ {
+  "field": "label",
+  "en": "Property type",
+  "hi": "प्रॉपर्टी का प्रकार"
+ },
+ {
+  "field": "label",
+  "en": "Property status",
+  "hi": "प्रॉपर्टी की स्थिति"
+ },
+ {
+  "field": "label",
+  "en": "Estimated property value (₹)",
+  "hi": "प्रॉपर्टी की अनुमानित कीमत (₹)"
+ },
+ {
+  "field": "label",
+  "en": "Your own contribution (₹)",
+  "hi": "आपका अपना योगदान (₹)"
+ },
+ {
+  "field": "label",
+  "en": "I consent to FynnEdge and its lending partners checking my credit information as part of this home loan application, and confirm I have read and agree to the Credit Report Terms of Use, Terms of Use & Privacy Policy.",
+  "hi": "मैं इस होम लोन आवेदन के तहत FynnEdge और उसके पार्टनर लेंडर को अपनी क्रेडिट जानकारी जांचने की सहमति देता/देती हूं, और पुष्टि करता/करती हूं कि मैंने क्रेडिट रिपोर्ट उपयोग की शर्तें, उपयोग की शर्तें और गोपनीयता नीति पढ़ ली हैं और मैं इनसे सहमत हूं।"
+ },
+ {
+  "field": "label",
+  "en": "Vehicle condition",
+  "hi": "वाहन की स्थिति"
+ },
+ {
+  "field": "label",
+  "en": "Estimated on-road price (₹)",
+  "hi": "अनुमानित ऑन-रोड कीमत (₹)"
+ },
+ {
+  "field": "label",
+  "en": "I consent to FynnEdge and its lending partners checking my credit information as part of this car loan application, and confirm I have read and agree to the Credit Report Terms of Use, Terms of Use & Privacy Policy.",
+  "hi": "मैं इस कार लोन आवेदन के तहत FynnEdge और उसके पार्टनर लेंडर को अपनी क्रेडिट जानकारी जांचने की सहमति देता/देती हूं, और पुष्टि करता/करती हूं कि मैंने क्रेडिट रिपोर्ट उपयोग की शर्तें, उपयोग की शर्तें और गोपनीयता नीति पढ़ ली हैं और मैं इनसे सहमत हूं।"
+ },
+ {
+  "field": "label",
+  "en": "Ownership",
+  "hi": "स्वामित्व"
+ },
+ {
+  "field": "label",
+  "en": "Any existing loan on this property?",
+  "hi": "क्या इस प्रॉपर्टी पर पहले से कोई लोन है?"
+ },
+ {
+  "field": "label",
+  "en": "Outstanding amount (₹)",
+  "hi": "बकाया राशि (₹)"
+ },
+ {
+  "field": "label",
+  "en": "I consent to FynnEdge and its lending partners checking my credit information as part of this loan against property application, and confirm I have read and agree to the Credit Report Terms of Use, Terms of Use & Privacy Policy.",
+  "hi": "मैं इस प्रॉपर्टी पर लोन आवेदन के तहत FynnEdge और उसके पार्टनर लेंडर को अपनी क्रेडिट जानकारी जांचने की सहमति देता/देती हूं, और पुष्टि करता/करती हूं कि मैंने क्रेडिट रिपोर्ट उपयोग की शर्तें, उपयोग की शर्तें और गोपनीयता नीति पढ़ ली हैं और मैं इनसे सहमत हूं।"
+ },
+ {
+  "field": "label",
+  "en": "Business constitution",
+  "hi": "बिज़नेस का स्वरूप"
+ },
+ {
+  "field": "label",
+  "en": "Industry",
+  "hi": "उद्योग"
+ },
+ {
+  "field": "label",
+  "en": "Years in business",
+  "hi": "बिज़नेस में कितने साल"
+ },
+ {
+  "field": "label",
+  "en": "Annual turnover (₹)",
+  "hi": "सालाना टर्नओवर (₹)"
+ },
+ {
+  "field": "label",
+  "en": "GST registered?",
+  "hi": "जीएसटी रजिस्टर्ड है?"
+ },
+ {
+  "field": "label",
+  "en": "GST number",
+  "hi": "जीएसटी नंबर"
+ },
+ {
+  "field": "label",
+  "en": "Is the business currently profitable?",
+  "hi": "क्या बिज़नेस अभी मुनाफ़े में है?"
+ },
+ {
+  "field": "label",
+  "en": "I consent to FynnEdge and its lending partners checking my credit information as part of this business loan application, and confirm I have read and agree to the Credit Report Terms of Use, Terms of Use & Privacy Policy.",
+  "hi": "मैं इस बिज़नेस लोन आवेदन के तहत FynnEdge और उसके पार्टनर लेंडर को अपनी क्रेडिट जानकारी जांचने की सहमति देता/देती हूं, और पुष्टि करता/करती हूं कि मैंने क्रेडिट रिपोर्ट उपयोग की शर्तें, उपयोग की शर्तें और गोपनीयता नीति पढ़ ली हैं और मैं इनसे सहमत हूं।"
+ },
+ {
+  "field": "label",
+  "en": "Do you have any existing credit cards?",
+  "hi": "क्या आपके पास पहले से कोई क्रेडिट कार्ड है?"
+ },
+ {
+  "field": "label",
+  "en": "How many?",
+  "hi": "कितने?"
+ },
+ {
+  "field": "label",
+  "en": "I consent to FynnEdge and its lending partners checking my credit information as part of this credit card application, and confirm I have read and agree to the Credit Report Terms of Use, Terms of Use & Privacy Policy.",
+  "hi": "मैं इस क्रेडिट कार्ड आवेदन के तहत FynnEdge और उसके पार्टनर लेंडर को अपनी क्रेडिट जानकारी जांचने की सहमति देता/देती हूं, और पुष्टि करता/करती हूं कि मैंने क्रेडिट रिपोर्ट उपयोग की शर्तें, उपयोग की शर्तें और गोपनीयता नीति पढ़ ली हैं और मैं इनसे सहमत हूं।"
+ },
+ {
+  "field": "label",
+  "en": "Gold item type",
+  "hi": "गोल्ड आइटम का प्रकार"
+ },
+ {
+  "field": "label",
+  "en": "Estimated gold weight (grams)",
+  "hi": "गोल्ड का अनुमानित वज़न (ग्राम)"
+ },
+ {
+  "field": "label",
+  "en": "I consent to FynnEdge and its lending partners checking my credit information as part of this gold loan application, and confirm I have read and agree to the Credit Report Terms of Use, Terms of Use & Privacy Policy.",
+  "hi": "मैं इस गोल्ड लोन आवेदन के तहत FynnEdge और उसके पार्टनर लेंडर को अपनी क्रेडिट जानकारी जांचने की सहमति देता/देती हूं, और पुष्टि करता/करती हूं कि मैंने क्रेडिट रिपोर्ट उपयोग की शर्तें, उपयोग की शर्तें और गोपनीयता नीति पढ़ ली हैं और मैं इनसे सहमत हूं।"
+ },
+ {
+  "field": "label",
+  "en": "I consent to FynnEdge and its lending partners checking my credit information as part of this two wheeler loan application, and confirm I have read and agree to the Credit Report Terms of Use, Terms of Use & Privacy Policy.",
+  "hi": "मैं इस टू व्हीलर लोन आवेदन के तहत FynnEdge और उसके पार्टनर लेंडर को अपनी क्रेडिट जानकारी जांचने की सहमति देता/देती हूं, और पुष्टि करता/करती हूं कि मैंने क्रेडिट रिपोर्ट उपयोग की शर्तें, उपयोग की शर्तें और गोपनीयता नीति पढ़ ली हैं और मैं इनसे सहमत हूं।"
+ },
+ {
+  "field": "label",
+  "en": "I consent to FynnEdge and its lending partners checking my credit information as part of this term loan application, and confirm I have read and agree to the Credit Report Terms of Use, Terms of Use & Privacy Policy.",
+  "hi": "मैं इस टर्म लोन आवेदन के तहत FynnEdge और उसके पार्टनर लेंडर को अपनी क्रेडिट जानकारी जांचने की सहमति देता/देती हूं, और पुष्टि करता/करती हूं कि मैंने क्रेडिट रिपोर्ट उपयोग की शर्तें, उपयोग की शर्तें और गोपनीयता नीति पढ़ ली हैं और मैं इनसे सहमत हूं।"
+ },
+ {
+  "field": "label",
+  "en": "Land holding (acres)",
+  "hi": "कुल ज़मीन (एकड़)"
+ },
+ {
+  "field": "label",
+  "en": "Land ownership",
+  "hi": "ज़मीन का स्वामित्व"
+ },
+ {
+  "field": "label",
+  "en": "Annual farm income (₹)",
+  "hi": "खेती से सालाना आय (₹)"
+ },
+ {
+  "field": "label",
+  "en": "Tractor condition",
+  "hi": "ट्रैक्टर की स्थिति"
+ },
+ {
+  "field": "label",
+  "en": "I consent to FynnEdge and its lending partners checking my credit information as part of this tractor loan application, and confirm I have read and agree to the Credit Report Terms of Use, Terms of Use & Privacy Policy.",
+  "hi": "मैं इस ट्रैक्टर लोन आवेदन के तहत FynnEdge और उसके पार्टनर लेंडर को अपनी क्रेडिट जानकारी जांचने की सहमति देता/देती हूं, और पुष्टि करता/करती हूं कि मैंने क्रेडिट रिपोर्ट उपयोग की शर्तें, उपयोग की शर्तें और गोपनीयता नीति पढ़ ली हैं और मैं इनसे सहमत हूं।"
+ },
+ {
+  "field": "label",
+  "en": "Years in business (0 if not yet started)",
+  "hi": "बिज़नेस में कितने साल (अगर अभी शुरू नहीं हुआ है तो 0)"
+ },
+ {
+  "field": "label",
+  "en": "Requested tier",
+  "hi": "मांगी गई श्रेणी"
+ },
+ {
+  "field": "label",
+  "en": "I consent to FynnEdge and its lending partners checking my credit information as part of this Mudra loan application, and confirm I have read and agree to the Credit Report Terms of Use, Terms of Use & Privacy Policy.",
+  "hi": "मैं इस मुद्रा लोन आवेदन के तहत FynnEdge और उसके पार्टनर लेंडर को अपनी क्रेडिट जानकारी जांचने की सहमति देता/देती हूं, और पुष्टि करता/करती हूं कि मैंने क्रेडिट रिपोर्ट उपयोग की शर्तें, उपयोग की शर्तें और गोपनीयता नीति पढ़ ली हैं और मैं इनसे सहमत हूं।"
+ },
+ {
+  "field": "label",
+  "en": "PAN",
+  "hi": "पैन"
+ },
+ {
+  "field": "label",
+  "en": "By submitting this form, you have read and agree to the Credit Report Terms of Use, Terms of Use & Privacy Policy.",
+  "hi": "इस फ़ॉर्म को सबमिट करने का मतलब है कि आपने क्रेडिट रिपोर्ट उपयोग की शर्तें, उपयोग की शर्तें और गोपनीयता नीति पढ़ ली हैं और आप इनसे सहमत हैं।"
+ },
+ {
+  "field": "label",
+  "en": "Preferred total tenure (months)",
+  "hi": "पसंदीदा कुल अवधि (महीने)"
+ },
+ {
+  "field": "label",
+  "en": "I consent to FynnEdge and its lending partners checking my credit information as part of this Flexi Hybrid Term Loan application, and confirm I have read and agree to the Credit Report Terms of Use, Terms of Use & Privacy Policy.",
+  "hi": "मैं इस फ्लेक्सी हाइब्रिड टर्म लोन आवेदन के तहत FynnEdge और उसके पार्टनर लेंडर को अपनी क्रेडिट जानकारी जांचने की सहमति देता/देती हूं, और पुष्टि करता/करती हूं कि मैंने क्रेडिट रिपोर्ट उपयोग की शर्तें, उपयोग की शर्तें और गोपनीयता नीति पढ़ ली हैं और मैं इनसे सहमत हूं।"
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Mumbai",
+    "value": "Mumbai"
+   },
+   {
+    "label": "Delhi",
+    "value": "Delhi"
+   },
+   {
+    "label": "Bengaluru",
+    "value": "Bengaluru"
+   },
+   {
+    "label": "Hyderabad",
+    "value": "Hyderabad"
+   },
+   {
+    "label": "Ahmedabad",
+    "value": "Ahmedabad"
+   },
+   {
+    "label": "Chennai",
+    "value": "Chennai"
+   },
+   {
+    "label": "Kolkata",
+    "value": "Kolkata"
+   },
+   {
+    "label": "Pune",
+    "value": "Pune"
+   },
+   {
+    "label": "Jaipur",
+    "value": "Jaipur"
+   },
+   {
+    "label": "Lucknow",
+    "value": "Lucknow"
+   },
+   {
+    "label": "Kanpur",
+    "value": "Kanpur"
+   },
+   {
+    "label": "Nagpur",
+    "value": "Nagpur"
+   },
+   {
+    "label": "Indore",
+    "value": "Indore"
+   },
+   {
+    "label": "Bhopal",
+    "value": "Bhopal"
+   },
+   {
+    "label": "Visakhapatnam",
+    "value": "Visakhapatnam"
+   },
+   {
+    "label": "Patna",
+    "value": "Patna"
+   },
+   {
+    "label": "Vadodara",
+    "value": "Vadodara"
+   },
+   {
+    "label": "Ludhiana",
+    "value": "Ludhiana"
+   },
+   {
+    "label": "Agra",
+    "value": "Agra"
+   },
+   {
+    "label": "Nashik",
+    "value": "Nashik"
+   },
+   {
+    "label": "Faridabad",
+    "value": "Faridabad"
+   },
+   {
+    "label": "Meerut",
+    "value": "Meerut"
+   },
+   {
+    "label": "Rajkot",
+    "value": "Rajkot"
+   },
+   {
+    "label": "Kalyan-Dombivli",
+    "value": "Kalyan-Dombivli"
+   },
+   {
+    "label": "Vasai-Virar",
+    "value": "Vasai-Virar"
+   },
+   {
+    "label": "Varanasi",
+    "value": "Varanasi"
+   },
+   {
+    "label": "Srinagar",
+    "value": "Srinagar"
+   },
+   {
+    "label": "Aurangabad",
+    "value": "Aurangabad"
+   },
+   {
+    "label": "Dhanbad",
+    "value": "Dhanbad"
+   },
+   {
+    "label": "Amritsar",
+    "value": "Amritsar"
+   },
+   {
+    "label": "Navi Mumbai",
+    "value": "Navi Mumbai"
+   },
+   {
+    "label": "Allahabad (Prayagraj)",
+    "value": "Allahabad (Prayagraj)"
+   },
+   {
+    "label": "Ranchi",
+    "value": "Ranchi"
+   },
+   {
+    "label": "Howrah",
+    "value": "Howrah"
+   },
+   {
+    "label": "Coimbatore",
+    "value": "Coimbatore"
+   },
+   {
+    "label": "Jabalpur",
+    "value": "Jabalpur"
+   },
+   {
+    "label": "Gwalior",
+    "value": "Gwalior"
+   },
+   {
+    "label": "Vijayawada",
+    "value": "Vijayawada"
+   },
+   {
+    "label": "Jodhpur",
+    "value": "Jodhpur"
+   },
+   {
+    "label": "Madurai",
+    "value": "Madurai"
+   },
+   {
+    "label": "Raipur",
+    "value": "Raipur"
+   },
+   {
+    "label": "Kota",
+    "value": "Kota"
+   },
+   {
+    "label": "Guwahati",
+    "value": "Guwahati"
+   },
+   {
+    "label": "Chandigarh",
+    "value": "Chandigarh"
+   },
+   {
+    "label": "Thiruvananthapuram",
+    "value": "Thiruvananthapuram"
+   },
+   {
+    "label": "Solapur",
+    "value": "Solapur"
+   },
+   {
+    "label": "Hubballi-Dharwad",
+    "value": "Hubballi-Dharwad"
+   },
+   {
+    "label": "Bareilly",
+    "value": "Bareilly"
+   },
+   {
+    "label": "Moradabad",
+    "value": "Moradabad"
+   },
+   {
+    "label": "Mysuru",
+    "value": "Mysuru"
+   },
+   {
+    "label": "Gurugram",
+    "value": "Gurugram"
+   },
+   {
+    "label": "Aligarh",
+    "value": "Aligarh"
+   },
+   {
+    "label": "Jalandhar",
+    "value": "Jalandhar"
+   },
+   {
+    "label": "Bhubaneswar",
+    "value": "Bhubaneswar"
+   },
+   {
+    "label": "Salem",
+    "value": "Salem"
+   },
+   {
+    "label": "Warangal",
+    "value": "Warangal"
+   },
+   {
+    "label": "Guntur",
+    "value": "Guntur"
+   },
+   {
+    "label": "Bhiwandi",
+    "value": "Bhiwandi"
+   },
+   {
+    "label": "Saharanpur",
+    "value": "Saharanpur"
+   },
+   {
+    "label": "Gorakhpur",
+    "value": "Gorakhpur"
+   },
+   {
+    "label": "Bikaner",
+    "value": "Bikaner"
+   },
+   {
+    "label": "Amravati",
+    "value": "Amravati"
+   },
+   {
+    "label": "Noida",
+    "value": "Noida"
+   },
+   {
+    "label": "Jamshedpur",
+    "value": "Jamshedpur"
+   },
+   {
+    "label": "Bhilai",
+    "value": "Bhilai"
+   },
+   {
+    "label": "Cuttack",
+    "value": "Cuttack"
+   },
+   {
+    "label": "Firozabad",
+    "value": "Firozabad"
+   },
+   {
+    "label": "Kochi",
+    "value": "Kochi"
+   },
+   {
+    "label": "Nellore",
+    "value": "Nellore"
+   },
+   {
+    "label": "Bhavnagar",
+    "value": "Bhavnagar"
+   },
+   {
+    "label": "Dehradun",
+    "value": "Dehradun"
+   },
+   {
+    "label": "Durgapur",
+    "value": "Durgapur"
+   },
+   {
+    "label": "Asansol",
+    "value": "Asansol"
+   },
+   {
+    "label": "Rourkela",
+    "value": "Rourkela"
+   },
+   {
+    "label": "Nanded",
+    "value": "Nanded"
+   },
+   {
+    "label": "Kolhapur",
+    "value": "Kolhapur"
+   },
+   {
+    "label": "Ajmer",
+    "value": "Ajmer"
+   },
+   {
+    "label": "Akola",
+    "value": "Akola"
+   },
+   {
+    "label": "Gulbarga",
+    "value": "Gulbarga"
+   },
+   {
+    "label": "Jamnagar",
+    "value": "Jamnagar"
+   },
+   {
+    "label": "Ujjain",
+    "value": "Ujjain"
+   },
+   {
+    "label": "Loni",
+    "value": "Loni"
+   },
+   {
+    "label": "Siliguri",
+    "value": "Siliguri"
+   },
+   {
+    "label": "Jhansi",
+    "value": "Jhansi"
+   },
+   {
+    "label": "Ulhasnagar",
+    "value": "Ulhasnagar"
+   },
+   {
+    "label": "Jammu",
+    "value": "Jammu"
+   },
+   {
+    "label": "Sangli-Miraj & Kupwad",
+    "value": "Sangli-Miraj & Kupwad"
+   },
+   {
+    "label": "Mangaluru",
+    "value": "Mangaluru"
+   },
+   {
+    "label": "Erode",
+    "value": "Erode"
+   },
+   {
+    "label": "Belgaum",
+    "value": "Belgaum"
+   },
+   {
+    "label": "Ambattur",
+    "value": "Ambattur"
+   },
+   {
+    "label": "Tirunelveli",
+    "value": "Tirunelveli"
+   },
+   {
+    "label": "Malegaon",
+    "value": "Malegaon"
+   },
+   {
+    "label": "Gaya",
+    "value": "Gaya"
+   },
+   {
+    "label": "Jalgaon",
+    "value": "Jalgaon"
+   },
+   {
+    "label": "Udaipur",
+    "value": "Udaipur"
+   },
+   {
+    "label": "Maheshtala",
+    "value": "Maheshtala"
+   },
+   {
+    "label": "Tiruchirappalli",
+    "value": "Tiruchirappalli"
+   },
+   {
+    "label": "Davanagere",
+    "value": "Davanagere"
+   },
+   {
+    "label": "Kozhikode",
+    "value": "Kozhikode"
+   },
+   {
+    "label": "Akbarpur",
+    "value": "Akbarpur"
+   },
+   {
+    "label": "Kurnool",
+    "value": "Kurnool"
+   },
+   {
+    "label": "Rajpur Sonarpur",
+    "value": "Rajpur Sonarpur"
+   },
+   {
+    "label": "Bokaro",
+    "value": "Bokaro"
+   },
+   {
+    "label": "South Dumdum",
+    "value": "South Dumdum"
+   },
+   {
+    "label": "Bellary",
+    "value": "Bellary"
+   },
+   {
+    "label": "Patiala",
+    "value": "Patiala"
+   },
+   {
+    "label": "Gopalpur",
+    "value": "Gopalpur"
+   },
+   {
+    "label": "Agartala",
+    "value": "Agartala"
+   },
+   {
+    "label": "Bhagalpur",
+    "value": "Bhagalpur"
+   },
+   {
+    "label": "Muzaffarnagar",
+    "value": "Muzaffarnagar"
+   },
+   {
+    "label": "Bhatpara",
+    "value": "Bhatpara"
+   },
+   {
+    "label": "Panihati",
+    "value": "Panihati"
+   },
+   {
+    "label": "Latur",
+    "value": "Latur"
+   },
+   {
+    "label": "Dhule",
+    "value": "Dhule"
+   },
+   {
+    "label": "Rohtak",
+    "value": "Rohtak"
+   },
+   {
+    "label": "Korba",
+    "value": "Korba"
+   },
+   {
+    "label": "Bhilwara",
+    "value": "Bhilwara"
+   },
+   {
+    "label": "Berhampur",
+    "value": "Berhampur"
+   },
+   {
+    "label": "Muzaffarpur",
+    "value": "Muzaffarpur"
+   },
+   {
+    "label": "Ahmednagar",
+    "value": "Ahmednagar"
+   },
+   {
+    "label": "Mathura",
+    "value": "Mathura"
+   },
+   {
+    "label": "Kollam",
+    "value": "Kollam"
+   },
+   {
+    "label": "Avadi",
+    "value": "Avadi"
+   },
+   {
+    "label": "Kadapa",
+    "value": "Kadapa"
+   },
+   {
+    "label": "Kamarhati",
+    "value": "Kamarhati"
+   },
+   {
+    "label": "Sambalpur",
+    "value": "Sambalpur"
+   },
+   {
+    "label": "Bilaspur",
+    "value": "Bilaspur"
+   },
+   {
+    "label": "Shahjahanpur",
+    "value": "Shahjahanpur"
+   },
+   {
+    "label": "Satara",
+    "value": "Satara"
+   },
+   {
+    "label": "Bijapur",
+    "value": "Bijapur"
+   },
+   {
+    "label": "Rampur",
+    "value": "Rampur"
+   },
+   {
+    "label": "Shivamogga",
+    "value": "Shivamogga"
+   },
+   {
+    "label": "Chandrapur",
+    "value": "Chandrapur"
+   },
+   {
+    "label": "Junagadh",
+    "value": "Junagadh"
+   },
+   {
+    "label": "Thrissur",
+    "value": "Thrissur"
+   },
+   {
+    "label": "Alwar",
+    "value": "Alwar"
+   },
+   {
+    "label": "Bardhaman",
+    "value": "Bardhaman"
+   },
+   {
+    "label": "Kulti",
+    "value": "Kulti"
+   },
+   {
+    "label": "Kakinada",
+    "value": "Kakinada"
+   },
+   {
+    "label": "Nizamabad",
+    "value": "Nizamabad"
+   },
+   {
+    "label": "Parbhani",
+    "value": "Parbhani"
+   },
+   {
+    "label": "Tumkur",
+    "value": "Tumkur"
+   },
+   {
+    "label": "Khammam",
+    "value": "Khammam"
+   },
+   {
+    "label": "Ozhukarai",
+    "value": "Ozhukarai"
+   },
+   {
+    "label": "Bihar Sharif",
+    "value": "Bihar Sharif"
+   },
+   {
+    "label": "Panipat",
+    "value": "Panipat"
+   },
+   {
+    "label": "Darbhanga",
+    "value": "Darbhanga"
+   },
+   {
+    "label": "Bally",
+    "value": "Bally"
+   },
+   {
+    "label": "Aizawl",
+    "value": "Aizawl"
+   },
+   {
+    "label": "Dewas",
+    "value": "Dewas"
+   },
+   {
+    "label": "Ichalkaranji",
+    "value": "Ichalkaranji"
+   },
+   {
+    "label": "Karnal",
+    "value": "Karnal"
+   },
+   {
+    "label": "Bathinda",
+    "value": "Bathinda"
+   },
+   {
+    "label": "Jalna",
+    "value": "Jalna"
+   },
+   {
+    "label": "Eluru",
+    "value": "Eluru"
+   },
+   {
+    "label": "Kirari Suleman Nagar",
+    "value": "Kirari Suleman Nagar"
+   },
+   {
+    "label": "Barabanki",
+    "value": "Barabanki"
+   },
+   {
+    "label": "Purnia",
+    "value": "Purnia"
+   },
+   {
+    "label": "Satna",
+    "value": "Satna"
+   },
+   {
+    "label": "Mau",
+    "value": "Mau"
+   },
+   {
+    "label": "Sonipat",
+    "value": "Sonipat"
+   },
+   {
+    "label": "Farrukhabad",
+    "value": "Farrukhabad"
+   },
+   {
+    "label": "Sagar",
+    "value": "Sagar"
+   },
+   {
+    "label": "Durg",
+    "value": "Durg"
+   },
+   {
+    "label": "Imphal",
+    "value": "Imphal"
+   },
+   {
+    "label": "Ratlam",
+    "value": "Ratlam"
+   },
+   {
+    "label": "Hapur",
+    "value": "Hapur"
+   },
+   {
+    "label": "Arrah",
+    "value": "Arrah"
+   },
+   {
+    "label": "Anantapur",
+    "value": "Anantapur"
+   },
+   {
+    "label": "Karimnagar",
+    "value": "Karimnagar"
+   },
+   {
+    "label": "Etawah",
+    "value": "Etawah"
+   },
+   {
+    "label": "Ambernath",
+    "value": "Ambernath"
+   },
+   {
+    "label": "North Dumdum",
+    "value": "North Dumdum"
+   },
+   {
+    "label": "Bharatpur",
+    "value": "Bharatpur"
+   },
+   {
+    "label": "Begusarai",
+    "value": "Begusarai"
+   },
+   {
+    "label": "New Delhi",
+    "value": "New Delhi"
+   },
+   {
+    "label": "Gandhinagar",
+    "value": "Gandhinagar"
+   },
+   {
+    "label": "Baranagar",
+    "value": "Baranagar"
+   },
+   {
+    "label": "Tirupati",
+    "value": "Tirupati"
+   },
+   {
+    "label": "Puducherry",
+    "value": "Puducherry"
+   },
+   {
+    "label": "Sikar",
+    "value": "Sikar"
+   },
+   {
+    "label": "Thoothukudi",
+    "value": "Thoothukudi"
+   },
+   {
+    "label": "Rewa",
+    "value": "Rewa"
+   },
+   {
+    "label": "Mirzapur",
+    "value": "Mirzapur"
+   },
+   {
+    "label": "Raichur",
+    "value": "Raichur"
+   },
+   {
+    "label": "Pali",
+    "value": "Pali"
+   },
+   {
+    "label": "Ramagundam",
+    "value": "Ramagundam"
+   },
+   {
+    "label": "Silchar",
+    "value": "Silchar"
+   },
+   {
+    "label": "Haridwar",
+    "value": "Haridwar"
+   },
+   {
+    "label": "Vijayanagaram",
+    "value": "Vijayanagaram"
+   },
+   {
+    "label": "Katihar",
+    "value": "Katihar"
+   },
+   {
+    "label": "Nagercoil",
+    "value": "Nagercoil"
+   },
+   {
+    "label": "Sri Ganganagar",
+    "value": "Sri Ganganagar"
+   },
+   {
+    "label": "Karawal Nagar",
+    "value": "Karawal Nagar"
+   },
+   {
+    "label": "Mango",
+    "value": "Mango"
+   },
+   {
+    "label": "Thanjavur",
+    "value": "Thanjavur"
+   },
+   {
+    "label": "Bulandshahr",
+    "value": "Bulandshahr"
+   },
+   {
+    "label": "Uluberia",
+    "value": "Uluberia"
+   },
+   {
+    "label": "Katni",
+    "value": "Katni"
+   },
+   {
+    "label": "Sambhal",
+    "value": "Sambhal"
+   },
+   {
+    "label": "Singrauli",
+    "value": "Singrauli"
+   },
+   {
+    "label": "Nadiad",
+    "value": "Nadiad"
+   },
+   {
+    "label": "Secunderabad",
+    "value": "Secunderabad"
+   },
+   {
+    "label": "Naihati",
+    "value": "Naihati"
+   },
+   {
+    "label": "Yamunanagar",
+    "value": "Yamunanagar"
+   },
+   {
+    "label": "Bidhannagar",
+    "value": "Bidhannagar"
+   },
+   {
+    "label": "Pallavaram",
+    "value": "Pallavaram"
+   },
+   {
+    "label": "Bidar",
+    "value": "Bidar"
+   },
+   {
+    "label": "Munger",
+    "value": "Munger"
+   },
+   {
+    "label": "Panchkula",
+    "value": "Panchkula"
+   },
+   {
+    "label": "Burhanpur",
+    "value": "Burhanpur"
+   },
+   {
+    "label": "Raurkela Industrial Township",
+    "value": "Raurkela Industrial Township"
+   },
+   {
+    "label": "Kharagpur",
+    "value": "Kharagpur"
+   },
+   {
+    "label": "Dindigul",
+    "value": "Dindigul"
+   },
+   {
+    "label": "Gandhidham",
+    "value": "Gandhidham"
+   },
+   {
+    "label": "Hospet",
+    "value": "Hospet"
+   },
+   {
+    "label": "Nangloi Jat",
+    "value": "Nangloi Jat"
+   },
+   {
+    "label": "Malda",
+    "value": "Malda"
+   },
+   {
+    "label": "Ongole",
+    "value": "Ongole"
+   },
+   {
+    "label": "Deoghar",
+    "value": "Deoghar"
+   },
+   {
+    "label": "Chapra",
+    "value": "Chapra"
+   },
+   {
+    "label": "Haldia",
+    "value": "Haldia"
+   },
+   {
+    "label": "Khandwa",
+    "value": "Khandwa"
+   },
+   {
+    "label": "Nandyal",
+    "value": "Nandyal"
+   },
+   {
+    "label": "Morena",
+    "value": "Morena"
+   },
+   {
+    "label": "Amroha",
+    "value": "Amroha"
+   },
+   {
+    "label": "Anand",
+    "value": "Anand"
+   },
+   {
+    "label": "Bhind",
+    "value": "Bhind"
+   },
+   {
+    "label": "Bhalswa Jahangir Pur",
+    "value": "Bhalswa Jahangir Pur"
+   },
+   {
+    "label": "Madhyamgram",
+    "value": "Madhyamgram"
+   },
+   {
+    "label": "Bhiwani",
+    "value": "Bhiwani"
+   },
+   {
+    "label": "Berhampore",
+    "value": "Berhampore"
+   },
+   {
+    "label": "Ambala",
+    "value": "Ambala"
+   },
+   {
+    "label": "Morbi",
+    "value": "Morbi"
+   },
+   {
+    "label": "Fatehpur",
+    "value": "Fatehpur"
+   },
+   {
+    "label": "Rae Bareli",
+    "value": "Rae Bareli"
+   },
+   {
+    "label": "Khora",
+    "value": "Khora"
+   },
+   {
+    "label": "Chittoor",
+    "value": "Chittoor"
+   },
+   {
+    "label": "Bhusawal",
+    "value": "Bhusawal"
+   }
+  ],
+  "hi": [
+   {
+    "label": "मुंबई",
+    "value": "Mumbai"
+   },
+   {
+    "label": "दिल्ली",
+    "value": "Delhi"
+   },
+   {
+    "label": "बेंगलुरु",
+    "value": "Bengaluru"
+   },
+   {
+    "label": "हैदराबाद",
+    "value": "Hyderabad"
+   },
+   {
+    "label": "अहमदाबाद",
+    "value": "Ahmedabad"
+   },
+   {
+    "label": "चेन्नई",
+    "value": "Chennai"
+   },
+   {
+    "label": "कोलकाता",
+    "value": "Kolkata"
+   },
+   {
+    "label": "पुणे",
+    "value": "Pune"
+   },
+   {
+    "label": "जयपुर",
+    "value": "Jaipur"
+   },
+   {
+    "label": "लखनऊ",
+    "value": "Lucknow"
+   },
+   {
+    "label": "कानपुर",
+    "value": "Kanpur"
+   },
+   {
+    "label": "नागपुर",
+    "value": "Nagpur"
+   },
+   {
+    "label": "इंदौर",
+    "value": "Indore"
+   },
+   {
+    "label": "भोपाल",
+    "value": "Bhopal"
+   },
+   {
+    "label": "विशाखापत्तनम",
+    "value": "Visakhapatnam"
+   },
+   {
+    "label": "पटना",
+    "value": "Patna"
+   },
+   {
+    "label": "वडोदरा",
+    "value": "Vadodara"
+   },
+   {
+    "label": "लुधियाना",
+    "value": "Ludhiana"
+   },
+   {
+    "label": "आगरा",
+    "value": "Agra"
+   },
+   {
+    "label": "नासिक",
+    "value": "Nashik"
+   },
+   {
+    "label": "फ़रीदाबाद",
+    "value": "Faridabad"
+   },
+   {
+    "label": "मेरठ",
+    "value": "Meerut"
+   },
+   {
+    "label": "राजकोट",
+    "value": "Rajkot"
+   },
+   {
+    "label": "कल्याण-डोंबिवली",
+    "value": "Kalyan-Dombivli"
+   },
+   {
+    "label": "वसई-विरार",
+    "value": "Vasai-Virar"
+   },
+   {
+    "label": "वाराणसी",
+    "value": "Varanasi"
+   },
+   {
+    "label": "श्रीनगर",
+    "value": "Srinagar"
+   },
+   {
+    "label": "औरंगाबाद",
+    "value": "Aurangabad"
+   },
+   {
+    "label": "धनबाद",
+    "value": "Dhanbad"
+   },
+   {
+    "label": "अमृतसर",
+    "value": "Amritsar"
+   },
+   {
+    "label": "नवी मुंबई",
+    "value": "Navi Mumbai"
+   },
+   {
+    "label": "इलाहाबाद (प्रयागराज)",
+    "value": "Allahabad (Prayagraj)"
+   },
+   {
+    "label": "रांची",
+    "value": "Ranchi"
+   },
+   {
+    "label": "हावड़ा",
+    "value": "Howrah"
+   },
+   {
+    "label": "कोयंबटूर",
+    "value": "Coimbatore"
+   },
+   {
+    "label": "जबलपुर",
+    "value": "Jabalpur"
+   },
+   {
+    "label": "ग्वालियर",
+    "value": "Gwalior"
+   },
+   {
+    "label": "विजयवाड़ा",
+    "value": "Vijayawada"
+   },
+   {
+    "label": "जोधपुर",
+    "value": "Jodhpur"
+   },
+   {
+    "label": "मदुरै",
+    "value": "Madurai"
+   },
+   {
+    "label": "रायपुर",
+    "value": "Raipur"
+   },
+   {
+    "label": "कोटा",
+    "value": "Kota"
+   },
+   {
+    "label": "गुवाहाटी",
+    "value": "Guwahati"
+   },
+   {
+    "label": "चंडीगढ़",
+    "value": "Chandigarh"
+   },
+   {
+    "label": "तिरुवनंतपुरम",
+    "value": "Thiruvananthapuram"
+   },
+   {
+    "label": "सोलापुर",
+    "value": "Solapur"
+   },
+   {
+    "label": "हुब्बल्ली-धारवाड़",
+    "value": "Hubballi-Dharwad"
+   },
+   {
+    "label": "बरेली",
+    "value": "Bareilly"
+   },
+   {
+    "label": "मुरादाबाद",
+    "value": "Moradabad"
+   },
+   {
+    "label": "मैसूरु",
+    "value": "Mysuru"
+   },
+   {
+    "label": "गुरुग्राम",
+    "value": "Gurugram"
+   },
+   {
+    "label": "अलीगढ़",
+    "value": "Aligarh"
+   },
+   {
+    "label": "जालंधर",
+    "value": "Jalandhar"
+   },
+   {
+    "label": "भुवनेश्वर",
+    "value": "Bhubaneswar"
+   },
+   {
+    "label": "सेलम",
+    "value": "Salem"
+   },
+   {
+    "label": "वारंगल",
+    "value": "Warangal"
+   },
+   {
+    "label": "गुंटूर",
+    "value": "Guntur"
+   },
+   {
+    "label": "भिवंडी",
+    "value": "Bhiwandi"
+   },
+   {
+    "label": "सहारनपुर",
+    "value": "Saharanpur"
+   },
+   {
+    "label": "गोरखपुर",
+    "value": "Gorakhpur"
+   },
+   {
+    "label": "बीकानेर",
+    "value": "Bikaner"
+   },
+   {
+    "label": "अमरावती",
+    "value": "Amravati"
+   },
+   {
+    "label": "नोएडा",
+    "value": "Noida"
+   },
+   {
+    "label": "जमशेदपुर",
+    "value": "Jamshedpur"
+   },
+   {
+    "label": "भिलाई",
+    "value": "Bhilai"
+   },
+   {
+    "label": "कटक",
+    "value": "Cuttack"
+   },
+   {
+    "label": "फ़िरोज़ाबाद",
+    "value": "Firozabad"
+   },
+   {
+    "label": "कोच्चि",
+    "value": "Kochi"
+   },
+   {
+    "label": "नेल्लोर",
+    "value": "Nellore"
+   },
+   {
+    "label": "भावनगर",
+    "value": "Bhavnagar"
+   },
+   {
+    "label": "देहरादून",
+    "value": "Dehradun"
+   },
+   {
+    "label": "दुर्गापुर",
+    "value": "Durgapur"
+   },
+   {
+    "label": "आसनसोल",
+    "value": "Asansol"
+   },
+   {
+    "label": "राउरकेला",
+    "value": "Rourkela"
+   },
+   {
+    "label": "नांदेड़",
+    "value": "Nanded"
+   },
+   {
+    "label": "कोल्हापुर",
+    "value": "Kolhapur"
+   },
+   {
+    "label": "अजमेर",
+    "value": "Ajmer"
+   },
+   {
+    "label": "अकोला",
+    "value": "Akola"
+   },
+   {
+    "label": "गुलबर्गा",
+    "value": "Gulbarga"
+   },
+   {
+    "label": "जामनगर",
+    "value": "Jamnagar"
+   },
+   {
+    "label": "उज्जैन",
+    "value": "Ujjain"
+   },
+   {
+    "label": "लोनी",
+    "value": "Loni"
+   },
+   {
+    "label": "सिलीगुड़ी",
+    "value": "Siliguri"
+   },
+   {
+    "label": "झांसी",
+    "value": "Jhansi"
+   },
+   {
+    "label": "उल्हासनगर",
+    "value": "Ulhasnagar"
+   },
+   {
+    "label": "जम्मू",
+    "value": "Jammu"
+   },
+   {
+    "label": "सांगली-मिरज और कुपवाड़",
+    "value": "Sangli-Miraj & Kupwad"
+   },
+   {
+    "label": "मंगलुरु",
+    "value": "Mangaluru"
+   },
+   {
+    "label": "इरोड",
+    "value": "Erode"
+   },
+   {
+    "label": "बेलगाम",
+    "value": "Belgaum"
+   },
+   {
+    "label": "अंबत्तूर",
+    "value": "Ambattur"
+   },
+   {
+    "label": "तिरुनेलवेली",
+    "value": "Tirunelveli"
+   },
+   {
+    "label": "मालेगांव",
+    "value": "Malegaon"
+   },
+   {
+    "label": "गया",
+    "value": "Gaya"
+   },
+   {
+    "label": "जलगांव",
+    "value": "Jalgaon"
+   },
+   {
+    "label": "उदयपुर",
+    "value": "Udaipur"
+   },
+   {
+    "label": "महेशतला",
+    "value": "Maheshtala"
+   },
+   {
+    "label": "तिरुचिरापल्ली",
+    "value": "Tiruchirappalli"
+   },
+   {
+    "label": "दावणगेरे",
+    "value": "Davanagere"
+   },
+   {
+    "label": "कोझिकोड",
+    "value": "Kozhikode"
+   },
+   {
+    "label": "अकबरपुर",
+    "value": "Akbarpur"
+   },
+   {
+    "label": "कुरनूल",
+    "value": "Kurnool"
+   },
+   {
+    "label": "राजपुर सोनारपुर",
+    "value": "Rajpur Sonarpur"
+   },
+   {
+    "label": "बोकारो",
+    "value": "Bokaro"
+   },
+   {
+    "label": "दक्षिण दमदम",
+    "value": "South Dumdum"
+   },
+   {
+    "label": "बेल्लारी",
+    "value": "Bellary"
+   },
+   {
+    "label": "पटियाला",
+    "value": "Patiala"
+   },
+   {
+    "label": "गोपालपुर",
+    "value": "Gopalpur"
+   },
+   {
+    "label": "अगरतला",
+    "value": "Agartala"
+   },
+   {
+    "label": "भागलपुर",
+    "value": "Bhagalpur"
+   },
+   {
+    "label": "मुज़फ़्फ़रनगर",
+    "value": "Muzaffarnagar"
+   },
+   {
+    "label": "भाटपाड़ा",
+    "value": "Bhatpara"
+   },
+   {
+    "label": "पानीहाटी",
+    "value": "Panihati"
+   },
+   {
+    "label": "लातूर",
+    "value": "Latur"
+   },
+   {
+    "label": "धुले",
+    "value": "Dhule"
+   },
+   {
+    "label": "रोहतक",
+    "value": "Rohtak"
+   },
+   {
+    "label": "कोरबा",
+    "value": "Korba"
+   },
+   {
+    "label": "भीलवाड़ा",
+    "value": "Bhilwara"
+   },
+   {
+    "label": "बरहामपुर",
+    "value": "Berhampur"
+   },
+   {
+    "label": "मुज़फ़्फ़रपुर",
+    "value": "Muzaffarpur"
+   },
+   {
+    "label": "अहमदनगर",
+    "value": "Ahmednagar"
+   },
+   {
+    "label": "मथुरा",
+    "value": "Mathura"
+   },
+   {
+    "label": "कोल्लम",
+    "value": "Kollam"
+   },
+   {
+    "label": "आवडी",
+    "value": "Avadi"
+   },
+   {
+    "label": "कडपा",
+    "value": "Kadapa"
+   },
+   {
+    "label": "कमरहाटी",
+    "value": "Kamarhati"
+   },
+   {
+    "label": "संबलपुर",
+    "value": "Sambalpur"
+   },
+   {
+    "label": "बिलासपुर",
+    "value": "Bilaspur"
+   },
+   {
+    "label": "शाहजहांपुर",
+    "value": "Shahjahanpur"
+   },
+   {
+    "label": "सतारा",
+    "value": "Satara"
+   },
+   {
+    "label": "बीजापुर",
+    "value": "Bijapur"
+   },
+   {
+    "label": "रामपुर",
+    "value": "Rampur"
+   },
+   {
+    "label": "शिवमोग्गा",
+    "value": "Shivamogga"
+   },
+   {
+    "label": "चंद्रपुर",
+    "value": "Chandrapur"
+   },
+   {
+    "label": "जूनागढ़",
+    "value": "Junagadh"
+   },
+   {
+    "label": "त्रिशूर",
+    "value": "Thrissur"
+   },
+   {
+    "label": "अलवर",
+    "value": "Alwar"
+   },
+   {
+    "label": "बर्धमान",
+    "value": "Bardhaman"
+   },
+   {
+    "label": "कुल्टी",
+    "value": "Kulti"
+   },
+   {
+    "label": "काकीनाडा",
+    "value": "Kakinada"
+   },
+   {
+    "label": "निज़ामाबाद",
+    "value": "Nizamabad"
+   },
+   {
+    "label": "परभणी",
+    "value": "Parbhani"
+   },
+   {
+    "label": "तुमकुर",
+    "value": "Tumkur"
+   },
+   {
+    "label": "खम्मम",
+    "value": "Khammam"
+   },
+   {
+    "label": "ओझुकरई",
+    "value": "Ozhukarai"
+   },
+   {
+    "label": "बिहार शरीफ़",
+    "value": "Bihar Sharif"
+   },
+   {
+    "label": "पानीपत",
+    "value": "Panipat"
+   },
+   {
+    "label": "दरभंगा",
+    "value": "Darbhanga"
+   },
+   {
+    "label": "बाली",
+    "value": "Bally"
+   },
+   {
+    "label": "आइज़ोल",
+    "value": "Aizawl"
+   },
+   {
+    "label": "देवास",
+    "value": "Dewas"
+   },
+   {
+    "label": "इचलकरंजी",
+    "value": "Ichalkaranji"
+   },
+   {
+    "label": "करनाल",
+    "value": "Karnal"
+   },
+   {
+    "label": "बठिंडा",
+    "value": "Bathinda"
+   },
+   {
+    "label": "जालना",
+    "value": "Jalna"
+   },
+   {
+    "label": "एलुरु",
+    "value": "Eluru"
+   },
+   {
+    "label": "किराड़ी सुलेमान नगर",
+    "value": "Kirari Suleman Nagar"
+   },
+   {
+    "label": "बाराबंकी",
+    "value": "Barabanki"
+   },
+   {
+    "label": "पूर्णिया",
+    "value": "Purnia"
+   },
+   {
+    "label": "सतना",
+    "value": "Satna"
+   },
+   {
+    "label": "मऊ",
+    "value": "Mau"
+   },
+   {
+    "label": "सोनीपत",
+    "value": "Sonipat"
+   },
+   {
+    "label": "फ़र्रुख़ाबाद",
+    "value": "Farrukhabad"
+   },
+   {
+    "label": "सागर",
+    "value": "Sagar"
+   },
+   {
+    "label": "दुर्ग",
+    "value": "Durg"
+   },
+   {
+    "label": "इंफाल",
+    "value": "Imphal"
+   },
+   {
+    "label": "रतलाम",
+    "value": "Ratlam"
+   },
+   {
+    "label": "हापुड़",
+    "value": "Hapur"
+   },
+   {
+    "label": "आरा",
+    "value": "Arrah"
+   },
+   {
+    "label": "अनंतपुर",
+    "value": "Anantapur"
+   },
+   {
+    "label": "करीमनगर",
+    "value": "Karimnagar"
+   },
+   {
+    "label": "इटावा",
+    "value": "Etawah"
+   },
+   {
+    "label": "अंबरनाथ",
+    "value": "Ambernath"
+   },
+   {
+    "label": "उत्तर दमदम",
+    "value": "North Dumdum"
+   },
+   {
+    "label": "भरतपुर",
+    "value": "Bharatpur"
+   },
+   {
+    "label": "बेगूसराय",
+    "value": "Begusarai"
+   },
+   {
+    "label": "नई दिल्ली",
+    "value": "New Delhi"
+   },
+   {
+    "label": "गांधीनगर",
+    "value": "Gandhinagar"
+   },
+   {
+    "label": "बरानगर",
+    "value": "Baranagar"
+   },
+   {
+    "label": "तिरुपति",
+    "value": "Tirupati"
+   },
+   {
+    "label": "पुडुचेरी",
+    "value": "Puducherry"
+   },
+   {
+    "label": "सीकर",
+    "value": "Sikar"
+   },
+   {
+    "label": "तूतुकुड़ी",
+    "value": "Thoothukudi"
+   },
+   {
+    "label": "रीवा",
+    "value": "Rewa"
+   },
+   {
+    "label": "मिर्ज़ापुर",
+    "value": "Mirzapur"
+   },
+   {
+    "label": "रायचूर",
+    "value": "Raichur"
+   },
+   {
+    "label": "पाली",
+    "value": "Pali"
+   },
+   {
+    "label": "रामागुंडम",
+    "value": "Ramagundam"
+   },
+   {
+    "label": "सिलचर",
+    "value": "Silchar"
+   },
+   {
+    "label": "हरिद्वार",
+    "value": "Haridwar"
+   },
+   {
+    "label": "विजयनगरम",
+    "value": "Vijayanagaram"
+   },
+   {
+    "label": "कटिहार",
+    "value": "Katihar"
+   },
+   {
+    "label": "नागरकोइल",
+    "value": "Nagercoil"
+   },
+   {
+    "label": "श्रीगंगानगर",
+    "value": "Sri Ganganagar"
+   },
+   {
+    "label": "करावल नगर",
+    "value": "Karawal Nagar"
+   },
+   {
+    "label": "मानगो",
+    "value": "Mango"
+   },
+   {
+    "label": "तंजावुर",
+    "value": "Thanjavur"
+   },
+   {
+    "label": "बुलंदशहर",
+    "value": "Bulandshahr"
+   },
+   {
+    "label": "उलुबेरिया",
+    "value": "Uluberia"
+   },
+   {
+    "label": "कटनी",
+    "value": "Katni"
+   },
+   {
+    "label": "संभल",
+    "value": "Sambhal"
+   },
+   {
+    "label": "सिंगरौली",
+    "value": "Singrauli"
+   },
+   {
+    "label": "नडियाद",
+    "value": "Nadiad"
+   },
+   {
+    "label": "सिकंदराबाद",
+    "value": "Secunderabad"
+   },
+   {
+    "label": "नैहाटी",
+    "value": "Naihati"
+   },
+   {
+    "label": "यमुनानगर",
+    "value": "Yamunanagar"
+   },
+   {
+    "label": "बिधाननगर",
+    "value": "Bidhannagar"
+   },
+   {
+    "label": "पल्लावरम",
+    "value": "Pallavaram"
+   },
+   {
+    "label": "बीदर",
+    "value": "Bidar"
+   },
+   {
+    "label": "मुंगेर",
+    "value": "Munger"
+   },
+   {
+    "label": "पंचकूला",
+    "value": "Panchkula"
+   },
+   {
+    "label": "बुरहानपुर",
+    "value": "Burhanpur"
+   },
+   {
+    "label": "राउरकेला इंडस्ट्रियल टाउनशिप",
+    "value": "Raurkela Industrial Township"
+   },
+   {
+    "label": "खड़गपुर",
+    "value": "Kharagpur"
+   },
+   {
+    "label": "डिंडीगुल",
+    "value": "Dindigul"
+   },
+   {
+    "label": "गांधीधाम",
+    "value": "Gandhidham"
+   },
+   {
+    "label": "होसपेट",
+    "value": "Hospet"
+   },
+   {
+    "label": "नांगलोई जाट",
+    "value": "Nangloi Jat"
+   },
+   {
+    "label": "मालदा",
+    "value": "Malda"
+   },
+   {
+    "label": "ओंगोल",
+    "value": "Ongole"
+   },
+   {
+    "label": "देवघर",
+    "value": "Deoghar"
+   },
+   {
+    "label": "छपरा",
+    "value": "Chapra"
+   },
+   {
+    "label": "हल्दिया",
+    "value": "Haldia"
+   },
+   {
+    "label": "खंडवा",
+    "value": "Khandwa"
+   },
+   {
+    "label": "नंद्याल",
+    "value": "Nandyal"
+   },
+   {
+    "label": "मुरैना",
+    "value": "Morena"
+   },
+   {
+    "label": "अमरोहा",
+    "value": "Amroha"
+   },
+   {
+    "label": "आणंद",
+    "value": "Anand"
+   },
+   {
+    "label": "भिंड",
+    "value": "Bhind"
+   },
+   {
+    "label": "भलस्वा जहांगीर पुर",
+    "value": "Bhalswa Jahangir Pur"
+   },
+   {
+    "label": "मध्यमग्राम",
+    "value": "Madhyamgram"
+   },
+   {
+    "label": "भिवानी",
+    "value": "Bhiwani"
+   },
+   {
+    "label": "बहरमपुर",
+    "value": "Berhampore"
+   },
+   {
+    "label": "अंबाला",
+    "value": "Ambala"
+   },
+   {
+    "label": "मोरबी",
+    "value": "Morbi"
+   },
+   {
+    "label": "फ़तेहपुर",
+    "value": "Fatehpur"
+   },
+   {
+    "label": "रायबरेली",
+    "value": "Rae Bareli"
+   },
+   {
+    "label": "खोड़ा",
+    "value": "Khora"
+   },
+   {
+    "label": "चित्तूर",
+    "value": "Chittoor"
+   },
+   {
+    "label": "भुसावल",
+    "value": "Bhusawal"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Salaried",
+    "value": "salaried"
+   },
+   {
+    "label": "Self-employed",
+    "value": "self-employed"
+   }
+  ],
+  "hi": [
+   {
+    "label": "वेतनभोगी",
+    "value": "salaried"
+   },
+   {
+    "label": "स्व-रोज़गार",
+    "value": "self-employed"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Tata Consultancy Services (TCS)",
+    "value": "Tata Consultancy Services (TCS)"
+   },
+   {
+    "label": "Infosys",
+    "value": "Infosys"
+   },
+   {
+    "label": "Wipro",
+    "value": "Wipro"
+   },
+   {
+    "label": "HCLTech",
+    "value": "HCLTech"
+   },
+   {
+    "label": "Tech Mahindra",
+    "value": "Tech Mahindra"
+   },
+   {
+    "label": "Cognizant",
+    "value": "Cognizant"
+   },
+   {
+    "label": "Accenture",
+    "value": "Accenture"
+   },
+   {
+    "label": "IBM India",
+    "value": "IBM India"
+   },
+   {
+    "label": "Capgemini",
+    "value": "Capgemini"
+   },
+   {
+    "label": "LTIMindtree",
+    "value": "LTIMindtree"
+   },
+   {
+    "label": "Mphasis",
+    "value": "Mphasis"
+   },
+   {
+    "label": "Persistent Systems",
+    "value": "Persistent Systems"
+   },
+   {
+    "label": "Zoho",
+    "value": "Zoho"
+   },
+   {
+    "label": "Freshworks",
+    "value": "Freshworks"
+   },
+   {
+    "label": "Microsoft India",
+    "value": "Microsoft India"
+   },
+   {
+    "label": "Google India",
+    "value": "Google India"
+   },
+   {
+    "label": "Amazon India",
+    "value": "Amazon India"
+   },
+   {
+    "label": "Adobe India",
+    "value": "Adobe India"
+   },
+   {
+    "label": "Oracle India",
+    "value": "Oracle India"
+   },
+   {
+    "label": "SAP India",
+    "value": "SAP India"
+   },
+   {
+    "label": "Dell Technologies India",
+    "value": "Dell Technologies India"
+   },
+   {
+    "label": "HP India",
+    "value": "HP India"
+   },
+   {
+    "label": "Intel India",
+    "value": "Intel India"
+   },
+   {
+    "label": "Qualcomm India",
+    "value": "Qualcomm India"
+   },
+   {
+    "label": "Cisco India",
+    "value": "Cisco India"
+   },
+   {
+    "label": "HDFC Bank",
+    "value": "HDFC Bank"
+   },
+   {
+    "label": "ICICI Bank",
+    "value": "ICICI Bank"
+   },
+   {
+    "label": "State Bank of India (SBI)",
+    "value": "State Bank of India (SBI)"
+   },
+   {
+    "label": "Axis Bank",
+    "value": "Axis Bank"
+   },
+   {
+    "label": "Kotak Mahindra Bank",
+    "value": "Kotak Mahindra Bank"
+   },
+   {
+    "label": "Yes Bank",
+    "value": "Yes Bank"
+   },
+   {
+    "label": "IndusInd Bank",
+    "value": "IndusInd Bank"
+   },
+   {
+    "label": "Bank of Baroda",
+    "value": "Bank of Baroda"
+   },
+   {
+    "label": "Punjab National Bank",
+    "value": "Punjab National Bank"
+   },
+   {
+    "label": "Canara Bank",
+    "value": "Canara Bank"
+   },
+   {
+    "label": "IDFC First Bank",
+    "value": "IDFC First Bank"
+   },
+   {
+    "label": "Bajaj Finserv",
+    "value": "Bajaj Finserv"
+   },
+   {
+    "label": "Bajaj Finance",
+    "value": "Bajaj Finance"
+   },
+   {
+    "label": "HDFC Life",
+    "value": "HDFC Life"
+   },
+   {
+    "label": "ICICI Prudential",
+    "value": "ICICI Prudential"
+   },
+   {
+    "label": "Life Insurance Corporation (LIC)",
+    "value": "Life Insurance Corporation (LIC)"
+   },
+   {
+    "label": "SBI Life Insurance",
+    "value": "SBI Life Insurance"
+   },
+   {
+    "label": "Muthoot Finance",
+    "value": "Muthoot Finance"
+   },
+   {
+    "label": "Cholamandalam Investment and Finance",
+    "value": "Cholamandalam Investment and Finance"
+   },
+   {
+    "label": "Shriram Finance",
+    "value": "Shriram Finance"
+   },
+   {
+    "label": "Hindustan Unilever",
+    "value": "Hindustan Unilever"
+   },
+   {
+    "label": "ITC Limited",
+    "value": "ITC Limited"
+   },
+   {
+    "label": "Nestle India",
+    "value": "Nestle India"
+   },
+   {
+    "label": "Britannia Industries",
+    "value": "Britannia Industries"
+   },
+   {
+    "label": "Dabur India",
+    "value": "Dabur India"
+   },
+   {
+    "label": "Marico",
+    "value": "Marico"
+   },
+   {
+    "label": "Godrej Consumer Products",
+    "value": "Godrej Consumer Products"
+   },
+   {
+    "label": "Colgate-Palmolive India",
+    "value": "Colgate-Palmolive India"
+   },
+   {
+    "label": "Procter & Gamble India",
+    "value": "Procter & Gamble India"
+   },
+   {
+    "label": "Parle Products",
+    "value": "Parle Products"
+   },
+   {
+    "label": "Patanjali Ayurved",
+    "value": "Patanjali Ayurved"
+   },
+   {
+    "label": "Tata Motors",
+    "value": "Tata Motors"
+   },
+   {
+    "label": "Mahindra & Mahindra",
+    "value": "Mahindra & Mahindra"
+   },
+   {
+    "label": "Maruti Suzuki India",
+    "value": "Maruti Suzuki India"
+   },
+   {
+    "label": "Bajaj Auto",
+    "value": "Bajaj Auto"
+   },
+   {
+    "label": "Hero MotoCorp",
+    "value": "Hero MotoCorp"
+   },
+   {
+    "label": "TVS Motor Company",
+    "value": "TVS Motor Company"
+   },
+   {
+    "label": "Ashok Leyland",
+    "value": "Ashok Leyland"
+   },
+   {
+    "label": "Eicher Motors",
+    "value": "Eicher Motors"
+   },
+   {
+    "label": "Tata Steel",
+    "value": "Tata Steel"
+   },
+   {
+    "label": "JSW Steel",
+    "value": "JSW Steel"
+   },
+   {
+    "label": "Hindalco Industries",
+    "value": "Hindalco Industries"
+   },
+   {
+    "label": "Larsen & Toubro (L&T)",
+    "value": "Larsen & Toubro (L&T)"
+   },
+   {
+    "label": "Bharat Forge",
+    "value": "Bharat Forge"
+   },
+   {
+    "label": "Tata Power",
+    "value": "Tata Power"
+   },
+   {
+    "label": "Adani Power",
+    "value": "Adani Power"
+   },
+   {
+    "label": "NTPC",
+    "value": "NTPC"
+   },
+   {
+    "label": "Sun Pharmaceutical",
+    "value": "Sun Pharmaceutical"
+   },
+   {
+    "label": "Dr. Reddy's Laboratories",
+    "value": "Dr. Reddy's Laboratories"
+   },
+   {
+    "label": "Cipla",
+    "value": "Cipla"
+   },
+   {
+    "label": "Lupin",
+    "value": "Lupin"
+   },
+   {
+    "label": "Aurobindo Pharma",
+    "value": "Aurobindo Pharma"
+   },
+   {
+    "label": "Divi's Laboratories",
+    "value": "Divi's Laboratories"
+   },
+   {
+    "label": "Biocon",
+    "value": "Biocon"
+   },
+   {
+    "label": "Zydus Lifesciences",
+    "value": "Zydus Lifesciences"
+   },
+   {
+    "label": "Torrent Pharmaceuticals",
+    "value": "Torrent Pharmaceuticals"
+   },
+   {
+    "label": "Apollo Hospitals",
+    "value": "Apollo Hospitals"
+   },
+   {
+    "label": "Fortis Healthcare",
+    "value": "Fortis Healthcare"
+   },
+   {
+    "label": "Reliance Retail",
+    "value": "Reliance Retail"
+   },
+   {
+    "label": "Flipkart",
+    "value": "Flipkart"
+   },
+   {
+    "label": "Amazon",
+    "value": "Amazon"
+   },
+   {
+    "label": "Myntra",
+    "value": "Myntra"
+   },
+   {
+    "label": "Nykaa",
+    "value": "Nykaa"
+   },
+   {
+    "label": "BigBasket",
+    "value": "BigBasket"
+   },
+   {
+    "label": "Avenue Supermarts (DMart)",
+    "value": "Avenue Supermarts (DMart)"
+   },
+   {
+    "label": "Tata CLiQ",
+    "value": "Tata CLiQ"
+   },
+   {
+    "label": "Trent Limited",
+    "value": "Trent Limited"
+   },
+   {
+    "label": "Titan Company",
+    "value": "Titan Company"
+   },
+   {
+    "label": "Reliance Jio",
+    "value": "Reliance Jio"
+   },
+   {
+    "label": "Bharti Airtel",
+    "value": "Bharti Airtel"
+   },
+   {
+    "label": "Vodafone Idea",
+    "value": "Vodafone Idea"
+   },
+   {
+    "label": "BSNL",
+    "value": "BSNL"
+   },
+   {
+    "label": "Oil and Natural Gas Corporation (ONGC)",
+    "value": "Oil and Natural Gas Corporation (ONGC)"
+   },
+   {
+    "label": "Indian Oil Corporation (IOCL)",
+    "value": "Indian Oil Corporation (IOCL)"
+   },
+   {
+    "label": "Bharat Petroleum (BPCL)",
+    "value": "Bharat Petroleum (BPCL)"
+   },
+   {
+    "label": "Hindustan Petroleum (HPCL)",
+    "value": "Hindustan Petroleum (HPCL)"
+   },
+   {
+    "label": "Coal India",
+    "value": "Coal India"
+   },
+   {
+    "label": "Steel Authority of India (SAIL)",
+    "value": "Steel Authority of India (SAIL)"
+   },
+   {
+    "label": "Bharat Heavy Electricals (BHEL)",
+    "value": "Bharat Heavy Electricals (BHEL)"
+   },
+   {
+    "label": "Power Grid Corporation of India",
+    "value": "Power Grid Corporation of India"
+   },
+   {
+    "label": "GAIL India",
+    "value": "GAIL India"
+   },
+   {
+    "label": "Reliance Industries",
+    "value": "Reliance Industries"
+   },
+   {
+    "label": "Tata Sons",
+    "value": "Tata Sons"
+   },
+   {
+    "label": "Aditya Birla Group",
+    "value": "Aditya Birla Group"
+   },
+   {
+    "label": "Adani Group",
+    "value": "Adani Group"
+   },
+   {
+    "label": "Mahindra Group",
+    "value": "Mahindra Group"
+   },
+   {
+    "label": "Godrej Group",
+    "value": "Godrej Group"
+   },
+   {
+    "label": "Zomato",
+    "value": "Zomato"
+   },
+   {
+    "label": "Swiggy",
+    "value": "Swiggy"
+   },
+   {
+    "label": "Paytm (One97 Communications)",
+    "value": "Paytm (One97 Communications)"
+   },
+   {
+    "label": "PhonePe",
+    "value": "PhonePe"
+   },
+   {
+    "label": "Ola Cabs",
+    "value": "Ola Cabs"
+   },
+   {
+    "label": "Byju's",
+    "value": "Byju's"
+   },
+   {
+    "label": "Unacademy",
+    "value": "Unacademy"
+   },
+   {
+    "label": "CRED",
+    "value": "CRED"
+   },
+   {
+    "label": "Razorpay",
+    "value": "Razorpay"
+   },
+   {
+    "label": "Zerodha",
+    "value": "Zerodha"
+   },
+   {
+    "label": "Meesho",
+    "value": "Meesho"
+   },
+   {
+    "label": "Delhivery",
+    "value": "Delhivery"
+   },
+   {
+    "label": "Urban Company",
+    "value": "Urban Company"
+   },
+   {
+    "label": "PolicyBazaar",
+    "value": "PolicyBazaar"
+   },
+   {
+    "label": "Lenskart",
+    "value": "Lenskart"
+   },
+   {
+    "label": "Imagine Marketing (boAt)",
+    "value": "Imagine Marketing (boAt)"
+   },
+   {
+    "label": "OYO Rooms",
+    "value": "OYO Rooms"
+   },
+   {
+    "label": "Dream11",
+    "value": "Dream11"
+   },
+   {
+    "label": "upGrad",
+    "value": "upGrad"
+   },
+   {
+    "label": "IndiGo (InterGlobe Aviation)",
+    "value": "IndiGo (InterGlobe Aviation)"
+   },
+   {
+    "label": "Air India",
+    "value": "Air India"
+   },
+   {
+    "label": "SpiceJet",
+    "value": "SpiceJet"
+   },
+   {
+    "label": "Vistara",
+    "value": "Vistara"
+   },
+   {
+    "label": "Zee Entertainment",
+    "value": "Zee Entertainment"
+   },
+   {
+    "label": "Sony Pictures Networks India",
+    "value": "Sony Pictures Networks India"
+   },
+   {
+    "label": "Star India",
+    "value": "Star India"
+   },
+   {
+    "label": "Disney+ Hotstar",
+    "value": "Disney+ Hotstar"
+   },
+   {
+    "label": "Deloitte India",
+    "value": "Deloitte India"
+   },
+   {
+    "label": "EY (Ernst & Young) India",
+    "value": "EY (Ernst & Young) India"
+   },
+   {
+    "label": "KPMG India",
+    "value": "KPMG India"
+   },
+   {
+    "label": "PwC India",
+    "value": "PwC India"
+   },
+   {
+    "label": "McKinsey & Company India",
+    "value": "McKinsey & Company India"
+   },
+   {
+    "label": "Boston Consulting Group India",
+    "value": "Boston Consulting Group India"
+   },
+   {
+    "label": "DLF Limited",
+    "value": "DLF Limited"
+   },
+   {
+    "label": "Godrej Properties",
+    "value": "Godrej Properties"
+   },
+   {
+    "label": "Prestige Group",
+    "value": "Prestige Group"
+   },
+   {
+    "label": "Oberoi Realty",
+    "value": "Oberoi Realty"
+   },
+   {
+    "label": "Sobha Limited",
+    "value": "Sobha Limited"
+   },
+   {
+    "label": "Asian Paints",
+    "value": "Asian Paints"
+   },
+   {
+    "label": "Pidilite Industries",
+    "value": "Pidilite Industries"
+   },
+   {
+    "label": "Havells India",
+    "value": "Havells India"
+   },
+   {
+    "label": "Voltas",
+    "value": "Voltas"
+   },
+   {
+    "label": "Blue Star",
+    "value": "Blue Star"
+   },
+   {
+    "label": "UltraTech Cement",
+    "value": "UltraTech Cement"
+   },
+   {
+    "label": "Ambuja Cements",
+    "value": "Ambuja Cements"
+   },
+   {
+    "label": "Grasim Industries",
+    "value": "Grasim Industries"
+   }
+  ],
+  "hi": [
+   {
+    "label": "Tata Consultancy Services (TCS)",
+    "value": "Tata Consultancy Services (TCS)"
+   },
+   {
+    "label": "Infosys",
+    "value": "Infosys"
+   },
+   {
+    "label": "Wipro",
+    "value": "Wipro"
+   },
+   {
+    "label": "HCLTech",
+    "value": "HCLTech"
+   },
+   {
+    "label": "Tech Mahindra",
+    "value": "Tech Mahindra"
+   },
+   {
+    "label": "Cognizant",
+    "value": "Cognizant"
+   },
+   {
+    "label": "Accenture",
+    "value": "Accenture"
+   },
+   {
+    "label": "IBM India",
+    "value": "IBM India"
+   },
+   {
+    "label": "Capgemini",
+    "value": "Capgemini"
+   },
+   {
+    "label": "LTIMindtree",
+    "value": "LTIMindtree"
+   },
+   {
+    "label": "Mphasis",
+    "value": "Mphasis"
+   },
+   {
+    "label": "Persistent Systems",
+    "value": "Persistent Systems"
+   },
+   {
+    "label": "Zoho",
+    "value": "Zoho"
+   },
+   {
+    "label": "Freshworks",
+    "value": "Freshworks"
+   },
+   {
+    "label": "Microsoft India",
+    "value": "Microsoft India"
+   },
+   {
+    "label": "Google India",
+    "value": "Google India"
+   },
+   {
+    "label": "Amazon India",
+    "value": "Amazon India"
+   },
+   {
+    "label": "Adobe India",
+    "value": "Adobe India"
+   },
+   {
+    "label": "Oracle India",
+    "value": "Oracle India"
+   },
+   {
+    "label": "SAP India",
+    "value": "SAP India"
+   },
+   {
+    "label": "Dell Technologies India",
+    "value": "Dell Technologies India"
+   },
+   {
+    "label": "HP India",
+    "value": "HP India"
+   },
+   {
+    "label": "Intel India",
+    "value": "Intel India"
+   },
+   {
+    "label": "Qualcomm India",
+    "value": "Qualcomm India"
+   },
+   {
+    "label": "Cisco India",
+    "value": "Cisco India"
+   },
+   {
+    "label": "HDFC Bank",
+    "value": "HDFC Bank"
+   },
+   {
+    "label": "ICICI Bank",
+    "value": "ICICI Bank"
+   },
+   {
+    "label": "State Bank of India (SBI)",
+    "value": "State Bank of India (SBI)"
+   },
+   {
+    "label": "Axis Bank",
+    "value": "Axis Bank"
+   },
+   {
+    "label": "Kotak Mahindra Bank",
+    "value": "Kotak Mahindra Bank"
+   },
+   {
+    "label": "Yes Bank",
+    "value": "Yes Bank"
+   },
+   {
+    "label": "IndusInd Bank",
+    "value": "IndusInd Bank"
+   },
+   {
+    "label": "Bank of Baroda",
+    "value": "Bank of Baroda"
+   },
+   {
+    "label": "Punjab National Bank",
+    "value": "Punjab National Bank"
+   },
+   {
+    "label": "Canara Bank",
+    "value": "Canara Bank"
+   },
+   {
+    "label": "IDFC First Bank",
+    "value": "IDFC First Bank"
+   },
+   {
+    "label": "Bajaj Finserv",
+    "value": "Bajaj Finserv"
+   },
+   {
+    "label": "Bajaj Finance",
+    "value": "Bajaj Finance"
+   },
+   {
+    "label": "HDFC Life",
+    "value": "HDFC Life"
+   },
+   {
+    "label": "ICICI Prudential",
+    "value": "ICICI Prudential"
+   },
+   {
+    "label": "Life Insurance Corporation (LIC)",
+    "value": "Life Insurance Corporation (LIC)"
+   },
+   {
+    "label": "SBI Life Insurance",
+    "value": "SBI Life Insurance"
+   },
+   {
+    "label": "Muthoot Finance",
+    "value": "Muthoot Finance"
+   },
+   {
+    "label": "Cholamandalam Investment and Finance",
+    "value": "Cholamandalam Investment and Finance"
+   },
+   {
+    "label": "Shriram Finance",
+    "value": "Shriram Finance"
+   },
+   {
+    "label": "Hindustan Unilever",
+    "value": "Hindustan Unilever"
+   },
+   {
+    "label": "ITC Limited",
+    "value": "ITC Limited"
+   },
+   {
+    "label": "Nestle India",
+    "value": "Nestle India"
+   },
+   {
+    "label": "Britannia Industries",
+    "value": "Britannia Industries"
+   },
+   {
+    "label": "Dabur India",
+    "value": "Dabur India"
+   },
+   {
+    "label": "Marico",
+    "value": "Marico"
+   },
+   {
+    "label": "Godrej Consumer Products",
+    "value": "Godrej Consumer Products"
+   },
+   {
+    "label": "Colgate-Palmolive India",
+    "value": "Colgate-Palmolive India"
+   },
+   {
+    "label": "Procter & Gamble India",
+    "value": "Procter & Gamble India"
+   },
+   {
+    "label": "Parle Products",
+    "value": "Parle Products"
+   },
+   {
+    "label": "Patanjali Ayurved",
+    "value": "Patanjali Ayurved"
+   },
+   {
+    "label": "Tata Motors",
+    "value": "Tata Motors"
+   },
+   {
+    "label": "Mahindra & Mahindra",
+    "value": "Mahindra & Mahindra"
+   },
+   {
+    "label": "Maruti Suzuki India",
+    "value": "Maruti Suzuki India"
+   },
+   {
+    "label": "Bajaj Auto",
+    "value": "Bajaj Auto"
+   },
+   {
+    "label": "Hero MotoCorp",
+    "value": "Hero MotoCorp"
+   },
+   {
+    "label": "TVS Motor Company",
+    "value": "TVS Motor Company"
+   },
+   {
+    "label": "Ashok Leyland",
+    "value": "Ashok Leyland"
+   },
+   {
+    "label": "Eicher Motors",
+    "value": "Eicher Motors"
+   },
+   {
+    "label": "Tata Steel",
+    "value": "Tata Steel"
+   },
+   {
+    "label": "JSW Steel",
+    "value": "JSW Steel"
+   },
+   {
+    "label": "Hindalco Industries",
+    "value": "Hindalco Industries"
+   },
+   {
+    "label": "Larsen & Toubro (L&T)",
+    "value": "Larsen & Toubro (L&T)"
+   },
+   {
+    "label": "Bharat Forge",
+    "value": "Bharat Forge"
+   },
+   {
+    "label": "Tata Power",
+    "value": "Tata Power"
+   },
+   {
+    "label": "Adani Power",
+    "value": "Adani Power"
+   },
+   {
+    "label": "NTPC",
+    "value": "NTPC"
+   },
+   {
+    "label": "Sun Pharmaceutical",
+    "value": "Sun Pharmaceutical"
+   },
+   {
+    "label": "Dr. Reddy's Laboratories",
+    "value": "Dr. Reddy's Laboratories"
+   },
+   {
+    "label": "Cipla",
+    "value": "Cipla"
+   },
+   {
+    "label": "Lupin",
+    "value": "Lupin"
+   },
+   {
+    "label": "Aurobindo Pharma",
+    "value": "Aurobindo Pharma"
+   },
+   {
+    "label": "Divi's Laboratories",
+    "value": "Divi's Laboratories"
+   },
+   {
+    "label": "Biocon",
+    "value": "Biocon"
+   },
+   {
+    "label": "Zydus Lifesciences",
+    "value": "Zydus Lifesciences"
+   },
+   {
+    "label": "Torrent Pharmaceuticals",
+    "value": "Torrent Pharmaceuticals"
+   },
+   {
+    "label": "Apollo Hospitals",
+    "value": "Apollo Hospitals"
+   },
+   {
+    "label": "Fortis Healthcare",
+    "value": "Fortis Healthcare"
+   },
+   {
+    "label": "Reliance Retail",
+    "value": "Reliance Retail"
+   },
+   {
+    "label": "Flipkart",
+    "value": "Flipkart"
+   },
+   {
+    "label": "Amazon",
+    "value": "Amazon"
+   },
+   {
+    "label": "Myntra",
+    "value": "Myntra"
+   },
+   {
+    "label": "Nykaa",
+    "value": "Nykaa"
+   },
+   {
+    "label": "BigBasket",
+    "value": "BigBasket"
+   },
+   {
+    "label": "Avenue Supermarts (DMart)",
+    "value": "Avenue Supermarts (DMart)"
+   },
+   {
+    "label": "Tata CLiQ",
+    "value": "Tata CLiQ"
+   },
+   {
+    "label": "Trent Limited",
+    "value": "Trent Limited"
+   },
+   {
+    "label": "Titan Company",
+    "value": "Titan Company"
+   },
+   {
+    "label": "Reliance Jio",
+    "value": "Reliance Jio"
+   },
+   {
+    "label": "Bharti Airtel",
+    "value": "Bharti Airtel"
+   },
+   {
+    "label": "Vodafone Idea",
+    "value": "Vodafone Idea"
+   },
+   {
+    "label": "BSNL",
+    "value": "BSNL"
+   },
+   {
+    "label": "Oil and Natural Gas Corporation (ONGC)",
+    "value": "Oil and Natural Gas Corporation (ONGC)"
+   },
+   {
+    "label": "Indian Oil Corporation (IOCL)",
+    "value": "Indian Oil Corporation (IOCL)"
+   },
+   {
+    "label": "Bharat Petroleum (BPCL)",
+    "value": "Bharat Petroleum (BPCL)"
+   },
+   {
+    "label": "Hindustan Petroleum (HPCL)",
+    "value": "Hindustan Petroleum (HPCL)"
+   },
+   {
+    "label": "Coal India",
+    "value": "Coal India"
+   },
+   {
+    "label": "Steel Authority of India (SAIL)",
+    "value": "Steel Authority of India (SAIL)"
+   },
+   {
+    "label": "Bharat Heavy Electricals (BHEL)",
+    "value": "Bharat Heavy Electricals (BHEL)"
+   },
+   {
+    "label": "Power Grid Corporation of India",
+    "value": "Power Grid Corporation of India"
+   },
+   {
+    "label": "GAIL India",
+    "value": "GAIL India"
+   },
+   {
+    "label": "Reliance Industries",
+    "value": "Reliance Industries"
+   },
+   {
+    "label": "Tata Sons",
+    "value": "Tata Sons"
+   },
+   {
+    "label": "Aditya Birla Group",
+    "value": "Aditya Birla Group"
+   },
+   {
+    "label": "Adani Group",
+    "value": "Adani Group"
+   },
+   {
+    "label": "Mahindra Group",
+    "value": "Mahindra Group"
+   },
+   {
+    "label": "Godrej Group",
+    "value": "Godrej Group"
+   },
+   {
+    "label": "Zomato",
+    "value": "Zomato"
+   },
+   {
+    "label": "Swiggy",
+    "value": "Swiggy"
+   },
+   {
+    "label": "Paytm (One97 Communications)",
+    "value": "Paytm (One97 Communications)"
+   },
+   {
+    "label": "PhonePe",
+    "value": "PhonePe"
+   },
+   {
+    "label": "Ola Cabs",
+    "value": "Ola Cabs"
+   },
+   {
+    "label": "Byju's",
+    "value": "Byju's"
+   },
+   {
+    "label": "Unacademy",
+    "value": "Unacademy"
+   },
+   {
+    "label": "CRED",
+    "value": "CRED"
+   },
+   {
+    "label": "Razorpay",
+    "value": "Razorpay"
+   },
+   {
+    "label": "Zerodha",
+    "value": "Zerodha"
+   },
+   {
+    "label": "Meesho",
+    "value": "Meesho"
+   },
+   {
+    "label": "Delhivery",
+    "value": "Delhivery"
+   },
+   {
+    "label": "Urban Company",
+    "value": "Urban Company"
+   },
+   {
+    "label": "PolicyBazaar",
+    "value": "PolicyBazaar"
+   },
+   {
+    "label": "Lenskart",
+    "value": "Lenskart"
+   },
+   {
+    "label": "Imagine Marketing (boAt)",
+    "value": "Imagine Marketing (boAt)"
+   },
+   {
+    "label": "OYO Rooms",
+    "value": "OYO Rooms"
+   },
+   {
+    "label": "Dream11",
+    "value": "Dream11"
+   },
+   {
+    "label": "upGrad",
+    "value": "upGrad"
+   },
+   {
+    "label": "IndiGo (InterGlobe Aviation)",
+    "value": "IndiGo (InterGlobe Aviation)"
+   },
+   {
+    "label": "Air India",
+    "value": "Air India"
+   },
+   {
+    "label": "SpiceJet",
+    "value": "SpiceJet"
+   },
+   {
+    "label": "Vistara",
+    "value": "Vistara"
+   },
+   {
+    "label": "Zee Entertainment",
+    "value": "Zee Entertainment"
+   },
+   {
+    "label": "Sony Pictures Networks India",
+    "value": "Sony Pictures Networks India"
+   },
+   {
+    "label": "Star India",
+    "value": "Star India"
+   },
+   {
+    "label": "Disney+ Hotstar",
+    "value": "Disney+ Hotstar"
+   },
+   {
+    "label": "Deloitte India",
+    "value": "Deloitte India"
+   },
+   {
+    "label": "EY (Ernst & Young) India",
+    "value": "EY (Ernst & Young) India"
+   },
+   {
+    "label": "KPMG India",
+    "value": "KPMG India"
+   },
+   {
+    "label": "PwC India",
+    "value": "PwC India"
+   },
+   {
+    "label": "McKinsey & Company India",
+    "value": "McKinsey & Company India"
+   },
+   {
+    "label": "Boston Consulting Group India",
+    "value": "Boston Consulting Group India"
+   },
+   {
+    "label": "DLF Limited",
+    "value": "DLF Limited"
+   },
+   {
+    "label": "Godrej Properties",
+    "value": "Godrej Properties"
+   },
+   {
+    "label": "Prestige Group",
+    "value": "Prestige Group"
+   },
+   {
+    "label": "Oberoi Realty",
+    "value": "Oberoi Realty"
+   },
+   {
+    "label": "Sobha Limited",
+    "value": "Sobha Limited"
+   },
+   {
+    "label": "Asian Paints",
+    "value": "Asian Paints"
+   },
+   {
+    "label": "Pidilite Industries",
+    "value": "Pidilite Industries"
+   },
+   {
+    "label": "Havells India",
+    "value": "Havells India"
+   },
+   {
+    "label": "Voltas",
+    "value": "Voltas"
+   },
+   {
+    "label": "Blue Star",
+    "value": "Blue Star"
+   },
+   {
+    "label": "UltraTech Cement",
+    "value": "UltraTech Cement"
+   },
+   {
+    "label": "Ambuja Cements",
+    "value": "Ambuja Cements"
+   },
+   {
+    "label": "Grasim Industries",
+    "value": "Grasim Industries"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Yes",
+    "value": "yes"
+   },
+   {
+    "label": "No",
+    "value": "no"
+   }
+  ],
+  "hi": [
+   {
+    "label": "हां",
+    "value": "yes"
+   },
+   {
+    "label": "नहीं",
+    "value": "no"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Wedding",
+    "value": "wedding"
+   },
+   {
+    "label": "Medical",
+    "value": "medical"
+   },
+   {
+    "label": "Travel",
+    "value": "travel"
+   },
+   {
+    "label": "Home renovation",
+    "value": "home-renovation"
+   },
+   {
+    "label": "Debt consolidation",
+    "value": "debt-consolidation"
+   },
+   {
+    "label": "Other",
+    "value": "other"
+   }
+  ],
+  "hi": [
+   {
+    "label": "शादी",
+    "value": "wedding"
+   },
+   {
+    "label": "मेडिकल",
+    "value": "medical"
+   },
+   {
+    "label": "यात्रा",
+    "value": "travel"
+   },
+   {
+    "label": "घर का रेनोवेशन",
+    "value": "home-renovation"
+   },
+   {
+    "label": "डेट कंसॉलिडेशन",
+    "value": "debt-consolidation"
+   },
+   {
+    "label": "अन्य",
+    "value": "other"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Apartment",
+    "value": "apartment"
+   },
+   {
+    "label": "Independent house",
+    "value": "independent-house"
+   },
+   {
+    "label": "Plot",
+    "value": "plot"
+   }
+  ],
+  "hi": [
+   {
+    "label": "अपार्टमेंट",
+    "value": "apartment"
+   },
+   {
+    "label": "इंडिपेंडेंट हाउस",
+    "value": "independent-house"
+   },
+   {
+    "label": "प्लॉट",
+    "value": "plot"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Ready to move",
+    "value": "ready-to-move"
+   },
+   {
+    "label": "Under construction",
+    "value": "under-construction"
+   },
+   {
+    "label": "Resale",
+    "value": "resale"
+   }
+  ],
+  "hi": [
+   {
+    "label": "रेडी-टू-मूव",
+    "value": "ready-to-move"
+   },
+   {
+    "label": "निर्माणाधीन",
+    "value": "under-construction"
+   },
+   {
+    "label": "रीसेल",
+    "value": "resale"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "New",
+    "value": "new"
+   },
+   {
+    "label": "Used",
+    "value": "used"
+   }
+  ],
+  "hi": [
+   {
+    "label": "नया",
+    "value": "new"
+   },
+   {
+    "label": "पुराना",
+    "value": "used"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Residential",
+    "value": "residential"
+   },
+   {
+    "label": "Commercial",
+    "value": "commercial"
+   }
+  ],
+  "hi": [
+   {
+    "label": "रेज़िडेंशियल",
+    "value": "residential"
+   },
+   {
+    "label": "कमर्शियल",
+    "value": "commercial"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Self-owned",
+    "value": "self"
+   },
+   {
+    "label": "Co-owned",
+    "value": "co-owned"
+   }
+  ],
+  "hi": [
+   {
+    "label": "खुद का",
+    "value": "self"
+   },
+   {
+    "label": "संयुक्त स्वामित्व",
+    "value": "co-owned"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Business expansion",
+    "value": "business-expansion"
+   },
+   {
+    "label": "Debt consolidation",
+    "value": "debt-consolidation"
+   },
+   {
+    "label": "Education",
+    "value": "education"
+   },
+   {
+    "label": "Personal",
+    "value": "personal"
+   },
+   {
+    "label": "Other",
+    "value": "other"
+   }
+  ],
+  "hi": [
+   {
+    "label": "बिज़नेस का विस्तार",
+    "value": "business-expansion"
+   },
+   {
+    "label": "डेट कंसॉलिडेशन",
+    "value": "debt-consolidation"
+   },
+   {
+    "label": "शिक्षा",
+    "value": "education"
+   },
+   {
+    "label": "निजी",
+    "value": "personal"
+   },
+   {
+    "label": "अन्य",
+    "value": "other"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Proprietorship",
+    "value": "proprietorship"
+   },
+   {
+    "label": "Partnership",
+    "value": "partnership"
+   },
+   {
+    "label": "Private Limited",
+    "value": "pvt-ltd"
+   },
+   {
+    "label": "LLP",
+    "value": "llp"
+   }
+  ],
+  "hi": [
+   {
+    "label": "प्रोप्राइटरशिप",
+    "value": "proprietorship"
+   },
+   {
+    "label": "पार्टनरशिप",
+    "value": "partnership"
+   },
+   {
+    "label": "प्राइवेट लिमिटेड",
+    "value": "pvt-ltd"
+   },
+   {
+    "label": "एलएलपी",
+    "value": "llp"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Working capital",
+    "value": "working-capital"
+   },
+   {
+    "label": "Equipment purchase",
+    "value": "equipment"
+   },
+   {
+    "label": "Business expansion",
+    "value": "expansion"
+   },
+   {
+    "label": "Other",
+    "value": "other"
+   }
+  ],
+  "hi": [
+   {
+    "label": "वर्किंग कैपिटल",
+    "value": "working-capital"
+   },
+   {
+    "label": "उपकरण की ख़रीद",
+    "value": "equipment"
+   },
+   {
+    "label": "बिज़नेस का विस्तार",
+    "value": "expansion"
+   },
+   {
+    "label": "अन्य",
+    "value": "other"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Jewellery",
+    "value": "jewellery"
+   },
+   {
+    "label": "Coins",
+    "value": "coins"
+   },
+   {
+    "label": "Bars",
+    "value": "bars"
+   }
+  ],
+  "hi": [
+   {
+    "label": "गहने",
+    "value": "jewellery"
+   },
+   {
+    "label": "सिक्के",
+    "value": "coins"
+   },
+   {
+    "label": "बार",
+    "value": "bars"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Medical emergency",
+    "value": "medical"
+   },
+   {
+    "label": "Business working capital",
+    "value": "business"
+   },
+   {
+    "label": "Agricultural needs",
+    "value": "agriculture"
+   },
+   {
+    "label": "Debt consolidation",
+    "value": "debt-consolidation"
+   },
+   {
+    "label": "Other",
+    "value": "other"
+   }
+  ],
+  "hi": [
+   {
+    "label": "मेडिकल इमरजेंसी",
+    "value": "medical"
+   },
+   {
+    "label": "बिज़नेस वर्किंग कैपिटल",
+    "value": "business"
+   },
+   {
+    "label": "खेती की ज़रूरतें",
+    "value": "agriculture"
+   },
+   {
+    "label": "डेट कंसॉलिडेशन",
+    "value": "debt-consolidation"
+   },
+   {
+    "label": "अन्य",
+    "value": "other"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Owned",
+    "value": "owned"
+   },
+   {
+    "label": "Leased",
+    "value": "leased"
+   }
+  ],
+  "hi": [
+   {
+    "label": "अपनी",
+    "value": "owned"
+   },
+   {
+    "label": "लीज़ पर",
+    "value": "leased"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Proprietorship",
+    "value": "proprietorship"
+   },
+   {
+    "label": "Partnership",
+    "value": "partnership"
+   }
+  ],
+  "hi": [
+   {
+    "label": "प्रोप्राइटरशिप",
+    "value": "proprietorship"
+   },
+   {
+    "label": "पार्टनरशिप",
+    "value": "partnership"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Shishu — up to ₹50,000",
+    "value": "shishu"
+   },
+   {
+    "label": "Kishor — ₹50,000 to ₹5,00,000",
+    "value": "kishor"
+   },
+   {
+    "label": "Tarun — ₹5,00,000 to ₹10,00,000",
+    "value": "tarun"
+   }
+  ],
+  "hi": [
+   {
+    "label": "शिशु — ₹50,000 तक",
+    "value": "shishu"
+   },
+   {
+    "label": "किशोर — ₹50,000 से ₹5,00,000 तक",
+    "value": "kishor"
+   },
+   {
+    "label": "तरुण — ₹5,00,000 से ₹10,00,000 तक",
+    "value": "tarun"
+   }
+  ]
+ },
+ {
+  "field": "options",
+  "en": [
+   {
+    "label": "Micro enterprise setup",
+    "value": "setup"
+   },
+   {
+    "label": "Working capital",
+    "value": "working-capital"
+   },
+   {
+    "label": "Equipment purchase",
+    "value": "equipment"
+   },
+   {
+    "label": "Other",
+    "value": "other"
+   }
+  ],
+  "hi": [
+   {
+    "label": "माइक्रो उद्यम की शुरुआत",
+    "value": "setup"
+   },
+   {
+    "label": "वर्किंग कैपिटल",
+    "value": "working-capital"
+   },
+   {
+    "label": "उपकरण की ख़रीद",
+    "value": "equipment"
+   },
+   {
+    "label": "अन्य",
+    "value": "other"
+   }
+  ]
+ }
+]

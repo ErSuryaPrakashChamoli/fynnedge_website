@@ -1,4 +1,4 @@
-@props(['testimonials', 'heading' => 'What our customers say'])
+@props(['testimonials', 'heading' => __('What our customers say')])
 
 @if ($testimonials->isNotEmpty())
     <div
@@ -25,10 +25,10 @@
             <h2 class="font-display text-xl font-semibold text-ink">{{ $heading }}</h2>
 
             <div x-show="! (atStart && atEnd)" x-cloak class="flex gap-2">
-                <button type="button" @click="scroll(-1)" :disabled="atStart" aria-label="Previous testimonials" class="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-sm transition hover:border-accent hover:text-accent disabled:pointer-events-none disabled:opacity-40">
+                <button type="button" @click="scroll(-1)" :disabled="atStart" aria-label="{{ __('Previous testimonials') }}" class="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-sm transition hover:border-accent hover:text-accent disabled:pointer-events-none disabled:opacity-40">
                     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-4 w-4" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m12.5 15-5-5 5-5" /></svg>
                 </button>
-                <button type="button" @click="scroll(1)" :disabled="atEnd" aria-label="More testimonials" class="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-sm transition hover:border-accent hover:text-accent disabled:pointer-events-none disabled:opacity-40">
+                <button type="button" @click="scroll(1)" :disabled="atEnd" aria-label="{{ __('More testimonials') }}" class="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-sm transition hover:border-accent hover:text-accent disabled:pointer-events-none disabled:opacity-40">
                     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-4 w-4" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m7.5 15 5-5-5-5" /></svg>
                 </button>
             </div>

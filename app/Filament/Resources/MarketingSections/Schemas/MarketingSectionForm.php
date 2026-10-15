@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\MarketingSections\Schemas;
 
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HindiTranslationSection;
+use App\Support\SocialVideos\SocialVideos;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -26,6 +28,7 @@ class MarketingSectionForm
                         'home_flexi_hybrid_ticker' => 'Homepage — Flexi Hybrid marquee strip (below header)',
                         'home_quick_enquiry' => 'Homepage — Quick Enquiry box',
                         'loan_enquiry_form' => 'Loan pages — enquiry form (all loan and landing pages)',
+                        SocialVideos::SECTION_PLACEMENT => 'Social media videos section — heading and intro (every page it appears on)',
                     ])
                     ->helperText('Where this section appears. Each placement shows its own hardcoded default copy on the website until a section is published here.')
                     ->columnSpanFull(),
@@ -38,6 +41,7 @@ class MarketingSectionForm
                         // keeps the product's own name in the heading.
                         'loan_enquiry_form' => 'The heading beside the form. Write :product where the loan name should appear, e.g. "Apply for a :product".',
                         'home_quick_enquiry' => 'The heading above the Quick Enquiry box, e.g. "Get Started with a Quick Enquiry".',
+                        SocialVideos::SECTION_PLACEMENT => 'The section heading, e.g. "Loan clarity, one reel at a time."',
                         default => null,
                     }),
                 TextInput::make('subheading')
@@ -45,12 +49,17 @@ class MarketingSectionForm
                     ->helperText(fn (callable $get) => match ($get('placement')) {
                         'loan_enquiry_form' => 'The small label above the form itself, e.g. "Instant :product". The rate and loan ceiling below it come from the loan product\'s own fields.',
                         'home_quick_enquiry' => 'The small note under the mobile number field, e.g. "We only need your number to call you back. No forms and no documents at this stage."',
+                        SocialVideos::SECTION_PLACEMENT => 'The small badge above the heading, e.g. "As seen on social".',
                         default => null,
                     }),
                 Textarea::make('description')
                     ->rows(3)
                     ->columnSpanFull()
-                    ->helperText(fn (callable $get) => $get('placement') === 'home_flexi_hybrid_ticker' ? 'The scrolling marquee text, e.g. "Flexi Hybrid Term Loan (Overdraft) — Bajaj Finance // Tata Capital // Aditya Birla Finance // Piramal Finance".' : null),
+                    ->helperText(fn (callable $get) => match ($get('placement')) {
+                        'home_flexi_hybrid_ticker' => 'The scrolling marquee text, e.g. "Flexi Hybrid Term Loan (Overdraft) — Bajaj Finance // Tata Capital // Aditya Birla Finance // Piramal Finance".',
+                        SocialVideos::SECTION_PLACEMENT => 'The line under the heading. The videos themselves are managed under Content → Social media videos.',
+                        default => null,
+                    }),
                 FileUpload::make('image_path')
                     ->label('Image')
                     ->image()
@@ -66,7 +75,9 @@ class MarketingSectionForm
                     ->label('Button label')
                     ->helperText(fn (callable $get) => in_array($get('placement'), ['loan_enquiry_form', 'home_quick_enquiry'], true)
                         ? 'The submit button on the enquiry form, e.g. "Submit Enquiry".'
-                        : null),
+                        : ($get('placement') === SocialVideos::SECTION_PLACEMENT
+                            ? 'Optional. A button beside the heading, e.g. "Follow us on Instagram". Shown only when a button link is set too. Follow icons for every profile under Settings → Social media appear automatically.'
+                            : null)),
                 TextInput::make('cta_url')
                     ->label('Button link')
                     ->rule(fn () => function (string $attribute, mixed $value, \Closure $fail): void {
@@ -89,6 +100,28 @@ class MarketingSectionForm
                 DateTimePicker::make('expires_at')
                     ->label('Expires at')
                     ->helperText('Optional. The section stops appearing publicly after this time.'),
+                HindiTranslationSection::make([
+                    TextInput::make('heading_hi')
+                        ->label('Heading (Hindi)')
+                        ->columnSpanFull()
+                        ->helperText(fn (callable $get): ?string => $get('placement') === 'loan_enquiry_form'
+                            ? 'Keep :product where the loan name should appear, as in the English heading.'
+                            : null),
+                    TextInput::make('subheading_hi')
+                        ->label('Subheading (Hindi)')
+                        ->columnSpanFull()
+                        ->helperText(fn (callable $get): ?string => $get('placement') === 'loan_enquiry_form'
+                            ? 'Keep :product where the loan name should appear, as in the English subheading.'
+                            : null),
+                    Textarea::make('description_hi')
+                        ->label('Description (Hindi)')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    TextInput::make('image_alt_hi')
+                        ->label('Image alt text (Hindi)'),
+                    TextInput::make('cta_label_hi')
+                        ->label('Button label (Hindi)'),
+                ])->columns(2),
             ]);
     }
 }

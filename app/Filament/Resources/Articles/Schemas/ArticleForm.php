@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Articles\Schemas;
 
 use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Filament\Schemas\HtmlBodyEditor;
 use App\Filament\Schemas\SeoFormSection;
 use App\Models\Article;
@@ -69,6 +70,18 @@ class ArticleForm
                     ->components(HtmlBodyEditor::make('body', attachmentsDirectory: 'articles/inline')),
 
                 SeoFormSection::make(),
+
+                HindiTranslationSection::make([
+                    TextInput::make('title_hi')
+                        ->label('Title (Hindi)'),
+                    TextInput::make('excerpt_hi')
+                        ->label('Excerpt (Hindi)')
+                        ->maxLength(240),
+                    TextInput::make('image_alt_hi')
+                        ->label('Cover image alt text (Hindi)')
+                        ->maxLength(500),
+                    ...HtmlBodyEditor::make('body_hi', attachmentsDirectory: 'articles/inline', label: 'Body (Hindi)'),
+                ]),
             ]);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\LoanLandingPages\Schemas;
 
 use App\Enums\LandingPageGroup;
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HindiTranslationSection;
 use App\Filament\Schemas\HtmlBodyEditor;
 use App\Filament\Schemas\SeoFormSection;
 use App\Models\LoanLandingPage;
@@ -74,6 +75,21 @@ class LoanLandingPageForm
                     ]),
 
                 SeoFormSection::make(),
+
+                HindiTranslationSection::make([
+                    TextInput::make('title_hi')
+                        ->label('Title (Hindi)'),
+                    TextInput::make('city_hi')
+                        ->label('City (Hindi)')
+                        ->maxLength(500)
+                        ->visible(fn (Get $get): bool => $get->enum('group', LandingPageGroup::class, isNullable: true) === LandingPageGroup::ByLocation),
+                    TextInput::make('excerpt_hi')
+                        ->label('Excerpt (Hindi)')
+                        ->maxLength(240),
+                    TextInput::make('cta_label_hi')
+                        ->label('Primary button label (Hindi)'),
+                    ...HtmlBodyEditor::make('body_hi', label: 'Body (Hindi)'),
+                ]),
             ]);
     }
 }

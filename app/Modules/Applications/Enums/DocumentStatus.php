@@ -13,9 +13,9 @@ enum DocumentStatus: string implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::Uploaded => 'Uploaded',
-            self::Verified => 'Verified',
-            self::Rejected => 'Rejected',
+            self::Uploaded => __('Uploaded'),
+            self::Verified => __('Verified'),
+            self::Rejected => __('Rejected'),
         };
     }
 }

@@ -3,6 +3,7 @@
 use App\Enums\LoanCategory;
 use App\Enums\RateStatus;
 use App\Enums\RateVerificationStatus;
+use App\Filament\Resources\LenderProductRates\LenderProductRateResource;
 use App\Filament\Resources\LenderProductRates\Pages\CreateLenderProductRate;
 use App\Filament\Resources\LenderProductRates\Pages\EditLenderProductRate;
 use App\Filament\Resources\LenderProductRates\Pages\ListLenderProductRates;
@@ -176,6 +177,87 @@ it('offers bulk publishing only on tabs that can list drafts or submitted rates'
     'archived versions' => ['history', false],
 ]);
 
+it('lets an editor verify an unverified draft from the list, correcting its figures and keeping the audit notes', function () {
+    $editor = rateAdmin(RateRoles::EDITOR_ROLE);
+    $this->actingAs($editor);
+    $draft = LenderProductRate::factory()->unverified()->for(rateFormOffer(), 'lenderProduct')->create([
+        'rate_min' => 12.0,
+        'source_notes' => 'Pre-audit figure from the lender offer, with no source on record.',
+    ]);
+
+    Livewire::test(ListLenderProductRates::class, ['activeTab' => 'attention'])
+        ->callTableAction('verify', $draft, data: [
+            'rate_unit' => 'per_annum',
+            'rate_min' => 10.75,
+            'rate_max' => 19.5,
+            'source_url' => 'https://www.lender.example/personal-loan/rates',
+            'quote' => 'Interest rate: 10.75% to 19.50% p.a.',
+            'last_verified_at' => now()->toDateString(),
+            'confirmed' => true,
+        ])
+        ->assertHasNoTableActionErrors()
+        ->assertNotified('Verified — ready to submit or publish');
+
+    expect($draft->fresh())
+        ->status->toBe(RateStatus::Draft)
+        ->verification_status->toBe(RateVerificationStatus::Verified)
+        ->rate_min->toBe('10.75')
+        ->source_url->toBe('https://www.lender.example/personal-loan/rates')
+        ->source_notes->toStartWith('Checked on '.now()->toDateString().' by '.$editor->name.': "Interest rate: 10.75% to 19.50% p.a."')
+        ->source_notes->toContain('Pre-audit figure from the lender offer');
+});
+
+it('lets a publisher verify and publish in one step', function () {
+    $this->actingAs(rateAdmin(RateRoles::PUBLISHER_ROLE));
+    $draft = LenderProductRate::factory()->unverified()->for(rateFormOffer(), 'lenderProduct')->create();
+
+    Livewire::test(ListLenderProductRates::class, ['activeTab' => 'attention'])
+        ->callTableAction('verify', $draft, data: [
+            'rate_unit' => 'per_annum',
+            'rate_min' => 10.99,
+            'source_url' => 'https://www.lender.example/pl',
+            'quote' => 'Starting at 10.99% p.a.',
+            'last_verified_at' => now()->toDateString(),
+            'confirmed' => true,
+            'publish_now' => true,
+        ])
+        ->assertNotified('Verified and published — the website now shows this rate');
+
+    expect($draft->fresh()->status)->toBe(RateStatus::Published);
+});
+
+it('will not verify without the lender\'s https link, the quoted wording and the confirmation', function () {
+    $this->actingAs(rateAdmin(RateRoles::EDITOR_ROLE));
+    $draft = LenderProductRate::factory()->unverified()->for(rateFormOffer(), 'lenderProduct')->create();
+
+    Livewire::test(ListLenderProductRates::class, ['activeTab' => 'attention'])
+        ->callTableAction('verify', $draft, data: [
+            'rate_unit' => 'per_annum',
+            'rate_min' => 10.99,
+            'source_url' => 'http://www.bankbazaar.example/pl',
+            'quote' => '',
+            'last_verified_at' => now()->toDateString(),
+            'confirmed' => false,
+        ])
+        ->assertHasTableActionErrors(['source_url', 'quote', 'confirmed']);
+
+    expect($draft->fresh()->verification_status)->toBe(RateVerificationStatus::Unverified);
+});
+
+it('offers Verify only on drafts that need it, to people who may edit rates', function () {
+    $draft = LenderProductRate::factory()->unverified()->for(rateFormOffer(), 'lenderProduct')->create();
+    $live = LenderProductRate::factory()->published()->for(rateFormOffer(), 'lenderProduct')->create();
+
+    $this->actingAs(rateAdmin(RateRoles::EDITOR_ROLE));
+    Livewire::test(ListLenderProductRates::class, ['activeTab' => 'all'])
+        ->assertTableActionVisible('verify', $draft)
+        ->assertTableActionHidden('verify', $live);
+
+    $this->actingAs(rateAdmin(RateRoles::REVIEWER_ROLE));
+    Livewire::test(ListLenderProductRates::class, ['activeTab' => 'all'])
+        ->assertTableActionHidden('verify', $draft);
+});
+
 it('restores an archived version from the history as a new draft', function () {
     $this->actingAs(rateAdmin(RateRoles::EDITOR_ROLE));
     $offer = rateFormOffer();
@@ -228,4 +310,33 @@ it('summarises rate health for anyone who can view rates', function () {
         ->assertSee('Awaiting approval')
         ->assertSee('Need verification')
         ->assertSee('Loan types with no verified rate');
+});
+
+it('links the "no verified rate" card to the loan type that needs rates', function () {
+    $this->actingAs(rateAdmin(RateRoles::REVIEWER_ROLE));
+    $product = LoanProduct::factory()->published()->create(['category' => LoanCategory::HomeLoan]);
+
+    Livewire::test(RateHealthOverview::class)
+        ->assertSee(e(LenderProductRateResource::getUrl('index', [
+            'tab' => 'all',
+            'filters' => ['loan_product' => ['value' => $product->id]],
+        ])), false);
+});
+
+it('links the "no verified rate" card to the live rates when every loan type has one', function () {
+    $this->actingAs(rateAdmin(RateRoles::REVIEWER_ROLE));
+
+    Livewire::test(RateHealthOverview::class)
+        ->assertSee(LenderProductRateResource::getUrl('index').'?tab=live', false);
+});
+
+it('opens the list filtered to one loan type from the card\'s link', function () {
+    $this->actingAs(rateAdmin(RateRoles::REVIEWER_ROLE));
+    $wanted = LenderProductRate::factory()->for(rateFormOffer(), 'lenderProduct')->create();
+    $other = LenderProductRate::factory()->for(rateFormOffer(), 'lenderProduct')->create();
+
+    Livewire::withQueryParams(['tab' => 'all', 'filters' => ['loan_product' => ['value' => $wanted->lenderProduct->loan_product_id]]])
+        ->test(ListLenderProductRates::class)
+        ->assertCanSeeTableRecords([$wanted])
+        ->assertCanNotSeeTableRecords([$other]);
 });

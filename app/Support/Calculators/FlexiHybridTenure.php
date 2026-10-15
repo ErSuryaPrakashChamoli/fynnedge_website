@@ -103,7 +103,7 @@ class FlexiHybridTenure
      */
     public static function label(array $option): string
     {
-        return self::years($option['initial']).' + '.self::years($option['subsequent']).' yrs';
+        return __(':initial + :subsequent yrs', ['initial' => self::years($option['initial']), 'subsequent' => self::years($option['subsequent'])]);
     }
 
     public static function years(int $months): string

@@ -24,6 +24,18 @@
     $numericMax = $parseIntRule($field->validation_rules, 'max:');
     $numericMaxLength = $numericMax !== null ? strlen((string) $numericMax) : null;
     $otpLength = MobileOtpChallenge::codeLength();
+
+    // The submitted value always comes from the English options, so a stored response is the same
+    // machine value (e.g. "self-employed") whichever language the visitor used — the Hindi copy
+    // (options_hi) only relabels them, matched by value, falling back to the English label.
+    $translatedLabels = collect($field->options ?? [])->pluck('label', 'value');
+    $options = collect($field->getOriginal('options') ?? $field->options ?? [])
+        ->map(fn (array $option): array => ['value' => $option['value'], 'label' => $translatedLabels->get($option['value'], $option['label'])])
+        ->all();
+
+    // Currency fields are recognised by the ₹ in the English label, so a Hindi label written
+    // without the symbol never turns the amount box back into a plain number input.
+    $isCurrencyField = str_contains((string) ($field->getOriginal('label') ?? $field->label), '₹');
 @endphp
 
 <div
@@ -41,8 +53,8 @@
                     x-model="values['{{ $field->key }}']"
                     class="rounded-lg border bg-surface px-3.5 py-2.5 text-sm text-ink transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 {{ $errorBag ? 'border-warn' : 'border-line-strong' }}"
                 >
-                    <option value="">Select…</option>
-                    @foreach ($field->options ?? [] as $option)
+                    <option value="">{{ __('Select…') }}</option>
+                    @foreach ($options as $option)
                         <option value="{{ $option['value'] }}" @selected(old($field->key, $value) == $option['value'])>{{ $option['label'] }}</option>
                     @endforeach
                 </select>
@@ -58,7 +70,7 @@
             <div
                 x-data="{
                     open: false,
-                    options: @js(collect($field->options ?? [])->all()),
+                    options: @js($options),
                     mode: 'select',
                     query: '',
                     init() {
@@ -73,7 +85,7 @@
                     get filtered() {
                         const q = this.query.trim().toLowerCase();
                         return q
-                            ? this.options.filter((o) => o.label.toLowerCase().includes(q)).slice(0, 8)
+                            ? this.options.filter((o) => o.label.toLowerCase().includes(q) || String(o.value).toLowerCase().includes(q)).slice(0, 8)
                             : this.options.slice(0, 8);
                     },
                     choose(option) {
@@ -105,7 +117,7 @@
                             x-model="query"
                             @focus="open = true"
                             @input="open = true"
-                            placeholder="Start typing to search…"
+                            placeholder="{{ __('Start typing to search…') }}"
                             autocomplete="off"
                             class="w-full rounded-lg border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 {{ $errorBag ? 'border-warn' : 'border-line-strong' }}"
                         >
@@ -116,9 +128,9 @@
                                 <button type="button" @click="choose(option)" class="block w-full px-3.5 py-2 text-left text-sm text-ink hover:bg-surface-2" x-text="option.label"></button>
                             </template>
                             <template x-if="filtered.length === 0">
-                                <p class="px-3.5 py-2 text-sm text-ink-faint">No matches — choose "Other" below</p>
+                                <p class="px-3.5 py-2 text-sm text-ink-faint">{{ __('No matches — choose "Other" below') }}</p>
                             </template>
-                            <button type="button" @click="chooseOther()" class="block w-full border-t border-line px-3.5 py-2 text-left text-sm font-medium text-accent hover:bg-surface-2">Other — enter manually</button>
+                            <button type="button" @click="chooseOther()" class="block w-full border-t border-line px-3.5 py-2 text-left text-sm font-medium text-accent hover:bg-surface-2">{{ __('Other — enter manually') }}</button>
                         </div>
                     </div>
                 </template>
@@ -130,10 +142,10 @@
                             name="{{ $field->key }}"
                             x-ref="customInput"
                             x-model="values['{{ $field->key }}']"
-                            placeholder="Enter {{ Str::lower($field->label) }}"
+                            placeholder="{{ __('Enter :field', ['field' => Str::lower($field->label)]) }}"
                             class="w-full rounded-lg border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 {{ $errorBag ? 'border-warn' : 'border-line-strong' }}"
                         >
-                        <button type="button" @click="backToSearch()" class="mt-1.5 text-xs font-medium text-accent hover:underline">← Search from list instead</button>
+                        <button type="button" @click="backToSearch()" class="mt-1.5 text-xs font-medium text-accent hover:underline">{{ __('← Search from list instead') }}</button>
                     </div>
                 </template>
 
@@ -149,7 +161,7 @@
             <fieldset class="flex flex-col gap-2">
                 <legend class="text-sm font-medium text-ink">{{ $field->label }}</legend>
                 <div class="flex flex-wrap gap-4">
-                    @foreach ($field->options ?? [] as $option)
+                    @foreach ($options as $option)
                         <label class="flex items-center gap-2 text-sm text-ink-muted">
                             <input
                                 type="radio"
@@ -189,11 +201,11 @@
                              hyperlinks. See JourneySeeder::consentField() and
                              JourneySeeder::basicDetailsFields() ('platform_consent'). --}}
                         <span>
-                            By submitting this form, you have read and agree to the
-                            <a href="{{ route('credit-report-terms') }}" target="_blank" rel="noopener" class="text-accent underline">Credit Report Terms of Use</a>,
-                            <a href="{{ route('terms') }}" target="_blank" rel="noopener" class="text-accent underline">Terms of Use</a>
-                            &amp;
-                            <a href="{{ route('privacy-policy') }}" target="_blank" rel="noopener" class="text-accent underline">Privacy Policy</a>.
+                            {!! __('By submitting this form, you have read and agree to the <a href=":credit_report_terms_url" target="_blank" rel="noopener" class="text-accent underline">Credit Report Terms of Use</a>, <a href=":terms_url" target="_blank" rel="noopener" class="text-accent underline">Terms of Use</a> &amp; <a href=":privacy_policy_url" target="_blank" rel="noopener" class="text-accent underline">Privacy Policy</a>.', [
+                                'credit_report_terms_url' => e(route('credit-report-terms')),
+                                'terms_url' => e(route('terms')),
+                                'privacy_policy_url' => e(route('privacy-policy')),
+                            ]) !!}
                         </span>
                     @else
                         <span>{{ $field->label }}</span>
@@ -218,7 +230,7 @@
             @break
 
         @case(FieldType::Number)
-            @if (str_contains($field->label, '₹'))
+            @if ($isCurrencyField)
                 <div
                     class="flex flex-col gap-1.5"
                     x-data="{ raw: (@js($value) ?? '').toString().replace(/[^0-9]/g, '') }"
@@ -239,7 +251,7 @@
                         class="rounded-lg border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint transition-colors focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent {{ $errorBag ? 'border-warn focus:ring-warn/30 focus:border-warn' : 'border-line-strong' }}"
                     >
                     <template x-if="raw">
-                        <p class="text-xs text-ink-faint" x-text="numberToIndianWords(raw) + ' Rupees only'"></p>
+                        <p class="text-xs text-ink-faint" x-text="numberToIndianWords(raw) + @js(' '.__('Rupees only'))"></p>
                     </template>
                     @if ($errorBag)
                         <p class="text-xs text-warn">{{ $errors->first($field->key) }}</p>
@@ -252,7 +264,7 @@
                      off it as a single 'employment_vintage_years' attribute) — only the label
                      changes to match "job" vs "business" wording. --}}
                 <div class="flex flex-col gap-1.5">
-                    <label for="{{ $field->key }}" class="text-sm font-medium text-ink" x-text="values['employment_type'] === 'self-employed' ? 'Years in current business' : 'Years in current job'">{{ $field->label }}</label>
+                    <label for="{{ $field->key }}" class="text-sm font-medium text-ink" x-text="values['employment_type'] === 'self-employed' ? @js(__('Years in current business')) : @js(__('Years in current job'))">{{ $field->label }}</label>
                     <input
                         type="number"
                         name="{{ $field->key }}"
@@ -305,7 +317,7 @@
                             name="{{ $field->key }}"
                             x-model="values['{{ $field->key }}']"
                             x-bind:readonly="phoneVerified"
-                            placeholder="10-digit mobile number"
+                            placeholder="{{ __('10-digit mobile number') }}"
                             {{-- min-w-0: a flex item defaults to min-width:auto, so this input
                                  refused to shrink below an <input>'s intrinsic ~20-character
                                  width and pushed the Send OTP button off-screen on narrow
@@ -318,18 +330,18 @@
                             x-on:click="sendPhoneOtp()"
                             x-bind:disabled="phoneOtpLoading || resendIn > 0 || ! values['{{ $field->key }}']"
                             class="shrink-0 cursor-pointer rounded-lg bg-accent-soft px-4 py-2.5 text-sm font-medium text-accent transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                            x-text="phoneOtpSent ? (resendIn > 0 ? `Resend in ${resendIn}s` : 'Resend OTP') : 'Send OTP'"
+                            x-text="phoneOtpSent ? (resendIn > 0 ? @js(__('Resend in :time')).replace(':time', `${resendIn}s`) : @js(__('Resend OTP'))) : @js(__('Send OTP'))"
                         ></button>
                         <span x-show="phoneVerified" x-cloak class="flex shrink-0 items-center gap-1.5 rounded-lg bg-pass-soft px-3.5 py-2.5 text-sm font-medium text-pass">
                             <svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4L8 11.6l6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd" /></svg>
-                            Verified
+                            {{ __('Verified') }}
                         </span>
                     </div>
 
                     <template x-if="phoneOtpSent && ! phoneVerified">
                         <div class="mt-1 flex flex-col gap-2 rounded-lg border border-line bg-surface-2 p-3">
                             <p class="text-xs text-ink-faint">
-                                We've sent a {{ $otpLength }}-digit code by SMS to +91 <span x-text="phoneOtpNumber"></span>. It may take a moment to arrive.
+                                {!! __('We\'ve sent a :length-digit code by SMS to +91 <span x-text="phoneOtpNumber"></span>. It may take a moment to arrive.', ['length' => e($otpLength)]) !!}
                             </p>
                             <div class="flex gap-2">
                                 <input
@@ -337,7 +349,7 @@
                                     inputmode="numeric"
                                     autocomplete="one-time-code"
                                     maxlength="{{ $otpLength }}"
-                                    placeholder="{{ $otpLength }}-digit code"
+                                    placeholder="{{ __(':length-digit code', ['length' => $otpLength]) }}"
                                     x-model="phoneOtpCode"
                                     class="w-32 rounded-lg border border-line-strong bg-surface px-3 py-2 text-sm tracking-[0.3em] text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
                                 >
@@ -347,7 +359,7 @@
                                     x-bind:disabled="phoneOtpLoading || phoneOtpCode.length !== {{ $otpLength }}"
                                     class="cursor-pointer rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                                 >
-                                    Verify
+                                    {{ __('Verify') }}
                                 </button>
                             </div>
                         </div>

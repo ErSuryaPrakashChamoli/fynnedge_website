@@ -3,6 +3,8 @@
 namespace App\Modules\Newsletter\Services;
 
 use App\Models\Setting;
+use App\Support\Localization\Phrasebook;
+use App\Support\Localization\SiteLocale;
 
 /**
  * Newsletter configuration, read from the SAME key/value Setting store the rest
@@ -54,15 +56,16 @@ class NewsletterSettings
     /**
      * Copy for the site-wide footer signup banner. Falls back to the original
      * hardcoded wording, so an install that never saves it renders unchanged.
+     * Served in the visitor's language; the admin panel always gets English.
      */
     public static function footerHeading(): string
     {
-        return self::string('newsletter_footer_heading') ?? self::DEFAULT_FOOTER_HEADING;
+        return self::localized('newsletter_footer_heading', self::DEFAULT_FOOTER_HEADING);
     }
 
     public static function footerDescription(): string
     {
-        return self::string('newsletter_footer_description') ?? self::DEFAULT_FOOTER_DESCRIPTION;
+        return self::localized('newsletter_footer_description', self::DEFAULT_FOOTER_DESCRIPTION);
     }
 
     /**
@@ -81,6 +84,21 @@ class NewsletterSettings
         ], fn (mixed $value): bool => filled($value));
 
         return $parts === [] ? null : implode(', ', $parts);
+    }
+
+    /**
+     * The English value (saved or default), or while the site runs in Hindi:
+     * the admin's own `{key}_hi` wording, else the lang/hi.json translation.
+     */
+    private static function localized(string $key, string $default): string
+    {
+        $english = self::string($key) ?? $default;
+
+        if (! SiteLocale::isTranslating()) {
+            return $english;
+        }
+
+        return self::string($key.'_'.SiteLocale::current()) ?? (string) Phrasebook::translate($english);
     }
 
     private static function string(string $key): ?string

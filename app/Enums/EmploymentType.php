@@ -12,8 +12,8 @@ enum EmploymentType: string implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::Salaried => 'Salaried',
-            self::SelfEmployed => 'Self-employed',
+            self::Salaried => __('Salaried'),
+            self::SelfEmployed => __('Self-employed'),
         };
     }
 }

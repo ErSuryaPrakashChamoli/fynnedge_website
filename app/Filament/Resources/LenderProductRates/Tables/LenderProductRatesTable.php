@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\LenderProductRates\Tables;
 
+use App\Enums\RateSourceType;
 use App\Enums\RateStatus;
 use App\Enums\RateVerificationStatus;
 use App\Filament\Resources\LenderProductRates\RateWorkflowActions;
@@ -51,10 +52,20 @@ class LenderProductRatesTable
                 TextColumn::make('verification_status')
                     ->label('Evidence')
                     ->badge()
-                    ->formatStateUsing(fn (LenderProductRate $record): string => $record->verification_status === RateVerificationStatus::Verified && $record->needsReverification()
-                        ? 'Re-verify'
-                        : $record->verification_status->getLabel())
-                    ->color(fn (LenderProductRate $record): string => $record->needsReverification() ? 'danger' : 'success'),
+                    ->formatStateUsing(fn (LenderProductRate $record): string => match (true) {
+                        $record->verification_status !== RateVerificationStatus::Verified => $record->verification_status->getLabel(),
+                        $record->source_type === RateSourceType::ThirdParty => 'Third-party',
+                        $record->needsReverification() => 'Re-verify',
+                        default => $record->verification_status->getLabel(),
+                    })
+                    ->tooltip(fn (LenderProductRate $record): ?string => $record->source_type === RateSourceType::ThirdParty
+                        ? 'Read on '.($record->source_name ?: 'a comparison site').', not the lender\'s own site — confirm it with the lender.'
+                        : null)
+                    ->color(fn (LenderProductRate $record): string => match (true) {
+                        $record->verification_status === RateVerificationStatus::Verified && $record->source_type === RateSourceType::ThirdParty => 'warning',
+                        $record->needsReverification() => 'danger',
+                        default => 'success',
+                    }),
                 TextColumn::make('last_verified_at')
                     ->label('Checked')
                     ->date('j M Y')

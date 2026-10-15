@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Faqs\Schemas;
 
 use App\Enums\PublishStatus;
+use App\Filament\Schemas\HindiTranslationSection;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -35,6 +36,15 @@ class FaqForm
                     ->visible(fn (callable $get) => $get('status') === PublishStatus::Published->value),
                 DateTimePicker::make('expires_at')
                     ->helperText('Optional. The FAQ stops appearing publicly after this time.'),
+                HindiTranslationSection::make([
+                    TextInput::make('question_hi')
+                        ->label('Question (Hindi)')
+                        ->columnSpanFull(),
+                    Textarea::make('answer_hi')
+                        ->label('Answer (Hindi)')
+                        ->rows(4)
+                        ->columnSpanFull(),
+                ]),
             ]);
     }
 }

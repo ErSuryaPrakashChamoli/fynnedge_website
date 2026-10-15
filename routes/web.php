@@ -13,6 +13,7 @@ use App\Http\Controllers\JourneyController;
 use App\Http\Controllers\LoanEnquiryController;
 use App\Http\Controllers\LoanLandingPageController;
 use App\Http\Controllers\LoanProductController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\NewsletterTrackingController;
 use App\Http\Controllers\PageController;
@@ -21,10 +22,19 @@ use App\Http\Controllers\QuickEnquiryController;
 use App\Http\Controllers\QuickEnquiryPageController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SitemapController;
+use App\Support\Localization\SiteLocale;
 use App\Support\Seo\Sitemap;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
+
+/*
+ * The header's English/Hindi switch. A GET link so it works without JavaScript
+ * and never meets an expired CSRF token; it only sets a preference cookie.
+ */
+Route::get('/language/{locale}', LocaleController::class)
+    ->whereIn('locale', array_keys(SiteLocale::SUPPORTED))
+    ->name('locale.switch');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/robots.txt', RobotsController::class)->name('robots');
 Route::get('/about', AboutController::class)->name('about');

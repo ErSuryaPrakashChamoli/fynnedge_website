@@ -16,12 +16,11 @@
         @endif
 
         <div class="mt-12">
-            <h2 data-reveal="left" class="font-display text-xl font-semibold text-ink">Open positions</h2>
+            <h2 data-reveal="left" class="font-display text-xl font-semibold text-ink">{{ __('Open positions') }}</h2>
 
             @if ($jobOpenings->isEmpty())
                 <p data-reveal="up" class="mt-3 text-sm text-ink-muted">
-                    We don't have any open positions listed right now. If you'd like to be considered for future
-                    roles, write to us using the details on our <a href="{{ route('contact') }}" class="text-accent hover:underline">Contact</a> page and tell us a bit about what you're looking for.
+                    {!! __("We don't have any open positions listed right now. If you'd like to be considered for future roles, write to us using the details on our <a href=\":url\" class=\"text-accent hover:underline\">Contact</a> page and tell us a bit about what you're looking for.", ['url' => e(route('contact'))]) !!}
                 </p>
             @else
                 <div class="mt-4 flex flex-col divide-y divide-line border-y border-line">
@@ -29,7 +28,7 @@
                         <div data-reveal="left stagger" class="flex items-center justify-between gap-4 py-4">
                             <p class="font-medium text-ink">{{ $opening->title }}</p>
                             <x-ui.button tag="a" :href="route('contact')" variant="secondary" size="sm" class="shrink-0">
-                                Apply
+                                {{ __('Apply') }}
                             </x-ui.button>
                         </div>
                     @endforeach

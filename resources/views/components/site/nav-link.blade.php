@@ -22,7 +22,7 @@
         {{ $label }}
     </a>
 @else
-    <span {{ $attributes->class('text-sm font-medium text-ink-faint/70 cursor-default select-none') }} title="Coming soon">
+    <span {{ $attributes->class('text-sm font-medium text-ink-faint/70 cursor-default select-none') }} title="{{ __('Coming soon') }}">
         {{ $label }}
     </span>
 @endif

@@ -160,7 +160,7 @@
         @keydown.right.prevent="step(1)"
         role="region"
         aria-roledescription="carousel"
-        aria-label="Promotional banners"
+        aria-label="{{ __('Promotional banners') }}"
         id="hero-banner"
         class="group relative h-[200px] w-full overflow-hidden rounded-3xl border border-line md:h-[300px] lg:h-[330px] xl:h-[350px]"
     >
@@ -252,7 +252,7 @@
             <button
                 type="button"
                 @click="step(-1)"
-                aria-label="Previous banner"
+                aria-label="{{ __('Previous banner') }}"
                 class="absolute left-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-ink shadow-md transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:left-3 sm:h-10 sm:w-10"
             >
                 <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m12.5 15-5-5 5-5" /></svg>
@@ -260,7 +260,7 @@
             <button
                 type="button"
                 @click="step(1)"
-                aria-label="Next banner"
+                aria-label="{{ __('Next banner') }}"
                 class="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-ink shadow-md transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-3 sm:h-10 sm:w-10"
             >
                 <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m7.5 15 5-5-5-5" /></svg>
@@ -274,7 +274,7 @@
                         :class="(current % total) === {{ $index }} ? 'w-6 bg-white' : 'w-1.5 bg-white/50 hover:bg-white/80'"
                         :aria-current="(current % total) === {{ $index }} ? 'true' : 'false'"
                         class="h-1.5 rounded-full transition-all"
-                        aria-label="Go to banner {{ $index + 1 }}"
+                        aria-label="{{ __('Go to banner :number', ['number' => $index + 1]) }}"
                     ></button>
                 @endforeach
             </div>
@@ -291,7 +291,7 @@
             <button
                 type="button"
                 @click="toggle()"
-                :aria-label="playing ? 'Pause banner slideshow' : 'Play banner slideshow'"
+                :aria-label="playing ? @js(__('Pause banner slideshow')) : @js(__('Play banner slideshow'))"
                 class="absolute bottom-2.5 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-white/80 text-ink shadow-md transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
                 <svg x-show="playing" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5" aria-hidden="true"><path d="M6 4h3v12H6zM11 4h3v12h-3z" /></svg>
