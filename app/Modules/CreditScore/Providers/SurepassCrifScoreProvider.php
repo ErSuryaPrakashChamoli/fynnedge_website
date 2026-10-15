@@ -11,6 +11,7 @@ use App\Modules\CreditBureau\Services\CrifReportDocument;
 use App\Modules\CreditBureau\Services\SurepassCrifService;
 use App\Modules\CreditScore\Contracts\CreditScoreProvider;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
+use Illuminate\Support\Facades\Log;
 
 /**
  * A real CRIF score for the public "Free CRIF Score" page, through Surepass's
@@ -48,6 +49,15 @@ class SurepassCrifScoreProvider implements CreditScoreProvider
         $result = $this->surepass->fetchScore(new CrifSubject($firstName, $lastName, $check->mobile_number, $check->pan_number, $consent));
 
         if (! $result->isSuccessful()) {
+            // The visitor only sees a generic message; this (and the admin's
+            // Credit Score Checks screen) is where the actual reason shows.
+            Log::warning('Public CRIF score check failed', [
+                'check' => $check->public_id,
+                'error' => $result->errorCode?->value,
+                'http_status' => $result->httpStatus,
+                'message_code' => $result->messageCode,
+            ]);
+
             return new CreditCheckResult(
                 status: $result->isUncertain() ? CreditCheckStatus::Pending : CreditCheckStatus::Failed,
                 rawResponse: ['error' => $result->errorCode?->value, 'http_status' => $result->httpStatus, 'message_code' => $result->messageCode],
@@ -56,6 +66,12 @@ class SurepassCrifScoreProvider implements CreditScoreProvider
         }
 
         $document = new CrifReportDocument($result->body ?? []);
+
+        Log::info('Public CRIF score check answered', [
+            'check' => $check->public_id,
+            'score_available' => $document->score() !== null,
+            'http_status' => $result->httpStatus,
+        ]);
 
         return new CreditCheckResult(
             status: CreditCheckStatus::Completed,

@@ -4,6 +4,7 @@ namespace App\Modules\CreditScore\Models;
 
 use App\Models\Concerns\HasPublicId;
 use App\Modules\CreditBureau\Enums\CreditCheckStatus;
+use App\Modules\CreditBureau\Enums\CrifErrorCode;
 use App\Modules\CreditScore\Enums\BureauName;
 use Database\Factories\CreditScoreCheckFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -37,5 +38,16 @@ class CreditScoreCheck extends Model
             'requested_at' => 'datetime',
             'completed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Why a live (Surepass) check gave no score — the visitor only sees a
+     * generic message, so this is what admins read to find the cause.
+     */
+    public function liveFailure(): ?CrifErrorCode
+    {
+        $error = is_array($this->raw_response) ? ($this->raw_response['error'] ?? null) : null;
+
+        return is_string($error) ? CrifErrorCode::tryFrom($error) : null;
     }
 }

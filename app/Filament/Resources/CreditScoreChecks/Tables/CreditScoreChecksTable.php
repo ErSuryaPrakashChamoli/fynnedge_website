@@ -32,6 +32,7 @@ class CreditScoreChecksTable
                     ->color(fn (string $state): string => $state === 'surepass' ? 'success' : 'gray'),
                 TextColumn::make('status')
                     ->badge()
+                    ->description(fn ($record): ?string => $record->liveFailure()?->getLabel())
                     ->color(fn (CreditCheckStatus $state) => match ($state) {
                         CreditCheckStatus::Completed => 'success',
                         CreditCheckStatus::Pending => 'warning',

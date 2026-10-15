@@ -1,12 +1,16 @@
 <?php
 
+use App\Filament\Resources\CreditScoreChecks\CreditScoreCheckResource;
 use App\Models\Setting;
+use App\Models\User;
 use App\Modules\CreditBureau\Enums\CreditCheckStatus;
+use App\Modules\CreditBureau\Enums\CrifErrorCode;
 use App\Modules\CreditBureau\Services\CrifSettings;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
@@ -128,6 +132,33 @@ it('explains a rejected check without showing provider text', function () {
     expect(CreditScoreCheck::query()->sole())
         ->status->toBe(CreditCheckStatus::Failed)
         ->score->toBeNull();
+});
+
+it('records why a live check failed where admins can see it, never in the visitor message', function () {
+    liveCrifScorePage(Http::response(['success' => false, 'message_code' => 'unauthorized'], 401));
+    Log::spy();
+
+    checkScoreOnPage()
+        ->assertSet('resultKind', 'failed')
+        ->assertSee('We could not fetch your CRIF score right now')
+        ->assertDontSee('API token');
+
+    $check = CreditScoreCheck::query()->sole();
+    expect($check->liveFailure())->toBe(CrifErrorCode::AuthenticationFailed);
+
+    Log::shouldHaveReceived('warning')->withArgs(fn (string $message, array $context): bool => $message === 'Public CRIF score check failed'
+        && $context['error'] === 'authentication_failed'
+        && $context['http_status'] === 401
+        && ! str_contains(json_encode($context), 'AAAPZ9999Z')
+        && ! str_contains(json_encode($context), '9000000001'))->once();
+
+    $this->actingAs(User::factory()->create(['is_admin' => true]))
+        ->get(CreditScoreCheckResource::getUrl('view', ['record' => $check]))
+        ->assertOk()
+        ->assertSee('Surepass result')
+        ->assertSee('Surepass rejected the API token')
+        ->assertSee('PRODUCTION token')
+        ->assertSee('401');
 });
 
 it('holds an uncertain check for an hour instead of re-sending it', function () {

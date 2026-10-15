@@ -101,10 +101,10 @@ enum CrifErrorCode: string implements HasLabel
         return match ($this) {
             self::NotConfigured => 'The Surepass integration is not configured or is switched off. An administrator must set it up before retrying.',
             self::ConsentInvalid => 'The customer\'s consent was withdrawn or expired before the request was sent, so nothing was sent. Record fresh consent and request again.',
-            self::ConnectionFailed => 'Surepass could not be reached, so nothing was sent. You can retry.',
+            self::ConnectionFailed => 'Surepass could not be reached, so nothing was sent. Check that this server can reach kyc-api.surepass.app (firewall, DNS), then retry.',
             self::Timeout => 'Surepass did not answer in time. It may still have processed the request, so this needs reconciliation before another attempt.',
-            self::AuthenticationFailed => 'Surepass rejected the API token. An administrator must check the configured token before retrying.',
-            self::InsufficientBalance => 'The Surepass account balance is too low. Top up the balance, then retry.',
+            self::AuthenticationFailed => 'Surepass rejected the API token (HTTP 401/403), so nothing was charged. Check that SUREPASS_BEARER_TOKEN is your PRODUCTION token (not a sandbox one) and was copied whole, that the CRIF APIs are enabled on your Surepass account, and — if your account uses IP whitelisting — that this server\'s IP is whitelisted. Then clear the config cache and retry.',
+            self::InsufficientBalance => 'The Surepass wallet balance is too low (HTTP 402), so nothing was charged. Top up the balance in the Surepass console, then retry.',
             self::RateLimited => 'Surepass is limiting requests right now. Retry in a few minutes.',
             self::InvalidRequest => 'Surepass rejected the customer details as invalid. Check the name, mobile number and PAN.',
             self::NoRecordFound => 'CRIF has no credit record matching these details.',
