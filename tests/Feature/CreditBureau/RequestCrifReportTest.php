@@ -62,6 +62,20 @@ it('fetches, stores and indexes a report for a valid request', function () {
         ->and($report->in_flight_key)->toBeNull();
 });
 
+it('sends a middle name inside first_name and keeps it as entered', function () {
+    fakeSurepassCrif();
+
+    $report = requestCrif(crifRequestFor($this->customer, ['firstName' => 'Surya', 'middleName' => ' Prakash ', 'lastName' => 'Chamoli']))->report->refresh();
+
+    Http::assertSent(fn ($request) => $request['first_name'] === 'Surya Prakash' && $request['last_name'] === 'Chamoli');
+    expect($report)
+        ->first_name->toBe('Surya')
+        ->middle_name->toBe('Prakash')
+        ->last_name->toBe('Chamoli')
+        ->and($report->customerName())->toBe('Surya Prakash Chamoli')
+        ->and((array) DB::table('crif_reports')->find($report->id))->not->toContain('Prakash');
+});
+
 it('stores the PAN, names, mobile and response encrypted at rest', function () {
     fakeSurepassCrif();
 

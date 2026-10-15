@@ -35,7 +35,7 @@ use Illuminate\Support\Facades\Auth;
     'customer_id', 'journey_session_id', 'credit_consent_id', 'previous_report_id', 'requested_by',
     'request_type', 'fresh_reason', 'status',
     'pan_hash', 'in_flight_key', 'request_fingerprint', 'pan_masked', 'mobile_masked',
-    'pan_encrypted', 'first_name', 'last_name', 'mobile',
+    'pan_encrypted', 'first_name', 'middle_name', 'last_name', 'mobile',
     'score', 'provider', 'provider_client_id', 'provider_report_id', 'provider_inquiry_id',
     'provider_message_code', 'http_status', 'report_requested_on', 'report_issued_on', 'raw_response',
     'error_code', 'error_message', 'retryable', 'times_reused', 'duplicates_blocked',
@@ -43,7 +43,7 @@ use Illuminate\Support\Facades\Auth;
     'pdf_path', 'pdf_fetched_at', 'pdf_error_code',
     'requested_at', 'processing_started_at', 'completed_at', 'purged_at',
 ])]
-#[Hidden(['pan_encrypted', 'first_name', 'last_name', 'mobile', 'raw_response', 'pan_hash', 'in_flight_key', 'request_fingerprint', 'pdf_path'])]
+#[Hidden(['pan_encrypted', 'first_name', 'middle_name', 'last_name', 'mobile', 'raw_response', 'pan_hash', 'in_flight_key', 'request_fingerprint', 'pdf_path'])]
 class CrifReport extends Model
 {
     /** @use HasFactory<CrifReportFactory> */
@@ -63,6 +63,7 @@ class CrifReport extends Model
             'reconciliation_resolution' => CrifReconciliationResolution::class,
             'pan_encrypted' => 'encrypted',
             'first_name' => 'encrypted',
+            'middle_name' => 'encrypted',
             'last_name' => 'encrypted',
             'mobile' => 'encrypted',
             'raw_response' => 'encrypted:array',
@@ -164,7 +165,16 @@ class CrifReport extends Model
 
     public function customerName(): string
     {
-        return trim(($this->first_name ?? '').' '.($this->last_name ?? '')) ?: ($this->customer?->full_name ?? '—');
+        return trim($this->givenNames().' '.($this->last_name ?? '')) ?: ($this->customer?->full_name ?? '—');
+    }
+
+    /**
+     * First and middle name together — what is sent to Surepass as first_name,
+     * since its CRIF API has no separate middle-name field.
+     */
+    public function givenNames(): string
+    {
+        return trim(($this->first_name ?? '').' '.($this->middle_name ?? ''));
     }
 
     /**
@@ -190,7 +200,7 @@ class CrifReport extends Model
     protected function auditExcept(): array
     {
         return [
-            'pan_encrypted', 'first_name', 'last_name', 'mobile', 'raw_response', 'score',
+            'pan_encrypted', 'first_name', 'middle_name', 'last_name', 'mobile', 'raw_response', 'score',
             'pan_hash', 'in_flight_key', 'request_fingerprint', 'pdf_path',
         ];
     }

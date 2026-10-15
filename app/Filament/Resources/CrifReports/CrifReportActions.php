@@ -243,6 +243,7 @@ final class CrifReportActions
                         customer: $customer,
                         firstName: (string) ($data['first_name'] ?? ''),
                         lastName: (string) ($data['last_name'] ?? ''),
+                        middleName: (string) ($data['middle_name'] ?? ''),
                         mobile: (string) ($data['mobile'] ?? ''),
                         pan: (string) ($data['pan'] ?? ''),
                         consent: self::consentInput($data, $customer),
@@ -280,14 +281,17 @@ final class CrifReportActions
                         ->mapWithKeys(fn (Customer $customer) => [$customer->id => self::customerLabel($customer)])
                         ->all())
                     ->getOptionLabelUsing(fn ($value): ?string => ($customer = Customer::query()->find($value)) ? self::customerLabel($customer) : null)
-                    ->helperText('Reports are always linked to an existing customer record; none is created here.'),
+                    ->helperText('Reports are always linked to a customer record. Someone who has not applied on the website yet? Add them first under Customers → Add customer.'),
             ] : []),
             Section::make('Customer details sent to CRIF')
-                ->description('Use the details exactly as on the customer\'s PAN card.')
+                ->description('Use the name exactly as on the customer\'s PAN card. Surepass takes a first and a last name, so a middle name is sent together with the first name.')
                 ->components([
-                    Grid::make(2)->schema([
+                    Grid::make(3)->schema([
                         TextInput::make('first_name')->label('First name')->required()->maxLength(100),
+                        TextInput::make('middle_name')->label('Middle name')->maxLength(100)->placeholder('If on the PAN card'),
                         TextInput::make('last_name')->label('Last name')->required()->maxLength(100),
+                    ]),
+                    Grid::make(2)->schema([
                         TextInput::make('mobile')
                             ->label('Mobile number')
                             ->tel()
@@ -364,8 +368,8 @@ final class CrifReportActions
         $session = $record instanceof JourneySession ? $record : null;
         $previous = $record instanceof CrifReport ? $record : $customer?->crifReports()->whereNotNull('pan_encrypted')->latest('id')->first();
 
-        [$firstName, $lastName] = $previous && filled($previous->first_name)
-            ? [$previous->first_name, $previous->last_name]
+        [$firstName, $middleName, $lastName] = $previous && filled($previous->first_name)
+            ? [$previous->first_name, $previous->middle_name, $previous->last_name]
             : self::splitName((string) ($customer?->full_name ?? ''));
 
         $journeyConsent = $session?->creditConsent
@@ -380,6 +384,7 @@ final class CrifReportActions
 
         return [
             'first_name' => $firstName,
+            'middle_name' => $middleName,
             'last_name' => $lastName,
             'mobile' => $previous?->mobile ?? $session?->phone_number ?? $customer?->phone,
             'pan' => $previous?->pan_encrypted ?? $journeyConsent?->pan_number,
@@ -508,19 +513,23 @@ final class CrifReportActions
     }
 
     /**
-     * @return array{0: string, 1: string}
+     * "Surya Prakash Chamoli" → first "Surya", middle "Prakash", last "Chamoli".
+     * Two words have no middle name; one word is only a first name.
+     *
+     * @return array{0: string, 1: string, 2: string}
      */
     private static function splitName(string $fullName): array
     {
-        $parts = preg_split('/\s+/', trim($fullName)) ?: [];
+        $parts = array_values(array_filter(preg_split('/\s+/', trim($fullName)) ?: []));
 
         if (count($parts) < 2) {
-            return [$parts[0] ?? '', ''];
+            return [$parts[0] ?? '', '', ''];
         }
 
+        $firstName = array_shift($parts);
         $lastName = array_pop($parts);
 
-        return [implode(' ', $parts), $lastName];
+        return [$firstName, implode(' ', $parts), $lastName];
     }
 
     private static function customerLabel(Customer $customer): string

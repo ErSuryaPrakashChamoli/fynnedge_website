@@ -13,8 +13,8 @@ use Spatie\Permission\PermissionRegistrar;
  * anything an admin has granted in Access Control → Roles.
  *
  *  - Credit Officer: view reports, request a report (reusing a recent one when
- *    it exists), retry a failed attempt Surepass never processed, and download
- *    the PDF.
+ *    it exists), retry a failed attempt Surepass never processed, download
+ *    the PDF, and add / open the customer records reports belong to.
  *  - Deliberately granted to NO starter role: fetching a fresh report over a
  *    reusable one (a second charge), reconciling uncertain attempts, viewing the
  *    raw provider JSON, and the CRIF settings page. super_admin has them through
@@ -33,6 +33,12 @@ final class CrifRoles
         'Create:CrifReport',
         'DownloadPdf:CrifReport',
         'View:CrifDashboard',
+        // The customer record a report hangs off: find one, add one, and open
+        // its page, where "Fetch CRIF Report" lives.
+        'ViewAny:Customer',
+        'View:Customer',
+        'Create:Customer',
+        'Update:Customer',
     ];
 
     /**

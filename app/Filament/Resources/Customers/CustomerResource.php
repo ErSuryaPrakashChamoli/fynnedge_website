@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Customers;
 
 use App\Filament\RelationManagers\CrifReportsRelationManager;
+use App\Filament\Resources\Customers\Pages\CreateCustomer;
 use App\Filament\Resources\Customers\Pages\EditCustomer;
 use App\Filament\Resources\Customers\Pages\ListCustomers;
 use App\Filament\Resources\Customers\RelationManagers\JourneySessionsRelationManager;
@@ -41,15 +42,11 @@ class CustomerResource extends Resource
         ];
     }
 
-    public static function canCreate(): bool
-    {
-        return false;
-    }
-
     public static function getPages(): array
     {
         return [
             'index' => ListCustomers::route('/'),
+            'create' => CreateCustomer::route('/create'),
             'edit' => EditCustomer::route('/{record}/edit'),
         ];
     }

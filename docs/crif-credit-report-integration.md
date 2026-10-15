@@ -86,7 +86,7 @@ pending ──▶ processing ──▶ success ──▶ expired (retention purg
 
 ## 6. Duplicate prevention and reuse (what an employee sees)
 
-1. **Fetch CRIF Report** (Customer page, Application page, or the CRIF list).
+1. **Fetch CRIF Report** (Customer page, Application page, or the CRIF list). Someone who has not applied on the website is added first under **Customers → Add customer** (full name as on the PAN card, email, mobile; the email must be new, so a later website application joins the same record). The form takes **first, middle and last name** as on the PAN card. Surepass's CRIF API has only `first_name` and `last_name`, so the middle name is sent inside `first_name` ("Surya Prakash" + "Chamoli") and stored separately (encrypted) on the request.
 2. If the PAN has a request in flight, the employee is taken to it. Nothing is sent, and `duplicates_blocked` is counted.
 3. Otherwise, if the PAN has a successful report inside the **reuse period**, that report is shown. Nothing is sent, and `times_reused` is counted.
 4. If the last request with **exactly these details** was rejected (invalid details, no record, declined), the request is refused. Corrected details count as a new request.
@@ -108,6 +108,7 @@ pending ──▶ processing ──▶ success ──▶ expired (retention purg
 | `Create:CrifReport` | Fetch a report (with reuse) and retry | ✔ |
 | `DownloadPdf:CrifReport` | Get and download the PDF | ✔ |
 | `View:CrifDashboard` | CRIF Dashboard | ✔ |
+| `ViewAny`, `View`, `Create`, `Update:Customer` | Find, add and open the customer a report belongs to | ✔ |
 | `FetchFresh:CrifReport` | Fresh-report override | — |
 | `Reconcile:CrifReport` | Reconcile uncertain attempts | — |
 | `ViewRaw:CrifReport` | Complete unmasked JSON | — |

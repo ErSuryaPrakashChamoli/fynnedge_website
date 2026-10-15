@@ -42,6 +42,7 @@ class CrifEnforceRetentionCommand extends Command
                     'score' => null,
                     'pan_encrypted' => null,
                     'first_name' => null,
+                    'middle_name' => null,
                     'last_name' => null,
                     'mobile' => null,
                     'pdf_path' => null,

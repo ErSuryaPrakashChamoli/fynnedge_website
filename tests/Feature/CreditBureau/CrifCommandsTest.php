@@ -27,7 +27,7 @@ it('purges report contents and personal details after the retention period', fun
     Storage::fake(FetchCrifReportPdf::DISK);
     Storage::disk(FetchCrifReportPdf::DISK)->put('crif-reports/old.pdf.enc', 'encrypted');
     Setting::set(CrifSettings::RETENTION_DAYS, 90);
-    $old = CrifReport::factory()->successful()->create(['requested_at' => now()->subDays(91), 'pdf_path' => 'crif-reports/old.pdf.enc']);
+    $old = CrifReport::factory()->successful()->create(['requested_at' => now()->subDays(91), 'pdf_path' => 'crif-reports/old.pdf.enc', 'middle_name' => 'Prakash']);
     $oldFailure = CrifReport::factory()->failed()->create(['requested_at' => now()->subDays(91)]);
     $awaiting = CrifReport::factory()->awaitingReconciliation()->create(['requested_at' => now()->subDays(91)]);
     $recent = CrifReport::factory()->successful()->create(['requested_at' => now()->subDays(89)]);
@@ -40,6 +40,7 @@ it('purges report contents and personal details after the retention period', fun
         ->score->toBeNull()
         ->pan_encrypted->toBeNull()
         ->first_name->toBeNull()
+        ->middle_name->toBeNull()
         ->mobile->toBeNull()
         ->pdf_path->toBeNull()
         ->purged_at->not->toBeNull()

@@ -76,7 +76,7 @@ class FetchCrifReportPdf
         }
 
         $result = $this->surepass->fetchReportPdf(new CrifSubject(
-            firstName: (string) $report->first_name,
+            firstName: $report->givenNames(),
             lastName: (string) $report->last_name,
             mobile: (string) $report->mobile,
             pan: (string) $report->pan_encrypted,

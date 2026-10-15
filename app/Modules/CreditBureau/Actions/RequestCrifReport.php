@@ -65,19 +65,21 @@ class RequestCrifReport
 
         $pan = PanNumber::normalize($request->pan);
         $firstName = $this->cleanName($request->firstName);
+        $middleName = $this->cleanName($request->middleName);
         $lastName = $this->cleanName($request->lastName);
         $mobile = MobileNumber::normalize($request->mobile);
 
-        $this->validateDetails($pan, $firstName, $lastName, $mobile);
+        $this->validateDetails($pan, $firstName, $middleName, $lastName, $mobile);
         $this->validateConsent($request, $pan);
 
         $panHash = PanNumber::hash($pan);
-        $fingerprint = CrifRequestFingerprint::make($pan, $firstName, $lastName, $mobile);
+        // Fingerprinted as sent: Surepass receives the middle name inside first_name.
+        $fingerprint = CrifRequestFingerprint::make($pan, trim("{$firstName} {$middleName}"), $lastName, $mobile);
 
         try {
             $outcome = Cache::lock('crif-request:'.$panHash, self::LOCK_SECONDS)->block(
                 self::LOCK_WAIT_SECONDS,
-                fn () => $this->decide($request, $actor, $pan, $firstName, $lastName, $mobile, $panHash, $fingerprint),
+                fn () => $this->decide($request, $actor, $pan, $firstName, $middleName, $lastName, $mobile, $panHash, $fingerprint),
             );
         } catch (LockTimeoutException) {
             throw new CrifRequestRefused('Another CRIF request for this PAN is being started right now. Wait a moment and open the customer\'s CRIF reports.');
@@ -103,13 +105,14 @@ class RequestCrifReport
         User $actor,
         string $pan,
         string $firstName,
+        string $middleName,
         string $lastName,
         string $mobile,
         string $panHash,
         string $fingerprint,
     ): CrifRequestOutcome {
         try {
-            return DB::transaction(function () use ($request, $actor, $pan, $firstName, $lastName, $mobile, $panHash, $fingerprint): CrifRequestOutcome {
+            return DB::transaction(function () use ($request, $actor, $pan, $firstName, $middleName, $lastName, $mobile, $panHash, $fingerprint): CrifRequestOutcome {
                 $inFlight = CrifReport::query()->forPan($panHash)->inFlight()->latest('id')->first();
 
                 if ($inFlight) {
@@ -144,6 +147,7 @@ class RequestCrifReport
                     'mobile_masked' => MobileNumber::mask($mobile),
                     'pan_encrypted' => $pan,
                     'first_name' => $firstName,
+                    'middle_name' => $middleName !== '' ? $middleName : null,
                     'last_name' => $lastName,
                     'mobile' => $mobile,
                     'provider' => 'surepass',
@@ -238,7 +242,7 @@ class RequestCrifReport
         }
     }
 
-    private function validateDetails(string $pan, string $firstName, string $lastName, string $mobile): void
+    private function validateDetails(string $pan, string $firstName, string $middleName, string $lastName, string $mobile): void
     {
         if (! PanNumber::isValid($pan)) {
             throw new CrifRequestRefused('Enter a valid PAN (five letters, four digits, one letter — e.g. ABCDE1234F).');
@@ -248,8 +252,8 @@ class RequestCrifReport
             throw new CrifRequestRefused('The customer\'s first and last name are both required for a CRIF report.');
         }
 
-        if (mb_strlen($firstName) > 100 || mb_strlen($lastName) > 100) {
-            throw new CrifRequestRefused('The customer\'s first and last name must each be 100 characters or fewer.');
+        if (mb_strlen($firstName) > 100 || mb_strlen($middleName) > 100 || mb_strlen($lastName) > 100) {
+            throw new CrifRequestRefused('The customer\'s first, middle and last name must each be 100 characters or fewer.');
         }
 
         if (! MobileNumber::isValid($mobile)) {

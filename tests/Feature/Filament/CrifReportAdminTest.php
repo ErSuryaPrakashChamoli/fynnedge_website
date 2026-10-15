@@ -242,7 +242,7 @@ it('fetches a CRIF report from the customer page with recorded consent', functio
     Livewire::test(EditCustomer::class, ['record' => $customer->getRouteKey()])
         ->assertActionHidden('viewExistingCrifReport')
         ->mountAction('fetchCrifReport')
-        ->assertSchemaStateSet(['first_name' => 'Test', 'last_name' => 'Fixture', 'mobile' => '9000000001', 'consent_source' => 'record'])
+        ->assertSchemaStateSet(['first_name' => 'Test', 'middle_name' => '', 'last_name' => 'Fixture', 'mobile' => '9000000001', 'consent_source' => 'record'])
         ->fillForm([
             'pan' => 'aaapz9999z',
             'consent_method' => 'recorded_call',
@@ -307,7 +307,8 @@ it('prefills a request from an application and offers its website consent', func
     Livewire::test(ViewJourneySession::class, ['record' => $session->getRouteKey()])
         ->mountAction('fetchCrifReport')
         ->assertSchemaStateSet([
-            'first_name' => 'Asha Kumari',
+            'first_name' => 'Asha',
+            'middle_name' => 'Kumari',
             'last_name' => 'Rao',
             'mobile' => '9000000002',
             'pan' => 'AAAPZ9999Z',
@@ -316,6 +317,7 @@ it('prefills a request from an application and offers its website consent', func
         ->callMountedAction()
         ->assertHasNoFormErrors();
 
+    Http::assertSent(fn ($request) => $request['first_name'] === 'Asha Kumari' && $request['last_name'] === 'Rao');
     expect($session->crifReports()->sole())
         ->customer_id->toBe($customer->id)
         ->credit_consent_id->toBe($consent->id);

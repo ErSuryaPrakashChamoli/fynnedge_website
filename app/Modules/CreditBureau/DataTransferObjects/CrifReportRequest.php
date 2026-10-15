@@ -25,6 +25,7 @@ final readonly class CrifReportRequest
         public ?string $freshReason = null,
         public ?JourneySession $journeySession = null,
         public ?CrifReport $previousReport = null,
+        public string $middleName = '',
     ) {}
 
     /**
@@ -46,6 +47,7 @@ final readonly class CrifReportRequest
             type: CrifRequestType::Retry,
             journeySession: $report->journeySession,
             previousReport: $report,
+            middleName: (string) $report->middle_name,
         );
     }
 }
