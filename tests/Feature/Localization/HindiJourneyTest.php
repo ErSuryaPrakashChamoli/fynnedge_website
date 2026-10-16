@@ -133,8 +133,7 @@ it('runs the credit score check in Hindi, including its error messages', functio
         ->assertSee('यह कोड गलत है या इसकी समय-सीमा खत्म हो गई है। आप नया कोड दोबारा भेज सकते हैं।')
         ->set('otpCode', lastTextedOtp())
         ->call('verifyOtp')
-        ->set('firstName', 'Jane')
-        ->set('lastName', 'Doe')
+        ->set('fullName', 'Jane Doe')
         ->set('dateOfBirth', '1990-01-01')
         ->set('panNumber', 'NOTAPAN')
         ->call('submitDetails');

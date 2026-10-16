@@ -4,6 +4,7 @@ namespace App\Modules\Journey\Models;
 
 use App\Models\Concerns\HasPublicId;
 use App\Models\LoanProduct;
+use App\Modules\Cibil\Models\CibilCreditRequest;
 use App\Modules\CreditBureau\Models\CreditConsent;
 use App\Modules\CreditBureau\Models\CrifReport;
 use App\Modules\Customers\Models\Customer;
@@ -92,6 +93,11 @@ class JourneySession extends Model
     public function experianRequests(): HasMany
     {
         return $this->hasMany(ExperianCreditRequest::class);
+    }
+
+    public function cibilRequests(): HasMany
+    {
+        return $this->hasMany(CibilCreditRequest::class);
     }
 
     /**

@@ -1,0 +1,110 @@
+{
+    "data": {
+        "client_id": "credit_report_cibil_TESTFIXTURE0001",
+        "mobile": "9000000001",
+        "pan": "AAAPZ9999Z",
+        "name": "TEST FIXTURE",
+        "gender": "male",
+        "user_email": null,
+        "credit_score": "750",
+        "credit_report": [
+            {
+                "control_number": "9100000001",
+                "names": [{"index": "N01", "name": "TEST FIXTURE", "birthDate": "01011990", "gender": "2"}],
+                "ids": [
+                    {"index": "I01", "idType": "01", "idNumber": "AAAPZ9999Z"},
+                    {"index": "I02", "idType": "06", "idNumber": "999900001234"}
+                ],
+                "telephones": [
+                    {"index": "T01", "telephoneNumber": "9000000001", "telephoneType": "01"},
+                    {"index": "T02", "telephoneNumber": "02200000000", "telephoneType": "03"}
+                ],
+                "emails": [{"index": "C01", "emailID": "test.fixture@example.test"}],
+                "employment": [{"index": "E01", "accountType": "10", "dateReported": "30092026", "occupationCode": "01", "income": "50000"}],
+                "scores": [
+                    {
+                        "scoreName": "CIBILTUSC3",
+                        "scoreCardName": "08",
+                        "scoreCardVersion": "10",
+                        "scoreDate": "16102026",
+                        "score": "00750",
+                        "reasonCodes": [
+                            {"reasonCodeName": "reasonCode1", "reasonCodeValue": "14"},
+                            {"reasonCodeName": "reasonCode2", "reasonCodeValue": "02"}
+                        ]
+                    }
+                ],
+                "addresses": [
+                    {"index": "A01", "line1": "1 FIXTURE LANE", "line2": "TEST NAGAR", "line5": "TESTPUR", "stateCode": "27", "pincode": "400001", "addressCategory": "02", "dateReported": "30092026"}
+                ],
+                "accounts": [
+                    {
+                        "index": "T001",
+                        "memberShortName": "FIXTURE BANK",
+                        "accountType": "10",
+                        "ownershipIndicator": "1",
+                        "accountNumber": "FIXTUREACC1234",
+                        "dateOpened": "15012022",
+                        "lastPaymentDate": "05092026",
+                        "dateReported": "30092026",
+                        "highCreditAmount": "62000",
+                        "creditLimit": "100000",
+                        "currentBalance": "45210",
+                        "amountOverdue": "3100",
+                        "paymentHistory": "030000XXX",
+                        "paymentStartDate": "01092026",
+                        "paymentEndDate": "01072026",
+                        "fixtureUnmappedField": "kept as sent"
+                    },
+                    {
+                        "index": "T002",
+                        "memberShortName": "FIXTURE FINANCE",
+                        "accountType": "05",
+                        "ownershipIndicator": "1",
+                        "accountNumber": "LN0000005678",
+                        "dateOpened": "10062019",
+                        "dateClosed": "15062024",
+                        "dateReported": "30062024",
+                        "highCreditAmount": "200000",
+                        "currentBalance": "0",
+                        "emiAmount": "6840",
+                        "interestRate": "14.5",
+                        "paymentTenure": "36",
+                        "paymentHistory": "000STD",
+                        "paymentStartDate": "01062024",
+                        "paymentEndDate": "01052024"
+                    }
+                ],
+                "enquiries": [
+                    {"index": "I001", "enquiryDate": "01102026", "memberShortName": "FIXTURE BANK", "enquiryPurpose": "05", "enquiryAmount": "250000"}
+                ],
+                "response": {
+                    "consumerSummaryresp": {
+                        "accountSummary": {
+                            "totalAccounts": "2",
+                            "overdueAccounts": "1",
+                            "zeroBalanceAccounts": "1",
+                            "highCreditAmount": "262000",
+                            "currentBalance": "45210",
+                            "overdueBalance": "3100",
+                            "recentDateOpened": "15012022",
+                            "oldestDateOpened": "10062019"
+                        },
+                        "inquirySummary": {
+                            "totalInquiry": "1",
+                            "inquiryPast30Days": "1",
+                            "inquiryPast12Months": "1",
+                            "inquiryPast24Months": "1",
+                            "recentInquiryDate": "01102026"
+                        }
+                    }
+                },
+                "fixtureFutureSection": {"someNewField": "kept as sent"}
+            }
+        ]
+    },
+    "status_code": 200,
+    "success": true,
+    "message": null,
+    "message_code": "success"
+}

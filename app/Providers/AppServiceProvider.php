@@ -7,6 +7,8 @@ use App\Models\LoanProduct;
 use App\Models\NavigationLink;
 use App\Models\Page;
 use App\Models\Setting;
+use App\Modules\Cibil\Services\CibilSettings;
+use App\Modules\Cibil\Services\SurepassCibilService;
 use App\Modules\CreditBureau\Contracts\CreditBureauProvider;
 use App\Modules\CreditBureau\Services\SurepassClient;
 use App\Modules\CreditScore\Contracts\CreditScoreProvider;
@@ -58,6 +60,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->when(SurepassExperianService::class)
             ->needs(SurepassClient::class)
             ->give(fn (): SurepassClient => ExperianSettings::surepassClient());
+
+        // CIBIL: its own token ONLY (SUREPASS_CIBIL_TOKEN) — never the shared one.
+        $this->app->when(SurepassCibilService::class)
+            ->needs(SurepassClient::class)
+            ->give(fn (): SurepassClient => CibilSettings::surepassClient());
 
         // Resolved by name from config/mobile_otp.php, so swapping or adding an SMS
         // gateway never touches a controller, action or form. An unknown name fails
@@ -244,6 +251,9 @@ class AppServiceProvider extends ServiceProvider
 
         // The Experian internal API (routes/experian.php), on its own counter.
         RateLimiter::for('experian-api', fn (Request $request) => Limit::perMinute(30)->by('experian:'.($request->user()?->getAuthIdentifier() ?? $request->ip())));
+
+        // The CIBIL internal API (routes/cibil.php), on its own counter.
+        RateLimiter::for('cibil-api', fn (Request $request) => Limit::perMinute(30)->by('cibil:'.($request->user()?->getAuthIdentifier() ?? $request->ip())));
 
         RateLimiter::for('mobile-otp-verify', fn (Request $request) => app()->runningUnitTests()
             ? Limit::none()

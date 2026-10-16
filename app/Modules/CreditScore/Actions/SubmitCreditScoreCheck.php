@@ -33,18 +33,22 @@ class SubmitCreditScoreCheck
     /**
      * Real scores for the bureaus whose public page is switched to live (CRIF:
      * CRIF Settings, Equifax: Equifax Settings, Experian: Experian Settings —
-     * each independently; CIBIL: CIBIL Settings, answered by its stand-in
-     * source, Experian, until a CIBIL API exists); the bound demo provider for
-     * everything else.
+     * each independently; CIBIL: CIBIL Settings, answered by the source
+     * CIBIL_PUBLIC_SCORE_SOURCE names — the CIBIL bureau or the Experian
+     * stand-in); the bound demo provider for everything else.
      *
-     * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
+     * The name arrives the way the bureau's API takes it: CRIF's page asks for
+     * first, middle and last name apart (full_name is the three joined), the
+     * other pages for one full name (first/middle/last null).
+     *
+     * @param  array{full_name: string, first_name: ?string, middle_name: ?string, last_name: ?string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
      */
     public function handle(array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress = null): CreditScoreCheck
     {
         $cibil = $bureau === BureauName::Cibil ? CibilSettings::liveProvider() : null;
 
         return match (true) {
-            $cibil !== null => $this->live($cibil, $bureau, CibilSettings::scoreReuseDays(), $data, $mobileNumber, $ipAddress),
+            $cibil !== null => $this->live($cibil, $bureau, CibilSettings::publicScoreReuseDays(), $data, $mobileNumber, $ipAddress),
             $bureau === BureauName::Crif && CrifSettings::publicScoreLive() => $this->live($this->liveCrif, $bureau, CrifSettings::reuseDays(), $data, $mobileNumber, $ipAddress),
             $bureau === BureauName::Equifax && EquifaxSettings::publicScoreLive() => $this->live($this->liveEquifax, $bureau, EquifaxSettings::scoreReuseDays(), $data, $mobileNumber, $ipAddress),
             $bureau === BureauName::Experian && ExperianSettings::publicScoreLive() => $this->live($this->liveExperian, $bureau, ExperianSettings::scoreReuseDays(), $data, $mobileNumber, $ipAddress),
@@ -59,7 +63,7 @@ class SubmitCreditScoreCheck
      * score already fetched, and a check whose outcome was uncertain is not
      * re-sent for an hour. A per-person lock stops two tabs paying twice.
      *
-     * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
+     * @param  array{full_name: string, first_name: ?string, middle_name: ?string, last_name: ?string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
      */
     private function live(CreditScoreProvider $provider, BureauName $bureau, int $reuseDays, array $data, string $mobileNumber, ?string $ipAddress): CreditScoreCheck
     {
@@ -89,6 +93,7 @@ class SubmitCreditScoreCheck
                             'reused_from' => $reusable->public_id,
                             'source_bureau' => $reusable->raw_response['source_bureau'] ?? null,
                         ]),
+                        'report_insights' => $reusable->report_insights,
                         'completed_at' => now(),
                     ]);
                 }
@@ -108,7 +113,7 @@ class SubmitCreditScoreCheck
     }
 
     /**
-     * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
+     * @param  array{full_name: string, first_name: ?string, middle_name: ?string, last_name: ?string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
      */
     private function run(CreditScoreProvider $provider, array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress): CreditScoreCheck
     {
@@ -123,6 +128,7 @@ class SubmitCreditScoreCheck
             'status' => $result->status,
             'score' => $result->score,
             'raw_response' => $result->rawResponse,
+            'report_insights' => $this->reportInsights($result->insights),
             'completed_at' => now(),
         ])->save();
 
@@ -130,7 +136,19 @@ class SubmitCreditScoreCheck
     }
 
     /**
-     * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
+     * Null when the answer held no report to read (the score-only endpoint,
+     * a demo score) rather than a row of nulls.
+     *
+     * @param  array<string, int|null>|null  $insights
+     * @return array<string, int|null>|null
+     */
+    private function reportInsights(?array $insights): ?array
+    {
+        return $insights !== null && array_filter($insights, fn (?int $value) => $value !== null) !== [] ? $insights : null;
+    }
+
+    /**
+     * @param  array{full_name: string, first_name: ?string, middle_name: ?string, last_name: ?string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
      * @param  array<string, mixed>  $outcome
      */
     private function record(array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress, array $outcome): CreditScoreCheck
@@ -139,10 +157,10 @@ class SubmitCreditScoreCheck
             'bureau' => $bureau,
             'mobile_number' => $mobileNumber,
             'mobile_verified_at' => now(),
-            'full_name' => Str::squish("{$data['first_name']} {$data['middle_name']} {$data['last_name']}"),
-            'first_name' => $data['first_name'],
+            'full_name' => Str::squish($data['full_name']),
+            'first_name' => $data['first_name'] ?: null,
             'middle_name' => $data['middle_name'] ?: null,
-            'last_name' => $data['last_name'],
+            'last_name' => $data['last_name'] ?: null,
             'date_of_birth' => $data['date_of_birth'],
             'gender' => $data['gender'] ?? null,
             'pan_number' => $data['pan_number'],

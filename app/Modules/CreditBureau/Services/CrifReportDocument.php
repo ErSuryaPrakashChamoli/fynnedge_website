@@ -266,10 +266,7 @@ final class CrifReportDocument
      */
     public function accounts(): array
     {
-        $responses = $this->node($this->report(), 'RESPONSES');
-
-        return collect($this->items($responses['RESPONSE'] ?? null))
-            ->map(fn (array $response) => is_array($response['LOAN-DETAILS'] ?? null) ? $response['LOAN-DETAILS'] : $response)
+        return collect($this->loans())
             ->map(function (array $loan): array {
                 $fields = [];
                 $consumed = ['COMBINED-PAYMENT-HISTORY'];
@@ -459,6 +456,124 @@ final class CrifReportDocument
         $decoded = base64_decode(preg_replace('/\s+/', '', $printable) ?? '', true);
 
         return is_string($decoded) && str_starts_with($decoded, '%PDF') ? $decoded : null;
+    }
+
+    /**
+     * The headline figures behind the score, for the public result page's
+     * report highlights and advice: counts and rupee totals only — no lender,
+     * account number or identity data. CRIF's own totals (ACCOUNTS-SUMMARY)
+     * come first; the rest are counted from the account rows. Each is null
+     * when the report does not say.
+     *
+     * @return array{accounts_total: ?int, accounts_active: ?int, accounts_overdue: ?int, overdue_amount: ?int, accounts_written_off: ?int, late_payments_last_12_months: ?int, card_limit: ?int, card_balance: ?int, enquiries_last_6_months: ?int, credit_age_months: ?int, outstanding_balance: ?int}
+     */
+    public function insights(): array
+    {
+        $summary = $this->node($this->report(), 'ACCOUNTS-SUMMARY');
+        $primary = $this->node($summary, 'PRIMARY-ACCOUNTS-SUMMARY');
+        $derived = $this->node($summary, 'DERIVED-ATTRIBUTES');
+        $asOf = $this->issuedOn() ?? $this->requestedOn() ?? CarbonImmutable::now();
+        $loans = $this->loans();
+        $open = array_values(array_filter($loans, fn (array $loan) => ! $this->isClosed($loan)));
+        $cards = array_values(array_filter($open, fn (array $loan) => str_contains(strtolower((string) $this->text($loan['ACCT-TYPE'] ?? $loan['ACCOUNT-TYPE'] ?? null)), 'credit card')));
+        $histories = collect($loans)->map(fn (array $loan) => $this->paymentHistory($loan['COMBINED-PAYMENT-HISTORY'] ?? null))->reject(fn (array $history) => $history === []);
+        $since = $asOf->startOfMonth()->subMonths(11);
+        $inquiryDates = collect($this->inquiries())->map(fn (array $inquiry) => $this->date($inquiry['fields']['Inquiry date']))->filter();
+        $openedDates = collect($loans)->map(fn (array $loan) => $this->date($this->text($loan['DISBURSED-DT'] ?? null)))->filter();
+        $historyYears = $this->whole($derived['LENGTH-OF-CREDIT-HISTORY-YEAR'] ?? null);
+        $historyMonths = $this->whole($derived['LENGTH-OF-CREDIT-HISTORY-MONTH'] ?? null);
+
+        return [
+            'accounts_total' => $this->whole($primary['PRIMARY-NUMBER-OF-ACCOUNTS'] ?? null) ?? ($loans === [] ? null : count($loans)),
+            'accounts_active' => $this->whole($primary['PRIMARY-ACTIVE-NUMBER-OF-ACCOUNTS'] ?? null) ?? ($loans === [] ? null : count($open)),
+            'accounts_overdue' => $this->whole($primary['PRIMARY-OVERDUE-NUMBER-OF-ACCOUNTS'] ?? null)
+                ?? ($loans === [] ? null : count(array_filter($loans, fn (array $loan) => ($this->whole($loan['OVERDUE-AMT'] ?? null) ?? 0) > 0))),
+            'overdue_amount' => $this->total($loans, ['OVERDUE-AMT']),
+            'accounts_written_off' => $loans === [] ? null : count(array_filter($loans, fn (array $loan) => $this->isWrittenOff($loan))),
+            'late_payments_last_12_months' => $histories->isEmpty() ? null : $histories->flatten(1)
+                ->filter(fn (array $month) => $month['late'] && ($this->monthOf($month['month'])?->gte($since) ?? false))
+                ->count(),
+            'card_limit' => $this->total($cards, ['CREDIT-LIMIT', 'HIGH-CREDIT', 'SANCTIONED-AMT']),
+            'card_balance' => $this->total($cards, ['CURRENT-BAL']),
+            'enquiries_last_6_months' => $this->whole($derived['INQURIES-IN-LAST-SIX-MONTHS'] ?? $derived['INQUIRIES-IN-LAST-SIX-MONTHS'] ?? null)
+                ?? ($inquiryDates->isEmpty() ? null : $inquiryDates->filter(fn (CarbonImmutable $date) => $date->gte($asOf->subMonths(6)))->count()),
+            'credit_age_months' => $historyYears !== null || $historyMonths !== null
+                ? ($historyYears ?? 0) * 12 + ($historyMonths ?? 0)
+                : ($openedDates->isEmpty() ? null : (int) $openedDates->min()->diffInMonths($asOf)),
+            'outstanding_balance' => $this->whole($primary['PRIMARY-CURRENT-BALANCE'] ?? null) ?? $this->total($open, ['CURRENT-BAL']),
+        ];
+    }
+
+    /**
+     * Every account row (RESPONSES → RESPONSE → LOAN-DETAILS), as sent.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function loans(): array
+    {
+        $responses = $this->node($this->report(), 'RESPONSES');
+
+        return collect($this->items($responses['RESPONSE'] ?? null))
+            ->map(fn (array $response) => is_array($response['LOAN-DETAILS'] ?? null) ? $response['LOAN-DETAILS'] : $response)
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param  array<string, mixed>  $loan
+     */
+    private function isClosed(array $loan): bool
+    {
+        return str_contains(strtolower((string) $this->text($loan['ACCOUNT-STATUS'] ?? null)), 'closed')
+            || $this->text($loan['CLOSED-DATE'] ?? null) !== null;
+    }
+
+    /**
+     * Written off, settled or taken to court — the marks lenders read as a default.
+     *
+     * @param  array<string, mixed>  $loan
+     */
+    private function isWrittenOff(array $loan): bool
+    {
+        $status = strtolower(($this->text($loan['ACCOUNT-STATUS'] ?? null) ?? '').' '.($this->text($loan['ACCOUNT-REMARKS'] ?? null) ?? ''));
+
+        return preg_match('/written|write-off|settled|suit|wilful|willful/', $status) === 1
+            || collect(['WRITE-OFF-AMT', 'PRINCIPAL-WRITE-OFF-AMT', 'SETTLEMENT-AMT'])->contains(fn (string $key) => ($this->whole($loan[$key] ?? null) ?? 0) > 0);
+    }
+
+    /**
+     * The sum of the first of $keys each row carries; null when no row carries any.
+     *
+     * @param  list<array<string, mixed>>  $rows
+     * @param  list<string>  $keys
+     */
+    private function total(array $rows, array $keys): ?int
+    {
+        $amounts = collect($rows)
+            ->map(fn (array $row) => collect($keys)->map(fn (string $key) => $this->whole($row[$key] ?? null))->first(fn (?int $amount) => $amount !== null))
+            ->reject(fn (?int $amount) => $amount === null);
+
+        return $amounts->isEmpty() ? null : (int) $amounts->sum();
+    }
+
+    /** "2,68,889" → 268889, "4,554/Monthly" → 4554; null for anything that is not a number. */
+    private function whole(mixed $value): ?int
+    {
+        $amount = $this->amount($this->text($value));
+
+        return $amount === null ? null : (int) round($amount);
+    }
+
+    /** A payment-history month ("Sep:2026") as its first day. */
+    private function monthOf(string $month): ?CarbonImmutable
+    {
+        try {
+            $date = CarbonImmutable::createFromFormat('!M:Y', $month);
+
+            return $date === false ? null : $date;
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     /**

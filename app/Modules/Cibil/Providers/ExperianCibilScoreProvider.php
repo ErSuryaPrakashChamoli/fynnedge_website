@@ -38,6 +38,7 @@ class ExperianCibilScoreProvider implements CreditScoreProvider
             reference: $result->reference,
             rawResponse: [...($result->rawResponse ?? []), 'source_bureau' => self::SOURCE_BUREAU],
             failureReason: $result->failureReason,
+            insights: $result->insights,
         );
     }
 }

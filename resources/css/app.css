@@ -45,6 +45,12 @@
     --color-champagne-soft: #faf1df;
     --color-champagne-shine: rgb(255 255 255 / 0.75);
 
+    /* The credit score meter's four bands (x-site.credit-score-meter), poor to excellent. */
+    --color-score-poor: #c2412d;
+    --color-score-average: #b26b00;
+    --color-score-good: #4f8a1c;
+    --color-score-excellent: #1f7a4d;
+
     --animate-marquee: marquee 80s linear infinite;
     --animate-marquee-reverse: marquee-reverse 40s linear infinite;
     --animate-card-swing: card-swing 0.4s ease-in-out;
@@ -115,6 +121,10 @@
         --color-champagne-strong: #f3dfb4;
         --color-champagne-soft: #2b2214;
         --color-champagne-shine: rgb(255 236 200 / 0.22);
+        --color-score-poor: #f08d7e;
+        --color-score-average: #e8ad5a;
+        --color-score-good: #a8d46f;
+        --color-score-excellent: #6ecb9a;
     }
 }
 
@@ -138,6 +148,10 @@
     --color-champagne-strong: #f3dfb4;
     --color-champagne-soft: #2b2214;
     --color-champagne-shine: rgb(255 236 200 / 0.22);
+    --color-score-poor: #f08d7e;
+    --color-score-average: #e8ad5a;
+    --color-score-good: #a8d46f;
+    --color-score-excellent: #6ecb9a;
 }
 
 body {
@@ -742,6 +756,103 @@ footer {
 
     .promo-bar-medallion::after {
         animation: none;
+    }
+}
+
+/*
+ * The credit score meter (x-site.credit-score-meter) and the "fetching your
+ * report" panel of the credit-score check. While a score is fetched the knob
+ * and its arc sweep back and forth across the dial, and each stage lights up
+ * in turn (--stage-start per row), then shows a tick when the next begins.
+ * The panel is shown by wire:loading, and going from display:none to visible
+ * restarts every animation, so each check starts from the first stage. With
+ * reduced motion the dial holds still and the stages simply list.
+ */
+.score-meter-sweep {
+    transform-box: view-box;
+    transform-origin: 120px 120px;
+    animation: score-meter-sweep 2.4s ease-in-out infinite;
+}
+
+.score-meter-sweep-arc {
+    animation: score-meter-sweep-arc 2.4s ease-in-out infinite;
+}
+
+.score-fetch-stage {
+    opacity: 0.35;
+    animation: score-fetch-on 0.35s ease-out var(--stage-start, 0s) forwards;
+}
+
+.score-fetch-spinner {
+    opacity: 0;
+    animation:
+        score-meter-spin 0.8s linear infinite,
+        score-fetch-on 0.01s linear var(--stage-start, 0s) forwards,
+        score-fetch-off 0.01s linear calc(var(--stage-start, 0s) + 1.4s) forwards;
+}
+
+.score-fetch-stage:last-child .score-fetch-spinner {
+    animation:
+        score-meter-spin 0.8s linear infinite,
+        score-fetch-on 0.01s linear var(--stage-start, 0s) forwards;
+}
+
+.score-fetch-check {
+    opacity: 0;
+    animation: score-fetch-on 0.25s ease-out calc(var(--stage-start, 0s) + 1.4s) forwards;
+}
+
+.score-fetch-stage:last-child .score-fetch-check {
+    animation: none;
+}
+
+@keyframes score-meter-sweep {
+    0%, 100% {
+        transform: rotate(18deg);
+    }
+    50% {
+        transform: rotate(162deg);
+    }
+}
+
+@keyframes score-meter-sweep-arc {
+    0%, 100% {
+        stroke-dashoffset: 90;
+    }
+    50% {
+        stroke-dashoffset: 10;
+    }
+}
+
+@keyframes score-meter-spin {
+    to {
+        rotate: 360deg;
+    }
+}
+
+@keyframes score-fetch-on {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes score-fetch-off {
+    to {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .score-meter-sweep,
+    .score-meter-sweep-arc,
+    .score-fetch-spinner,
+    .score-fetch-check {
+        animation: none;
+    }
+
+    .score-fetch-stage {
+        animation: none;
+        opacity: 1;
     }
 }
 

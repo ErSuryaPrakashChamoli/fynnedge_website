@@ -1,0 +1,18 @@
+{
+    "data": {
+        "client_id": "credit_report_cibil_pdf_TESTFIXTURE0001",
+        "name": "TEST FIXTURE",
+        "mobile": "9000000001",
+        "pan": "AAAPZ9999Z",
+        "gender": "male",
+        "user_email": null,
+        "credit_score": "750",
+        "credit_report": null,
+        "credit_report_link": "https://files.surepass.test/cibil/TESTFIXTURE0001.pdf",
+        "credit_report_base64": null
+    },
+    "status_code": 200,
+    "success": true,
+    "message": "Success",
+    "message_code": "success"
+}

@@ -110,3 +110,44 @@ it('finds the report under a wrapper or inside a list', function (array $creditR
     'B2C wrapper' => [['B2C-REPORT' => ['HEADER' => ['REPORT-ID' => 'WRAPPED-1']]]],
     'list of reports' => [[['HEADER' => ['REPORT-ID' => 'WRAPPED-1']]]],
 ]);
+
+it('reads the headline figures behind the score from the summary and account rows', function () {
+    expect((new CrifReportDocument(crifReportFixture()))->insights())->toBe([
+        'accounts_total' => 3,
+        'accounts_active' => 2,
+        'accounts_overdue' => 1,
+        'overdue_amount' => 9108,
+        'accounts_written_off' => 0,
+        'late_payments_last_12_months' => 1,
+        'card_limit' => null,
+        'card_balance' => null,
+        'enquiries_last_6_months' => 2,
+        'credit_age_months' => 76,
+        'outstanding_balance' => 268889,
+    ]);
+});
+
+it('counts the headline figures from the accounts when the summary is missing', function () {
+    $document = new CrifReportDocument(['data' => ['credit_report' => [
+        'HEADER' => ['DATE-OF-ISSUE' => '15-10-2026'],
+        'RESPONSES' => ['RESPONSE' => [
+            ['LOAN-DETAILS' => ['ACCT-TYPE' => 'Credit Card', 'ACCOUNT-STATUS' => 'Active', 'CREDIT-LIMIT' => '2,00,000', 'CURRENT-BAL' => '1,30,000', 'DISBURSED-DT' => '10-04-2025', 'COMBINED-PAYMENT-HISTORY' => 'Oct:2026,000/STD|Sep:2025,060/SUB|']],
+            ['LOAN-DETAILS' => ['ACCT-TYPE' => 'Personal Loan', 'ACCOUNT-STATUS' => 'Settled', 'SETTLEMENT-AMT' => '50,000', 'OVERDUE-AMT' => '0', 'DISBURSED-DT' => '01-01-2024', 'CLOSED-DATE' => '01-03-2026']],
+        ]],
+        'INQUIRY-HISTORY' => ['HISTORY' => [['INQUIRY-DATE' => '01-09-2026'], ['INQUIRY-DATE' => '01-01-2026']]],
+    ]]]);
+
+    expect($document->insights())->toBe([
+        'accounts_total' => 2,
+        'accounts_active' => 1,
+        'accounts_overdue' => 0,
+        'overdue_amount' => 0,
+        'accounts_written_off' => 1,
+        'late_payments_last_12_months' => 0,
+        'card_limit' => 200000,
+        'card_balance' => 130000,
+        'enquiries_last_6_months' => 1,
+        'credit_age_months' => 33,
+        'outstanding_balance' => 130000,
+    ]);
+});

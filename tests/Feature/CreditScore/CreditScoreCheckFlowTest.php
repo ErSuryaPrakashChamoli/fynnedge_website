@@ -25,8 +25,7 @@ it('walks through mobile, OTP, details and result end to end', function () {
         ->call('verifyOtp')
         ->assertSet('step', 'details')
         ->assertHasNoErrors('otpCode')
-        ->set('firstName', 'Jane')
-        ->set('lastName', 'Doe')
+        ->set('fullName', 'Jane Doe')
         ->set('dateOfBirth', '1990-01-01')
         ->set('panNumber', 'abcde1234f')
         ->set('consent', true)
@@ -39,6 +38,7 @@ it('walks through mobile, OTP, details and result end to end', function () {
     expect($check->mobile_number)->toBe('9876543210');
     expect($check->pan_number)->toBe('ABCDE1234F'); // uppercased server-side
     expect($check->full_name)->toBe('Jane Doe');
+    expect($check->first_name)->toBeNull();
     expect($check->bureau->value)->toBe('cibil');
     expect($check->status)->toBe(CreditCheckStatus::Completed);
     expect($check->score)->toBe($component->get('resultScore'));
@@ -47,7 +47,7 @@ it('walks through mobile, OTP, details and result end to end', function () {
         ->consumed_at->not->toBeNull();
 });
 
-it('saves the name as per PAN with each word capitalised, however it was typed', function (string $first, string $middle, string $last, string $saved) {
+it('saves the name as per PAN with each word capitalised, however it was typed', function (string $typed, string $saved) {
     fakeAreachSms();
     $component = Livewire::test('credit-score-check', ['bureau' => 'experian'])
         ->set('mobileNumber', '9876543210')
@@ -55,9 +55,7 @@ it('saves the name as per PAN with each word capitalised, however it was typed',
 
     $component->set('otpCode', lastTextedOtp())
         ->call('verifyOtp')
-        ->set('firstName', $first)
-        ->set('middleName', $middle)
-        ->set('lastName', $last)
+        ->set('fullName', $typed)
         ->set('dateOfBirth', '1990-01-01')
         ->set('panNumber', 'ABCDE1234F')
         ->set('consent', true)
@@ -66,10 +64,10 @@ it('saves the name as per PAN with each word capitalised, however it was typed',
 
     expect(CreditScoreCheck::query()->sole()->full_name)->toBe($saved);
 })->with([
-    'all capitals' => ['SURYA', 'PRAKASH', 'CHAMOLI', 'Surya Prakash Chamoli'],
-    'all small' => ['surya', 'prakash', 'chamoli', 'Surya Prakash Chamoli'],
-    'mixed case with stray spaces, no middle name' => ['  sURYA ', '', ' sEN   gUPTA', 'Surya Sen Gupta'],
-    'initials and joined names' => ['s.p.', '', "d'souza-RAO", "S.P. D'Souza-Rao"],
+    'all capitals' => ['SURYA PRAKASH CHAMOLI', 'Surya Prakash Chamoli'],
+    'all small' => ['surya prakash chamoli', 'Surya Prakash Chamoli'],
+    'mixed case with stray spaces' => ['  sURYA   sEN   gUPTA ', 'Surya Sen Gupta'],
+    'initials and joined names' => ["s.p. d'souza-RAO", "S.P. D'Souza-Rao"],
 ]);
 
 it('does not let an unverified OTP reach the details step', function () {
@@ -92,8 +90,7 @@ it('rejects an invalid PAN format', function () {
 
     $component->set('otpCode', lastTextedOtp())
         ->call('verifyOtp')
-        ->set('firstName', 'Jane')
-        ->set('lastName', 'Doe')
+        ->set('fullName', 'Jane Doe')
         ->set('dateOfBirth', '1990-01-01')
         ->set('panNumber', 'not-a-pan')
         ->set('consent', true)
@@ -110,8 +107,7 @@ it('requires consent before submitting', function () {
 
     $component->set('otpCode', lastTextedOtp())
         ->call('verifyOtp')
-        ->set('firstName', 'Jane')
-        ->set('lastName', 'Doe')
+        ->set('fullName', 'Jane Doe')
         ->set('dateOfBirth', '1990-01-01')
         ->set('panNumber', 'ABCDE1234F')
         ->set('consent', false)
@@ -155,8 +151,7 @@ it('runs the check for the verified number even if the input is changed afterwar
     $component->set('otpCode', lastTextedOtp())
         ->call('verifyOtp')
         ->set('mobileNumber', '9123456780')
-        ->set('firstName', 'Jane')
-        ->set('lastName', 'Doe')
+        ->set('fullName', 'Jane Doe')
         ->set('dateOfBirth', '1990-01-01')
         ->set('panNumber', 'ABCDE1234F')
         ->set('consent', true)
@@ -174,8 +169,7 @@ it('sends the visitor back to verify once the verification has gone stale', func
     $component->set('otpCode', lastTextedOtp())->call('verifyOtp');
     $this->travel(31)->minutes();
 
-    $component->set('firstName', 'Jane')
-        ->set('lastName', 'Doe')
+    $component->set('fullName', 'Jane Doe')
         ->set('dateOfBirth', '1990-01-01')
         ->set('panNumber', 'ABCDE1234F')
         ->set('consent', true)
@@ -184,4 +178,79 @@ it('sends the visitor back to verify once the verification has gone stale', func
         ->assertHasErrors('mobileNumber');
 
     expect(CreditScoreCheck::query()->count())->toBe(0);
+});
+
+it('asks for one full name on the pages whose bureau API takes a single name', function (string $bureau) {
+    fakeAreachSms();
+
+    Livewire::test('credit-score-check', ['bureau' => $bureau])
+        ->set('mobileNumber', '9876543210')
+        ->call('sendOtp')
+        ->set('otpCode', lastTextedOtp())
+        ->call('verifyOtp')
+        ->assertSee('Full name (as per PAN)')
+        ->assertDontSee(['First name', 'Last name']);
+})->with(['cibil', 'experian', 'equifax']);
+
+it('asks for first, middle and last name apart on the CRIF page', function () {
+    fakeAreachSms();
+
+    Livewire::test('credit-score-check', ['bureau' => 'crif'])
+        ->set('mobileNumber', '9876543210')
+        ->call('sendOtp')
+        ->set('otpCode', lastTextedOtp())
+        ->call('verifyOtp')
+        ->assertSee(['First name', 'Middle name', 'Last name'])
+        ->assertDontSee('Full name (as per PAN)');
+});
+
+it('requires the full name before running a check', function () {
+    fakeAreachSms();
+    $component = Livewire::test('credit-score-check', ['bureau' => 'experian'])
+        ->set('mobileNumber', '9876543210')
+        ->call('sendOtp');
+
+    $component->set('otpCode', lastTextedOtp())
+        ->call('verifyOtp')
+        ->set('fullName', '   ')
+        ->set('dateOfBirth', '1990-01-01')
+        ->set('panNumber', 'ABCDE1234F')
+        ->set('consent', true)
+        ->call('submitDetails')
+        ->assertHasErrors(['fullName' => 'required'])
+        ->assertSet('step', 'details');
+
+    expect(CreditScoreCheck::query()->count())->toBe(0);
+});
+
+it('shows the fetching panel and its meter while the details are being checked', function () {
+    fakeAreachSms();
+
+    Livewire::test('credit-score-check', ['bureau' => 'experian'])
+        ->set('mobileNumber', '9876543210')
+        ->call('sendOtp')
+        ->set('otpCode', lastTextedOtp())
+        ->call('verifyOtp')
+        ->assertSeeHtml('wire:target="submitDetails"')
+        ->assertSee(['Fetching your Experian score', 'Fetching your credit report', 'Preparing your score']);
+});
+
+it('shows a demo score on the dial with the band\'s pointers but no report factors', function () {
+    fakeAreachSms();
+    $component = Livewire::test('credit-score-check', ['bureau' => 'cibil'])
+        ->set('mobileNumber', '9876543210')
+        ->call('sendOtp');
+
+    $component->set('otpCode', lastTextedOtp())
+        ->call('verifyOtp')
+        ->set('fullName', 'Jane Doe')
+        ->set('dateOfBirth', '1990-01-01')
+        ->set('panNumber', 'ABCDE1234F')
+        ->set('consent', true)
+        ->call('submitDetails')
+        ->assertSet('resultKind', 'demo')
+        ->assertSee(['Demo score', 'Score ranges', 'Pointers for your score range'])
+        ->assertDontSee('What is shaping your score');
+
+    expect($component->get('resultInsights'))->toBeNull();
 });

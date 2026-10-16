@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\JourneySessions;
 
+use App\Filament\RelationManagers\CibilRequestsRelationManager;
 use App\Filament\RelationManagers\CrifReportsRelationManager;
 use App\Filament\RelationManagers\EquifaxRequestsRelationManager;
 use App\Filament\RelationManagers\ExperianRequestsRelationManager;
@@ -47,6 +48,7 @@ class JourneySessionResource extends Resource
             CrifReportsRelationManager::class,
             EquifaxRequestsRelationManager::class,
             ExperianRequestsRelationManager::class,
+            CibilRequestsRelationManager::class,
         ];
     }
 

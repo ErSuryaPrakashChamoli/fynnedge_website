@@ -37,6 +37,7 @@
         <env name="SUREPASS_EQUIFAX_BASE_URL" value=""/>
         <env name="SUREPASS_EXPERIAN_TOKEN" value=""/>
         <env name="SUREPASS_EXPERIAN_BASE_URL" value=""/>
+        <env name="SUREPASS_CIBIL_TOKEN" value=""/>
         <env name="MOBILE_OTP_LIVE_TEST_ENABLED" value="false"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>

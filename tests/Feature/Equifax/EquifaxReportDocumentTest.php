@@ -88,3 +88,49 @@ it('copes with a sparse or differently wrapped response without inventing values
         ->and($document->summary()['total_balance'])->toBeNull()
         ->and($document->pdfLink())->toBe('https://files.example.test/report.pdf');
 });
+
+it('reads the headline figures behind the score from the summary and account rows', function () {
+    expect((new EquifaxReportDocument(equifaxReportFixture()))->insights())->toBe([
+        'accounts_total' => 2,
+        'accounts_active' => 1,
+        'accounts_overdue' => 1,
+        'overdue_amount' => 9108,
+        'accounts_written_off' => 0,
+        'late_payments_last_12_months' => 1,
+        'card_limit' => null,
+        'card_balance' => null,
+        'enquiries_last_6_months' => 2,
+        'credit_age_months' => 35,
+        'outstanding_balance' => 268889,
+    ]);
+});
+
+it('counts the headline figures from the accounts when the summary is missing', function () {
+    $document = new EquifaxReportDocument(['data' => ['credit_report' => [[
+        'InquiryResponseHeader' => ['Date' => '2026-10-16'],
+        'CCRResponse' => ['CIRReportDataLst' => [['CIRReportData' => [
+            'RetailAccountDetails' => [
+                ['AccountType' => 'Credit Card', 'Open' => 'Yes', 'CreditLimit' => '50000', 'Balance' => '40000', 'PastDueAmount' => '2000', 'DateOpened' => '2025-06-01', 'History48Months' => [
+                    ['key' => '09-26', 'PaymentStatus' => '000', 'AssetClassificationStatus' => 'SMA'],
+                    ['key' => '10-25', 'PaymentStatus' => '060'],
+                ]],
+                ['AccountType' => 'Personal Loan', 'Open' => 'No', 'AccountStatus' => 'Written-off', 'WriteOffAmount' => '15000', 'DateOpened' => '2022-02-10'],
+            ],
+            'EnquirySummary' => ['Total' => '0'],
+        ]]]],
+    ]]]]);
+
+    expect($document->insights())->toBe([
+        'accounts_total' => 2,
+        'accounts_active' => 1,
+        'accounts_overdue' => 1,
+        'overdue_amount' => 2000,
+        'accounts_written_off' => 1,
+        'late_payments_last_12_months' => 1,
+        'card_limit' => 50000,
+        'card_balance' => 40000,
+        'enquiries_last_6_months' => 0,
+        'credit_age_months' => 56,
+        'outstanding_balance' => 40000,
+    ]);
+});

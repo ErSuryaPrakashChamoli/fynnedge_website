@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Customers\Pages;
 
+use App\Filament\Resources\CibilCreditRequests\CibilActions;
 use App\Filament\Resources\CrifReports\CrifReportActions;
 use App\Filament\Resources\Customers\CustomerResource;
 use App\Filament\Resources\EquifaxCreditRequests\EquifaxActions;
@@ -21,6 +22,7 @@ class EditCustomer extends EditRecord
             CrifReportActions::fetchFresh(),
             EquifaxActions::group(),
             ExperianActions::group(),
+            CibilActions::group(),
             DeleteAction::make(),
         ];
     }

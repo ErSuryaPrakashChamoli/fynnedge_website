@@ -654,6 +654,46 @@ document.addEventListener('alpine:init', () => {
         },
     }));
 
+    // The credit-score result dial (x-site.credit-score-meter): counts the score
+    // up from 300 while the knob and its arc travel to it. The server renders
+    // the final value, so with reduced motion it is simply left as it is.
+    window.Alpine.data('creditScoreMeter', (score, percent) => ({
+        shown: score,
+        percent,
+        frame: null,
+
+        init() {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                return;
+            }
+
+            const from = Math.min(300, score);
+            const duration = 1600;
+            const started = performance.now();
+
+            this.shown = from;
+            this.percent = 0;
+
+            const step = (now) => {
+                const progress = Math.min((now - started) / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+
+                this.shown = Math.round(from + (score - from) * eased);
+                this.percent = percent * eased;
+
+                if (progress < 1) {
+                    this.frame = requestAnimationFrame(step);
+                }
+            };
+
+            this.frame = requestAnimationFrame(step);
+        },
+
+        destroy() {
+            cancelAnimationFrame(this.frame);
+        },
+    }));
+
     window.Alpine.data('journeyStep', (initialValues, conditions, phoneVerification = {}) => ({
         ...otpResendTimer(),
 

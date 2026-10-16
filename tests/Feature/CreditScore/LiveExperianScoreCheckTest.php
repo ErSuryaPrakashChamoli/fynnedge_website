@@ -14,6 +14,7 @@ use App\Modules\Experian\Enums\ExperianRequestStatus;
 use App\Modules\Experian\Models\ExperianCreditRequest;
 use App\Modules\Experian\Services\ExperianSettings;
 use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
@@ -38,8 +39,7 @@ function checkExperianOnPage(string $mobile = '9000000001', string $bureau = 'ex
     return $component
         ->set('otpCode', lastTextedOtp())
         ->call('verifyOtp')
-        ->set('firstName', 'Test')
-        ->set('lastName', 'Fixture')
+        ->set('fullName', 'Test Fixture')
         ->set('dateOfBirth', '1990-01-01')
         ->set('panNumber', 'aaapz9999z')
         ->set('consent', true)
@@ -122,7 +122,8 @@ it('shows the same person their stored Experian score without paying again', fun
     checkExperianOnPage();
     $this->travel(2)->minutes();
 
-    checkExperianOnPage()->assertSet('resultKind', 'live')->assertSet('resultScore', 792);
+    checkExperianOnPage()->assertSet('resultKind', 'live')->assertSet('resultScore', 792)
+        ->assertSee(['What is shaping your score', 'Clear your overdue amount now']);
 
     expect(surepassExperianCalls())->toBe(1)
         ->and(ExperianCreditRequest::query()->count())->toBe(1);
@@ -151,4 +152,44 @@ it('keeps a labelled demo score when switched off, and CIBIL stays a demo', func
 
     expect(surepassExperianCalls())->toBe(0)
         ->and(CreditScoreCheck::query()->where('status', CreditCheckStatus::Completed)->count())->toBe(2);
+});
+
+it('explains a live score with its band, the report\'s factors and pointers drawn from the report', function () {
+    liveExperianScorePage();
+
+    checkExperianOnPage()->assertSee([
+        'Excellent',
+        'What is shaping your score',
+        'From your Experian report',
+        '45%',
+        'of your ₹1,00,000 card limit in use',
+        'How to keep your score excellent',
+        'Clear your overdue amount now',
+        '₹3,100 is overdue on your accounts',
+        'Never miss a due date',
+    ]);
+
+    expect(CreditScoreCheck::query()->sole()->report_insights)->toMatchArray([
+        'overdue_amount' => 3100,
+        'late_payments_last_12_months' => 1,
+        'card_limit' => 100000,
+        'card_balance' => 45210,
+    ]);
+});
+
+it('keeps the report\'s headline figures encrypted at rest', function () {
+    liveExperianScorePage();
+
+    checkExperianOnPage();
+
+    expect(DB::table('credit_score_checks')->value('report_insights'))->not->toContain('overdue_amount')->not->toContain('3100');
+});
+
+it('keeps no report figures when the score-only endpoint answers', function () {
+    liveExperianScorePage(Http::response(experianFixture('score')));
+    config(['services.surepass.experian_public_score_source' => 'score']);
+
+    checkExperianOnPage()->assertSet('resultKind', 'live')->assertDontSee('What is shaping your score');
+
+    expect(CreditScoreCheck::query()->sole()->report_insights)->toBeNull();
 });

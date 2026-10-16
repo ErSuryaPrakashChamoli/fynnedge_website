@@ -220,6 +220,7 @@ return [
         // Credit score check (Livewire)
         'mobileNumber' => 'मोबाइल नंबर',
         'otpCode' => 'ओटीपी',
+        'fullName' => 'पूरा नाम',
         'firstName' => 'पहला नाम',
         'middleName' => 'मध्य नाम',
         'lastName' => 'अंतिम नाम',

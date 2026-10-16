@@ -7,7 +7,9 @@ use App\Modules\CreditBureau\Services\CrifSettings;
 use App\Modules\CreditBureau\Services\PanName;
 use App\Modules\CreditScore\Actions\SubmitCreditScoreCheck;
 use App\Modules\CreditScore\Enums\BureauName;
+use App\Modules\CreditScore\Enums\ScoreBand;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
+use App\Modules\CreditScore\Services\CreditScoreAdvice;
 use App\Modules\Equifax\Enums\Gender;
 use App\Modules\Equifax\Services\EquifaxSettings;
 use App\Modules\Experian\Services\ExperianSettings;
@@ -20,6 +22,7 @@ use App\Modules\MobileOtp\Exceptions\MobileOtpThrottled;
 use App\Modules\MobileOtp\Models\MobileOtpChallenge;
 use App\Modules\MobileOtp\Services\MobileNumber;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
@@ -58,9 +61,16 @@ new class extends Component
     public int $resendAfterSeconds = 0;
 
     /**
-     * The name as on the PAN card, in three boxes: Surepass's CRIF API takes
-     * first_name and last_name apart (a middle name travels inside first_name),
-     * and splitting one box guessed wrong on two-word surnames like "Sen Gupta".
+     * The name as on the PAN card, asked the way the page's bureau API takes it
+     * (BureauName::takesSplitName()): one box for CIBIL, Experian and Equifax,
+     * whose APIs take a single `name`…
+     */
+    public string $fullName = '';
+
+    /**
+     * …and three boxes on the CRIF page: Surepass's CRIF API takes first_name
+     * and last_name apart (a middle name travels inside first_name), and
+     * splitting one box guessed wrong on two-word surnames like "Sen Gupta".
      */
     public string $firstName = '';
 
@@ -94,6 +104,16 @@ new class extends Component
     /** The error code behind a failed live check, for the visitor's message. */
     #[Locked]
     public ?string $resultError = null;
+
+    /**
+     * The headline figures of the live report behind the score (see
+     * CrifReportDocument::insights()), for the result's factors and advice.
+     * Null for a demo score or when no report was read.
+     *
+     * @var array<string, int|null>|null
+     */
+    #[Locked]
+    public ?array $resultInsights = null;
 
     /**
      * Accepts a plain string (from the `:bureau="$bureau->value"` the controller
@@ -139,7 +159,7 @@ new class extends Component
     #[Computed]
     public function standInSource(): ?string
     {
-        return $this->bureau === BureauName::Cibil->value && $this->isLive ? CibilSettings::sourceLabel() : null;
+        return $this->bureau === BureauName::Cibil->value && $this->isLive && CibilSettings::isStandIn() ? CibilSettings::sourceLabel() : null;
     }
 
     /** The bureau named on a live result: the stand-in when there is one. */
@@ -150,9 +170,31 @@ new class extends Component
     }
 
     #[Computed]
+    public function takesSplitName(): bool
+    {
+        return BureauName::from($this->bureau)->takesSplitName();
+    }
+
+    /** The band, report factors and pointers shown with the result. */
+    #[Computed]
+    public function advice(): CreditScoreAdvice
+    {
+        $score = in_array($this->resultKind, ['live', 'demo'], true) ? $this->resultScore : null;
+
+        return new CreditScoreAdvice($score, $this->resultKind === 'live' ? $this->resultInsights : null, $this->scoreBureau);
+    }
+
+    /**
+     * Asked only where the live bureau requires it: Equifax, and CIBIL when the
+     * CIBIL bureau itself (not the Experian stand-in) answers the page.
+     */
+    #[Computed]
     public function needsGender(): bool
     {
-        return $this->bureau === BureauName::Equifax->value && $this->isLive;
+        $requiresGender = $this->bureau === BureauName::Equifax->value
+            || ($this->bureau === BureauName::Cibil->value && ! CibilSettings::isStandIn());
+
+        return $requiresGender && $this->isLive;
     }
 
     /** Who a live score comes from, as the visitor knows it. */
@@ -245,7 +287,7 @@ new class extends Component
     /** "SURYA" → "Surya", "sen GUPTA" → "Sen Gupta", whichever case each name was typed in. */
     public function updated(string $property, mixed $value): void
     {
-        if (in_array($property, ['firstName', 'middleName', 'lastName'], true)) {
+        if (in_array($property, ['fullName', 'firstName', 'middleName', 'lastName'], true)) {
             $this->{$property} = PanName::normalize($value);
         }
     }
@@ -263,16 +305,22 @@ new class extends Component
             return;
         }
 
+        $nameRules = $this->takesSplitName
+            ? [
+                'firstName' => ['required', 'string', 'max:100'],
+                'middleName' => ['nullable', 'string', 'max:100'],
+                'lastName' => ['required', 'string', 'max:100'],
+            ]
+            : ['fullName' => ['required', 'string', 'max:150']];
+
         $validated = $this->validate([
-            'firstName' => ['required', 'string', 'max:100'],
-            'middleName' => ['nullable', 'string', 'max:100'],
-            'lastName' => ['required', 'string', 'max:100'],
+            ...$nameRules,
             'dateOfBirth' => ['required', 'date', 'before:-18 years'],
             'panNumber' => ['required', 'regex:/^[A-Z]{5}[0-9]{4}[A-Z]$/'],
             'gender' => [$this->needsGender ? 'required' : 'nullable', Rule::enum(Gender::class)],
             'consent' => ['accepted'],
         ], [
-            'gender.required' => __('Please choose your gender — Equifax needs it to find your credit record.'),
+            'gender.required' => __('Please choose your gender — :bureau needs it to find your credit record.', ['bureau' => $this->bureauLabel]),
             'dateOfBirth.before' => __('You must be at least 18 years old.'),
             'panNumber.regex' => __('Enter a valid PAN (e.g. ABCDE1234F).'),
             'consent.accepted' => __('Please provide consent to continue.'),
@@ -289,11 +337,18 @@ new class extends Component
             return;
         }
 
+        $name = $this->takesSplitName
+            ? [
+                'full_name' => Str::squish(implode(' ', [$validated['firstName'], $validated['middleName'] ?? '', $validated['lastName']])),
+                'first_name' => $validated['firstName'],
+                'middle_name' => $validated['middleName'] ?? null,
+                'last_name' => $validated['lastName'],
+            ]
+            : ['full_name' => $validated['fullName'], 'first_name' => null, 'middle_name' => null, 'last_name' => null];
+
         $check = $action->handle(
             [
-                'first_name' => $validated['firstName'],
-                'middle_name' => $validated['middleName'] ?? '',
-                'last_name' => $validated['lastName'],
+                ...$name,
                 'date_of_birth' => $validated['dateOfBirth'],
                 'pan_number' => $validated['panNumber'],
                 'gender' => $this->needsGender ? $validated['gender'] : null,
@@ -304,6 +359,7 @@ new class extends Component
         );
 
         $this->resultScore = $check->score;
+        $this->resultInsights = $check->report_insights;
         $this->resultError = is_array($check->raw_response) ? ($check->raw_response['error'] ?? null) : null;
         $this->resultKind = match (true) {
             $check->provider !== 'surepass' => 'demo',
@@ -319,13 +375,13 @@ new class extends Component
     {
         $this->reset([
             'step', 'mobileNumber', 'otpCode', 'otpChallengeId', 'verifiedMobileNumber', 'resendAfterSeconds',
-            'firstName', 'middleName', 'lastName', 'gender', 'dateOfBirth', 'panNumber', 'consent', 'resultScore', 'resultKind', 'resultError',
+            'fullName', 'firstName', 'middleName', 'lastName', 'gender', 'dateOfBirth', 'panNumber', 'consent', 'resultScore', 'resultKind', 'resultError', 'resultInsights',
         ]);
     }
 };
 ?>
 
-<x-ui.card :padded="false" class="overflow-hidden">
+<x-ui.card :padded="false" class="relative overflow-hidden">
     @if ($step === 'mobile')
         <div class="flex items-center gap-2.5 bg-accent-soft px-6 py-3 text-sm text-accent-strong">
             <svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 shrink-0" aria-hidden="true"><path d="M10 2a6 6 0 0 0-6 6c0 4-2 5.5-2 5.5h16S16 12 16 8a6 6 0 0 0-6-6ZM8.5 16a1.5 1.5 0 0 0 3 0h-3Z" /></svg>
@@ -413,34 +469,54 @@ new class extends Component
             @elseif ($step === 'details')
                 <p class="font-display text-xl font-semibold text-ink">{{ __('A few last details') }}</p>
                 <div class="mt-4 flex flex-col gap-4">
-                    <fieldset>
-                        <legend class="text-sm font-medium text-ink">{{ __('Name (as per PAN)') }}</legend>
-                        <p class="mt-0.5 text-xs text-ink-muted">{{ __('Enter your name exactly as printed on your PAN card.') }}</p>
-                        <div class="mt-2 grid gap-3 sm:grid-cols-3">
-                            @foreach ([
-                                'firstName' => ['label' => __('First name'), 'autocomplete' => 'given-name', 'optional' => false],
-                                'middleName' => ['label' => __('Middle name'), 'autocomplete' => 'additional-name', 'optional' => true],
-                                'lastName' => ['label' => __('Last name'), 'autocomplete' => 'family-name', 'optional' => false],
-                            ] as $nameField => $nameMeta)
-                                <div wire:key="name-{{ $nameField }}">
-                                    <label for="{{ $nameField }}" class="text-xs font-medium text-ink-muted">
-                                        {{ $nameMeta['label'] }}
-                                        @if ($nameMeta['optional']) <span class="font-normal text-ink-faint">{{ __('(optional)') }}</span> @endif
-                                    </label>
-                                    <input
-                                        id="{{ $nameField }}"
-                                        type="text"
-                                        maxlength="100"
-                                        autocomplete="{{ $nameMeta['autocomplete'] }}"
-                                        wire:model="{{ $nameField }}"
-                                        x-on:input="formatPanNameInput($event)"
-                                        class="mt-1 w-full rounded-lg border border-line-strong bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
-                                    >
-                                    @error($nameField) <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
-                                </div>
-                            @endforeach
+                    @if ($this->takesSplitName)
+                        <fieldset wire:key="name-split">
+                            <legend class="text-sm font-medium text-ink">{{ __('Name (as per PAN)') }}</legend>
+                            <p class="mt-0.5 text-xs text-ink-muted">{{ __('Enter your name exactly as printed on your PAN card.') }}</p>
+                            <div class="mt-2 grid gap-3 sm:grid-cols-3">
+                                @foreach ([
+                                    'firstName' => ['label' => __('First name'), 'autocomplete' => 'given-name', 'optional' => false],
+                                    'middleName' => ['label' => __('Middle name'), 'autocomplete' => 'additional-name', 'optional' => true],
+                                    'lastName' => ['label' => __('Last name'), 'autocomplete' => 'family-name', 'optional' => false],
+                                ] as $nameField => $nameMeta)
+                                    <div wire:key="name-{{ $nameField }}">
+                                        <label for="{{ $nameField }}" class="text-xs font-medium text-ink-muted">
+                                            {{ $nameMeta['label'] }}
+                                            @if ($nameMeta['optional']) <span class="font-normal text-ink-faint">{{ __('(optional)') }}</span> @endif
+                                        </label>
+                                        <input
+                                            id="{{ $nameField }}"
+                                            type="text"
+                                            maxlength="100"
+                                            autocomplete="{{ $nameMeta['autocomplete'] }}"
+                                            wire:model="{{ $nameField }}"
+                                            x-on:input="formatPanNameInput($event)"
+                                            class="mt-1 w-full rounded-lg border border-line-strong bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+                                        >
+                                        @error($nameField) <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
+                                    </div>
+                                @endforeach
+                            </div>
+                        </fieldset>
+                    @else
+                        <div wire:key="name-full">
+                            <label for="fullName" class="text-sm font-medium text-ink">{{ __('Full name (as per PAN)') }}</label>
+                            <input
+                                id="fullName"
+                                type="text"
+                                maxlength="150"
+                                autocomplete="name"
+                                wire:model="fullName"
+                                x-on:input="formatPanNameInput($event)"
+                                class="mt-1.5 w-full rounded-lg border border-line-strong bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+                            >
+                            @error('fullName')
+                                <p class="mt-1 text-xs text-warn">{{ $message }}</p>
+                            @else
+                                <p class="mt-1.5 text-xs text-ink-faint">{{ __('Enter your name exactly as printed on your PAN card.') }}</p>
+                            @enderror
                         </div>
-                    </fieldset>
+                    @endif
                     <div
                         x-data="{ raw: isoToDateInputDigits(@js($dateOfBirth)) }"
                         x-init="$refs.dateOfBirthDisplay.value = formatDateInput(raw)"
@@ -487,7 +563,7 @@ new class extends Component
                             @error('gender')
                                 <p class="mt-1 text-xs text-warn">{{ $message }}</p>
                             @else
-                                <p class="mt-1.5 text-xs text-ink-faint">{{ __('Equifax needs this to find your credit record.') }}</p>
+                                <p class="mt-1.5 text-xs text-ink-faint">{{ __(':bureau needs this to find your credit record.', ['bureau' => $this->bureauLabel]) }}</p>
                             @enderror
                         </div>
                     @endif
@@ -520,53 +596,156 @@ new class extends Component
                     </x-ui.button>
                 </div>
             @else
-                <div class="flex flex-col items-center gap-5 py-2 text-center">
-                    @if ($resultKind === 'live')
-                        <x-ui.badge tone="pass">{{ __('Live score from :provider', ['provider' => $this->liveSource]) }}</x-ui.badge>
-                        <div>
-                            <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Your :bureau score', ['bureau' => $this->scoreBureau]) }}</p>
-                            <p class="mt-1 font-display text-5xl font-semibold text-accent">{{ $resultScore }}</p>
+                {{-- Brings the dial into view when the result lands below a scrolled-past form. --}}
+                <div class="flex scroll-mt-28 flex-col gap-6" x-data x-init="if ($el.getBoundingClientRect().top < 0) { $el.scrollIntoView({ behavior: 'smooth', block: 'start' }) }">
+                    @if (in_array($resultKind, ['live', 'demo'], true))
+                        <div class="flex flex-col items-center text-center">
+                            @if ($resultKind === 'live')
+                                <x-ui.badge tone="pass">
+                                    <span class="relative flex h-2 w-2" aria-hidden="true">
+                                        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-pass opacity-60 motion-reduce:animate-none"></span>
+                                        <span class="relative inline-flex h-2 w-2 rounded-full bg-pass"></span>
+                                    </span>
+                                    {{ __('Live score from :provider', ['provider' => $this->liveSource]) }}
+                                </x-ui.badge>
+                            @else
+                                <x-ui.badge tone="warn">{{ __('Demo score — not your real credit report') }}</x-ui.badge>
+                            @endif
+
+                            <p class="mt-4 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">
+                                {{ __('Your :bureau score', ['bureau' => $resultKind === 'live' ? $this->scoreBureau : $this->bureauLabel]) }}
+                            </p>
+                            <x-site.credit-score-meter :score="$resultScore" class="mt-3" />
+
+                            <p class="mt-4 max-w-sm text-sm text-ink-muted">{{ $this->advice->band()->verdict() }}</p>
+                            <p class="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-accent">
+                                @if ($this->advice->nextBandGap())
+                                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" class="h-3.5 w-3.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8 13V3m0 0L4 7m4-4 4 4" /></svg>
+                                    {{ $this->advice->nextBandGap() }}
+                                @else
+                                    <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5" aria-hidden="true"><path d="M10 1.8l2.5 5.1 5.6.8-4 3.9.9 5.6L10 14.6l-5 2.6.9-5.6-4-3.9 5.6-.8L10 1.8Z" /></svg>
+                                    {{ __('You are in the top score band') }}
+                                @endif
+                            </p>
                         </div>
-                        <p class="max-w-sm text-sm text-ink-muted">
-                            {{ __(':bureau scores range from 300 to 900 — the higher, the better your chances of a loan approval at a good rate. Checking your own score does not lower it.', ['bureau' => $this->scoreBureau]) }}
-                        </p>
-                        @if ($this->standInSource)
-                            <p class="max-w-sm text-xs text-ink-faint">
+
+                        <ol class="grid grid-cols-4 gap-1.5" aria-label="{{ __('Score ranges') }}">
+                            @foreach (ScoreBand::cases() as $legendBand)
+                                <li @class([
+                                    'rounded-lg px-1.5 py-2 text-center',
+                                    'bg-surface-2 ring-1 ring-line-strong' => $legendBand === $this->advice->band(),
+                                ])>
+                                    <span class="mx-auto block h-1.5 w-8 rounded-full" style="background: var(--color-score-{{ $legendBand->value }})"></span>
+                                    <span class="mt-1.5 block text-xs font-medium text-ink">{{ $legendBand->getLabel() }}</span>
+                                    <span class="block font-mono text-[0.62rem] text-ink-faint">{{ $legendBand->min() }}–{{ $legendBand->max() }}</span>
+                                </li>
+                            @endforeach
+                        </ol>
+
+                        @if ($resultKind === 'demo')
+                            <x-ui.alert tone="warn">
+                                {{ __('This is a sample score for demonstration purposes — :bureau isn\'t connected yet, so this figure isn\'t pulled from a real credit bureau and shouldn\'t be relied on.', ['bureau' => $this->bureauLabel]) }}
+                            </x-ui.alert>
+                        @elseif ($this->standInSource)
+                            <p class="text-center text-xs text-ink-faint">
                                 {{ __(':bureau isn\'t connected yet, so this is your score from :source, another RBI-licensed credit bureau. Scores can differ a little between bureaus.', ['bureau' => $this->bureauLabel, 'source' => $this->standInSource]) }}
                             </p>
                         @endif
+
+                        <x-site.credit-score-advice :advice="$this->advice" :bureau="$this->scoreBureau" class="border-t border-line pt-6" />
                     @elseif ($resultKind === 'no_score')
-                        <x-ui.badge tone="muted">{{ __('No score yet') }}</x-ui.badge>
-                        <p class="max-w-sm text-sm text-ink-muted">
-                            {{ __(':bureau found your record but has no score for you yet. This usually means there is not enough credit history — a score appears a few months after your first loan or credit card.', ['bureau' => $this->scoreBureau]) }}
-                        </p>
-                    @elseif ($resultKind === 'pending')
-                        <x-ui.badge tone="warn">{{ __('Still checking') }}</x-ui.badge>
-                        <p class="max-w-sm text-sm text-ink-muted">
-                            {{ __('We could not confirm your score with :bureau just now. Please try again in an hour.', ['bureau' => $this->scoreBureau]) }}
-                        </p>
-                    @elseif ($resultKind === 'failed')
-                        <x-ui.badge tone="warn">{{ __('Score not available') }}</x-ui.badge>
-                        <p class="max-w-sm text-sm text-ink-muted">
-                            @if (in_array($resultError, [CrifErrorCode::NoRecordFound->value, CrifErrorCode::InvalidRequest->value, CrifErrorCode::ProviderRejected->value], true))
-                                {{ __(':bureau could not find a credit record matching these details. Check that your name and PAN are exactly as on your PAN card, and that this mobile number is the one your bank or lender has.', ['bureau' => $this->scoreBureau]) }}
-                            @else
-                                {{ __('We could not fetch your :bureau score right now. Please try again a little later.', ['bureau' => $this->scoreBureau]) }}
-                            @endif
-                        </p>
-                    @else
-                        <x-ui.badge tone="warn">{{ __('Demo score — not your real credit report') }}</x-ui.badge>
-                        <div>
-                            <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Your :bureau score', ['bureau' => $this->bureauLabel]) }}</p>
-                            <p class="mt-1 font-display text-5xl font-semibold text-accent">{{ $resultScore }}</p>
+                        <div class="flex flex-col items-center text-center">
+                            <x-ui.badge tone="muted">{{ __('No score yet') }}</x-ui.badge>
+                            <x-site.credit-score-meter class="mt-4" />
+                            <p class="mt-4 max-w-sm text-sm text-ink-muted">
+                                {{ __(':bureau found your record but has no score for you yet. This usually means there is not enough credit history — a score appears a few months after your first loan or credit card.', ['bureau' => $this->scoreBureau]) }}
+                            </p>
                         </div>
-                        <p class="max-w-sm text-sm text-ink-muted">
-                            {{ __('This is a sample score for demonstration purposes — :bureau isn\'t connected yet, so this figure isn\'t pulled from a real credit bureau and shouldn\'t be relied on.', ['bureau' => $this->bureauLabel]) }}
+
+                        <x-site.credit-score-advice :advice="$this->advice" :bureau="$this->scoreBureau" class="border-t border-line pt-6" />
+                    @else
+                        <div class="flex flex-col items-center gap-4 py-4 text-center">
+                            <span class="flex h-14 w-14 items-center justify-center rounded-full bg-warn-soft text-warn" aria-hidden="true">
+                                @if ($resultKind === 'pending')
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-7 w-7"><circle cx="12" cy="12" r="8.5" /><path stroke-linecap="round" d="M12 7.5V12l3 2" /></svg>
+                                @else
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-7 w-7"><path stroke-linejoin="round" d="M10.3 4.3 2.9 17.2A2 2 0 0 0 4.6 20h14.8a2 2 0 0 0 1.7-2.8L13.7 4.3a2 2 0 0 0-3.4 0Z" /><path stroke-linecap="round" d="M12 9.5v4M12 16.5v.01" /></svg>
+                                @endif
+                            </span>
+                            @if ($resultKind === 'pending')
+                                <x-ui.badge tone="warn">{{ __('Still checking') }}</x-ui.badge>
+                                <p class="max-w-sm text-sm text-ink-muted">
+                                    {{ __('We could not confirm your score with :bureau just now. Please try again in an hour.', ['bureau' => $this->scoreBureau]) }}
+                                </p>
+                            @else
+                                <x-ui.badge tone="warn">{{ __('Score not available') }}</x-ui.badge>
+                                <p class="max-w-sm text-sm text-ink-muted">
+                                    @if (in_array($resultError, [CrifErrorCode::NoRecordFound->value, CrifErrorCode::InvalidRequest->value, CrifErrorCode::ProviderRejected->value], true))
+                                        {{ __(':bureau could not find a credit record matching these details. Check that your name and PAN are exactly as on your PAN card, and that this mobile number is the one your bank or lender has.', ['bureau' => $this->scoreBureau]) }}
+                                    @else
+                                        {{ __('We could not fetch your :bureau score right now. Please try again a little later.', ['bureau' => $this->scoreBureau]) }}
+                                    @endif
+                                </p>
+                            @endif
+                        </div>
+                    @endif
+
+                    <div class="flex flex-col gap-2.5 border-t border-line pt-5 sm:flex-row sm:justify-center">
+                        @if (in_array($resultKind, ['live', 'demo'], true))
+                            <x-ui.button tag="a" href="{{ route('eligibility.index') }}" class="justify-center">
+                                {{ __('Check Eligibility') }}
+                                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8h10m0 0-4-4m4 4-4 4" /></svg>
+                            </x-ui.button>
+                        @endif
+                        <x-ui.button wire:click="restart" variant="secondary" class="justify-center">{{ __('Check another number') }}</x-ui.button>
+                    </div>
+
+                    @if ($resultKind === 'live')
+                        <p class="-mt-2 text-center text-xs text-ink-faint">
+                            {{ __(':bureau scores range from 300 to 900 — the higher, the better your chances of a loan approval at a good rate. Checking your own score does not lower it.', ['bureau' => $this->scoreBureau]) }}
                         </p>
                     @endif
-                    <x-ui.button wire:click="restart" variant="secondary" size="sm">{{ __('Check another number') }}</x-ui.button>
                 </div>
             @endif
         </div>
     </div>
+
+    {{--
+        While the bureau is asked (a live check can take several seconds), the
+        form gives way to the dial sweeping and each stage of the check ticking
+        off in turn. Delayed, so a submit that fails validation never flashes it.
+    --}}
+    @if ($step === 'details')
+        <div
+            wire:loading.delay.flex
+            wire:target="submitDetails"
+            class="absolute inset-0 z-10 hidden flex-col items-center justify-center bg-surface px-6 py-8 text-center"
+            role="status"
+            aria-live="polite"
+        >
+            <x-ui.badge tone="accent">{{ __('Secure check in progress') }}</x-ui.badge>
+            <p class="mt-4 font-display text-xl font-semibold text-ink">{{ __('Fetching your :bureau score', ['bureau' => $this->scoreBureau]) }}</p>
+            <x-site.credit-score-meter fetching class="mt-5" />
+            <ol class="mt-6 flex w-full max-w-xs flex-col gap-3 text-left">
+                @foreach ([
+                    __('Verifying your details'),
+                    __('Connecting securely to :bureau', ['bureau' => $this->liveSource]),
+                    __('Fetching your credit report'),
+                    __('Analysing your report'),
+                    __('Preparing your score'),
+                ] as $stageIndex => $stage)
+                    <li class="score-fetch-stage flex items-center gap-3 text-sm text-ink" style="--stage-start: {{ $stageIndex * 1.4 }}s">
+                        <span class="relative flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-line-strong" aria-hidden="true">
+                            <span class="score-fetch-spinner absolute -inset-px rounded-full border-2 border-accent border-t-transparent"></span>
+                            <span class="score-fetch-check absolute -inset-px flex items-center justify-center rounded-full bg-pass text-white">
+                                <svg viewBox="0 0 20 20" fill="currentColor" class="h-3 w-3"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4L8 11.6l6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd" /></svg>
+                            </span>
+                        </span>
+                        {{ $stage }}
+                    </li>
+                @endforeach
+            </ol>
+            <p class="mt-6 max-w-xs text-xs text-ink-faint">{{ __('This usually takes a few seconds. Please keep this page open.') }}</p>
+        </div>
+    @endif
 </x-ui.card>

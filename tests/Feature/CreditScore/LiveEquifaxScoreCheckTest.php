@@ -42,8 +42,7 @@ function checkEquifaxOnPage(string $mobile = '9000000001', string $gender = 'mal
     return $component
         ->set('otpCode', lastTextedOtp())
         ->call('verifyOtp')
-        ->set('firstName', 'Test')
-        ->set('lastName', 'Fixture')
+        ->set('fullName', 'Test Fixture')
         ->set('dateOfBirth', '1990-01-01')
         ->set('panNumber', 'aaapz9999z')
         ->set('gender', $gender)
