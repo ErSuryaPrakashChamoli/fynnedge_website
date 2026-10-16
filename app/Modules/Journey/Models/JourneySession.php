@@ -8,6 +8,7 @@ use App\Modules\CreditBureau\Models\CreditConsent;
 use App\Modules\CreditBureau\Models\CrifReport;
 use App\Modules\Customers\Models\Customer;
 use App\Modules\Eligibility\Models\EligibilityResult;
+use App\Modules\Equifax\Models\EquifaxCreditRequest;
 use App\Modules\Journey\Enums\JourneySessionStatus;
 use Database\Factories\JourneySessionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -80,6 +81,11 @@ class JourneySession extends Model
     public function crifReports(): HasMany
     {
         return $this->hasMany(CrifReport::class);
+    }
+
+    public function equifaxRequests(): HasMany
+    {
+        return $this->hasMany(EquifaxCreditRequest::class);
     }
 
     /**

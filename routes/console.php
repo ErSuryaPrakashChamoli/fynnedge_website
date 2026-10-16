@@ -45,3 +45,10 @@ Schedule::command('translations:fill-hindi')->dailyAt('03:30')->withoutOverlappi
  */
 Schedule::command('crif:flag-stale')->everyFiveMinutes()->withoutOverlapping();
 Schedule::command('crif:enforce-retention')->dailyAt('02:30')->withoutOverlapping();
+
+/*
+ * Equifax — the same two housekeeping jobs as CRIF, for Equifax's own table.
+ * Neither calls Surepass.
+ */
+Schedule::command('equifax:flag-stale')->everyFiveMinutes()->withoutOverlapping();
+Schedule::command('equifax:enforce-retention')->dailyAt('02:45')->withoutOverlapping();

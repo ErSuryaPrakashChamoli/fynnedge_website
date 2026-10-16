@@ -90,6 +90,11 @@ return [
         // cheaper, but only if your Surepass plan includes it). `php artisan
         // crif:check-access` shows which ones your token may use.
         'crif_public_score_source' => env('SUREPASS_CRIF_PUBLIC_SCORE_SOURCE', 'report'),
+        // The same choice for the public Free Equifax Score page (Surepass
+        // credit-report-v2): "report" (fetch-report, score read from the report)
+        // or "score" (credit-report-v2/score, only if your plan includes it).
+        // `php artisan equifax:check-access` shows which ones your token may use.
+        'equifax_public_score_source' => env('SUREPASS_EQUIFAX_PUBLIC_SCORE_SOURCE', 'report'),
     ],
 
 ];

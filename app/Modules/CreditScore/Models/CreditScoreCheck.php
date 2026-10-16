@@ -6,13 +6,14 @@ use App\Models\Concerns\HasPublicId;
 use App\Modules\CreditBureau\Enums\CreditCheckStatus;
 use App\Modules\CreditBureau\Enums\CrifErrorCode;
 use App\Modules\CreditScore\Enums\BureauName;
+use App\Modules\Equifax\Enums\EquifaxErrorCode;
 use Database\Factories\CreditScoreCheckFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 #[Fillable([
-    'bureau', 'mobile_number', 'mobile_verified_at', 'full_name', 'first_name', 'middle_name', 'last_name', 'date_of_birth',
+    'bureau', 'mobile_number', 'mobile_verified_at', 'full_name', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'gender',
     'pan_number', 'provider', 'status', 'score', 'raw_response',
     'consent_given_at', 'ip_address', 'requested_at', 'completed_at',
 ])]
@@ -53,10 +54,14 @@ class CreditScoreCheck extends Model
      * Why a live (Surepass) check gave no score — the visitor only sees a
      * generic message, so this is what admins read to find the cause.
      */
-    public function liveFailure(): ?CrifErrorCode
+    public function liveFailure(): CrifErrorCode|EquifaxErrorCode|null
     {
         $error = is_array($this->raw_response) ? ($this->raw_response['error'] ?? null) : null;
 
-        return is_string($error) ? CrifErrorCode::tryFrom($error) : null;
+        if (! is_string($error)) {
+            return null;
+        }
+
+        return $this->bureau === BureauName::Equifax ? EquifaxErrorCode::tryFrom($error) : CrifErrorCode::tryFrom($error);
     }
 }

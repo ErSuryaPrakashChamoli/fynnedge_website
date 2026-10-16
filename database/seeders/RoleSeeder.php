@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Modules\CreditBureau\Services\CrifRoles;
+use App\Modules\Equifax\Services\EquifaxRoles;
 use App\Support\Rates\RateRoles;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
@@ -91,6 +92,10 @@ class RoleSeeder extends Seeder
         // CRIF credit reports: the Credit Officer starter role. Fresh-report
         // overrides, reconciliation, raw JSON and CRIF Settings stay ungranted.
         CrifRoles::grant();
+
+        // Equifax: the same Credit Officer role gets the everyday Equifax set;
+        // fresh pulls, reconciliation, raw JSON and settings stay ungranted.
+        EquifaxRoles::grant();
     }
 
     /**

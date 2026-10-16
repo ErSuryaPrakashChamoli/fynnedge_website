@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Customers;
 
 use App\Filament\RelationManagers\CrifReportsRelationManager;
+use App\Filament\RelationManagers\EquifaxRequestsRelationManager;
 use App\Filament\Resources\Customers\Pages\CreateCustomer;
 use App\Filament\Resources\Customers\Pages\EditCustomer;
 use App\Filament\Resources\Customers\Pages\ListCustomers;
@@ -39,6 +40,7 @@ class CustomerResource extends Resource
         return [
             JourneySessionsRelationManager::class,
             CrifReportsRelationManager::class,
+            EquifaxRequestsRelationManager::class,
         ];
     }
 

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 use App\Filament\Resources\CrifReports\CrifReportResource;
+use App\Filament\Resources\EquifaxCreditRequests\EquifaxCreditRequestResource;
 use App\Filament\Resources\LenderProductRates\LenderProductRateResource;
 use App\Filament\Widgets\RateHealthOverview;
 use BezhanSalleh\FilamentShield\Resources\Roles\RoleResource;
@@ -208,6 +209,16 @@ return [
             // uncertain attempts, ViewRaw shows the full provider JSON, DownloadPdf
             // serves the stored PDF.
             CrifReportResource::class => [
+                'fetchFresh',
+                'reconcile',
+                'viewRaw',
+                'downloadPdf',
+            ],
+            // Equifax (see App\Modules\Equifax\Services\EquifaxRoles): ViewReport opens the
+            // full report (View alone shows status and score), plus the same
+            // FetchFresh / Reconcile / ViewRaw / DownloadPdf as CRIF.
+            EquifaxCreditRequestResource::class => [
+                'viewReport',
                 'fetchFresh',
                 'reconcile',
                 'viewRaw',

@@ -5,12 +5,17 @@ use App\Models\LenderProduct;
 use App\Models\LenderProductRate;
 use App\Models\LoanProduct;
 use App\Models\Setting;
+use App\Modules\CreditBureau\DataTransferObjects\CreditConsentInput;
 use App\Modules\CreditBureau\DataTransferObjects\CrifConsentInput;
 use App\Modules\CreditBureau\DataTransferObjects\CrifReportRequest;
 use App\Modules\CreditBureau\Enums\ConsentMethod;
 use App\Modules\CreditBureau\Enums\CrifRequestType;
 use App\Modules\CreditBureau\Services\CrifSettings;
 use App\Modules\Customers\Models\Customer;
+use App\Modules\Equifax\DataTransferObjects\EquifaxCheckRequest;
+use App\Modules\Equifax\Enums\EquifaxProduct;
+use App\Modules\Equifax\Enums\Gender;
+use App\Modules\Equifax\Services\EquifaxSettings;
 use App\Modules\MobileOtp\Models\MobileOtpChallenge;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
@@ -186,6 +191,59 @@ function crifRequestFor(Customer $customer, array $overrides = []): CrifReportRe
         'pan' => 'AAAPZ9999Z',
         'consent' => CrifConsentInput::recordedByEmployee(ConsentMethod::RecordedCall, 'CALL-REF-001', now()->subHour(), true),
         'type' => CrifRequestType::Standard,
+        ...$overrides,
+    ]);
+}
+
+/**
+ * Switches Equifax requests on with a fake Surepass token and puts Surepass's
+ * credit-report-v2 endpoints behind Http::fake(). Stray requests are refused,
+ * so no test can ever reach the real (billable) API.
+ *
+ * @param  mixed  $response  Any Http::fake() stub for the Equifax endpoints; defaults to the full-report fixture.
+ */
+function fakeSurepassEquifax(mixed $response = null): void
+{
+    config([
+        'services.surepass.base_url' => 'https://kyc-api.surepass.app',
+        'services.surepass.token' => 'test-surepass-token',
+        'services.surepass.timeout' => 60,
+        'services.surepass.connect_timeout' => 10,
+    ]);
+    Setting::set(EquifaxSettings::ENABLED, true);
+
+    Http::preventStrayRequests();
+    Http::fake([
+        'kyc-api.surepass.app/api/v1/credit-report-v2/*' => $response ?? Http::response(equifaxReportFixture()),
+    ]);
+}
+
+/**
+ * The fabricated Surepass Equifax (credit-report-v2) full-report response — never real data.
+ *
+ * @return array<string, mixed>
+ */
+function equifaxReportFixture(): array
+{
+    return json_decode((string) file_get_contents(__DIR__.'/Fixtures/Surepass/equifax-report-success.json'), true, flags: JSON_THROW_ON_ERROR);
+}
+
+/**
+ * A valid Equifax request for the customer, with consent recorded now by phone
+ * call. Override any constructor argument by name.
+ *
+ * @param  array<string, mixed>  $overrides
+ */
+function equifaxRequestFor(Customer $customer, array $overrides = []): EquifaxCheckRequest
+{
+    return new EquifaxCheckRequest(...[
+        'customer' => $customer,
+        'product' => EquifaxProduct::Report,
+        'name' => 'Test Fixture',
+        'mobile' => '9000000001',
+        'pan' => 'AAAPZ9999Z',
+        'gender' => Gender::Male,
+        'consent' => CreditConsentInput::recordedByEmployee(ConsentMethod::RecordedCall, 'CALL-REF-EQ1', now()->subHour(), true),
         ...$overrides,
     ]);
 }

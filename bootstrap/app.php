@@ -1,15 +1,18 @@
 <?php
 
+use App\Http\Middleware\ForceJsonResponse;
 use App\Http\Middleware\HandleRedirects;
 use App\Http\Middleware\SearchEngineIndexingHeader;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetSiteLocale;
 use App\Support\Localization\SiteLocale;
 use App\Support\Privacy\CookieConsent;
+use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -18,8 +21,18 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        // The Equifax internal API: session-authenticated, so it runs in the web
+        // group rather than the public, anonymous routes/api.php.
+        then: function (): void {
+            Route::middleware('web')->group(base_path('routes/equifax.php'));
+        },
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->alias(['equifax.json' => ForceJsonResponse::class]);
+        // Must run BEFORE `auth` (which Laravel otherwise sorts first): a signed-out
+        // API caller then gets a 401 JSON answer instead of a login redirect.
+        $middleware->prependToPriorityList(AuthenticatesRequests::class, ForceJsonResponse::class);
+
         $middleware->appendToGroup('web', SecurityHeaders::class);
         // The public JSON API gets the same nosniff/framing/CSP headers as every page.
         $middleware->appendToGroup('api', SecurityHeaders::class);

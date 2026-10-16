@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\JourneySessions;
 
 use App\Filament\RelationManagers\CrifReportsRelationManager;
+use App\Filament\RelationManagers\EquifaxRequestsRelationManager;
 use App\Filament\Resources\JourneySessions\Pages\ListJourneySessions;
 use App\Filament\Resources\JourneySessions\Pages\ViewJourneySession;
 use App\Filament\Resources\JourneySessions\RelationManagers\ResponsesRelationManager;
@@ -43,6 +44,7 @@ class JourneySessionResource extends Resource
         return [
             ResponsesRelationManager::class,
             CrifReportsRelationManager::class,
+            EquifaxRequestsRelationManager::class,
         ];
     }
 

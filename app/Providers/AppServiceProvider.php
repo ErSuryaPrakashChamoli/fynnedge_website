@@ -222,6 +222,11 @@ class AppServiceProvider extends ServiceProvider
             ? Limit::none()
             : [Limit::perMinute(5)->by('minute:'.$request->ip()), Limit::perDay(30)->by('day:'.$request->ip())]);
 
+        // The Equifax internal API (routes/equifax.php): per signed-in employee, so
+        // one person's script cannot spend the Surepass balance or hammer report
+        // reads. Not lifted under tests — the limit itself is tested.
+        RateLimiter::for('equifax-api', fn (Request $request) => Limit::perMinute(30)->by('equifax:'.($request->user()?->getAuthIdentifier() ?? $request->ip())));
+
         RateLimiter::for('mobile-otp-verify', fn (Request $request) => app()->runningUnitTests()
             ? Limit::none()
             : [Limit::perMinute(10)->by('minute:'.$request->ip()), Limit::perHour(60)->by('hour:'.$request->ip())]);

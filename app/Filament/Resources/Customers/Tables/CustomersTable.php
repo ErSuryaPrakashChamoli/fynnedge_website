@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Customers\Tables;
 
 use App\Modules\CreditBureau\Models\CrifReport;
+use App\Modules\Equifax\Models\EquifaxCreditRequest;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -29,6 +30,11 @@ class CustomersTable
                     ->badge()
                     ->placeholder('Not requested')
                     ->visible(fn (): bool => (bool) auth()->user()?->can('viewAny', CrifReport::class)),
+                TextColumn::make('latestEquifaxRequest.status')
+                    ->label('Equifax')
+                    ->badge()
+                    ->placeholder('Not requested')
+                    ->visible(fn (): bool => (bool) auth()->user()?->can('viewAny', EquifaxCreditRequest::class)),
                 TextColumn::make('created_at')
                     ->label('First seen')
                     ->dateTime()

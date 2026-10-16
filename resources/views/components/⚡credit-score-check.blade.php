@@ -7,6 +7,8 @@ use App\Modules\CreditBureau\Services\PanName;
 use App\Modules\CreditScore\Actions\SubmitCreditScoreCheck;
 use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
+use App\Modules\Equifax\Enums\Gender;
+use App\Modules\Equifax\Services\EquifaxSettings;
 use App\Modules\MobileOtp\Actions\RequestMobileOtp;
 use App\Modules\MobileOtp\Actions\VerifyMobileOtp;
 use App\Modules\MobileOtp\Enums\MobileOtpPurpose;
@@ -16,6 +18,7 @@ use App\Modules\MobileOtp\Exceptions\MobileOtpThrottled;
 use App\Modules\MobileOtp\Models\MobileOtpChallenge;
 use App\Modules\MobileOtp\Services\MobileNumber;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -63,6 +66,12 @@ new class extends Component
 
     public string $lastName = '';
 
+    /**
+     * Asked only on the live Equifax page: Surepass's Equifax API requires the
+     * gender and accepts exactly "male" or "female".
+     */
+    public string $gender = '';
+
     public string $dateOfBirth = '';
 
     public string $panNumber = '';
@@ -72,15 +81,15 @@ new class extends Component
     public ?int $resultScore = null;
 
     /**
-     * What the result step shows: 'demo' (sample score), 'live' (a real CRIF
-     * score), 'no_score' (CRIF answered but holds no score), 'pending' (outcome
+     * What the result step shows: 'demo' (sample score), 'live' (a real bureau
+     * score), 'no_score' (the bureau answered but holds no score), 'pending' (outcome
      * not confirmed yet) or 'failed'. Locked: the browser must never be able to
      * dress a demo score up as a real one.
      */
     #[Locked]
     public ?string $resultKind = null;
 
-    /** The CrifErrorCode value behind a failed live check, for the visitor's message. */
+    /** The error code behind a failed live check, for the visitor's message. */
     #[Locked]
     public ?string $resultError = null;
 
@@ -103,14 +112,33 @@ new class extends Component
     }
 
     /**
-     * The CRIF page shows real scores (a paid Surepass call per new check)
-     * only while CRIF Settings → "Free CRIF Score page uses real scores" is on
-     * and the server has a Surepass token. Every other bureau stays a demo.
+     * Real scores (a paid Surepass call per new check) only on the CRIF page
+     * while CRIF Settings → "Free CRIF Score page uses real scores" is on, and
+     * on the Equifax page while Equifax Settings → "Free Equifax Score page uses
+     * real scores" is on — each also needs the server's Surepass token. Every
+     * other bureau stays a demo.
      */
     #[Computed]
-    public function isLiveCrif(): bool
+    public function isLive(): bool
     {
-        return $this->bureau === BureauName::Crif->value && CrifSettings::publicScoreLive();
+        return match ($this->bureau) {
+            BureauName::Crif->value => CrifSettings::publicScoreLive(),
+            BureauName::Equifax->value => EquifaxSettings::publicScoreLive(),
+            default => false,
+        };
+    }
+
+    #[Computed]
+    public function needsGender(): bool
+    {
+        return $this->bureau === BureauName::Equifax->value && $this->isLive;
+    }
+
+    /** Who a live score comes from, as the visitor knows it. */
+    #[Computed]
+    public function liveSource(): string
+    {
+        return $this->bureau === BureauName::Crif->value ? 'CRIF High Mark' : $this->bureauLabel;
     }
 
     #[Computed]
@@ -220,8 +248,10 @@ new class extends Component
             'lastName' => ['required', 'string', 'max:100'],
             'dateOfBirth' => ['required', 'date', 'before:-18 years'],
             'panNumber' => ['required', 'regex:/^[A-Z]{5}[0-9]{4}[A-Z]$/'],
+            'gender' => [$this->needsGender ? 'required' : 'nullable', Rule::enum(Gender::class)],
             'consent' => ['accepted'],
         ], [
+            'gender.required' => __('Please choose your gender — Equifax needs it to find your credit record.'),
             'dateOfBirth.before' => __('You must be at least 18 years old.'),
             'panNumber.regex' => __('Enter a valid PAN (e.g. ABCDE1234F).'),
             'consent.accepted' => __('Please provide consent to continue.'),
@@ -245,6 +275,7 @@ new class extends Component
                 'last_name' => $validated['lastName'],
                 'date_of_birth' => $validated['dateOfBirth'],
                 'pan_number' => $validated['panNumber'],
+                'gender' => $this->needsGender ? $validated['gender'] : null,
             ],
             BureauName::from($this->bureau),
             $this->verifiedMobileNumber,
@@ -267,7 +298,7 @@ new class extends Component
     {
         $this->reset([
             'step', 'mobileNumber', 'otpCode', 'otpChallengeId', 'verifiedMobileNumber', 'resendAfterSeconds',
-            'firstName', 'middleName', 'lastName', 'dateOfBirth', 'panNumber', 'consent', 'resultScore', 'resultKind', 'resultError',
+            'firstName', 'middleName', 'lastName', 'gender', 'dateOfBirth', 'panNumber', 'consent', 'resultScore', 'resultKind', 'resultError',
         ]);
     }
 };
@@ -314,8 +345,8 @@ new class extends Component
                     </x-ui.button>
                     <p class="flex items-center justify-center gap-1.5 text-xs text-ink-faint">
                         <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 text-pass" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4L8 11.6l6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd" /></svg>
-                        @if ($this->isLiveCrif)
-                            {{ __('Your real CRIF score, free — checking your own score does not lower it') }}
+                        @if ($this->isLive)
+                            {{ __('Your real :bureau score, free — checking your own score does not lower it', ['bureau' => $this->bureauLabel]) }}
                         @else
                             {{ __('Demo mode — see a sample score instantly, no real bureau pull') }}
                         @endif
@@ -414,6 +445,25 @@ new class extends Component
                         <input type="hidden" x-ref="dateOfBirthHidden" wire:model="dateOfBirth">
                         @error('dateOfBirth') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
                     </div>
+                    @if ($this->needsGender)
+                        <div>
+                            <label for="gender" class="text-sm font-medium text-ink">{{ __('Gender') }}</label>
+                            <select
+                                id="gender"
+                                wire:model="gender"
+                                class="mt-1.5 w-full rounded-lg border border-line-strong bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+                            >
+                                <option value="">{{ __('Select') }}</option>
+                                <option value="male">{{ __('Male') }}</option>
+                                <option value="female">{{ __('Female') }}</option>
+                            </select>
+                            @error('gender')
+                                <p class="mt-1 text-xs text-warn">{{ $message }}</p>
+                            @else
+                                <p class="mt-1.5 text-xs text-ink-faint">{{ __('Equifax needs this to find your credit record.') }}</p>
+                            @enderror
+                        </div>
+                    @endif
                     <div>
                         <label for="panNumber" class="text-sm font-medium text-ink">{{ __('PAN number') }}</label>
                         <input
@@ -445,31 +495,31 @@ new class extends Component
             @else
                 <div class="flex flex-col items-center gap-5 py-2 text-center">
                     @if ($resultKind === 'live')
-                        <x-ui.badge tone="pass">{{ __('Live score from CRIF High Mark') }}</x-ui.badge>
+                        <x-ui.badge tone="pass">{{ __('Live score from :provider', ['provider' => $this->liveSource]) }}</x-ui.badge>
                         <div>
                             <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Your :bureau score', ['bureau' => $this->bureauLabel]) }}</p>
                             <p class="mt-1 font-display text-5xl font-semibold text-accent">{{ $resultScore }}</p>
                         </div>
                         <p class="max-w-sm text-sm text-ink-muted">
-                            {{ __('CRIF scores range from 300 to 900 — the higher, the better your chances of a loan approval at a good rate. Checking your own score does not lower it.') }}
+                            {{ __(':bureau scores range from 300 to 900 — the higher, the better your chances of a loan approval at a good rate. Checking your own score does not lower it.', ['bureau' => $this->bureauLabel]) }}
                         </p>
                     @elseif ($resultKind === 'no_score')
                         <x-ui.badge tone="muted">{{ __('No score yet') }}</x-ui.badge>
                         <p class="max-w-sm text-sm text-ink-muted">
-                            {{ __('CRIF found your record but has no score for you yet. This usually means there is not enough credit history — a score appears a few months after your first loan or credit card.') }}
+                            {{ __(':bureau found your record but has no score for you yet. This usually means there is not enough credit history — a score appears a few months after your first loan or credit card.', ['bureau' => $this->bureauLabel]) }}
                         </p>
                     @elseif ($resultKind === 'pending')
                         <x-ui.badge tone="warn">{{ __('Still checking') }}</x-ui.badge>
                         <p class="max-w-sm text-sm text-ink-muted">
-                            {{ __('We could not confirm your score with CRIF just now. Please try again in an hour.') }}
+                            {{ __('We could not confirm your score with :bureau just now. Please try again in an hour.', ['bureau' => $this->bureauLabel]) }}
                         </p>
                     @elseif ($resultKind === 'failed')
                         <x-ui.badge tone="warn">{{ __('Score not available') }}</x-ui.badge>
                         <p class="max-w-sm text-sm text-ink-muted">
                             @if (in_array($resultError, [CrifErrorCode::NoRecordFound->value, CrifErrorCode::InvalidRequest->value, CrifErrorCode::ProviderRejected->value], true))
-                                {{ __('CRIF could not find a credit record matching these details. Check that your name and PAN are exactly as on your PAN card, and that this mobile number is the one your bank or lender has.') }}
+                                {{ __(':bureau could not find a credit record matching these details. Check that your name and PAN are exactly as on your PAN card, and that this mobile number is the one your bank or lender has.', ['bureau' => $this->bureauLabel]) }}
                             @else
-                                {{ __('We could not fetch your CRIF score right now. Please try again a little later.') }}
+                                {{ __('We could not fetch your :bureau score right now. Please try again a little later.', ['bureau' => $this->bureauLabel]) }}
                             @endif
                         </p>
                     @else

@@ -3,29 +3,21 @@
 namespace App\Modules\CreditBureau\Services;
 
 use App\Modules\CreditBureau\DataTransferObjects\CrifSubject;
+use App\Modules\CreditBureau\DataTransferObjects\SurepassCall;
 use App\Modules\CreditBureau\DataTransferObjects\SurepassCrifResult;
 use App\Modules\CreditBureau\Enums\CrifErrorCode;
 use Closure;
-use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Http;
-use Throwable;
 
 /**
  * Surepass's CRIF credit report endpoints: POST {base_url}/api/v1/credit-report-crif/…
- * with `Authorization: Bearer {token}` and a JSON body of first_name / last_name /
- * mobile / pan / consent.
+ * with a JSON body of first_name / last_name / mobile / pan / consent. The wire
+ * itself (token, timeouts, no retries) is the shared SurepassClient; this class
+ * decides what a CRIF answer means.
  *
- * Every call is PAID, so this class never retries: there is no ->retry(), and a
- * response that leaves the billing question open (a read timeout, a gateway
- * error, a 200 that is not a readable success) comes back as an *uncertain*
- * failure for reconciliation rather than as something safe to send again.
- * Duplicate prevention itself is RequestCrifReport's job; this class is only
- * the wire.
- *
- * Nothing here logs or returns the token, the request body or a failed
- * response's body.
+ * Every call is PAID: a response that leaves the billing question open (a read
+ * timeout, a gateway error, a 200 that is not a readable success) comes back
+ * as an *uncertain* failure for reconciliation rather than as something safe
+ * to send again. Duplicate prevention itself is RequestCrifReport's job.
  */
 class SurepassCrifService
 {
@@ -35,10 +27,9 @@ class SurepassCrifService
 
     public const SCORE_PATH = 'api/v1/credit-report-crif/score';
 
-    /** A provider PDF larger than this is refused rather than held in memory. */
-    private const MAX_PDF_BYTES = 20 * 1024 * 1024;
-
     private const NOT_FOUND_WORDS = ['not_found', 'no_record', 'record_not_found', 'no_hit', 'nohit'];
+
+    public function __construct(private readonly SurepassClient $client) {}
 
     public function fetchReport(CrifSubject $subject): SurepassCrifResult
     {
@@ -56,90 +47,27 @@ class SurepassCrifService
     }
 
     /**
-     * Whether the configured token may call each CRIF endpoint, WITHOUT pulling
-     * a report: the request body is empty, so Surepass rejects it at input
-     * validation (HTTP 400/422 = the token may use this API) or at the token
-     * check (HTTP 401) — no PAN is sent and no bureau lookup can happen.
+     * Whether the configured token may call each CRIF endpoint, without pulling
+     * a report (see SurepassClient::checkAccess()).
      *
      * @return array<string, array{access: string, http_status: ?int}> path => result
      */
     public function checkAccess(): array
     {
-        $config = config('services.surepass');
-        $results = [];
-
-        foreach ([self::REPORT_PATH, self::SCORE_PATH, self::PDF_PATH] as $path) {
-            if (blank($config['token'] ?? null) || blank($config['base_url'] ?? null)) {
-                $results[$path] = ['access' => 'not_configured', 'http_status' => null];
-
-                continue;
-            }
-
-            try {
-                $response = $this->client($config['base_url'], (string) $config['token'])->post($path, (object) []);
-            } catch (Throwable) {
-                $results[$path] = ['access' => 'unreachable', 'http_status' => null];
-
-                continue;
-            }
-
-            $status = $response->status();
-            $message = (string) ($response->json('message') ?? '');
-
-            $results[$path] = ['access' => match (true) {
-                in_array($status, [400, 422], true) => 'allowed',
-                in_array($status, [401, 403], true) && stripos($message, 'scope') !== false => 'not_enabled',
-                in_array($status, [401, 403], true) => 'token_rejected',
-                $status === 404 => 'not_found',
-                default => 'unexpected',
-            }, 'http_status' => $status];
-        }
-
-        return $results;
+        return $this->client->checkAccess([self::REPORT_PATH, self::SCORE_PATH, self::PDF_PATH]);
     }
 
     /**
-     * The temporary PDF link out of a fetch-report-pdf response. Surepass has
-     * used several key names across products, so the known ones are tried in
-     * order; only an https URL is accepted.
-     *
      * @param  array<string, mixed>  $data
      */
     public function pdfLink(array $data): ?string
     {
-        foreach (['credit_report_link', 'pdf_link', 'report_link', 'pdf_url', 'link', 'url'] as $key) {
-            $value = $data[$key] ?? null;
-
-            if (is_string($value) && str_starts_with(strtolower($value), 'https://') && filter_var($value, FILTER_VALIDATE_URL)) {
-                return $value;
-            }
-        }
-
-        return null;
+        return $this->client->pdfLink($data);
     }
 
-    /**
-     * Downloads the PDF behind a provider link, server side. The bearer token is
-     * deliberately NOT sent: the link may point at a storage host, and the token
-     * must never leave for anywhere but the Surepass API.
-     */
     public function downloadPdf(string $url): ?string
     {
-        try {
-            $response = Http::timeout($this->timeout())
-                ->connectTimeout($this->connectTimeout())
-                ->get($url);
-        } catch (Throwable) {
-            return null;
-        }
-
-        $bytes = $response->body();
-
-        if (! $response->successful() || ! str_starts_with($bytes, '%PDF') || strlen($bytes) > self::MAX_PDF_BYTES) {
-            return null;
-        }
-
-        return $bytes;
+        return $this->client->downloadPdf($url);
     }
 
     /**
@@ -148,52 +76,34 @@ class SurepassCrifService
      */
     private function post(string $path, array $payload, Closure $hasPayload): SurepassCrifResult
     {
-        $config = config('services.surepass');
+        $call = $this->client->post($path, $payload);
 
-        if (blank($config['token'] ?? null) || blank($config['base_url'] ?? null)) {
-            return SurepassCrifResult::failed(CrifErrorCode::NotConfigured);
+        if ($call->response === null) {
+            return SurepassCrifResult::failed(match ($call->failure) {
+                SurepassCall::NOT_CONFIGURED => CrifErrorCode::NotConfigured,
+                SurepassCall::CONNECTION_FAILED => CrifErrorCode::ConnectionFailed,
+                SurepassCall::TIMEOUT => CrifErrorCode::Timeout,
+                default => CrifErrorCode::UnexpectedError,
+            });
         }
 
-        try {
-            $response = $this->client($config['base_url'], (string) $config['token'])->post($path, $payload);
-        } catch (ConnectionException $exception) {
-            return SurepassCrifResult::failed($this->connectionFailure($exception));
-        } catch (Throwable) {
-            return SurepassCrifResult::failed(CrifErrorCode::UnexpectedError);
-        }
-
-        return $this->interpret($response, $hasPayload);
-    }
-
-    private function client(string $baseUrl, #[\SensitiveParameter] string $token): PendingRequest
-    {
-        // No ->retry() and no ->throw(): a second attempt after a read timeout
-        // could be a second charge, and a thrown RequestException would carry
-        // the response body (and so customer data) into logs.
-        return Http::baseUrl($baseUrl)
-            ->withToken($token)
-            ->acceptJson()
-            ->asJson()
-            ->connectTimeout($this->connectTimeout())
-            ->timeout($this->timeout());
+        return $this->interpret($call, $hasPayload);
     }
 
     /**
      * @param  Closure(array<string, mixed>): bool  $hasPayload
      */
-    private function interpret(Response $response, Closure $hasPayload): SurepassCrifResult
+    private function interpret(SurepassCall $call, Closure $hasPayload): SurepassCrifResult
     {
-        $status = $response->status();
-        $body = $response->json();
-        $messageCode = is_array($body) && is_string($body['message_code'] ?? null) ? $body['message_code'] : null;
+        $status = (int) $call->status();
+        $body = $call->json();
+        $messageCode = $call->messageCode();
 
-        if (! $response->successful()) {
-            $message = is_array($body) && is_string($body['message'] ?? null) ? $body['message'] : '';
-
-            return SurepassCrifResult::failed($this->httpFailure($status, is_array($body), $messageCode, $message), $status, $messageCode);
+        if (! $call->response->successful()) {
+            return SurepassCrifResult::failed($this->httpFailure($status, $body !== null, $messageCode, $call->message()), $status, $messageCode);
         }
 
-        if (! is_array($body)) {
+        if ($body === null) {
             return SurepassCrifResult::failed(CrifErrorCode::MalformedResponse, $status);
         }
 
@@ -223,15 +133,10 @@ class SurepassCrifService
         return is_array($data['credit_report'] ?? null) && $data['credit_report'] !== [];
     }
 
-    /**
-     * Surepass answers 401 `invalid_token` both for a bad token and for a good
-     * token whose plan lacks the API ("…not valid for this API/Scope…"). The
-     * message is read only to tell the two apart — it is never stored or shown.
-     */
     private function httpFailure(int $status, bool $isJson, ?string $messageCode, string $message = ''): CrifErrorCode
     {
         return match (true) {
-            ($status === 401 || $status === 403) && stripos($message, 'scope') !== false => CrifErrorCode::ApiNotEnabled,
+            SurepassClient::isScopeRejection($status, $message) => CrifErrorCode::ApiNotEnabled,
             $status === 401, $status === 403 => CrifErrorCode::AuthenticationFailed,
             $status === 402 => CrifErrorCode::InsufficientBalance,
             $status === 429 => CrifErrorCode::RateLimited,
@@ -254,35 +159,5 @@ class SurepassCrifService
             collect(self::NOT_FOUND_WORDS)->contains(fn (string $word) => str_contains($code, $word)) => CrifErrorCode::NoRecordFound,
             default => $fallback,
         };
-    }
-
-    /**
-     * cURL 6 (DNS), 7 (refused), 35 (TLS handshake) and a connect-phase 28 fail
-     * before the request is sent, so nothing can have been processed. A read
-     * timeout or a connection dropped after sending may mean Surepass already
-     * did the work.
-     */
-    private function connectionFailure(ConnectionException $exception): CrifErrorCode
-    {
-        $message = $exception->getMessage();
-
-        return match (true) {
-            preg_match('/cURL error (6|7|35)\b/', $message) === 1 => CrifErrorCode::ConnectionFailed,
-            // curl's connect-phase timeout ("Connection timed out after …") also fires
-            // before anything is sent; "Operation timed out" is the read phase.
-            str_contains($message, 'cURL error 28: Connection timed out') || str_contains($message, 'cURL error 28: Resolving timed out') => CrifErrorCode::ConnectionFailed,
-            str_contains($message, 'cURL error 28') || stripos($message, 'timed out') !== false => CrifErrorCode::Timeout,
-            default => CrifErrorCode::UnexpectedError,
-        };
-    }
-
-    private function timeout(): int
-    {
-        return max(5, (int) config('services.surepass.timeout', 60));
-    }
-
-    private function connectTimeout(): int
-    {
-        return max(1, min((int) config('services.surepass.connect_timeout', 10), $this->timeout()));
     }
 }

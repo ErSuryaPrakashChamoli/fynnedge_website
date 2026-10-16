@@ -1,0 +1,131 @@
+{
+    "data": {
+        "client_id": "credit_report_v2_TESTFIXTURE0001",
+        "name": "TEST FIXTURE",
+        "mobile": "9000000001",
+        "id_number": "AAAPZ9999Z",
+        "id_type": "pan",
+        "gender": "male",
+        "credit_score": "761",
+        "credit_report": {
+            "credit_report": [
+                {
+                    "InquiryResponseHeader": {
+                        "ClientID": "FIXTURE-CLIENT",
+                        "CustRefField": "FIXTURE-REF",
+                        "ReportOrderNO": "FIXTURE-ORDER-0001",
+                        "ProductCode": ["PCS"],
+                        "SuccessCode": "1",
+                        "Date": "2026-10-16",
+                        "Time": "10:15:00"
+                    },
+                    "InquiryRequestInfo": {
+                        "InquiryPurpose": "Personal Loan",
+                        "FirstName": "TEST FIXTURE",
+                        "InquiryPhones": [{ "seq": "1", "Number": "9000000001", "PhoneType": ["M"] }],
+                        "IDDetails": [{ "seq": "1", "IDType": "T", "IDValue": "AAAPZ9999Z", "Source": "Inquiry" }]
+                    },
+                    "Score": [{ "Type": "ERS", "Version": "4.0" }],
+                    "CCRResponse": {
+                        "Status": "1",
+                        "CIRReportDataLst": [
+                            {
+                                "InquiryResponseHeader": { "ReportOrderNO": "FIXTURE-ORDER-0001", "Date": "2026-10-16" },
+                                "CIRReportData": {
+                                    "IDAndContactInfo": {
+                                        "PersonalInfo": {
+                                            "Name": { "FullName": "TEST FIXTURE", "FirstName": "TEST", "LastName": "FIXTURE" },
+                                            "DateOfBirth": "1990-01-01",
+                                            "Gender": "Male",
+                                            "Age": { "Age": "36" }
+                                        },
+                                        "IdentityInfo": {
+                                            "PANId": [{ "seq": "1", "ReportedDate": "2026-09-30", "IdNumber": "AAAPZ9999Z" }],
+                                            "PassportID": [{ "seq": "2", "ReportedDate": "2016-02-28", "IdNumber": "P0000001" }]
+                                        },
+                                        "AddressInfo": [
+                                            { "Seq": "1", "ReportedDate": "2026-09-30", "Address": "1 FIXTURE ROAD TESTNAGAR", "State": "DL", "Postal": "110001", "Type": "Primary" },
+                                            { "Seq": "2", "ReportedDate": "2016-02-28", "Address": "2 SAMPLE LANE", "State": "MH", "Postal": "400001", "Type": "Office" }
+                                        ],
+                                        "PhoneInfo": [{ "seq": "1", "typeCode": "M", "ReportedDate": "2026-09-30", "Number": "9000000001" }],
+                                        "EmailAddressInfo": [{ "seq": "1", "ReportedDate": "2026-09-30", "EmailAddress": "fixture@example.test" }]
+                                    },
+                                    "RetailAccountDetails": [
+                                        {
+                                            "seq": "1",
+                                            "AccountNumber": "FIXLOAN00012345",
+                                            "Institution": "FIXTURE BANK",
+                                            "AccountType": "Personal Loan",
+                                            "OwnershipType": "Individual",
+                                            "Balance": "268889",
+                                            "PastDueAmount": "9108",
+                                            "Open": "Yes",
+                                            "SanctionAmount": "372000",
+                                            "DateReported": "2026-09-30",
+                                            "DateOpened": "2023-11-26",
+                                            "InterestRate": "10.2",
+                                            "RepaymentTenure": "120",
+                                            "InstallmentAmount": "4554",
+                                            "AccountStatus": "Current Account",
+                                            "FixtureUnmappedField": "kept as sent",
+                                            "History48Months": [
+                                                { "key": "09-26", "PaymentStatus": "030", "SuitFiledStatus": "*", "AssetClassificationStatus": "*" },
+                                                { "key": "08-26", "PaymentStatus": "000", "SuitFiledStatus": "*", "AssetClassificationStatus": "*" }
+                                            ]
+                                        },
+                                        {
+                                            "seq": "2",
+                                            "AccountNumber": "FIXCARD00098765",
+                                            "Institution": "FIXTURE CARDS",
+                                            "AccountType": "Credit Card",
+                                            "Balance": "0",
+                                            "CreditLimit": "100000",
+                                            "Open": "No",
+                                            "DateClosed": "2025-06-15",
+                                            "AccountStatus": "Closed Account"
+                                        }
+                                    ],
+                                    "RetailAccountsSummary": {
+                                        "NoOfAccounts": "2",
+                                        "NoOfActiveAccounts": "1",
+                                        "NoOfWriteOffs": "0",
+                                        "TotalPastDue": "9108",
+                                        "NoOfPastDueAccounts": "1",
+                                        "TotalBalanceAmount": "268889",
+                                        "TotalSanctionAmount": "372000"
+                                    },
+                                    "ScoreDetails": [
+                                        {
+                                            "Type": "ERS",
+                                            "Version": "4.0",
+                                            "Name": "M3",
+                                            "Value": "761",
+                                            "ScoringElements": [
+                                                { "type": "RES", "seq": "1", "code": "FIX1", "Description": "Fixture scoring factor" }
+                                            ]
+                                        }
+                                    ],
+                                    "EnquirySummary": { "Purpose": "ALL", "Total": "2", "Past30Days": "0", "Past12Months": "2", "Past24Months": "2", "Recent": "2026-09-01" },
+                                    "Enquiries": [
+                                        { "seq": "1", "Institution": "FIXTURE NBFC", "Date": "2026-09-01", "Time": "11:00", "RequestPurpose": "Personal Loan", "Amount": "200000" },
+                                        { "seq": "2", "Institution": "FIXTURE BANK", "Date": "2026-05-15", "RequestPurpose": "Credit Card" }
+                                    ],
+                                    "OtherKeyInd": { "AgeOfOldestTrade": "35", "FixtureFutureFlag": "Y" }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ],
+            "status_code": 200,
+            "success": true,
+            "message": "Success",
+            "message_code": "success"
+        },
+        "credit_report_link": ""
+    },
+    "status_code": 200,
+    "success": true,
+    "message": "Success",
+    "message_code": "success"
+}

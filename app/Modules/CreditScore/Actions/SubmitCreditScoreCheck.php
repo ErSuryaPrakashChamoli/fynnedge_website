@@ -9,6 +9,8 @@ use App\Modules\CreditScore\Contracts\CreditScoreProvider;
 use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
 use App\Modules\CreditScore\Providers\SurepassCrifScoreProvider;
+use App\Modules\CreditScore\Providers\SurepassEquifaxScoreProvider;
+use App\Modules\Equifax\Services\EquifaxSettings;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -21,50 +23,56 @@ class SubmitCreditScoreCheck
     public function __construct(
         private readonly CreditScoreProvider $provider,
         private readonly SurepassCrifScoreProvider $liveCrif,
+        private readonly SurepassEquifaxScoreProvider $liveEquifax,
     ) {}
 
     /**
-     * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string}  $data
+     * Real scores for the bureaus whose public page is switched to live (CRIF:
+     * CRIF Settings, Equifax: Equifax Settings — each independently); the bound
+     * demo provider for everything else.
+     *
+     * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
      */
     public function handle(array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress = null): CreditScoreCheck
     {
-        if ($bureau === BureauName::Crif && CrifSettings::publicScoreLive()) {
-            return $this->liveCrif($data, $mobileNumber, $ipAddress);
-        }
-
-        return $this->run($this->provider, $data, $bureau, $mobileNumber, $ipAddress);
+        return match (true) {
+            $bureau === BureauName::Crif && CrifSettings::publicScoreLive() => $this->live($this->liveCrif, $bureau, CrifSettings::reuseDays(), $data, $mobileNumber, $ipAddress),
+            $bureau === BureauName::Equifax && EquifaxSettings::publicScoreLive() => $this->live($this->liveEquifax, $bureau, EquifaxSettings::scoreReuseDays(), $data, $mobileNumber, $ipAddress),
+            default => $this->run($this->provider, $data, $bureau, $mobileNumber, $ipAddress),
+        };
     }
 
     /**
-     * Every new live CRIF check is a paid Surepass call, so the same person —
-     * same PAN AND same verified mobile, so a typed-in PAN never reveals someone
+     * Every new live check is a paid Surepass call, so the same person — same
+     * bureau, PAN AND verified mobile, so a typed-in PAN never reveals someone
      * else's stored score — checking again inside the reuse period is shown the
      * score already fetched, and a check whose outcome was uncertain is not
      * re-sent for an hour. A per-person lock stops two tabs paying twice.
      *
-     * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string}  $data
+     * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
      */
-    private function liveCrif(array $data, string $mobileNumber, ?string $ipAddress): CreditScoreCheck
+    private function live(CreditScoreProvider $provider, BureauName $bureau, int $reuseDays, array $data, string $mobileNumber, ?string $ipAddress): CreditScoreCheck
     {
         $pan = PanNumber::normalize($data['pan_number']);
+        $data = [...$data, 'pan_number' => $pan];
         $previous = fn () => CreditScoreCheck::query()
-            ->where('bureau', BureauName::Crif)
-            ->where('provider', $this->liveCrif->name())
+            ->where('bureau', $bureau)
+            ->where('provider', $provider->name())
             ->where('pan_number', $pan)
             ->where('mobile_number', $mobileNumber);
 
         try {
-            return Cache::lock('crif-public-score:'.PanNumber::hash($pan.'|'.$mobileNumber), 90)->block(10, function () use ($data, $pan, $mobileNumber, $ipAddress, $previous): CreditScoreCheck {
+            return Cache::lock($bureau->value.'-public-score:'.PanNumber::hash($pan.'|'.$mobileNumber), 90)->block(10, function () use ($provider, $bureau, $reuseDays, $data, $mobileNumber, $ipAddress, $previous): CreditScoreCheck {
                 $reusable = $previous()
                     ->where('status', CreditCheckStatus::Completed)
-                    ->where('completed_at', '>=', now()->subDays(CrifSettings::reuseDays()))
+                    ->where('completed_at', '>=', now()->subDays($reuseDays))
                     ->whereNull('raw_response->reused_from')
                     ->latest('completed_at')
                     ->first();
 
                 if ($reusable) {
-                    return $this->record([...$data, 'pan_number' => $pan], BureauName::Crif, $mobileNumber, $ipAddress, [
-                        'provider' => $this->liveCrif->name(),
+                    return $this->record($data, $bureau, $mobileNumber, $ipAddress, [
+                        'provider' => $provider->name(),
                         'status' => CreditCheckStatus::Completed,
                         'score' => $reusable->score,
                         'raw_response' => ['reused_from' => $reusable->public_id],
@@ -78,16 +86,16 @@ class SubmitCreditScoreCheck
                     ->latest('id')
                     ->first();
 
-                return $unresolved ?? $this->run($this->liveCrif, [...$data, 'pan_number' => $pan], BureauName::Crif, $mobileNumber, $ipAddress);
+                return $unresolved ?? $this->run($provider, $data, $bureau, $mobileNumber, $ipAddress);
             });
         } catch (LockTimeoutException) {
             // The same person's previous check is still waiting for Surepass.
-            return new CreditScoreCheck(['bureau' => BureauName::Crif, 'provider' => $this->liveCrif->name(), 'status' => CreditCheckStatus::Pending]);
+            return new CreditScoreCheck(['bureau' => $bureau, 'provider' => $provider->name(), 'status' => CreditCheckStatus::Pending]);
         }
     }
 
     /**
-     * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string}  $data
+     * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
      */
     private function run(CreditScoreProvider $provider, array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress): CreditScoreCheck
     {
@@ -109,7 +117,7 @@ class SubmitCreditScoreCheck
     }
 
     /**
-     * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string}  $data
+     * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
      * @param  array<string, mixed>  $outcome
      */
     private function record(array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress, array $outcome): CreditScoreCheck
@@ -123,6 +131,7 @@ class SubmitCreditScoreCheck
             'middle_name' => $data['middle_name'] ?: null,
             'last_name' => $data['last_name'],
             'date_of_birth' => $data['date_of_birth'],
+            'gender' => $data['gender'] ?? null,
             'pan_number' => $data['pan_number'],
             'consent_given_at' => now(),
             'ip_address' => $ipAddress,
