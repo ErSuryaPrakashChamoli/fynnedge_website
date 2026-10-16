@@ -99,6 +99,14 @@ return [
         // Blank = Equifax uses the shared SUREPASS_BEARER_TOKEN / SUREPASS_BASE_URL above.
         'equifax_token' => env('SUREPASS_EQUIFAX_TOKEN'),
         'equifax_base_url' => env('SUREPASS_EQUIFAX_BASE_URL'),
+        // Experian (Surepass credit-report-experian; App\Modules\Experian, docs/experian-credit-bureau-integration.md):
+        // its own optional token / base URL (ExperianSettings::surepassClient()) — blank = the shared ones above —
+        // and which endpoint the public Free Experian Score page reads the score from: "report"
+        // (fetch-report, score read from the report) or "score" (score endpoint, only if your plan
+        // includes it). `php artisan experian:check-access` shows which ones your token may use.
+        'experian_token' => env('SUREPASS_EXPERIAN_TOKEN'),
+        'experian_base_url' => env('SUREPASS_EXPERIAN_BASE_URL'),
+        'experian_public_score_source' => env('SUREPASS_EXPERIAN_PUBLIC_SCORE_SOURCE', 'report'),
     ],
 
 ];

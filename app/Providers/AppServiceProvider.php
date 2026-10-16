@@ -12,6 +12,8 @@ use App\Modules\CreditBureau\Services\SurepassClient;
 use App\Modules\CreditScore\Contracts\CreditScoreProvider;
 use App\Modules\Equifax\Services\EquifaxSettings;
 use App\Modules\Equifax\Services\SurepassEquifaxService;
+use App\Modules\Experian\Services\ExperianSettings;
+use App\Modules\Experian\Services\SurepassExperianService;
 use App\Modules\MobileOtp\Contracts\SmsProvider;
 use App\Support\Analytics\TrackingScripts;
 use App\Support\Contact\OfficeMap;
@@ -51,6 +53,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->when(SurepassEquifaxService::class)
             ->needs(SurepassClient::class)
             ->give(fn (): SurepassClient => EquifaxSettings::surepassClient());
+
+        // Experian likewise (SUREPASS_EXPERIAN_TOKEN); unset, it shares CRIF's.
+        $this->app->when(SurepassExperianService::class)
+            ->needs(SurepassClient::class)
+            ->give(fn (): SurepassClient => ExperianSettings::surepassClient());
 
         // Resolved by name from config/mobile_otp.php, so swapping or adding an SMS
         // gateway never touches a controller, action or form. An unknown name fails
@@ -234,6 +241,9 @@ class AppServiceProvider extends ServiceProvider
         // one person's script cannot spend the Surepass balance or hammer report
         // reads. Not lifted under tests — the limit itself is tested.
         RateLimiter::for('equifax-api', fn (Request $request) => Limit::perMinute(30)->by('equifax:'.($request->user()?->getAuthIdentifier() ?? $request->ip())));
+
+        // The Experian internal API (routes/experian.php), on its own counter.
+        RateLimiter::for('experian-api', fn (Request $request) => Limit::perMinute(30)->by('experian:'.($request->user()?->getAuthIdentifier() ?? $request->ip())));
 
         RateLimiter::for('mobile-otp-verify', fn (Request $request) => app()->runningUnitTests()
             ? Limit::none()

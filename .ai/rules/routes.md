@@ -2,6 +2,7 @@
 paths:
   - routes/api.php
   - routes/equifax.php
+  - routes/experian.php
 ---
 
 # Routes
@@ -11,3 +12,6 @@ routes/api.php (registered in bootstrap/app.php, /api prefix) is public and stat
 
 ## Authenticated JSON API: session auth, JSON forced before auth
 The app has no token auth (no Sanctum) and routes/api.php is public, so staff-only JSON endpoints live in their own route file loaded in bootstrap/app.php `then:` with the `web` group (session + CSRF) and middleware ['equifax.json', 'auth', throttle]. ForceJsonResponse must run BEFORE auth — it is registered with prependToPriorityList(AuthenticatesRequests::class, …) because Laravel otherwise sorts auth first and a signed-out caller hits route('login'), which does not exist (500). Inside the app, call EquifaxCreditService instead of HTTP to yourself.
+
+## Experian API reuses the session-auth JSON pattern
+routes/experian.php is loaded in bootstrap/app.php `then:` with the `web` group and middleware ['experian.json', 'auth', 'throttle:experian-api'] — the same pattern as routes/equifax.php (alias experian.json = ForceJsonResponse, which must run before auth). Records are addressed by UUID public_id. Every action authorises the Experian policy AND Gate 'view' on the record's customer (IDOR guard). POST /reports/{id}/pdf returns application/pdf when a PDF is at hand, otherwise starts a paid PDF request (202/409 JSON) — never a silent re-purchase.

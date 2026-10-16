@@ -10,7 +10,9 @@ use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
 use App\Modules\CreditScore\Providers\SurepassCrifScoreProvider;
 use App\Modules\CreditScore\Providers\SurepassEquifaxScoreProvider;
+use App\Modules\CreditScore\Providers\SurepassExperianScoreProvider;
 use App\Modules\Equifax\Services\EquifaxSettings;
+use App\Modules\Experian\Services\ExperianSettings;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -24,12 +26,13 @@ class SubmitCreditScoreCheck
         private readonly CreditScoreProvider $provider,
         private readonly SurepassCrifScoreProvider $liveCrif,
         private readonly SurepassEquifaxScoreProvider $liveEquifax,
+        private readonly SurepassExperianScoreProvider $liveExperian,
     ) {}
 
     /**
      * Real scores for the bureaus whose public page is switched to live (CRIF:
-     * CRIF Settings, Equifax: Equifax Settings — each independently); the bound
-     * demo provider for everything else.
+     * CRIF Settings, Equifax: Equifax Settings, Experian: Experian Settings —
+     * each independently); the bound demo provider for everything else.
      *
      * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
      */
@@ -38,6 +41,7 @@ class SubmitCreditScoreCheck
         return match (true) {
             $bureau === BureauName::Crif && CrifSettings::publicScoreLive() => $this->live($this->liveCrif, $bureau, CrifSettings::reuseDays(), $data, $mobileNumber, $ipAddress),
             $bureau === BureauName::Equifax && EquifaxSettings::publicScoreLive() => $this->live($this->liveEquifax, $bureau, EquifaxSettings::scoreReuseDays(), $data, $mobileNumber, $ipAddress),
+            $bureau === BureauName::Experian && ExperianSettings::publicScoreLive() => $this->live($this->liveExperian, $bureau, ExperianSettings::scoreReuseDays(), $data, $mobileNumber, $ipAddress),
             default => $this->run($this->provider, $data, $bureau, $mobileNumber, $ipAddress),
         };
     }

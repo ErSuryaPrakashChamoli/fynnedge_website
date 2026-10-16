@@ -5,6 +5,7 @@ namespace App\Modules\Customers\Models;
 use App\Models\Concerns\HasPublicId;
 use App\Modules\CreditBureau\Models\CrifReport;
 use App\Modules\Equifax\Models\EquifaxCreditRequest;
+use App\Modules\Experian\Models\ExperianCreditRequest;
 use App\Modules\Journey\Models\JourneySession;
 use Database\Factories\CustomerFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -47,5 +48,15 @@ class Customer extends Model
     public function latestEquifaxRequest(): HasOne
     {
         return $this->hasOne(EquifaxCreditRequest::class)->latestOfMany();
+    }
+
+    public function experianRequests(): HasMany
+    {
+        return $this->hasMany(ExperianCreditRequest::class);
+    }
+
+    public function latestExperianRequest(): HasOne
+    {
+        return $this->hasOne(ExperianCreditRequest::class)->latestOfMany();
     }
 }

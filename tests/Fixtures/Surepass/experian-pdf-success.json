@@ -1,0 +1,15 @@
+{
+    "data": {
+        "client_id": "credit_report_experian_pdf_TESTFIXTURE0001",
+        "name": "TEST FIXTURE",
+        "mobile": "9000000001",
+        "pan": "AAAPZ9999Z",
+        "credit_score": "761",
+        "credit_report": {},
+        "credit_report_link": "https://files.surepass.test/experian/TESTFIXTURE0001.pdf"
+    },
+    "status_code": 200,
+    "success": true,
+    "message": "Success",
+    "message_code": "success"
+}

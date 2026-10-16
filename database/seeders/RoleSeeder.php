@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Modules\CreditBureau\Services\CrifRoles;
 use App\Modules\Equifax\Services\EquifaxRoles;
+use App\Modules\Experian\Services\ExperianRoles;
 use App\Support\Rates\RateRoles;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
@@ -96,6 +97,9 @@ class RoleSeeder extends Seeder
         // Equifax: the same Credit Officer role gets the everyday Equifax set;
         // fresh pulls, reconciliation, raw JSON and settings stay ungranted.
         EquifaxRoles::grant();
+
+        // Experian: the same pattern, its own permissions.
+        ExperianRoles::grant();
     }
 
     /**

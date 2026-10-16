@@ -34,6 +34,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | resources/views/emails/**,resources/views/components/emails/** | .ai/rules/emails.md |
 | resources/views/**,app/Http/Controllers/**,app/Support/**,app/Enums/**,lang/** | .ai/rules/enums.md |
 | app/Modules/Equifax/** | .ai/rules/equifax.md |
+| app/Modules/Experian/** | .ai/rules/experian.md |
 | app/Filament/Imports/** | .ai/rules/filament-imports.md |
 | app/Filament/**,database/migrations/** | .ai/rules/filament-migrations.md |
 | app/Support/Pages/AboutPageContent.php,app/Filament/Pages/AboutPageSettings.php,resources/views/about.blade.php | .ai/rules/filament-pages-views.md |
@@ -87,7 +88,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | resources/views/components/⚡credit-score-check.blade.php | .ai/rules/resources-views-components.md |
 | resources/views/quick-enquiry.blade.php, resources/views/**, resources/views/home.blade.php, resources/views/contact.blade.php | .ai/rules/resources-views.md |
 | app/Filament/Resources/** | .ai/rules/resources.md |
-| routes/api.php, routes/equifax.php | .ai/rules/routes.md |
+| routes/api.php, routes/equifax.php, routes/experian.php | .ai/rules/routes.md |
 | app/Support/Enquiries/EnquiryFormContent.php,app/Filament/Resources/MarketingSections/Schemas/MarketingSectionForm.php,resources/views/components/site/quick-enquiry.blade.php | .ai/rules/schemas-views-components-site.md |
 | app/Support/Seo/**,app/Filament/Pages/StructuredData.php,app/Filament/Resources/SchemaTemplates/**,app/Filament/Schemas/SeoFormSection.php | .ai/rules/schemas.md |
 | app/Support/Seo/OrganizationSchema.php,database/seeders/BusinessProfileSeeder.php,app/Filament/Pages/Settings.php | .ai/rules/seeders-filament-pages.md |

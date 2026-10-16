@@ -7,6 +7,7 @@ use App\Modules\CreditBureau\Enums\CreditCheckStatus;
 use App\Modules\CreditBureau\Enums\CrifErrorCode;
 use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\Equifax\Enums\EquifaxErrorCode;
+use App\Modules\Experian\Enums\ExperianErrorCode;
 use Database\Factories\CreditScoreCheckFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -54,7 +55,7 @@ class CreditScoreCheck extends Model
      * Why a live (Surepass) check gave no score — the visitor only sees a
      * generic message, so this is what admins read to find the cause.
      */
-    public function liveFailure(): CrifErrorCode|EquifaxErrorCode|null
+    public function liveFailure(): CrifErrorCode|EquifaxErrorCode|ExperianErrorCode|null
     {
         $error = is_array($this->raw_response) ? ($this->raw_response['error'] ?? null) : null;
 
@@ -62,6 +63,10 @@ class CreditScoreCheck extends Model
             return null;
         }
 
-        return $this->bureau === BureauName::Equifax ? EquifaxErrorCode::tryFrom($error) : CrifErrorCode::tryFrom($error);
+        return match ($this->bureau) {
+            BureauName::Equifax => EquifaxErrorCode::tryFrom($error),
+            BureauName::Experian => ExperianErrorCode::tryFrom($error),
+            default => CrifErrorCode::tryFrom($error),
+        };
     }
 }

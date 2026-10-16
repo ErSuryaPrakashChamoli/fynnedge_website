@@ -16,6 +16,9 @@ use App\Modules\Equifax\DataTransferObjects\EquifaxCheckRequest;
 use App\Modules\Equifax\Enums\EquifaxProduct;
 use App\Modules\Equifax\Enums\Gender;
 use App\Modules\Equifax\Services\EquifaxSettings;
+use App\Modules\Experian\DataTransferObjects\ExperianCheckRequest;
+use App\Modules\Experian\Enums\ExperianProduct;
+use App\Modules\Experian\Services\ExperianSettings;
 use App\Modules\MobileOtp\Models\MobileOtpChallenge;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
@@ -244,6 +247,65 @@ function equifaxRequestFor(Customer $customer, array $overrides = []): EquifaxCh
         'pan' => 'AAAPZ9999Z',
         'gender' => Gender::Male,
         'consent' => CreditConsentInput::recordedByEmployee(ConsentMethod::RecordedCall, 'CALL-REF-EQ1', now()->subHour(), true),
+        ...$overrides,
+    ]);
+}
+
+/**
+ * Switches Experian requests on with a fake Surepass token and puts Surepass's
+ * credit-report-experian endpoints — and the host its PDF links point at —
+ * behind Http::fake(). Stray requests are refused, so no test can ever reach
+ * the real (billable) API. By default each endpoint answers with its own
+ * synthetic fixture (score, fetch-report, fetch-report-pdf).
+ *
+ * @param  mixed  $response  Any Http::fake() stub for the Experian endpoints.
+ */
+function fakeSurepassExperian(mixed $response = null): void
+{
+    config([
+        'services.surepass.base_url' => 'https://kyc-api.surepass.app',
+        'services.surepass.token' => 'test-surepass-token',
+        'services.surepass.timeout' => 60,
+        'services.surepass.connect_timeout' => 10,
+    ]);
+    Setting::set(ExperianSettings::ENABLED, true);
+
+    Http::preventStrayRequests();
+    Http::fake([
+        'kyc-api.surepass.app/api/v1/credit-report-experian/*' => $response ?? fn (Request $request) => Http::response(experianFixture(match (true) {
+            str_ends_with($request->url(), '/score') => 'score',
+            str_ends_with($request->url(), '/fetch-report-pdf') => 'pdf',
+            default => 'report',
+        })),
+        'files.surepass.test/*' => Http::response('%PDF-1.4 synthetic test PDF', 200, ['Content-Type' => 'application/pdf']),
+    ]);
+}
+
+/**
+ * A fabricated Surepass Experian response — "score", "report" or "pdf"; never real data.
+ *
+ * @return array<string, mixed>
+ */
+function experianFixture(string $product = 'report'): array
+{
+    return json_decode((string) file_get_contents(__DIR__."/Fixtures/Surepass/experian-{$product}-success.json"), true, flags: JSON_THROW_ON_ERROR);
+}
+
+/**
+ * A valid Experian request for the customer, with consent recorded now by
+ * phone call. Override any constructor argument by name.
+ *
+ * @param  array<string, mixed>  $overrides
+ */
+function experianRequestFor(Customer $customer, array $overrides = []): ExperianCheckRequest
+{
+    return new ExperianCheckRequest(...[
+        'customer' => $customer,
+        'product' => ExperianProduct::Report,
+        'name' => 'Test Fixture',
+        'mobile' => '9000000001',
+        'pan' => 'AAAPZ9999Z',
+        'consent' => CreditConsentInput::recordedByEmployee(ConsentMethod::RecordedCall, 'CALL-REF-EX1', now()->subHour(), true),
         ...$overrides,
     ]);
 }

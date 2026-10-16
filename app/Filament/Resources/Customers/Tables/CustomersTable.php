@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Customers\Tables;
 
 use App\Modules\CreditBureau\Models\CrifReport;
 use App\Modules\Equifax\Models\EquifaxCreditRequest;
+use App\Modules\Experian\Models\ExperianCreditRequest;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -35,6 +36,11 @@ class CustomersTable
                     ->badge()
                     ->placeholder('Not requested')
                     ->visible(fn (): bool => (bool) auth()->user()?->can('viewAny', EquifaxCreditRequest::class)),
+                TextColumn::make('latestExperianRequest.status')
+                    ->label('Experian')
+                    ->badge()
+                    ->placeholder('Not requested')
+                    ->visible(fn (): bool => (bool) auth()->user()?->can('viewAny', ExperianCreditRequest::class)),
                 TextColumn::make('created_at')
                     ->label('First seen')
                     ->dateTime()
