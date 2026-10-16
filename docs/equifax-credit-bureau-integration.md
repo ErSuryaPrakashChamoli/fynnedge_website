@@ -227,12 +227,13 @@ The read methods never call Surepass, so they are safe on every page load. `requ
 
 ## 12. Configuration
 
-**Environment:** the same Surepass account as CRIF; no new secret.
+**Environment:** the same Surepass account as CRIF. Equifax may have its own token; without one it uses CRIF's.
 
 | Variable | Default |
 | --- | --- |
 | `SUREPASS_BASE_URL` | `https://kyc-api.surepass.app` |
 | `SUREPASS_BEARER_TOKEN` | secret, server only |
+| `SUREPASS_EQUIFAX_TOKEN` / `SUREPASS_EQUIFAX_BASE_URL` | optional, Equifax only; blank = the two above |
 | `SUREPASS_TIMEOUT` / `SUREPASS_CONNECT_TIMEOUT` | 60 / 10 seconds |
 | `SUREPASS_EQUIFAX_PUBLIC_SCORE_SOURCE` | `report` (`score` once Surepass enables it) |
 

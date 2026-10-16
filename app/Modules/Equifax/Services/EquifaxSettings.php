@@ -10,7 +10,8 @@ use App\Modules\CreditBureau\Services\SurepassClient;
  * and stored in the SAME key/value Setting table the rest of the site uses.
  * Independent of CRIF's settings: switching one bureau off never touches the
  * other. The Surepass token is deliberately NOT here — it stays in the server
- * environment (config/services.php), shared with CRIF, and no screen shows it.
+ * environment (config/services.php): SUREPASS_EQUIFAX_TOKEN when set, else the
+ * SUREPASS_BEARER_TOKEN shared with CRIF — and no screen shows it.
  */
 final class EquifaxSettings
 {
@@ -57,7 +58,33 @@ final class EquifaxSettings
 
     public static function isConfigured(): bool
     {
-        return app(SurepassClient::class)->isConfigured();
+        return self::surepassClient()->isConfigured();
+    }
+
+    /**
+     * The Surepass wire Equifax calls go through (bound for
+     * SurepassEquifaxService in AppServiceProvider): the Equifax-only token and
+     * base URL when the server sets them, otherwise the shared ones.
+     */
+    public static function surepassClient(): SurepassClient
+    {
+        return new SurepassClient(
+            config('services.surepass.equifax_token'),
+            config('services.surepass.equifax_base_url'),
+        );
+    }
+
+    /**
+     * Which environment variable the Equifax token is read from — the name
+     * only, for diagnostics; null when neither is set.
+     */
+    public static function tokenSource(): ?string
+    {
+        return match (true) {
+            filled(config('services.surepass.equifax_token')) => 'SUREPASS_EQUIFAX_TOKEN',
+            filled(config('services.surepass.token')) => 'SUREPASS_BEARER_TOKEN, shared with CRIF',
+            default => null,
+        };
     }
 
     public static function isAvailable(): bool

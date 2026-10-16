@@ -95,6 +95,10 @@ return [
         // or "score" (credit-report-v2/score, only if your plan includes it).
         // `php artisan equifax:check-access` shows which ones your token may use.
         'equifax_public_score_source' => env('SUREPASS_EQUIFAX_PUBLIC_SCORE_SOURCE', 'report'),
+        // Optional token / base URL for Equifax only (App\Modules\Equifax\Services\EquifaxSettings::surepassClient()).
+        // Blank = Equifax uses the shared SUREPASS_BEARER_TOKEN / SUREPASS_BASE_URL above.
+        'equifax_token' => env('SUREPASS_EQUIFAX_TOKEN'),
+        'equifax_base_url' => env('SUREPASS_EQUIFAX_BASE_URL'),
     ],
 
 ];

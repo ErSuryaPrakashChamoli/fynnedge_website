@@ -1,10 +1,13 @@
 <?php
 
 use App\Modules\CreditBureau\Models\CreditConsent;
+use App\Modules\CreditBureau\Services\CrifSettings;
+use App\Modules\CreditBureau\Services\SurepassCrifService;
 use App\Modules\Equifax\DataTransferObjects\EquifaxSubject;
 use App\Modules\Equifax\DataTransferObjects\SurepassEquifaxResult;
 use App\Modules\Equifax\Enums\EquifaxErrorCode;
 use App\Modules\Equifax\Enums\Gender;
+use App\Modules\Equifax\Services\EquifaxSettings;
 use App\Modules\Equifax\Services\SurepassEquifaxService;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Request;
@@ -92,6 +95,25 @@ it('sends nothing without a token and refuses a subject without consent', functi
 
     expect(fn () => new EquifaxSubject('A B', 'AAAPZ9999Z', '9000000001', Gender::Male, CreditConsent::factory()->make(['status' => 'withdrawn'])))
         ->toThrow(InvalidArgumentException::class);
+});
+
+it('uses the Equifax-only token and base URL when the server sets them, without lending them to CRIF', function () {
+    fakeSurepassEquifax();
+    Http::fake(['equifax.surepass.test/*' => Http::response(equifaxReportFixture())]);
+    config([
+        'services.surepass.token' => null,
+        'services.surepass.equifax_token' => 'equifax-only-token',
+        'services.surepass.equifax_base_url' => 'https://equifax.surepass.test',
+    ]);
+
+    expect(fetchEquifaxReport()->isSuccessful())->toBeTrue()
+        ->and(EquifaxSettings::isConfigured())->toBeTrue()
+        ->and(CrifSettings::isConfigured())->toBeFalse()
+        ->and(app(SurepassCrifService::class)->checkAccess()[SurepassCrifService::REPORT_PATH]['access'])->toBe('not_configured');
+
+    Http::assertSentCount(1);
+    Http::assertSent(fn (Request $request) => $request->url() === 'https://equifax.surepass.test/api/v1/credit-report-v2/fetch-report'
+        && $request->hasHeader('Authorization', 'Bearer equifax-only-token'));
 });
 
 it('checks which Equifax APIs the token may use without sending customer data', function () {

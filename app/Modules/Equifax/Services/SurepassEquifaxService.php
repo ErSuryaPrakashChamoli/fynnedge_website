@@ -12,7 +12,8 @@ use Closure;
 /**
  * Surepass's Equifax endpoints (credit-report-v2): score, full report and PDF,
  * each a POST of name / id_number / id_type "pan" / mobile / consent / gender.
- * The wire (token, timeouts, no retries) is the shared SurepassClient; this
+ * The wire (timeouts, no retries) is the shared SurepassClient, built with
+ * Equifax's own token when set (EquifaxSettings::surepassClient()); this
  * class decides what an Equifax answer means. Kept apart from CRIF's
  * SurepassCrifService on purpose: different endpoints, payload and report.
  *
@@ -32,6 +33,11 @@ class SurepassEquifaxService
     private const NOT_FOUND_WORDS = ['not_found', 'no_record', 'record_not_found', 'no_hit', 'nohit'];
 
     public function __construct(private readonly SurepassClient $client) {}
+
+    public function baseUrl(): string
+    {
+        return $this->client->baseUrl();
+    }
 
     public function fetchScore(EquifaxSubject $subject): SurepassEquifaxResult
     {

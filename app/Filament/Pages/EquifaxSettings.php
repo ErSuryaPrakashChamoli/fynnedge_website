@@ -67,8 +67,8 @@ class EquifaxSettings extends Page
             ->components([
                 Callout::make(Settings::isConfigured() ? 'Surepass API token is configured on this server' : 'Surepass API token is NOT configured')
                     ->description(Settings::isConfigured()
-                        ? 'The token is read from the server environment (shared with CRIF) and is never shown here. Run `php artisan equifax:check-access` to see which Equifax APIs it may use.'
-                        : 'Set SUREPASS_BEARER_TOKEN in the server environment (not in this panel), then clear the config cache. Until then no Equifax request can be sent.')
+                        ? 'The token is read from the server environment ('.Settings::tokenSource().') and is never shown here. Run `php artisan equifax:check-access` to see which Equifax APIs it may use.'
+                        : 'Set SUREPASS_EQUIFAX_TOKEN (or the SUREPASS_BEARER_TOKEN shared with CRIF) in the server environment, not in this panel, then clear the config cache. Until then no Equifax request can be sent.')
                     ->status(Settings::isConfigured() ? 'success' : 'warning'),
                 Section::make('Integration')
                     ->components([

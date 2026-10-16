@@ -52,6 +52,7 @@ it('reports which Equifax APIs the token may use', function () {
 
     expect(Artisan::call('equifax:check-access'))->toBe(0)
         ->and(Artisan::output())
+        ->toContain('yes (SUREPASS_BEARER_TOKEN, shared with CRIF)')
         ->toContain('Allowed — your plan includes this API')
         ->toContain('NOT ENABLED on your Surepass plan')
         ->toContain('Score-only requests will fail');

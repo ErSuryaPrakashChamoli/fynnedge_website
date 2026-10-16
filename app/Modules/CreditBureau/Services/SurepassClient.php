@@ -11,7 +11,9 @@ use Throwable;
 /**
  * The wire to Surepass's KYC API, shared by every bureau that goes through it
  * (CRIF: SurepassCrifService; Equifax: App\Modules\Equifax\Services\SurepassEquifaxService).
- * One token, one base URL, one set of timeouts — config('services.surepass').
+ * Token and base URL come from config('services.surepass') unless a bureau
+ * passes its own (Equifax may: SUREPASS_EQUIFAX_TOKEN); a blank one falls back
+ * to the shared value. Timeouts are always shared.
  *
  * Every bureau call is PAID, so this class never retries: there is no ->retry()
  * and no ->throw() (a thrown RequestException would carry the response body —
@@ -24,9 +26,19 @@ class SurepassClient
     /** A provider PDF larger than this is refused rather than held in memory. */
     private const MAX_PDF_BYTES = 20 * 1024 * 1024;
 
+    public function __construct(
+        private readonly ?string $token = null,
+        private readonly ?string $baseUrl = null,
+    ) {}
+
     public function isConfigured(): bool
     {
-        return filled(config('services.surepass.token')) && filled(config('services.surepass.base_url'));
+        return filled($this->token()) && filled($this->baseUrl());
+    }
+
+    public function baseUrl(): string
+    {
+        return filled($this->baseUrl) ? (string) $this->baseUrl : (string) config('services.surepass.base_url');
     }
 
     /**
@@ -163,12 +175,17 @@ class SurepassClient
     private function request(): PendingRequest
     {
         // No ->retry() and no ->throw(): see the class docblock.
-        return Http::baseUrl((string) config('services.surepass.base_url'))
-            ->withToken((string) config('services.surepass.token'))
+        return Http::baseUrl($this->baseUrl())
+            ->withToken($this->token())
             ->acceptJson()
             ->asJson()
             ->connectTimeout($this->connectTimeout())
             ->timeout($this->timeout());
+    }
+
+    private function token(): string
+    {
+        return filled($this->token) ? (string) $this->token : (string) config('services.surepass.token');
     }
 
     private function timeout(): int

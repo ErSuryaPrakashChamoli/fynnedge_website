@@ -8,7 +8,10 @@ use App\Models\NavigationLink;
 use App\Models\Page;
 use App\Models\Setting;
 use App\Modules\CreditBureau\Contracts\CreditBureauProvider;
+use App\Modules\CreditBureau\Services\SurepassClient;
 use App\Modules\CreditScore\Contracts\CreditScoreProvider;
+use App\Modules\Equifax\Services\EquifaxSettings;
+use App\Modules\Equifax\Services\SurepassEquifaxService;
 use App\Modules\MobileOtp\Contracts\SmsProvider;
 use App\Support\Analytics\TrackingScripts;
 use App\Support\Contact\OfficeMap;
@@ -43,6 +46,11 @@ class AppServiceProvider extends ServiceProvider
             CreditScoreProvider::class,
             fn () => $this->app->make(config('services.credit_score.provider')),
         );
+
+        // Equifax may have its own Surepass token (SUREPASS_EQUIFAX_TOKEN); unset, it shares CRIF's.
+        $this->app->when(SurepassEquifaxService::class)
+            ->needs(SurepassClient::class)
+            ->give(fn (): SurepassClient => EquifaxSettings::surepassClient());
 
         // Resolved by name from config/mobile_otp.php, so swapping or adding an SMS
         // gateway never touches a controller, action or form. An unknown name fails

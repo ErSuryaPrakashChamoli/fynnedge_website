@@ -22,9 +22,9 @@ class EquifaxCheckAccessCommand extends Command
     private const MEANING = [
         'allowed' => 'Allowed — your plan includes this API',
         'not_enabled' => 'NOT ENABLED on your Surepass plan — ask Surepass support to enable it',
-        'token_rejected' => 'Token rejected — check SUREPASS_BEARER_TOKEN is the full production token',
+        'token_rejected' => 'Token rejected — check the token named above is the full production token',
         'unreachable' => 'Unreachable — this server cannot connect to Surepass (firewall / DNS)',
-        'not_found' => 'Endpoint not found — check SUREPASS_BASE_URL',
+        'not_found' => 'Endpoint not found — check the base URL above',
         'not_configured' => 'Token or base URL missing from the environment',
         'unexpected' => 'Unexpected answer — try again, then contact Surepass',
     ];
@@ -33,8 +33,10 @@ class EquifaxCheckAccessCommand extends Command
     {
         $source = config('services.surepass.equifax_public_score_source') === 'score' ? 'score' : 'report';
 
-        $this->components->twoColumnDetail('Base URL', (string) config('services.surepass.base_url'));
-        $this->components->twoColumnDetail('Token loaded', EquifaxSettings::isConfigured() ? 'yes' : '<fg=red>NO</>');
+        $this->components->twoColumnDetail('Base URL', $surepass->baseUrl());
+        $this->components->twoColumnDetail('Token loaded', EquifaxSettings::isConfigured()
+            ? 'yes ('.EquifaxSettings::tokenSource().')'
+            : '<fg=red>NO</> — set SUREPASS_EQUIFAX_TOKEN or SUREPASS_BEARER_TOKEN, then php artisan config:clear');
         $this->components->twoColumnDetail('Equifax requests (admin / API)', EquifaxSettings::enabled() ? 'on' : 'off');
         $this->components->twoColumnDetail('Free Equifax Score page uses real scores', EquifaxSettings::publicScoreEnabled() ? 'on' : 'off');
         $this->components->twoColumnDetail('Public score source', $source);
