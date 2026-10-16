@@ -55,7 +55,9 @@ class RecordWebsiteEquifaxCheck
                 $pan = PanNumber::normalize($check->pan_number);
                 $mobile = MobileNumber::normalize($check->mobile_number);
                 $name = trim(preg_replace('/\s+/', ' ', (string) $check->full_name) ?? '');
-                $customer = Customer::query()->where('phone', $mobile)->latest('id')->first();
+                // The portal account the visitor's verified mobile resolved to; older
+                // checks without one fall back to the contact-phone match.
+                $customer = $check->customer ?? Customer::query()->where('phone', $mobile)->latest('id')->first();
 
                 $consent = CreditConsent::query()->create([
                     'customer_id' => $customer?->id,

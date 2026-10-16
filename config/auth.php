@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Modules\Customers\Models\Customer;
 
 return [
 
@@ -42,6 +43,13 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        // FynnOn customer portal (/my-profile). Customers sign in with an OTP
+        // to their verified mobile; staff keep the `web` guard above.
+        'customer' => [
+            'driver' => 'session',
+            'provider' => 'customers',
+        ],
     ],
 
     /*
@@ -65,6 +73,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', User::class),
+        ],
+
+        'customers' => [
+            'driver' => 'eloquent',
+            'model' => Customer::class,
         ],
 
         // 'users' => [

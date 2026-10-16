@@ -36,7 +36,7 @@ trait ValidatesMobileOtpInput
         return [
             'mobile_number' => ['required', 'string', 'regex:'.MobileNumber::PATTERN],
             'country_code' => ['required', 'string', Rule::in(MobileNumber::SUPPORTED_COUNTRIES)],
-            'purpose' => ['required', 'string', Rule::enum(MobileOtpPurpose::class)],
+            'purpose' => ['required', 'string', Rule::enum(MobileOtpPurpose::class)->only(MobileOtpPurpose::apiPurposes())],
         ];
     }
 

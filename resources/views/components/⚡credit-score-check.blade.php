@@ -10,6 +10,9 @@ use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\CreditScore\Enums\ScoreBand;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
 use App\Modules\CreditScore\Services\CreditScoreAdvice;
+use App\Modules\Customers\Actions\LogInCustomer;
+use App\Modules\Customers\Actions\ResolveCustomerAccount;
+use App\Modules\Customers\Models\Customer;
 use App\Modules\Equifax\Enums\Gender;
 use App\Modules\Equifax\Services\EquifaxSettings;
 use App\Modules\Experian\Services\ExperianSettings;
@@ -21,6 +24,8 @@ use App\Modules\MobileOtp\Enums\MobileOtpVerificationResult;
 use App\Modules\MobileOtp\Exceptions\MobileOtpThrottled;
 use App\Modules\MobileOtp\Models\MobileOtpChallenge;
 use App\Modules\MobileOtp\Services\MobileNumber;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -31,6 +36,13 @@ use Livewire\Component;
 new class extends Component
 {
     public string $bureau;
+
+    /**
+     * 'public' on /credit-score/{bureau}; 'portal' when a signed-in customer
+     * refreshes a score from /my-profile (only the result step's links differ).
+     */
+    #[Locked]
+    public string $context = 'public';
 
     /**
      * Locked: every public property is otherwise writable from the browser, and
@@ -116,15 +128,67 @@ new class extends Component
     public ?array $resultInsights = null;
 
     /**
+     * The check just run, by public id, when it was saved to a portal account —
+     * for the "View report" link. Never a bureau request id or report data.
+     */
+    #[Locked]
+    public ?string $resultCheckId = null;
+
+    /** 'signed_in' once the check's account is open in this browser, 'disabled' when staff switched it off. */
+    #[Locked]
+    public ?string $accountStatus = null;
+
+    /**
      * Accepts a plain string (from the `:bureau="$bureau->value"` the controller
      * passes in) rather than requiring a typed BureauName — Livewire's test
      * harness assigns initial params to typed public properties directly, before
      * mount() runs, so a strict enum type here would reject the raw string it's
      * given. Mirrors the same accepts-string pattern used by the EMI calculator.
      */
-    public function mount(string $bureau): void
+    public function mount(string $bureau, string $context = 'public'): void
     {
         $this->bureau = (BureauName::tryFrom($bureau) ?? BureauName::Cibil)->value;
+        $this->context = $context === 'portal' ? 'portal' : 'public';
+        $this->mobileNumber = $this->lockedToAccount ? (string) $this->signedInCustomer->verified_mobile : '';
+    }
+
+    /** The signed-in portal customer, if any. */
+    #[Computed]
+    public function signedInCustomer(): ?Customer
+    {
+        $customer = Auth::guard(LogInCustomer::GUARD)->user();
+
+        return $customer instanceof Customer && $customer->hasPortalAccess() ? $customer : null;
+    }
+
+    /**
+     * A refresh from the portal always goes to the customer's own registered
+     * mobile. The public page stays open to any number — a second person on a
+     * shared browser checks their own — and nothing of the signed-in
+     * customer's is shown until an OTP proves the number is theirs.
+     */
+    #[Computed]
+    public function lockedToAccount(): bool
+    {
+        return $this->context === 'portal' && $this->signedInCustomer !== null;
+    }
+
+    /**
+     * The customer's own details, once their OTP is verified: from their last
+     * check on this bureau's page, else from their profile. They can still
+     * correct anything before submitting.
+     */
+    private function prefillFrom(Customer $customer): void
+    {
+        $latest = $customer->creditScoreChecks()->where('bureau', $this->bureau)->latest('id')->first();
+
+        $this->fullName = (string) ($latest?->full_name ?? $customer->full_name ?? '');
+        $this->firstName = (string) ($latest?->first_name ?? '');
+        $this->middleName = (string) ($latest?->middle_name ?? '');
+        $this->lastName = (string) ($latest?->last_name ?? '');
+        $this->dateOfBirth = (string) (($latest?->date_of_birth ?? $customer->date_of_birth)?->toDateString() ?? '');
+        $this->gender = (string) ($latest?->gender ?? $customer->gender?->value ?? '');
+        $this->panNumber = (string) ($latest?->pan_number ?? $customer->pan() ?? '');
     }
 
     #[Computed]
@@ -229,7 +293,7 @@ new class extends Component
 
     public function sendOtp(RequestMobileOtp $action): void
     {
-        $this->mobileNumber = MobileNumber::normalize($this->mobileNumber);
+        $this->mobileNumber = MobileNumber::normalize($this->lockedToAccount ? $this->signedInCustomer->verified_mobile : $this->mobileNumber);
 
         $this->validate([
             'mobileNumber' => ['required', 'regex:'.MobileNumber::PATTERN],
@@ -267,6 +331,10 @@ new class extends Component
             'otpCode' => ['required', 'digits:'.$this->otpLength],
         ]);
 
+        if ($this->lockedToAccount) {
+            $this->mobileNumber = (string) $this->signedInCustomer->verified_mobile;
+        }
+
         // Matched on the number too: editing the input after the code was sent
         // can never verify a different number than the one that received it.
         $challenge = MobileOtpChallenge::findForVerification($this->otpChallengeId, $this->mobileNumber, MobileOtpPurpose::CreditScoreCheck);
@@ -282,6 +350,10 @@ new class extends Component
 
         $this->verifiedMobileNumber = $challenge->mobile_number;
         $this->step = 'details';
+
+        if ($this->signedInCustomer?->verified_mobile === $this->verifiedMobileNumber) {
+            $this->prefillFrom($this->signedInCustomer);
+        }
     }
 
     /** "SURYA" → "Surya", "sen GUPTA" → "Sen Gupta", whichever case each name was typed in. */
@@ -297,7 +369,7 @@ new class extends Component
         $this->panNumber = strtoupper($value);
     }
 
-    public function submitDetails(SubmitCreditScoreCheck $action): void
+    public function submitDetails(SubmitCreditScoreCheck $action, ResolveCustomerAccount $accounts, LogInCustomer $logIn): void
     {
         if ($this->step !== 'details' || $this->verifiedMobileNumber === null) {
             $this->restart();
@@ -346,17 +418,25 @@ new class extends Component
             ]
             : ['full_name' => $validated['fullName'], 'first_name' => null, 'middle_name' => null, 'last_name' => null];
 
-        $check = $action->handle(
-            [
-                ...$name,
-                'date_of_birth' => $validated['dateOfBirth'],
-                'pan_number' => $validated['panNumber'],
-                'gender' => $this->needsGender ? $validated['gender'] : null,
-            ],
-            BureauName::from($this->bureau),
-            $this->verifiedMobileNumber,
-            request()->ip(),
-        );
+        $details = [
+            ...$name,
+            'date_of_birth' => $validated['dateOfBirth'],
+            'pan_number' => $validated['panNumber'],
+            'gender' => $this->needsGender ? $validated['gender'] : null,
+        ];
+        $customer = $this->accountFor($this->verifiedMobileNumber, $accounts);
+
+        $check = $action->handle($details, BureauName::from($this->bureau), $this->verifiedMobileNumber, request()->ip(), $customer);
+
+        if ($customer !== null) {
+            if ($check->isSuccessful()) {
+                $customer->fillBlankProfileDetails($details);
+            }
+
+            $this->resultCheckId = $check->exists && $check->customer_id === $customer->id ? $check->public_id : null;
+            $this->accountStatus = $this->signedInCustomer?->is($customer) || $logIn->handle($customer, 'credit_score_check') ? 'signed_in' : 'disabled';
+            unset($this->signedInCustomer, $this->lockedToAccount);
+        }
 
         $this->resultScore = $check->score;
         $this->resultInsights = $check->report_insights;
@@ -371,12 +451,41 @@ new class extends Component
         $this->step = 'result';
     }
 
+    /**
+     * The portal account for the number just verified: the signed-in customer's
+     * own, else the one ResolveCustomerAccount finds or opens. A failure here is
+     * logged and never stops the visitor's check.
+     */
+    private function accountFor(string $verifiedMobile, ResolveCustomerAccount $accounts): ?Customer
+    {
+        $signedIn = $this->signedInCustomer;
+
+        if ($signedIn !== null && $signedIn->verified_mobile === $verifiedMobile) {
+            return $signedIn;
+        }
+
+        try {
+            return $accounts->forVerifiedMobile($verifiedMobile);
+        } catch (\Throwable $exception) {
+            Log::error('Customer account could not be resolved for a credit score check', ['exception' => $exception::class]);
+
+            return null;
+        }
+    }
+
     public function restart(): void
     {
         $this->reset([
             'step', 'mobileNumber', 'otpCode', 'otpChallengeId', 'verifiedMobileNumber', 'resendAfterSeconds',
             'fullName', 'firstName', 'middleName', 'lastName', 'gender', 'dateOfBirth', 'panNumber', 'consent', 'resultScore', 'resultKind', 'resultError', 'resultInsights',
+            'resultCheckId', 'accountStatus',
         ]);
+
+        unset($this->signedInCustomer, $this->lockedToAccount);
+
+        if ($this->lockedToAccount) {
+            $this->mobileNumber = (string) $this->signedInCustomer->verified_mobile;
+        }
     }
 };
 ?>
@@ -400,23 +509,35 @@ new class extends Component
             @if ($step === 'mobile')
                 <p class="font-display text-xl font-semibold text-ink">{{ __('Let\'s get started') }}</p>
                 <div class="mt-4 flex flex-col gap-4">
-                    <div>
-                        <label for="mobileNumber" class="text-sm font-medium text-ink">{{ __('Mobile number') }}</label>
-                        <input
-                            id="mobileNumber"
-                            type="tel"
-                            inputmode="numeric"
-                            maxlength="10"
-                            placeholder="{{ __('10-digit mobile number') }}"
-                            wire:model="mobileNumber"
-                            class="mt-1.5 w-full rounded-lg border border-line-strong bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
-                        >
-                        @error('mobileNumber')
-                            <p class="mt-1 text-xs text-warn">{{ $message }}</p>
-                        @else
-                            <p class="mt-1.5 text-xs text-ink-faint">{{ __('You\'ll receive an OTP on this number.') }}</p>
-                        @enderror
-                    </div>
+                    @if ($this->lockedToAccount)
+                        <div>
+                            <p class="text-sm font-medium text-ink">{{ __('Mobile number') }}</p>
+                            <p class="mt-1.5 rounded-lg border border-line bg-surface-2 px-3.5 py-2.5 font-mono text-sm text-ink-muted">+91 {{ $this->signedInCustomer->maskedMobile() }}</p>
+                            @error('mobileNumber')
+                                <p class="mt-1 text-xs text-warn">{{ $message }}</p>
+                            @else
+                                <p class="mt-1.5 text-xs text-ink-faint">{{ __('We\'ll send the OTP to your registered mobile number.') }}</p>
+                            @enderror
+                        </div>
+                    @else
+                        <div>
+                            <label for="mobileNumber" class="text-sm font-medium text-ink">{{ __('Mobile number') }}</label>
+                            <input
+                                id="mobileNumber"
+                                type="tel"
+                                inputmode="numeric"
+                                maxlength="10"
+                                placeholder="{{ __('10-digit mobile number') }}"
+                                wire:model="mobileNumber"
+                                class="mt-1.5 w-full rounded-lg border border-line-strong bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+                            >
+                            @error('mobileNumber')
+                                <p class="mt-1 text-xs text-warn">{{ $message }}</p>
+                            @else
+                                <p class="mt-1.5 text-xs text-ink-faint">{{ __('You\'ll receive an OTP on this number.') }}</p>
+                            @enderror
+                        </div>
+                    @endif
                     <p class="text-xs text-ink-faint">
                         {!! __('By continuing, you agree to FynnEdge\'s <a href=":terms_url" class="underline hover:text-ink">Terms</a> and <a href=":privacy_policy_url" class="underline hover:text-ink">Privacy Policy</a>.', ['terms_url' => e(route('terms')), 'privacy_policy_url' => e(route('privacy-policy'))]) !!}
                     </p>
@@ -690,14 +811,48 @@ new class extends Component
                         </div>
                     @endif
 
+                    @if ($accountStatus === 'signed_in')
+                        {{-- A plain link the visitor clicks, so a new tab is never blocked
+                             as a pop-up; it carries no report data — the profile reads
+                             the saved check server-side for the signed-in customer. --}}
+                        <div class="flex flex-col gap-3 rounded-xl border border-line bg-surface-2 p-4 text-sm sm:flex-row sm:items-center sm:justify-between" data-portal-handoff>
+                            <div>
+                                <p class="font-medium text-ink">
+                                    @if (in_array($resultKind, ['live', 'no_score'], true))
+                                        {{ __('Saved to your :brand profile', ['brand' => config('customer_portal.brand')]) }}
+                                    @else
+                                        {{ __('You\'re signed in to your :brand profile', ['brand' => config('customer_portal.brand')]) }}
+                                    @endif
+                                </p>
+                                <p class="mt-1 text-ink-muted">{{ __('Sign in any time with your mobile number to see your saved scores and reports — opening them never runs a new credit check.') }}</p>
+                            </div>
+                            @if ($context === 'portal')
+                                @if ($resultCheckId && in_array($resultKind, ['live', 'no_score'], true))
+                                    <x-ui.button tag="a" href="{{ route('portal.reports.show', $resultCheckId) }}" size="sm" class="shrink-0 justify-center">{{ __('View report') }}</x-ui.button>
+                                @else
+                                    <x-ui.button tag="a" href="{{ route('portal.credit-score') }}" size="sm" class="shrink-0 justify-center">{{ __('Back to my credit score') }}</x-ui.button>
+                                @endif
+                            @else
+                                <x-ui.button tag="a" href="{{ route('portal.dashboard') }}" target="_blank" rel="noopener" size="sm" class="shrink-0 justify-center">
+                                    {{ __('Open my profile') }}
+                                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 3h4v4M13 3 7 9M11 9.5V13H3V5h3.5" /></svg>
+                                </x-ui.button>
+                            @endif
+                        </div>
+                    @elseif ($accountStatus === 'disabled')
+                        <x-ui.alert tone="warn">{{ __('Access to your profile is switched off. Please contact us to restore it.') }}</x-ui.alert>
+                    @endif
+
                     <div class="flex flex-col gap-2.5 border-t border-line pt-5 sm:flex-row sm:justify-center">
                         @if (in_array($resultKind, ['live', 'demo'], true))
-                            <x-ui.button tag="a" href="{{ route('eligibility.index') }}" class="justify-center">
-                                {{ __('Check Eligibility') }}
+                            <x-ui.button tag="a" href="{{ $context === 'portal' ? route('portal.apply') : route('eligibility.index') }}" class="justify-center">
+                                {{ $context === 'portal' ? __('Apply for a Loan') : __('Check Eligibility') }}
                                 <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8h10m0 0-4-4m4 4-4 4" /></svg>
                             </x-ui.button>
                         @endif
-                        <x-ui.button wire:click="restart" variant="secondary" class="justify-center">{{ __('Check another number') }}</x-ui.button>
+                        <x-ui.button wire:click="restart" variant="secondary" class="justify-center">
+                            {{ $this->lockedToAccount ? __('Start again') : __('Check another number') }}
+                        </x-ui.button>
                     </div>
 
                     @if ($resultKind === 'live')

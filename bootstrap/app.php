@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureCustomerPortalAccess;
 use App\Http\Middleware\ForceJsonResponse;
 use App\Http\Middleware\HandleRedirects;
 use App\Http\Middleware\SearchEngineIndexingHeader;
@@ -30,7 +31,19 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias(['equifax.json' => ForceJsonResponse::class, 'experian.json' => ForceJsonResponse::class, 'cibil.json' => ForceJsonResponse::class]);
+        $middleware->alias([
+            'equifax.json' => ForceJsonResponse::class,
+            'experian.json' => ForceJsonResponse::class,
+            'cibil.json' => ForceJsonResponse::class,
+            'customer.portal' => EnsureCustomerPortalAccess::class,
+        ]);
+
+        // The only browser-facing `auth` routes are the customer portal's
+        // (`auth:customer`); staff JSON APIs answer 401 (ForceJsonResponse) and
+        // Filament redirects to its own login. A signed-out visitor is sent to
+        // the customer login, which returns them to the page they asked for.
+        $middleware->redirectGuestsTo(fn (): string => route('customer.login'));
+        $middleware->redirectUsersTo(fn (Request $request): string => $request->routeIs('customer.*') ? route('portal.dashboard') : '/');
         // Must run BEFORE `auth` (which Laravel otherwise sorts first): a signed-out
         // API caller then gets a 401 JSON answer instead of a login redirect.
         $middleware->prependToPriorityList(AuthenticatesRequests::class, ForceJsonResponse::class);

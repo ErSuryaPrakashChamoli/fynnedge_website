@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\LoanProduct;
+use App\Modules\Customers\Actions\LogInCustomer;
+use App\Modules\Customers\Models\Customer;
+use App\Modules\Customers\Services\LoanApplicationPrefillService;
 use App\Modules\Journey\Actions\GoToPreviousJourneyStep;
 use App\Modules\Journey\Actions\StartJourneySession;
 use App\Modules\Journey\Actions\SubmitJourneyStepResponses;
@@ -44,7 +47,7 @@ class JourneyController extends Controller
         return redirect()->route('journey.show', $session);
     }
 
-    public function show(JourneySession $session, JourneyStepResolver $resolver): View
+    public function show(JourneySession $session, JourneyStepResolver $resolver, LoanApplicationPrefillService $prefill, Request $request): View
     {
         $session->load(['loanProduct', 'journeyDefinition.steps.fields', 'currentStep']);
 
@@ -78,7 +81,16 @@ class JourneyController extends Controller
             'fields' => $session->currentStep->fields,
             'responses' => $responses,
             'progress' => $resolver->progress($session->journeyDefinition, $session->currentStep, $responses),
+            // Only for the signed-in customer's own portal application (see the service).
+            'prefill' => $prefill->forSession($session, $this->portalCustomer($request)),
         ]);
+    }
+
+    private function portalCustomer(Request $request): ?Customer
+    {
+        $customer = $request->user(LogInCustomer::GUARD);
+
+        return $customer instanceof Customer ? $customer : null;
     }
 
     public function update(

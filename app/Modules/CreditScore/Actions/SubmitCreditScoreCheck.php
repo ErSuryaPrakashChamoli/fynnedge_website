@@ -12,6 +12,7 @@ use App\Modules\CreditScore\Models\CreditScoreCheck;
 use App\Modules\CreditScore\Providers\SurepassCrifScoreProvider;
 use App\Modules\CreditScore\Providers\SurepassEquifaxScoreProvider;
 use App\Modules\CreditScore\Providers\SurepassExperianScoreProvider;
+use App\Modules\Customers\Models\Customer;
 use App\Modules\Equifax\Services\EquifaxSettings;
 use App\Modules\Experian\Services\ExperianSettings;
 use Illuminate\Contracts\Cache\LockTimeoutException;
@@ -41,10 +42,15 @@ class SubmitCreditScoreCheck
      * first, middle and last name apart (full_name is the three joined), the
      * other pages for one full name (first/middle/last null).
      *
+     * $customer is the portal account the OTP-verified mobile resolved to
+     * (ResolveCustomerAccount); the check is recorded against it so the
+     * customer finds it in their profile later.
+     *
      * @param  array{full_name: string, first_name: ?string, middle_name: ?string, last_name: ?string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
      */
-    public function handle(array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress = null): CreditScoreCheck
+    public function handle(array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress = null, ?Customer $customer = null): CreditScoreCheck
     {
+        $data = [...$data, 'customer_id' => $customer?->id];
         $cibil = $bureau === BureauName::Cibil ? CibilSettings::liveProvider() : null;
 
         return match (true) {
@@ -54,6 +60,42 @@ class SubmitCreditScoreCheck
             $bureau === BureauName::Experian && ExperianSettings::publicScoreLive() => $this->live($this->liveExperian, $bureau, ExperianSettings::scoreReuseDays(), $data, $mobileNumber, $ipAddress),
             default => $this->run($this->provider, $data, $bureau, $mobileNumber, $ipAddress),
         };
+    }
+
+    /**
+     * Whether a new check for this bureau would be sent to the real bureau
+     * (its public page is switched to live and configured) rather than
+     * answered with a demo score.
+     */
+    public static function isLive(BureauName $bureau): bool
+    {
+        return match ($bureau) {
+            BureauName::Cibil => CibilSettings::publicScoreLive(),
+            BureauName::Crif => CrifSettings::publicScoreLive(),
+            BureauName::Equifax => EquifaxSettings::publicScoreLive(),
+            BureauName::Experian => ExperianSettings::publicScoreLive(),
+        };
+    }
+
+    /**
+     * The existing reuse period for a bureau's public score: a stored score
+     * younger than this is shown again instead of paying for a new one. The
+     * customer portal's monthly refresh policy is this same period.
+     */
+    public static function reuseDays(BureauName $bureau): int
+    {
+        return match ($bureau) {
+            BureauName::Cibil => CibilSettings::publicScoreReuseDays(),
+            BureauName::Crif => CrifSettings::reuseDays(),
+            BureauName::Equifax => EquifaxSettings::scoreReuseDays(),
+            BureauName::Experian => ExperianSettings::scoreReuseDays(),
+        };
+    }
+
+    /** How long an uncertain live check blocks a new paid one for the same person. */
+    public static function uncertainHoldMinutes(): int
+    {
+        return self::UNCERTAIN_HOLD_MINUTES;
     }
 
     /**
@@ -148,12 +190,13 @@ class SubmitCreditScoreCheck
     }
 
     /**
-     * @param  array{full_name: string, first_name: ?string, middle_name: ?string, last_name: ?string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
+     * @param  array{full_name: string, first_name: ?string, middle_name: ?string, last_name: ?string, date_of_birth: string, pan_number: string, gender?: ?string, customer_id?: ?int}  $data
      * @param  array<string, mixed>  $outcome
      */
     private function record(array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress, array $outcome): CreditScoreCheck
     {
         return CreditScoreCheck::query()->create([
+            'customer_id' => $data['customer_id'] ?? null,
             'bureau' => $bureau,
             'mobile_number' => $mobileNumber,
             'mobile_verified_at' => now(),

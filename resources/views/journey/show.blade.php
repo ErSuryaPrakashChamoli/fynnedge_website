@@ -14,7 +14,7 @@
 
             <div
                 x-data="journeyStep(
-                    @js(collect($fields)->mapWithKeys(fn ($f) => [$f->key => old($f->key, $responses[$f->key] ?? null)])),
+                    @js(collect($fields)->mapWithKeys(fn ($f) => [$f->key => old($f->key, $responses[$f->key] ?? $prefill[$f->key]['value'] ?? null)])),
                     @js(collect($fields)->mapWithKeys(fn ($f) => [$f->key => $f->conditional_on])),
                     @js([
                         'required' => $fields->contains('key', 'phone'),
@@ -39,6 +39,25 @@
                     <p class="mt-2 text-ink-muted">{{ $step->description }}</p>
                 @endif
 
+                @php
+                    $prefilledHere = collect($fields)->filter(fn ($f) => isset($prefill[$f->key]));
+                @endphp
+                @if ($prefilledHere->isNotEmpty())
+                    <x-ui.alert class="mt-6" :title="__('Filled in from your :brand profile', ['brand' => config('customer_portal.brand')])" data-prefill-notice>
+                        <p>{{ __('Please check these before continuing — you can change anything that is wrong.') }}</p>
+                        <ul class="mt-2 flex flex-wrap gap-2">
+                            @foreach ($prefilledHere as $prefilledField)
+                                <li class="inline-flex items-center gap-1.5 rounded-full bg-surface px-2.5 py-0.5 text-xs text-ink">
+                                    {{ $prefilledField->label }}
+                                    <span @class(['font-semibold', 'text-pass' => $prefill[$prefilledField->key]['verified'], 'text-ink-faint' => ! $prefill[$prefilledField->key]['verified']])>
+                                        · {{ $prefill[$prefilledField->key]['verified'] ? __('Verified') : __('Not verified') }}
+                                    </span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </x-ui.alert>
+                @endif
+
                 <form
                     id="journey-step-form"
                     method="POST"
@@ -49,7 +68,7 @@
                     @csrf
 
                     @foreach ($fields as $field)
-                        <x-journey.field :field="$field" :value="old($field->key, $responses[$field->key] ?? null)" />
+                        <x-journey.field :field="$field" :value="old($field->key, $responses[$field->key] ?? $prefill[$field->key]['value'] ?? null)" />
                     @endforeach
                 </form>
 

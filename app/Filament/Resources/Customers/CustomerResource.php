@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Customers;
 
+use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\RelationManagers\CibilRequestsRelationManager;
+use App\Filament\RelationManagers\CreditScoreChecksRelationManager;
 use App\Filament\RelationManagers\CrifReportsRelationManager;
 use App\Filament\RelationManagers\EquifaxRequestsRelationManager;
 use App\Filament\RelationManagers\ExperianRequestsRelationManager;
@@ -45,6 +47,8 @@ class CustomerResource extends Resource
             EquifaxRequestsRelationManager::class,
             ExperianRequestsRelationManager::class,
             CibilRequestsRelationManager::class,
+            CreditScoreChecksRelationManager::class,
+            AuditLogsRelationManager::class,
         ];
     }
 

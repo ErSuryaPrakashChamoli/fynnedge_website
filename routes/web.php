@@ -7,6 +7,7 @@ use App\Http\Controllers\CalculatorController;
 use App\Http\Controllers\CareerController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CreditScoreController;
+use App\Http\Controllers\CustomerSessionController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JourneyController;
@@ -18,6 +19,14 @@ use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\NewsletterTrackingController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PartnerLenderController;
+use App\Http\Controllers\Portal\CreditReportController as PortalCreditReportController;
+use App\Http\Controllers\Portal\CreditScoreOverviewController as PortalCreditScoreOverviewController;
+use App\Http\Controllers\Portal\DashboardController as PortalDashboardController;
+use App\Http\Controllers\Portal\DocumentController as PortalDocumentController;
+use App\Http\Controllers\Portal\LoanApplicationController as PortalLoanApplicationController;
+use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
+use App\Http\Controllers\Portal\SettingsController as PortalSettingsController;
+use App\Http\Controllers\Portal\SupportController as PortalSupportController;
 use App\Http\Controllers\QuickEnquiryController;
 use App\Http\Controllers\QuickEnquiryPageController;
 use App\Http\Controllers\RobotsController;
@@ -125,6 +134,41 @@ Route::middleware('throttle:public-forms')->group(function (): void {
     Route::delete('/applications/{application}/documents/{document}', [ApplicationController::class, 'deleteDocument'])->name('applications.documents.delete');
     Route::post('/applications/{application}/submit', [ApplicationController::class, 'submit'])->name('applications.submit');
 });
+
+/*
+ * FynnOn customer portal (docs/customer-portal.md). Customers sign in on the
+ * Existing Customer page with an OTP to their verified mobile (the
+ * customer-login Livewire component throttles itself — Livewire actions never
+ * pass through route throttles). Every /my-profile page is session-authenticated
+ * on the `customer` guard, re-checks the account is still enabled, is never
+ * cached by the browser and is scoped to the signed-in customer's own records.
+ * Nothing here calls a credit bureau.
+ */
+Route::get('/existing-customer', [CustomerSessionController::class, 'create'])
+    ->middleware('guest:customer')
+    ->name('customer.login');
+
+Route::prefix('my-profile')
+    ->name('portal.')
+    ->middleware(['auth:customer', 'customer.portal', 'throttle:customer-portal'])
+    ->group(function (): void {
+        Route::get('/', PortalDashboardController::class)->name('dashboard');
+        Route::get('/personal-information', [PortalProfileController::class, 'edit'])->name('profile');
+        Route::put('/personal-information', [PortalProfileController::class, 'update'])->name('profile.update');
+        Route::get('/credit-score', [PortalCreditScoreOverviewController::class, 'index'])->name('credit-score');
+        Route::get('/credit-score/{bureau}/refresh', [PortalCreditScoreOverviewController::class, 'refresh'])->name('credit-score.refresh');
+        Route::get('/credit-reports', [PortalCreditReportController::class, 'index'])->name('reports.index');
+        Route::get('/credit-reports/{report}', [PortalCreditReportController::class, 'show'])->whereUuid('report')->name('reports.show');
+        Route::get('/credit-reports/{report}/pdf', [PortalCreditReportController::class, 'pdf'])->whereUuid('report')->name('reports.pdf');
+        Route::get('/apply-for-loan', [PortalLoanApplicationController::class, 'create'])->name('apply');
+        Route::post('/apply-for-loan/{loanProduct:slug}', [PortalLoanApplicationController::class, 'store'])->name('apply.start');
+        Route::get('/loan-applications', [PortalLoanApplicationController::class, 'index'])->name('applications');
+        Route::get('/documents', [PortalDocumentController::class, 'index'])->name('documents');
+        Route::get('/documents/{document}', [PortalDocumentController::class, 'show'])->whereUuid('document')->name('documents.show');
+        Route::get('/help', PortalSupportController::class)->name('support');
+        Route::get('/settings', PortalSettingsController::class)->name('settings');
+        Route::post('/logout', [CustomerSessionController::class, 'destroy'])->name('logout');
+    });
 
 // Registered after the /loans/{loanProduct:slug}/apply route above (and after loans.show)
 // so that literal path always wins the match first — this wildcard second segment can

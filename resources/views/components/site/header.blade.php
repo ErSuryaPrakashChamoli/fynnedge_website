@@ -9,6 +9,18 @@
 --}}
 <div class="border-b border-line bg-surface" data-language-strip>
     <div class="mx-auto flex max-w-7xl items-center justify-end gap-3 px-6 py-1.5 lg:px-8">
+        {{-- The customer portal's way in, kept in this strip because the header row has no spare width. --}}
+        @auth('customer')
+            <a href="{{ route('portal.dashboard') }}" class="mr-auto inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:text-accent-strong" data-portal-link>
+                <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5" aria-hidden="true"><path d="M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0H3Z" /></svg>
+                {{ __('My Profile') }}
+            </a>
+        @else
+            <a href="{{ route('customer.login') }}" class="mr-auto inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:text-accent-strong" data-portal-link>
+                <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5" aria-hidden="true"><path d="M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0H3Z" /></svg>
+                {{ __('Existing Customer? Sign in') }}
+            </a>
+        @endauth
         <span class="text-xs text-ink-faint" aria-hidden="true">Language · <span lang="hi">भाषा</span></span>
         <x-site.language-switch />
     </div>
