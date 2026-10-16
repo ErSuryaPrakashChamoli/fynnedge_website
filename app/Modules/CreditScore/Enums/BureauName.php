@@ -20,4 +20,15 @@ enum BureauName: string implements HasLabel
             self::Crif => 'CRIF',
         };
     }
+
+    /**
+     * Whether this page asks for the name as on PAN in separate first, middle
+     * and last name boxes. Only CRIF's API takes first_name and last_name
+     * apart (a middle name travels inside first_name); CIBIL's, Experian's and
+     * Equifax's take one `name` (so does Experian when it stands in for CIBIL).
+     */
+    public function takesSplitName(): bool
+    {
+        return $this === self::Crif;
+    }
 }

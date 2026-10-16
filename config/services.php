@@ -107,13 +107,22 @@ return [
         'experian_token' => env('SUREPASS_EXPERIAN_TOKEN'),
         'experian_base_url' => env('SUREPASS_EXPERIAN_BASE_URL'),
         'experian_public_score_source' => env('SUREPASS_EXPERIAN_PUBLIC_SCORE_SOURCE', 'report'),
+        // CIBIL (Surepass credit-report-cibil; App\Modules\Cibil, docs/cibil-credit-bureau-integration.md):
+        // its OWN token, with NO fallback to SUREPASS_BEARER_TOKEN or another bureau's token
+        // (CibilSettings::surepassClient()), and the endpoint the public CIBIL page reads the
+        // score from when CIBIL answers it: "report" (fetch-report) or "score" (only if your plan
+        // includes it). `php artisan cibil:check-access` shows which ones your token may use.
+        'cibil_token' => env('SUREPASS_CIBIL_TOKEN'),
+        'cibil_base_url' => env('SUREPASS_CIBIL_BASE_URL', 'https://kyc-api.surepass.app'),
+        'cibil_public_score_endpoint' => env('SUREPASS_CIBIL_PUBLIC_SCORE_ENDPOINT', 'report'),
     ],
 
     'cibil' => [
-        // FynnEdge has no CIBIL API yet: where the public Free CIBIL Score page gets real
-        // scores (App\Modules\Cibil\Services\CibilSettings::SOURCES) while CIBIL Settings →
-        // "shows real scores" is on. "experian" = the visitor's Experian score, labelled as such.
-        // When a CIBIL API is added, register its provider in SOURCES and switch this value.
+        // Where the public Free CIBIL Score page gets real scores (CibilSettings::SOURCES) while
+        // CIBIL Settings → "shows real scores" is on: "cibil" = the CIBIL bureau through Surepass
+        // (needs SUREPASS_CIBIL_TOKEN), "experian" = the visitor's Experian score, labelled as such
+        // (the stand-in used before CIBIL was integrated, kept as the default so deploying this
+        // does not change the live page; switch to "cibil" once cibil:check-access shows Allowed).
         'public_score_source' => env('CIBIL_PUBLIC_SCORE_SOURCE', 'experian'),
     ],
 

@@ -5,6 +5,10 @@ use App\Models\LenderProduct;
 use App\Models\LenderProductRate;
 use App\Models\LoanProduct;
 use App\Models\Setting;
+use App\Modules\Cibil\DataTransferObjects\CibilCheckRequest;
+use App\Modules\Cibil\Enums\CibilProduct;
+use App\Modules\Cibil\Enums\Gender as CibilGender;
+use App\Modules\Cibil\Services\CibilSettings;
 use App\Modules\CreditBureau\DataTransferObjects\CreditConsentInput;
 use App\Modules\CreditBureau\DataTransferObjects\CrifConsentInput;
 use App\Modules\CreditBureau\DataTransferObjects\CrifReportRequest;
@@ -306,6 +310,67 @@ function experianRequestFor(Customer $customer, array $overrides = []): Experian
         'mobile' => '9000000001',
         'pan' => 'AAAPZ9999Z',
         'consent' => CreditConsentInput::recordedByEmployee(ConsentMethod::RecordedCall, 'CALL-REF-EX1', now()->subHour(), true),
+        ...$overrides,
+    ]);
+}
+
+/**
+ * Switches CIBIL requests on with a fake CIBIL-only token (CIBIL never uses
+ * the shared one) and puts Surepass's credit-report-cibil endpoints — and the
+ * host its PDF links point at — behind Http::fake(). Stray requests are
+ * refused, so no test can ever reach the real (billable) API. By default each
+ * endpoint answers with its own synthetic fixture (score, fetch-report,
+ * fetch-report-pdf).
+ *
+ * @param  mixed  $response  Any Http::fake() stub for the CIBIL endpoints.
+ */
+function fakeSurepassCibil(mixed $response = null): void
+{
+    config([
+        'services.surepass.cibil_base_url' => 'https://kyc-api.surepass.app',
+        'services.surepass.cibil_token' => 'test-cibil-token',
+        'services.surepass.timeout' => 60,
+        'services.surepass.connect_timeout' => 10,
+    ]);
+    Setting::set(CibilSettings::ENABLED, true);
+
+    Http::preventStrayRequests();
+    Http::fake([
+        'kyc-api.surepass.app/api/v1/credit-report-cibil/*' => $response ?? fn (Request $request) => Http::response(cibilFixture(match (true) {
+            str_ends_with($request->url(), '/score') => 'score',
+            str_ends_with($request->url(), '/fetch-report-pdf') => 'pdf',
+            default => 'report',
+        })),
+        'files.surepass.test/*' => Http::response('%PDF-1.4 synthetic CIBIL test PDF', 200, ['Content-Type' => 'application/pdf']),
+    ]);
+}
+
+/**
+ * A fabricated Surepass CIBIL response — "score", "report" or "pdf"; never real data.
+ *
+ * @return array<string, mixed>
+ */
+function cibilFixture(string $product = 'report'): array
+{
+    return json_decode((string) file_get_contents(__DIR__."/Fixtures/Surepass/cibil-{$product}-success.json"), true, flags: JSON_THROW_ON_ERROR);
+}
+
+/**
+ * A valid CIBIL request for the customer, with consent recorded now by phone
+ * call. Override any constructor argument by name.
+ *
+ * @param  array<string, mixed>  $overrides
+ */
+function cibilRequestFor(Customer $customer, array $overrides = []): CibilCheckRequest
+{
+    return new CibilCheckRequest(...[
+        'customer' => $customer,
+        'product' => CibilProduct::Report,
+        'name' => 'Test Fixture',
+        'mobile' => '9000000001',
+        'pan' => 'AAAPZ9999Z',
+        'gender' => CibilGender::Male,
+        'consent' => CreditConsentInput::recordedByEmployee(ConsentMethod::RecordedCall, 'CALL-REF-CB1', now()->subHour(), true),
         ...$overrides,
     ]);
 }

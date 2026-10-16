@@ -5,9 +5,10 @@ namespace App\Filament\Pages;
 use App\Models\Setting;
 use App\Modules\Cibil\Services\CibilRoles;
 use App\Modules\Cibil\Services\CibilSettings as Settings;
-use App\Modules\Experian\Services\ExperianSettings;
+use App\Modules\Cibil\Services\SurepassCibilService;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -17,10 +18,13 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 
 /**
- * The public Free CIBIL Score page's one switch. There is no CIBIL API yet, so
- * "real scores" here means the stand-in source (Experian through Surepass),
- * clearly labelled as Experian on the page. Which source is used is server
- * configuration (CIBIL_PUBLIC_SCORE_SOURCE), not an admin choice.
+ * CIBIL business rules and the public CIBIL page's switch, stored in the
+ * shared Setting table and independent of the other bureaus'. The Surepass
+ * token is deliberately NOT editable or visible here — it lives in the server
+ * environment (SUREPASS_CIBIL_TOKEN, with no fallback to another bureau's
+ * token); this page only says whether it is set and can run the free access
+ * check. Which source answers the public page (the CIBIL bureau, or Experian
+ * standing in) is server configuration: CIBIL_PUBLIC_SCORE_SOURCE.
  */
 class CibilSettings extends Page
 {
@@ -33,6 +37,8 @@ class CibilSettings extends Page
     protected static ?string $navigationLabel = 'CIBIL Settings';
 
     protected static ?string $title = 'CIBIL Settings';
+
+    protected static ?int $navigationSort = 7;
 
     /**
      * @var array<string, mixed>
@@ -47,7 +53,13 @@ class CibilSettings extends Page
     public function mount(): void
     {
         $this->form->fill([
+            Settings::ENABLED => Settings::enabled(),
             Settings::PUBLIC_SCORE_ENABLED => Settings::publicScoreEnabled(),
+            Settings::SCORE_REUSE_DAYS => Settings::scoreReuseDays(),
+            Settings::REPORT_REUSE_DAYS => Settings::reportReuseDays(),
+            Settings::CONSENT_VALIDITY_DAYS => Settings::consentValidityDays(),
+            Settings::RETENTION_DAYS => Settings::retentionDays(),
+            Settings::ALERT_EMAIL => Settings::alertEmail(),
         ]);
     }
 
@@ -58,20 +70,58 @@ class CibilSettings extends Page
         return $schema
             ->statePath('data')
             ->components([
-                Callout::make($source === null
-                    ? 'No score source is configured for the CIBIL page'
-                    : 'CIBIL API not connected — the page uses '.$source.' scores')
+                Callout::make(Settings::isConfigured() ? 'CIBIL API token is configured on this server' : 'CIBIL API token is NOT configured')
+                    ->description(Settings::isConfigured()
+                        ? 'The token is read from the server environment (SUREPASS_CIBIL_TOKEN) and is never shown here. Endpoints: '.app(SurepassCibilService::class)->baseUrl().'/'.SurepassCibilService::SCORE_PATH.', /'.SurepassCibilService::REPORT_PATH.' and /'.SurepassCibilService::PDF_PATH.'. Use "Check Surepass access" (free) to see which of them your plan includes.'
+                        : 'Set SUREPASS_CIBIL_TOKEN in the server environment (not in this panel), then clear the config cache. CIBIL never falls back to the shared or another bureau\'s token, so until it is set no CIBIL request can be sent.')
+                    ->status(Settings::isConfigured() ? 'success' : 'warning'),
+                Section::make('Integration')
+                    ->components([
+                        Toggle::make(Settings::ENABLED)
+                            ->label('CIBIL requests enabled (admin and internal API)')
+                            ->helperText('Off stops every new paid CIBIL request from staff, the API and other modules. Existing results stay viewable; queued requests fail as "not configured" without calling Surepass.'),
+                    ]),
+                Section::make('Free CIBIL Score page')
                     ->description($source === null
                         ? 'CIBIL_PUBLIC_SCORE_SOURCE names no known source, so the page shows demo scores.'
-                        : 'FynnEdge has no CIBIL API yet. With real scores on, the Free CIBIL Score page gets the visitor\'s real '.$source.' score through Surepass and tells them it is an '.$source.' score — never a CIBIL score. '.(Settings::isConfigured()
+                        : (Settings::isStandIn()
+                            ? 'CIBIL API not connected — the page uses '.$source.' scores, and tells the visitor they are '.$source.' scores, never CIBIL scores. Set CIBIL_PUBLIC_SCORE_SOURCE=cibil on the server to use the CIBIL bureau.'
+                            : 'Answered by the CIBIL bureau through Surepass (CIBIL_PUBLIC_SCORE_SOURCE=cibil); the visitor is asked their gender, which CIBIL requires.').' '.(Settings::publicSourceConfigured()
                             ? 'The '.$source.' token is configured on this server.'
-                            : 'The '.$source.' token is NOT configured on this server, so the page shows demo scores until it is.').' The source is set by CIBIL_PUBLIC_SCORE_SOURCE in the server environment; when a CIBIL API is added, it is switched there.')
-                    ->status($source !== null && Settings::isConfigured() ? 'info' : 'warning'),
-                Section::make('Free CIBIL Score page')
+                            : 'The '.($source ?? 'source').' token is NOT configured on this server, so the page shows demo scores until it is.'))
                     ->components([
                         Toggle::make(Settings::PUBLIC_SCORE_ENABLED)
                             ->label('Free CIBIL Score page shows real scores')
-                            ->helperText('Off: a clearly labelled demo score. On: the visitor\'s real '.($source ?? 'stand-in').' score. Each NEW visitor check is a paid Surepass call; the same PAN and mobile checking again within '.ExperianSettings::scoreReuseDays().' days sees the stored score at no cost. Independent of the Experian page\'s own switch.'),
+                            ->helperText('Off: a clearly labelled demo score. On: the visitor\'s real '.($source ?? 'credit').' score. Each NEW visitor check is a paid Surepass call; the same PAN and mobile checking again within '.Settings::publicScoreReuseDays().' days sees the stored score at no cost. Independent of the other bureaus\' pages.'),
+                    ]),
+                Section::make('Duplicate prevention and consent')
+                    ->columns(3)
+                    ->components([
+                        TextInput::make(Settings::SCORE_REUSE_DAYS)
+                            ->label('Score reuse period (days)')
+                            ->helperText('A score (or a full report or PDF) this recent answers a score request without a new pull.')
+                            ->integer()->minValue(1)->maxValue(365)->required(),
+                        TextInput::make(Settings::REPORT_REUSE_DAYS)
+                            ->label('Report reuse period (days)')
+                            ->helperText('A full report (or stored PDF) this recent is shown instead of paying for a new one. A fresh pull inside it needs the FetchFresh permission and a reason.')
+                            ->integer()->minValue(1)->maxValue(365)->required(),
+                        TextInput::make(Settings::CONSENT_VALIDITY_DAYS)
+                            ->label('Consent validity (days)')
+                            ->helperText('A recorded consent older than this cannot authorise a new request.')
+                            ->integer()->minValue(1)->maxValue(365)->required(),
+                    ]),
+                Section::make('Retention and alerts')
+                    ->columns(2)
+                    ->components([
+                        TextInput::make(Settings::RETENTION_DAYS)
+                            ->label('Retention period (days)')
+                            ->helperText('After this, results, summaries, PDFs and the customer\'s PAN, name and mobile are erased by the daily cibil:enforce-retention job. Never shorter than either reuse period.')
+                            ->integer()->minValue(30)->maxValue(3650)->required(),
+                        TextInput::make(Settings::ALERT_EMAIL)
+                            ->label('Operational alert email')
+                            ->helperText('Told about requests needing reconciliation and token / plan / balance failures. Leave blank for none.')
+                            ->email()
+                            ->maxLength(190),
                     ]),
             ]);
     }
@@ -91,6 +141,31 @@ class CibilSettings extends Page
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('checkAccess')
+                ->label('Check Surepass access')
+                ->icon(Heroicon::OutlinedSignal)
+                ->color('gray')
+                ->requiresConfirmation()
+                ->modalDescription('Sends an EMPTY request to each CIBIL endpoint. Surepass rejects it at input validation or at the token check, so no PAN is sent, no report is pulled and nothing is charged.')
+                ->action(function (SurepassCibilService $surepass): void {
+                    $lines = collect($surepass->checkAccess())
+                        ->map(fn (array $result, string $path): string => basename($path).': '.match ($result['access']) {
+                            'allowed' => 'allowed',
+                            'not_enabled' => 'not enabled on your Surepass plan',
+                            'token_rejected' => 'token rejected',
+                            'not_configured' => 'SUREPASS_CIBIL_TOKEN not set',
+                            'unreachable' => 'Surepass unreachable from this server',
+                            'not_found' => 'endpoint not found',
+                            default => 'unexpected answer',
+                        }.($result['http_status'] ? ' (HTTP '.$result['http_status'].')' : ''));
+
+                    Notification::make()
+                        ->title('Surepass CIBIL access')
+                        ->body($lines->implode("\n"))
+                        ->info()
+                        ->persistent()
+                        ->send();
+                }),
             Action::make('save')->label('Save')->action('save'),
         ];
     }

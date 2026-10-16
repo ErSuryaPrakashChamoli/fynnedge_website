@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use App\Filament\Resources\CibilCreditRequests\CibilCreditRequestResource;
 use App\Filament\Resources\CrifReports\CrifReportResource;
 use App\Filament\Resources\EquifaxCreditRequests\EquifaxCreditRequestResource;
 use App\Filament\Resources\ExperianCreditRequests\ExperianCreditRequestResource;
@@ -227,6 +228,14 @@ return [
             ],
             // Experian (see App\Modules\Experian\Services\ExperianRoles): the same set as Equifax.
             ExperianCreditRequestResource::class => [
+                'viewReport',
+                'fetchFresh',
+                'reconcile',
+                'viewRaw',
+                'downloadPdf',
+            ],
+            // CIBIL (see App\Modules\Cibil\Services\CibilRoles): the same set again.
+            CibilCreditRequestResource::class => [
                 'viewReport',
                 'fetchFresh',
                 'reconcile',

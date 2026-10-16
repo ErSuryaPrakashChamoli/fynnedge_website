@@ -3,6 +3,7 @@
 namespace App\Modules\Customers\Models;
 
 use App\Models\Concerns\HasPublicId;
+use App\Modules\Cibil\Models\CibilCreditRequest;
 use App\Modules\CreditBureau\Models\CrifReport;
 use App\Modules\Equifax\Models\EquifaxCreditRequest;
 use App\Modules\Experian\Models\ExperianCreditRequest;
@@ -58,5 +59,15 @@ class Customer extends Model
     public function latestExperianRequest(): HasOne
     {
         return $this->hasOne(ExperianCreditRequest::class)->latestOfMany();
+    }
+
+    public function cibilRequests(): HasMany
+    {
+        return $this->hasMany(CibilCreditRequest::class);
+    }
+
+    public function latestCibilRequest(): HasOne
+    {
+        return $this->hasOne(CibilCreditRequest::class)->latestOfMany();
     }
 }

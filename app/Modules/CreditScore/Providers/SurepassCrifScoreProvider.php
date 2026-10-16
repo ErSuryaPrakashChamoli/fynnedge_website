@@ -25,9 +25,11 @@ use Illuminate\Support\Facades\Log;
  * with 401 "not valid for this API/Scope" — while fetch-report is. Set it to
  * "score" once Surepass enables the cheaper endpoint.
  *
- * Only the score, Surepass's client id and message code are kept — never the
- * response body (with "report", the whole credit report), which also echoes
- * the visitor's PAN, name and mobile. An outcome
+ * Only the score, Surepass's client id, message code and the report's
+ * headline figures (CrifReportDocument::insights(): counts and totals, for the
+ * result page's advice) are kept — never the response body (with "report",
+ * the whole credit report), which also echoes the visitor's PAN, name and
+ * mobile. An outcome
  * that may have been charged but gave no answer (timeout, gateway error) is
  * returned as Pending so it is not re-sent straight away.
  */
@@ -88,6 +90,7 @@ class SurepassCrifScoreProvider implements CreditScoreProvider
             score: $document->score(),
             reference: $document->clientId(),
             rawResponse: ['client_id' => $document->clientId(), 'message_code' => $result->messageCode, 'source' => $source],
+            insights: $document->insights(),
         );
     }
 }

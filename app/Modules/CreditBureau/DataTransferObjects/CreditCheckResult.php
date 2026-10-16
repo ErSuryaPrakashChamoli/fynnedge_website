@@ -8,6 +8,7 @@ final readonly class CreditCheckResult
 {
     /**
      * @param  array<string, mixed>|null  $rawResponse
+     * @param  array<string, int|null>|null  $insights  Headline figures from the full credit report (see CrifReportDocument::insights()), when one was read.
      */
     public function __construct(
         public CreditCheckStatus $status,
@@ -15,5 +16,6 @@ final readonly class CreditCheckResult
         public ?string $reference = null,
         public ?array $rawResponse = null,
         public ?string $failureReason = null,
+        public ?array $insights = null,
     ) {}
 }

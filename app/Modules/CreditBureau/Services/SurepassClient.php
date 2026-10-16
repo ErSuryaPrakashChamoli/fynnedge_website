@@ -12,8 +12,10 @@ use Throwable;
  * The wire to Surepass's KYC API, shared by every bureau that goes through it
  * (CRIF: SurepassCrifService; Equifax: App\Modules\Equifax\Services\SurepassEquifaxService).
  * Token and base URL come from config('services.surepass') unless a bureau
- * passes its own (Equifax may: SUREPASS_EQUIFAX_TOKEN); a blank one falls back
- * to the shared value. Timeouts are always shared.
+ * passes its own (SUREPASS_EQUIFAX_TOKEN, SUREPASS_EXPERIAN_TOKEN…); a blank
+ * one falls back to the shared value — except for a bureau built with
+ * $useSharedCredentials = false (CIBIL), which then counts as not configured.
+ * Timeouts are always shared.
  *
  * Every bureau call is PAID, so this class never retries: there is no ->retry()
  * and no ->throw() (a thrown RequestException would carry the response body —
@@ -29,6 +31,7 @@ class SurepassClient
     public function __construct(
         private readonly ?string $token = null,
         private readonly ?string $baseUrl = null,
+        private readonly bool $useSharedCredentials = true,
     ) {}
 
     public function isConfigured(): bool
@@ -38,7 +41,7 @@ class SurepassClient
 
     public function baseUrl(): string
     {
-        return filled($this->baseUrl) ? (string) $this->baseUrl : (string) config('services.surepass.base_url');
+        return filled($this->baseUrl) || ! $this->useSharedCredentials ? (string) $this->baseUrl : (string) config('services.surepass.base_url');
     }
 
     /**
@@ -185,7 +188,7 @@ class SurepassClient
 
     private function token(): string
     {
-        return filled($this->token) ? (string) $this->token : (string) config('services.surepass.token');
+        return filled($this->token) || ! $this->useSharedCredentials ? (string) $this->token : (string) config('services.surepass.token');
     }
 
     private function timeout(): int

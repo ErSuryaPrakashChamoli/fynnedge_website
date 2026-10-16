@@ -3,6 +3,7 @@
 namespace App\Modules\CreditScore\Models;
 
 use App\Models\Concerns\HasPublicId;
+use App\Modules\Cibil\Enums\CibilErrorCode;
 use App\Modules\CreditBureau\Enums\CreditCheckStatus;
 use App\Modules\CreditBureau\Enums\CrifErrorCode;
 use App\Modules\CreditScore\Enums\BureauName;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 
 #[Fillable([
     'bureau', 'mobile_number', 'mobile_verified_at', 'full_name', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'gender',
-    'pan_number', 'provider', 'status', 'score', 'raw_response',
+    'pan_number', 'provider', 'status', 'score', 'raw_response', 'report_insights',
     'consent_given_at', 'ip_address', 'requested_at', 'completed_at',
 ])]
 class CreditScoreCheck extends Model
@@ -34,6 +35,7 @@ class CreditScoreCheck extends Model
             'bureau' => BureauName::class,
             'status' => CreditCheckStatus::class,
             'raw_response' => 'array',
+            'report_insights' => 'encrypted:array',
             'date_of_birth' => 'date',
             'mobile_verified_at' => 'datetime',
             'consent_given_at' => 'datetime',
@@ -55,7 +57,7 @@ class CreditScoreCheck extends Model
      * Why a live (Surepass) check gave no score — the visitor only sees a
      * generic message, so this is what admins read to find the cause.
      */
-    public function liveFailure(): CrifErrorCode|EquifaxErrorCode|ExperianErrorCode|null
+    public function liveFailure(): CrifErrorCode|EquifaxErrorCode|ExperianErrorCode|CibilErrorCode|null
     {
         $error = is_array($this->raw_response) ? ($this->raw_response['error'] ?? null) : null;
 
@@ -66,14 +68,15 @@ class CreditScoreCheck extends Model
         return match ($this->sourceBureau()) {
             BureauName::Equifax => EquifaxErrorCode::tryFrom($error),
             BureauName::Experian => ExperianErrorCode::tryFrom($error),
+            BureauName::Cibil => CibilErrorCode::tryFrom($error),
             default => CrifErrorCode::tryFrom($error),
         };
     }
 
     /**
      * The bureau whose answer this check holds — the page's own bureau, except
-     * where a stand-in source answered it (the CIBIL page, by Experian, until a
-     * CIBIL API exists; recorded as raw_response.source_bureau).
+     * where a stand-in source answered it (the CIBIL page answered by Experian;
+     * recorded as raw_response.source_bureau).
      */
     public function sourceBureau(): ?BureauName
     {

@@ -53,6 +53,7 @@ function checkScoreOnPage(string $bureau = 'crif', string $mobile = '9000000001'
         ->set('firstName', $firstName)
         ->set('middleName', $middleName)
         ->set('lastName', $lastName)
+        ->set('fullName', trim("{$firstName} {$middleName} {$lastName}")) // the other bureaus' pages ask for one name
         ->set('dateOfBirth', '1990-01-01')
         ->set('panNumber', $pan)
         ->set('consent', true)
@@ -267,4 +268,24 @@ it('keeps the other bureaus on demo scores while CRIF is live', function () {
     checkScoreOnPage(bureau: 'cibil')->assertSet('resultKind', 'demo');
 
     expect(surepassScoreCalls())->toBe(0);
+});
+
+it('keeps the CRIF report\'s headline figures for the result\'s pointers, never the report itself', function () {
+    liveCrifScorePage();
+
+    checkScoreOnPage()->assertSee(['What is shaping your score', '₹9,108 is overdue on your accounts']);
+
+    expect(CreditScoreCheck::query()->sole()->report_insights)->toBe([
+        'accounts_total' => 3,
+        'accounts_active' => 2,
+        'accounts_overdue' => 1,
+        'overdue_amount' => 9108,
+        'accounts_written_off' => 0,
+        'late_payments_last_12_months' => 1,
+        'card_limit' => null,
+        'card_balance' => null,
+        'enquiries_last_6_months' => 2,
+        'credit_age_months' => 76,
+        'outstanding_balance' => 268889,
+    ]);
 });

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Customers\Tables;
 
+use App\Modules\Cibil\Models\CibilCreditRequest;
 use App\Modules\CreditBureau\Models\CrifReport;
 use App\Modules\Equifax\Models\EquifaxCreditRequest;
 use App\Modules\Experian\Models\ExperianCreditRequest;
@@ -41,6 +42,11 @@ class CustomersTable
                     ->badge()
                     ->placeholder('Not requested')
                     ->visible(fn (): bool => (bool) auth()->user()?->can('viewAny', ExperianCreditRequest::class)),
+                TextColumn::make('latestCibilRequest.status')
+                    ->label('CIBIL')
+                    ->badge()
+                    ->placeholder('Not requested')
+                    ->visible(fn (): bool => (bool) auth()->user()?->can('viewAny', CibilCreditRequest::class)),
                 TextColumn::make('created_at')
                     ->label('First seen')
                     ->dateTime()

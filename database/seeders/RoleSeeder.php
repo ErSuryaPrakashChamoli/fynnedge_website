@@ -102,7 +102,8 @@ class RoleSeeder extends Seeder
         // Experian: the same pattern, its own permissions.
         ExperianRoles::grant();
 
-        // CIBIL Settings (the public CIBIL page's real-score switch): no starter role.
+        // CIBIL: the Credit Officer role gets the everyday CIBIL set; fresh pulls,
+        // reconciliation, raw JSON and CIBIL Settings stay ungranted.
         CibilRoles::grant();
     }
 

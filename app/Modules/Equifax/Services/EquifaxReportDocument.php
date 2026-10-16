@@ -456,6 +456,56 @@ final class EquifaxReportDocument
     }
 
     /**
+     * The headline figures behind the score, for the public result page's
+     * report highlights and advice: counts and rupee totals only — no lender,
+     * account number or identity data. Equifax's own totals
+     * (RetailAccountsSummary, OtherKeyInd) come first; the rest are counted
+     * from the account rows. Each is null when the report does not say.
+     *
+     * @return array{accounts_total: ?int, accounts_active: ?int, accounts_overdue: ?int, overdue_amount: ?int, accounts_written_off: ?int, late_payments_last_12_months: ?int, card_limit: ?int, card_balance: ?int, enquiries_last_6_months: ?int, credit_age_months: ?int, outstanding_balance: ?int}
+     */
+    public function insights(): array
+    {
+        $summary = $this->first($this->find('RetailAccountsSummary'));
+        $enquirySummary = $this->first($this->find('EnquirySummary'));
+        $asOf = $this->reportDate() ?? CarbonImmutable::now();
+        $accounts = $this->items($this->find('RetailAccountDetails'));
+        $open = array_values(array_filter($accounts, fn (array $account) => $this->isOpen($account)));
+        $cards = array_values(array_filter($open, fn (array $account) => str_contains(strtolower((string) $this->text($account['AccountType'] ?? null)), 'credit card')));
+        $histories = collect($accounts)->map(fn (array $account) => $this->history($account['History48Months'] ?? null))->reject(fn (array $history) => $history === []);
+        $since = $asOf->startOfMonth()->subMonths(11);
+        $enquiries = $this->items($this->find('Enquiries'));
+        $openedDates = collect($accounts)->map(fn (array $account) => $this->date($this->text($account['DateOpened'] ?? null)))->filter();
+
+        return [
+            'accounts_total' => $this->whole($summary['NoOfAccounts'] ?? null) ?? ($accounts === [] ? null : count($accounts)),
+            'accounts_active' => $this->whole($summary['NoOfActiveAccounts'] ?? null) ?? ($accounts === [] ? null : count($open)),
+            'accounts_overdue' => $this->whole($summary['NoOfPastDueAccounts'] ?? null)
+                ?? ($accounts === [] ? null : count(array_filter($accounts, fn (array $account) => ($this->whole($account['PastDueAmount'] ?? null) ?? 0) > 0))),
+            'overdue_amount' => $this->whole($summary['TotalPastDue'] ?? null) ?? $this->total($accounts, ['PastDueAmount']),
+            'accounts_written_off' => $accounts === []
+                ? $this->whole($summary['NoOfWriteOffs'] ?? null)
+                : count(array_filter($accounts, fn (array $account) => $this->isWrittenOff($account))),
+            'late_payments_last_12_months' => $histories->isEmpty() ? null : $histories->flatten(1)
+                ->filter(fn (array $month) => $month['late'] && ($this->monthOf($month['month'])?->gte($since) ?? false))
+                ->count(),
+            'card_limit' => $this->total($cards, ['CreditLimit', 'HighCredit', 'SanctionAmount']),
+            'card_balance' => $this->total($cards, ['Balance']),
+            'enquiries_last_6_months' => match (true) {
+                $enquiries !== [] => collect($enquiries)
+                    ->map(fn (array $enquiry) => $this->date($this->text($enquiry['Date'] ?? null)))
+                    ->filter(fn (?CarbonImmutable $date) => $date?->gte($asOf->subMonths(6)) ?? false)
+                    ->count(),
+                $this->whole($enquirySummary['Total'] ?? null) === 0 => 0,
+                default => null,
+            },
+            'credit_age_months' => $this->whole($this->first($this->find('OtherKeyInd'))['AgeOfOldestTrade'] ?? null)
+                ?? ($openedDates->isEmpty() ? null : (int) $openedDates->min()->diffInMonths($asOf)),
+            'outstanding_balance' => $this->whole($summary['TotalBalanceAmount'] ?? null) ?? $this->total($open, ['Balance']),
+        ];
+    }
+
+    /**
      * Equifax's "History48Months": [{key: "09-26", PaymentStatus: "000", …}].
      * A month is late when days past due > 0 or the asset class is SMA/SUB/DBT/LSS.
      *
@@ -480,6 +530,64 @@ final class EquifaxReportDocument
             ->filter()
             ->values()
             ->all();
+    }
+
+    /**
+     * @param  array<string, mixed>  $account
+     */
+    private function isOpen(array $account): bool
+    {
+        $open = strtolower((string) $this->text($account['Open'] ?? null));
+
+        return $open !== '' ? $open === 'yes' : $this->text($account['DateClosed'] ?? null) === null;
+    }
+
+    /**
+     * Written off, settled or taken to court — the marks lenders read as a default.
+     *
+     * @param  array<string, mixed>  $account
+     */
+    private function isWrittenOff(array $account): bool
+    {
+        $status = strtolower(($this->text($account['AccountStatus'] ?? null) ?? '').' '.($this->text($account['SuitFiledStatus'] ?? null) ?? ''));
+
+        return preg_match('/written|write-off|settled|suit filed|wilful|willful/', $status) === 1
+            || ($this->whole($account['WriteOffAmount'] ?? null) ?? 0) > 0;
+    }
+
+    /**
+     * The sum of the first of $keys each row carries; null when no row carries any.
+     *
+     * @param  list<array<string, mixed>>  $rows
+     * @param  list<string>  $keys
+     */
+    private function total(array $rows, array $keys): ?int
+    {
+        $amounts = collect($rows)
+            ->map(fn (array $row) => collect($keys)->map(fn (string $key) => $this->whole($row[$key] ?? null))->first(fn (?int $amount) => $amount !== null))
+            ->reject(fn (?int $amount) => $amount === null);
+
+        return $amounts->isEmpty() ? null : (int) $amounts->sum();
+    }
+
+    /** "268889" or "2,68,889" → 268889; null for anything that is not a number. */
+    private function whole(mixed $value): ?int
+    {
+        $plain = str_replace(',', '', (string) $this->text($value));
+
+        return is_numeric($plain) ? (int) round((float) $plain) : null;
+    }
+
+    /** A 48-month history key ("09-26") as that month's first day. */
+    private function monthOf(string $month): ?CarbonImmutable
+    {
+        try {
+            $date = CarbonImmutable::createFromFormat('!m-y', $month);
+
+            return $date === false ? null : $date;
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     /**

@@ -59,3 +59,10 @@ Schedule::command('equifax:enforce-retention')->dailyAt('02:45')->withoutOverlap
  */
 Schedule::command('experian:flag-stale')->everyFiveMinutes()->withoutOverlapping();
 Schedule::command('experian:enforce-retention')->dailyAt('02:50')->withoutOverlapping();
+
+/*
+ * CIBIL — the same two housekeeping jobs, for CIBIL's own table.
+ * Neither calls Surepass.
+ */
+Schedule::command('cibil:flag-stale')->everyFiveMinutes()->withoutOverlapping();
+Schedule::command('cibil:enforce-retention')->dailyAt('02:55')->withoutOverlapping();

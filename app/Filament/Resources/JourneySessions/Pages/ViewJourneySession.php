@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\JourneySessions\Pages;
 
+use App\Filament\Resources\CibilCreditRequests\CibilActions;
 use App\Filament\Resources\CrifReports\CrifReportActions;
 use App\Filament\Resources\EquifaxCreditRequests\EquifaxActions;
 use App\Filament\Resources\ExperianCreditRequests\ExperianActions;
@@ -24,6 +25,7 @@ class ViewJourneySession extends ViewRecord
             CrifReportActions::fetchFresh(),
             EquifaxActions::group(),
             ExperianActions::group(),
+            CibilActions::group(),
         ];
     }
 }

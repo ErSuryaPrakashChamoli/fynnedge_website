@@ -96,6 +96,19 @@ final class ExperianReportDocument
         '61' => 'Business loan – unsecured',
     ];
 
+    /** Account types that are personal credit cards (credit card, secured credit card). */
+    private const CARD_TYPES = ['10', '31'];
+
+    /**
+     * Written_off_Settled_Status codes that mark a default: written off,
+     * settled, post-write-off settled, and their sold / purchased variants.
+     * (Restructured and "clear existing status" codes are left out.)
+     */
+    private const WRITTEN_OFF_CODES = ['02', '03', '04', '06', '08', '09'];
+
+    /** SuitFiled_WilfulDefault codes: suit filed, wilful default, or both. */
+    private const SUIT_FILED_CODES = ['01', '02', '03'];
+
     /** Report sections with a dedicated layout; everything else is shown as-is. */
     private const HANDLED_SECTIONS = [
         'Header', 'UserMessage', 'CreditProfileHeader', 'Current_Application', 'CAIS_Account', 'Match_result',
@@ -519,6 +532,51 @@ final class ExperianReportDocument
     }
 
     /**
+     * The headline figures behind the score, for the public result page's
+     * report highlights and advice: counts and rupee totals only — no lender,
+     * account number or identity data. Experian's own totals (CAIS_Summary,
+     * TotalCAPS_Summary) come first; the rest are counted from the account
+     * rows. Each is null when the report does not say.
+     *
+     * @return array{accounts_total: ?int, accounts_active: ?int, accounts_overdue: ?int, overdue_amount: ?int, accounts_written_off: ?int, late_payments_last_12_months: ?int, card_limit: ?int, card_balance: ?int, enquiries_last_6_months: ?int, credit_age_months: ?int, outstanding_balance: ?int}
+     */
+    public function insights(): array
+    {
+        $summary = $this->first($this->find('CAIS_Summary'));
+        $counts = $this->first($summary['Credit_Account'] ?? null);
+        $balances = $this->first($summary['Total_Outstanding_Balance'] ?? null);
+        $asOf = $this->reportDate() ?? CarbonImmutable::now();
+        $accounts = $this->accountItems();
+        $open = array_values(array_filter($accounts, fn (array $account) => $this->text($account['Date_Closed'] ?? null) === null));
+        $cards = array_values(array_filter($open, fn (array $account) => in_array(ltrim((string) $this->text($account['Account_Type'] ?? null), '0'), self::CARD_TYPES, true)));
+        $histories = collect($accounts)->map(fn (array $account) => $this->history($account['CAIS_Account_History'] ?? null))->reject(fn (array $history) => $history === []);
+        $since = $asOf->startOfMonth()->subMonths(11);
+        $enquiryDates = collect($this->items($this->find('CAPS_Application_Details', $this->first($this->find('CAPS')))))
+            ->map(fn (array $enquiry) => $this->date($this->text($enquiry['Date_of_Request'] ?? null)))
+            ->filter();
+        $openedDates = collect($accounts)->map(fn (array $account) => $this->date($this->text($account['Open_Date'] ?? null)))->filter();
+
+        return [
+            'accounts_total' => $this->whole($counts['CreditAccountTotal'] ?? null) ?? ($accounts === [] ? null : count($accounts)),
+            'accounts_active' => $this->whole($counts['CreditAccountActive'] ?? null) ?? ($accounts === [] ? null : count($open)),
+            'accounts_overdue' => $accounts === [] ? null : count(array_filter($accounts, fn (array $account) => ($this->whole($account['Amount_Past_Due'] ?? null) ?? 0) > 0)),
+            'overdue_amount' => $this->total($accounts, ['Amount_Past_Due']),
+            'accounts_written_off' => $accounts === []
+                ? $this->whole($counts['CreditAccountDefault'] ?? null)
+                : count(array_filter($accounts, fn (array $account) => $this->isWrittenOff($account))),
+            'late_payments_last_12_months' => $histories->isEmpty() ? null : $histories->flatten(1)
+                ->filter(fn (array $month) => $month['late'] && ($this->monthOf($month['month'])?->gte($since) ?? false))
+                ->count(),
+            'card_limit' => $this->total($cards, ['Credit_Limit_Amount', 'Highest_Credit_or_Original_Loan_Amount']),
+            'card_balance' => $this->total($cards, ['Current_Balance']),
+            'enquiries_last_6_months' => $this->whole($this->first($this->find('TotalCAPS_Summary'))['TotalCAPSLast180Days'] ?? null)
+                ?? ($enquiryDates->isEmpty() ? null : $enquiryDates->filter(fn (CarbonImmutable $date) => $date->gte($asOf->subMonths(6)))->count()),
+            'credit_age_months' => $openedDates->isEmpty() ? null : (int) $openedDates->min()->diffInMonths($asOf),
+            'outstanding_balance' => $this->whole($balances['Outstanding_Balance_All'] ?? null) ?? $this->total($open, ['Current_Balance']),
+        ];
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private function applicant(): array
@@ -636,6 +694,56 @@ final class ExperianReportDocument
             ->filter()
             ->values()
             ->all();
+    }
+
+    /**
+     * Written off, settled, suit filed or a wilful default — the marks lenders read as a default.
+     *
+     * @param  array<string, mixed>  $account
+     */
+    private function isWrittenOff(array $account): bool
+    {
+        $code = fn (string $key): string => str_pad((string) $this->text($account[$key] ?? null), 2, '0', STR_PAD_LEFT);
+
+        return in_array($code('Written_off_Settled_Status'), self::WRITTEN_OFF_CODES, true)
+            || in_array($code('SuitFiled_WilfulDefault'), self::SUIT_FILED_CODES, true)
+            || ($this->whole($account['Written_Off_Amt_Total'] ?? null) ?? 0) > 0
+            || ($this->whole($account['Settlement_Amount'] ?? null) ?? 0) > 0;
+    }
+
+    /**
+     * The sum of the first of $keys each row carries; null when no row carries any.
+     *
+     * @param  list<array<string, mixed>>  $rows
+     * @param  list<string>  $keys
+     */
+    private function total(array $rows, array $keys): ?int
+    {
+        $amounts = collect($rows)
+            ->map(fn (array $row) => collect($keys)->map(fn (string $key) => $this->whole($row[$key] ?? null))->first(fn (?int $amount) => $amount !== null))
+            ->reject(fn (?int $amount) => $amount === null);
+
+        return $amounts->isEmpty() ? null : (int) $amounts->sum();
+    }
+
+    /** "45210" or "45,210" → 45210; null for anything that is not a number. */
+    private function whole(mixed $value): ?int
+    {
+        $plain = str_replace(',', '', (string) $this->text($value));
+
+        return is_numeric($plain) ? (int) round((float) $plain) : null;
+    }
+
+    /** A history month as history() writes it ("09-26") as that month's first day. */
+    private function monthOf(string $month): ?CarbonImmutable
+    {
+        try {
+            $date = CarbonImmutable::createFromFormat('!m-y', $month);
+
+            return $date === false ? null : $date;
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     /**

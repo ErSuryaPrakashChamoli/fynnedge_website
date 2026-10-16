@@ -119,3 +119,45 @@ it('reads the score from SCORE when the envelope has none, and takes only a vali
         ->and((new ExperianReportDocument(['data' => ['credit_report_link' => 'http://files.surepass.test/a.pdf']]))->pdfLink())->toBeNull()
         ->and((new ExperianReportDocument(['data' => ['credit_report_link' => 'javascript:alert(1)']]))->pdfLink())->toBeNull();
 });
+
+it('reads the headline figures behind the score, including card usage', function () {
+    expect((new ExperianReportDocument(experianFixture()))->insights())->toBe([
+        'accounts_total' => 2,
+        'accounts_active' => 1,
+        'accounts_overdue' => 1,
+        'overdue_amount' => 3100,
+        'accounts_written_off' => 0,
+        'late_payments_last_12_months' => 1,
+        'card_limit' => 100000,
+        'card_balance' => 45210,
+        'enquiries_last_6_months' => 2,
+        'credit_age_months' => 88,
+        'outstanding_balance' => 45210,
+    ]);
+});
+
+it('counts settled and suit-filed accounts as defaults but not a restructured one', function () {
+    $document = new ExperianReportDocument(['data' => ['credit_report' => [
+        'Header' => ['ReportDate' => '20261016'],
+        'CAIS_Account' => ['CAIS_Account_DETAILS' => [
+            ['Account_Type' => '31', 'Credit_Limit_Amount' => '', 'Highest_Credit_or_Original_Loan_Amount' => '20000', 'Current_Balance' => '15000', 'Open_Date' => '20250101', 'Date_Closed' => ''],
+            ['Account_Type' => '5', 'Written_off_Settled_Status' => '03', 'Open_Date' => '20210510', 'Date_Closed' => '20240101', 'Current_Balance' => '0'],
+            ['Account_Type' => '5', 'Written_off_Settled_Status' => '00', 'SuitFiled_WilfulDefault' => '01', 'Open_Date' => '20230101', 'Date_Closed' => ''],
+            ['Account_Type' => '1', 'Written_off_Settled_Status' => '00', 'Open_Date' => '20240101', 'Date_Closed' => '', 'Current_Balance' => '300000'],
+        ]],
+    ]]]);
+
+    expect($document->insights())->toBe([
+        'accounts_total' => 4,
+        'accounts_active' => 3,
+        'accounts_overdue' => 0,
+        'overdue_amount' => null,
+        'accounts_written_off' => 2,
+        'late_payments_last_12_months' => null,
+        'card_limit' => 20000,
+        'card_balance' => 15000,
+        'enquiries_last_6_months' => null,
+        'credit_age_months' => 65,
+        'outstanding_balance' => 315000,
+    ]);
+});

@@ -109,6 +109,7 @@ class SurepassEquifaxScoreProvider implements CreditScoreProvider
             score: $document->score(),
             reference: $document->clientId(),
             rawResponse: ['client_id' => $document->clientId(), 'message_code' => $result->messageCode, 'source' => $source, ...$this->link($requestId)],
+            insights: $document->insights(),
         );
     }
 
