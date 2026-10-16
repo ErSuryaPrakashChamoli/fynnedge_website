@@ -1,0 +1,13 @@
+{
+    "data": {
+        "client_id": "experian_credit_score_TESTFIXTURE0001",
+        "name": "TEST FIXTURE",
+        "mobile": "9000000001",
+        "pan": "AAAPZ9999Z",
+        "credit_score": "796"
+    },
+    "status_code": 200,
+    "success": true,
+    "message": "Success",
+    "message_code": "success"
+}

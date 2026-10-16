@@ -3,6 +3,7 @@
 declare(strict_types=1);
 use App\Filament\Resources\CrifReports\CrifReportResource;
 use App\Filament\Resources\EquifaxCreditRequests\EquifaxCreditRequestResource;
+use App\Filament\Resources\ExperianCreditRequests\ExperianCreditRequestResource;
 use App\Filament\Resources\LenderProductRates\LenderProductRateResource;
 use App\Filament\Widgets\RateHealthOverview;
 use BezhanSalleh\FilamentShield\Resources\Roles\RoleResource;
@@ -218,6 +219,14 @@ return [
             // full report (View alone shows status and score), plus the same
             // FetchFresh / Reconcile / ViewRaw / DownloadPdf as CRIF.
             EquifaxCreditRequestResource::class => [
+                'viewReport',
+                'fetchFresh',
+                'reconcile',
+                'viewRaw',
+                'downloadPdf',
+            ],
+            // Experian (see App\Modules\Experian\Services\ExperianRoles): the same set as Equifax.
+            ExperianCreditRequestResource::class => [
                 'viewReport',
                 'fetchFresh',
                 'reconcile',

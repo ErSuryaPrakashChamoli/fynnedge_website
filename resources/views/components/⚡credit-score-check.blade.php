@@ -9,6 +9,7 @@ use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
 use App\Modules\Equifax\Enums\Gender;
 use App\Modules\Equifax\Services\EquifaxSettings;
+use App\Modules\Experian\Services\ExperianSettings;
 use App\Modules\MobileOtp\Actions\RequestMobileOtp;
 use App\Modules\MobileOtp\Actions\VerifyMobileOtp;
 use App\Modules\MobileOtp\Enums\MobileOtpPurpose;
@@ -112,11 +113,10 @@ new class extends Component
     }
 
     /**
-     * Real scores (a paid Surepass call per new check) only on the CRIF page
-     * while CRIF Settings → "Free CRIF Score page uses real scores" is on, and
-     * on the Equifax page while Equifax Settings → "Free Equifax Score page uses
-     * real scores" is on — each also needs the server's Surepass token. Every
-     * other bureau stays a demo.
+     * Real scores (a paid Surepass call per new check) only on the CRIF,
+     * Equifax and Experian pages, each while its own Settings page → "Free …
+     * Score page uses real scores" is on — each also needs the server's
+     * Surepass token. Every other bureau (CIBIL) stays a demo.
      */
     #[Computed]
     public function isLive(): bool
@@ -124,6 +124,7 @@ new class extends Component
         return match ($this->bureau) {
             BureauName::Crif->value => CrifSettings::publicScoreLive(),
             BureauName::Equifax->value => EquifaxSettings::publicScoreLive(),
+            BureauName::Experian->value => ExperianSettings::publicScoreLive(),
             default => false,
         };
     }

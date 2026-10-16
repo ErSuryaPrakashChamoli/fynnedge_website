@@ -21,14 +21,15 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
-        // The Equifax internal API: session-authenticated, so it runs in the web
-        // group rather than the public, anonymous routes/api.php.
+        // The Equifax and Experian internal APIs: session-authenticated, so they
+        // run in the web group rather than the public, anonymous routes/api.php.
         then: function (): void {
             Route::middleware('web')->group(base_path('routes/equifax.php'));
+            Route::middleware('web')->group(base_path('routes/experian.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias(['equifax.json' => ForceJsonResponse::class]);
+        $middleware->alias(['equifax.json' => ForceJsonResponse::class, 'experian.json' => ForceJsonResponse::class]);
         // Must run BEFORE `auth` (which Laravel otherwise sorts first): a signed-out
         // API caller then gets a 401 JSON answer instead of a login redirect.
         $middleware->prependToPriorityList(AuthenticatesRequests::class, ForceJsonResponse::class);
