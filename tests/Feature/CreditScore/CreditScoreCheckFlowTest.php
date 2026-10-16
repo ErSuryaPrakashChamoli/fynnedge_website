@@ -25,7 +25,8 @@ it('walks through mobile, OTP, details and result end to end', function () {
         ->call('verifyOtp')
         ->assertSet('step', 'details')
         ->assertHasNoErrors('otpCode')
-        ->set('fullName', 'Jane Doe')
+        ->set('firstName', 'Jane')
+        ->set('lastName', 'Doe')
         ->set('dateOfBirth', '1990-01-01')
         ->set('panNumber', 'abcde1234f')
         ->set('consent', true)
@@ -46,7 +47,7 @@ it('walks through mobile, OTP, details and result end to end', function () {
         ->consumed_at->not->toBeNull();
 });
 
-it('saves the name as per PAN with each word capitalised, however it was typed', function (string $typed, string $saved) {
+it('saves the name as per PAN with each word capitalised, however it was typed', function (string $first, string $middle, string $last, string $saved) {
     fakeAreachSms();
     $component = Livewire::test('credit-score-check', ['bureau' => 'experian'])
         ->set('mobileNumber', '9876543210')
@@ -54,8 +55,9 @@ it('saves the name as per PAN with each word capitalised, however it was typed',
 
     $component->set('otpCode', lastTextedOtp())
         ->call('verifyOtp')
-        ->set('fullName', $typed)
-        ->assertSet('fullName', $saved)
+        ->set('firstName', $first)
+        ->set('middleName', $middle)
+        ->set('lastName', $last)
         ->set('dateOfBirth', '1990-01-01')
         ->set('panNumber', 'ABCDE1234F')
         ->set('consent', true)
@@ -64,10 +66,10 @@ it('saves the name as per PAN with each word capitalised, however it was typed',
 
     expect(CreditScoreCheck::query()->sole()->full_name)->toBe($saved);
 })->with([
-    'all capitals' => ['SURYA PRAKASH CHAMOLI', 'Surya Prakash Chamoli'],
-    'all small' => ['surya prakash chamoli', 'Surya Prakash Chamoli'],
-    'mixed case with stray spaces' => ['  sURYA   pRAKASH chamoli ', 'Surya Prakash Chamoli'],
-    'initials and joined names' => ["s.p. d'souza-RAO", "S.P. D'Souza-Rao"],
+    'all capitals' => ['SURYA', 'PRAKASH', 'CHAMOLI', 'Surya Prakash Chamoli'],
+    'all small' => ['surya', 'prakash', 'chamoli', 'Surya Prakash Chamoli'],
+    'mixed case with stray spaces, no middle name' => ['  sURYA ', '', ' sEN   gUPTA', 'Surya Sen Gupta'],
+    'initials and joined names' => ['s.p.', '', "d'souza-RAO", "S.P. D'Souza-Rao"],
 ]);
 
 it('does not let an unverified OTP reach the details step', function () {
@@ -90,7 +92,8 @@ it('rejects an invalid PAN format', function () {
 
     $component->set('otpCode', lastTextedOtp())
         ->call('verifyOtp')
-        ->set('fullName', 'Jane Doe')
+        ->set('firstName', 'Jane')
+        ->set('lastName', 'Doe')
         ->set('dateOfBirth', '1990-01-01')
         ->set('panNumber', 'not-a-pan')
         ->set('consent', true)
@@ -107,7 +110,8 @@ it('requires consent before submitting', function () {
 
     $component->set('otpCode', lastTextedOtp())
         ->call('verifyOtp')
-        ->set('fullName', 'Jane Doe')
+        ->set('firstName', 'Jane')
+        ->set('lastName', 'Doe')
         ->set('dateOfBirth', '1990-01-01')
         ->set('panNumber', 'ABCDE1234F')
         ->set('consent', false)
@@ -151,7 +155,8 @@ it('runs the check for the verified number even if the input is changed afterwar
     $component->set('otpCode', lastTextedOtp())
         ->call('verifyOtp')
         ->set('mobileNumber', '9123456780')
-        ->set('fullName', 'Jane Doe')
+        ->set('firstName', 'Jane')
+        ->set('lastName', 'Doe')
         ->set('dateOfBirth', '1990-01-01')
         ->set('panNumber', 'ABCDE1234F')
         ->set('consent', true)
@@ -169,7 +174,8 @@ it('sends the visitor back to verify once the verification has gone stale', func
     $component->set('otpCode', lastTextedOtp())->call('verifyOtp');
     $this->travel(31)->minutes();
 
-    $component->set('fullName', 'Jane Doe')
+    $component->set('firstName', 'Jane')
+        ->set('lastName', 'Doe')
         ->set('dateOfBirth', '1990-01-01')
         ->set('panNumber', 'ABCDE1234F')
         ->set('consent', true)

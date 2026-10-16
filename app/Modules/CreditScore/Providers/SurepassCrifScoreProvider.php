@@ -42,8 +42,6 @@ class SurepassCrifScoreProvider implements CreditScoreProvider
 
     public function check(CreditScoreCheck $check): CreditCheckResult
     {
-        [$firstName, $lastName] = self::splitName($check->full_name);
-
         // The public flow's consent record is the check itself: an OTP-verified
         // mobile, the ticked consent box and consent_given_at, all required
         // before this provider is ever reached.
@@ -53,7 +51,8 @@ class SurepassCrifScoreProvider implements CreditScoreProvider
             'purpose' => 'Free CRIF score check',
         ]);
 
-        $subject = new CrifSubject($firstName, $lastName, $check->mobile_number, $check->pan_number, $consent);
+        // Surepass has no middle-name field, so it travels inside first_name.
+        $subject = new CrifSubject($check->givenNames(), (string) $check->last_name, $check->mobile_number, $check->pan_number, $consent);
         $source = config('services.surepass.crif_public_score_source') === 'score' ? 'score' : 'report';
         $result = $source === 'score' ? $this->surepass->fetchScore($subject) : $this->surepass->fetchReport($subject);
 
@@ -90,24 +89,5 @@ class SurepassCrifScoreProvider implements CreditScoreProvider
             reference: $document->clientId(),
             rawResponse: ['client_id' => $document->clientId(), 'message_code' => $result->messageCode, 'source' => $source],
         );
-    }
-
-    /**
-     * "Asha Kumari Rao" → ["Asha Kumari", "Rao"]. A single word has no last
-     * name to send; SubmitCreditScoreCheck's caller asks for both first.
-     *
-     * @return array{0: string, 1: string}
-     */
-    public static function splitName(string $fullName): array
-    {
-        $parts = preg_split('/\s+/', trim($fullName)) ?: [];
-
-        if (count($parts) < 2) {
-            return [$parts[0] ?? '', ''];
-        }
-
-        $lastName = array_pop($parts);
-
-        return [implode(' ', $parts), $lastName];
     }
 }

@@ -41,7 +41,7 @@ function crifReportWithScore(string $score): array
     return $body;
 }
 
-function checkScoreOnPage(string $bureau = 'crif', string $mobile = '9000000001', string $pan = 'aaapz9999z', string $name = 'Test Fixture'): Testable
+function checkScoreOnPage(string $bureau = 'crif', string $mobile = '9000000001', string $pan = 'aaapz9999z', string $firstName = 'Test', string $middleName = '', string $lastName = 'Fixture'): Testable
 {
     $component = Livewire::test('credit-score-check', ['bureau' => $bureau])
         ->set('mobileNumber', $mobile)
@@ -50,7 +50,9 @@ function checkScoreOnPage(string $bureau = 'crif', string $mobile = '9000000001'
     return $component
         ->set('otpCode', lastTextedOtp())
         ->call('verifyOtp')
-        ->set('fullName', $name)
+        ->set('firstName', $firstName)
+        ->set('middleName', $middleName)
+        ->set('lastName', $lastName)
         ->set('dateOfBirth', '1990-01-01')
         ->set('panNumber', $pan)
         ->set('consent', true)
@@ -86,6 +88,21 @@ it('shows a real CRIF score from Surepass when switched on', function () {
         ->status->toBe(CreditCheckStatus::Completed)
         ->score->toBe(742)
         ->raw_response->toBe(['client_id' => 'credit_report_crif_TESTFIXTURE0001', 'message_code' => 'success', 'source' => 'report']);
+});
+
+it('sends the middle name inside first_name and keeps a two-word surname whole', function () {
+    liveCrifScorePage();
+
+    checkScoreOnPage(firstName: 'surya', middleName: 'PRAKASH', lastName: 'sen gupta')->assertSet('resultKind', 'live');
+
+    Http::assertSent(fn (Request $request) => str_contains($request->url(), '/credit-report-crif/')
+        && $request['first_name'] === 'Surya Prakash' && $request['last_name'] === 'Sen Gupta');
+
+    expect(CreditScoreCheck::query()->sole())
+        ->full_name->toBe('Surya Prakash Sen Gupta')
+        ->first_name->toBe('Surya')
+        ->middle_name->toBe('Prakash')
+        ->last_name->toBe('Sen Gupta');
 });
 
 it('reads the score from the score-only endpoint when configured to', function () {
@@ -215,16 +232,19 @@ it('holds an uncertain check for an hour instead of re-sending it', function () 
     expect($attempts)->toBe(2);
 });
 
-it('asks for a first and last name before paying for a check', function () {
+it('asks for a first and last name before paying for a check', function (array $name, string $missing) {
     liveCrifScorePage();
 
-    checkScoreOnPage(name: 'Madonna')
+    checkScoreOnPage(...$name)
         ->assertSet('step', 'details')
-        ->assertHasErrors('fullName');
+        ->assertHasErrors($missing);
 
     expect(surepassScoreCalls())->toBe(0)
         ->and(CreditScoreCheck::query()->count())->toBe(0);
-});
+})->with([
+    'no first name' => [['firstName' => ''], 'firstName'],
+    'no last name' => [['lastName' => '  '], 'lastName'],
+]);
 
 it('keeps showing a demo score when switched off or without a token', function (Closure $disable) {
     liveCrifScorePage();

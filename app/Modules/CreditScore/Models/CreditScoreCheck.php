@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 #[Fillable([
-    'bureau', 'mobile_number', 'mobile_verified_at', 'full_name', 'date_of_birth',
+    'bureau', 'mobile_number', 'mobile_verified_at', 'full_name', 'first_name', 'middle_name', 'last_name', 'date_of_birth',
     'pan_number', 'provider', 'status', 'score', 'raw_response',
     'consent_given_at', 'ip_address', 'requested_at', 'completed_at',
 ])]
@@ -38,6 +38,15 @@ class CreditScoreCheck extends Model
             'requested_at' => 'datetime',
             'completed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * First and middle name together — what is sent to Surepass as first_name,
+     * since its CRIF API has no separate middle-name field.
+     */
+    public function givenNames(): string
+    {
+        return trim(($this->first_name ?? '').' '.($this->middle_name ?? ''));
     }
 
     /**

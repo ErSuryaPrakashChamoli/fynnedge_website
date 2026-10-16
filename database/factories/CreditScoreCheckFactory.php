@@ -17,12 +17,18 @@ class CreditScoreCheckFactory extends Factory
 
     public function definition(): array
     {
+        $firstName = $this->faker->firstName();
+        $lastName = $this->faker->lastName();
+
         return [
             'public_id' => Str::uuid(),
             'bureau' => $this->faker->randomElement(BureauName::cases()),
             'mobile_number' => '9'.$this->faker->numerify('#########'),
             'mobile_verified_at' => now(),
-            'full_name' => $this->faker->name(),
+            'full_name' => "{$firstName} {$lastName}",
+            'first_name' => $firstName,
+            'middle_name' => null,
+            'last_name' => $lastName,
             'date_of_birth' => $this->faker->date(max: '-18 years'),
             'pan_number' => strtoupper($this->faker->bothify('?????####?')),
             'provider' => 'demo',

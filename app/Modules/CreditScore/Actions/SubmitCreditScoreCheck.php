@@ -11,6 +11,7 @@ use App\Modules\CreditScore\Models\CreditScoreCheck;
 use App\Modules\CreditScore\Providers\SurepassCrifScoreProvider;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class SubmitCreditScoreCheck
 {
@@ -23,7 +24,7 @@ class SubmitCreditScoreCheck
     ) {}
 
     /**
-     * @param  array{full_name: string, date_of_birth: string, pan_number: string}  $data
+     * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string}  $data
      */
     public function handle(array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress = null): CreditScoreCheck
     {
@@ -41,7 +42,7 @@ class SubmitCreditScoreCheck
      * score already fetched, and a check whose outcome was uncertain is not
      * re-sent for an hour. A per-person lock stops two tabs paying twice.
      *
-     * @param  array{full_name: string, date_of_birth: string, pan_number: string}  $data
+     * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string}  $data
      */
     private function liveCrif(array $data, string $mobileNumber, ?string $ipAddress): CreditScoreCheck
     {
@@ -86,7 +87,7 @@ class SubmitCreditScoreCheck
     }
 
     /**
-     * @param  array{full_name: string, date_of_birth: string, pan_number: string}  $data
+     * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string}  $data
      */
     private function run(CreditScoreProvider $provider, array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress): CreditScoreCheck
     {
@@ -108,7 +109,7 @@ class SubmitCreditScoreCheck
     }
 
     /**
-     * @param  array{full_name: string, date_of_birth: string, pan_number: string}  $data
+     * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string}  $data
      * @param  array<string, mixed>  $outcome
      */
     private function record(array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress, array $outcome): CreditScoreCheck
@@ -117,7 +118,10 @@ class SubmitCreditScoreCheck
             'bureau' => $bureau,
             'mobile_number' => $mobileNumber,
             'mobile_verified_at' => now(),
-            'full_name' => $data['full_name'],
+            'full_name' => Str::squish("{$data['first_name']} {$data['middle_name']} {$data['last_name']}"),
+            'first_name' => $data['first_name'],
+            'middle_name' => $data['middle_name'] ?: null,
+            'last_name' => $data['last_name'],
             'date_of_birth' => $data['date_of_birth'],
             'pan_number' => $data['pan_number'],
             'consent_given_at' => now(),

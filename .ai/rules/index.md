@@ -16,6 +16,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Support/Calculators/CalculatorPagesContent.php,app/Filament/Pages/CalculatorPagesSettings.php,resources/views/calculators/** | .ai/rules/calculators.md |
 | app/Support/Rates/RateBook.php,app/Console/Commands/RatesStatusCommand.php | .ai/rules/commands.md |
 | app/Support/Seo/SeoDefaults.php,app/Support/Seo/Sitemap.php,app/Support/Seo/CrawlerPolicy.php,resources/views/components/layouts/app.blade.php | .ai/rules/components-layouts.md |
+| resources/views/components/⚡credit-score-check.blade.php,app/Modules/CreditScore/** | .ai/rules/components-modules-credit-score.md |
 | resources/views/components/ui/input-affix.blade.php,resources/views/components/site/loan-enquiry-form.blade.php,resources/views/components/site/quick-enquiry.blade.php | .ai/rules/components-site-views-components-site.md |
 | app/Support/Contact/**,resources/views/components/site/location-map.blade.php,resources/views/components/site/footer.blade.php,resources/views/contact.blade.php | .ai/rules/components-site-views.md |
 | app/Models/MarketingSection.php,app/Models/NavigationLink.php,resources/views/home.blade.php,resources/views/components/site/footer.blade.php | .ai/rules/components-site.md |

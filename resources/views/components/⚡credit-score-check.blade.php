@@ -52,7 +52,16 @@ new class extends Component
     #[Locked]
     public int $resendAfterSeconds = 0;
 
-    public string $fullName = '';
+    /**
+     * The name as on the PAN card, in three boxes: Surepass's CRIF API takes
+     * first_name and last_name apart (a middle name travels inside first_name),
+     * and splitting one box guessed wrong on two-word surnames like "Sen Gupta".
+     */
+    public string $firstName = '';
+
+    public string $middleName = '';
+
+    public string $lastName = '';
 
     public string $dateOfBirth = '';
 
@@ -184,10 +193,12 @@ new class extends Component
         $this->step = 'details';
     }
 
-    /** "SURYA prakash chamoli" → "Surya Prakash Chamoli", whichever case it was typed in. */
-    public function updatedFullName(string $value): void
+    /** "SURYA" → "Surya", "sen GUPTA" → "Sen Gupta", whichever case each name was typed in. */
+    public function updated(string $property, mixed $value): void
     {
-        $this->fullName = PanName::normalize($value);
+        if (in_array($property, ['firstName', 'middleName', 'lastName'], true)) {
+            $this->{$property} = PanName::normalize($value);
+        }
     }
 
     public function updatedPanNumber(string $value): void
@@ -204,7 +215,9 @@ new class extends Component
         }
 
         $validated = $this->validate([
-            'fullName' => ['required', 'string', 'max:120'],
+            'firstName' => ['required', 'string', 'max:100'],
+            'middleName' => ['nullable', 'string', 'max:100'],
+            'lastName' => ['required', 'string', 'max:100'],
             'dateOfBirth' => ['required', 'date', 'before:-18 years'],
             'panNumber' => ['required', 'regex:/^[A-Z]{5}[0-9]{4}[A-Z]$/'],
             'consent' => ['accepted'],
@@ -213,13 +226,6 @@ new class extends Component
             'panNumber.regex' => __('Enter a valid PAN (e.g. ABCDE1234F).'),
             'consent.accepted' => __('Please provide consent to continue.'),
         ]);
-
-        // CRIF matches on first AND last name; a single word cannot be sent.
-        if ($this->isLiveCrif && count(preg_split('/\s+/', trim($validated['fullName'])) ?: []) < 2) {
-            $this->addError('fullName', __('Enter your first and last name as on your PAN card.'));
-
-            return;
-        }
 
         // The verification is spent on exactly one check — re-submitting, or a
         // second tab replaying the same component state, has nothing left to spend.
@@ -234,7 +240,9 @@ new class extends Component
 
         $check = $action->handle(
             [
-                'full_name' => $validated['fullName'],
+                'first_name' => $validated['firstName'],
+                'middle_name' => $validated['middleName'] ?? '',
+                'last_name' => $validated['lastName'],
                 'date_of_birth' => $validated['dateOfBirth'],
                 'pan_number' => $validated['panNumber'],
             ],
@@ -259,7 +267,7 @@ new class extends Component
     {
         $this->reset([
             'step', 'mobileNumber', 'otpCode', 'otpChallengeId', 'verifiedMobileNumber', 'resendAfterSeconds',
-            'fullName', 'dateOfBirth', 'panNumber', 'consent', 'resultScore', 'resultKind', 'resultError',
+            'firstName', 'middleName', 'lastName', 'dateOfBirth', 'panNumber', 'consent', 'resultScore', 'resultKind', 'resultError',
         ]);
     }
 };
@@ -347,17 +355,34 @@ new class extends Component
             @elseif ($step === 'details')
                 <p class="font-display text-xl font-semibold text-ink">{{ __('A few last details') }}</p>
                 <div class="mt-4 flex flex-col gap-4">
-                    <div>
-                        <label for="fullName" class="text-sm font-medium text-ink">{{ __('Full name (as per PAN)') }}</label>
-                        <input
-                            id="fullName"
-                            type="text"
-                            wire:model="fullName"
-                            x-on:input="formatPanNameInput($event)"
-                            class="mt-1.5 w-full rounded-lg border border-line-strong bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
-                        >
-                        @error('fullName') <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
-                    </div>
+                    <fieldset>
+                        <legend class="text-sm font-medium text-ink">{{ __('Name (as per PAN)') }}</legend>
+                        <p class="mt-0.5 text-xs text-ink-muted">{{ __('Enter your name exactly as printed on your PAN card.') }}</p>
+                        <div class="mt-2 grid gap-3 sm:grid-cols-3">
+                            @foreach ([
+                                'firstName' => ['label' => __('First name'), 'autocomplete' => 'given-name', 'optional' => false],
+                                'middleName' => ['label' => __('Middle name'), 'autocomplete' => 'additional-name', 'optional' => true],
+                                'lastName' => ['label' => __('Last name'), 'autocomplete' => 'family-name', 'optional' => false],
+                            ] as $nameField => $nameMeta)
+                                <div wire:key="name-{{ $nameField }}">
+                                    <label for="{{ $nameField }}" class="text-xs font-medium text-ink-muted">
+                                        {{ $nameMeta['label'] }}
+                                        @if ($nameMeta['optional']) <span class="font-normal text-ink-faint">{{ __('(optional)') }}</span> @endif
+                                    </label>
+                                    <input
+                                        id="{{ $nameField }}"
+                                        type="text"
+                                        maxlength="100"
+                                        autocomplete="{{ $nameMeta['autocomplete'] }}"
+                                        wire:model="{{ $nameField }}"
+                                        x-on:input="formatPanNameInput($event)"
+                                        class="mt-1 w-full rounded-lg border border-line-strong bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+                                    >
+                                    @error($nameField) <p class="mt-1 text-xs text-warn">{{ $message }}</p> @enderror
+                                </div>
+                            @endforeach
+                        </div>
+                    </fieldset>
                     <div
                         x-data="{ raw: isoToDateInputDigits(@js($dateOfBirth)) }"
                         x-init="$refs.dateOfBirthDisplay.value = formatDateInput(raw)"
