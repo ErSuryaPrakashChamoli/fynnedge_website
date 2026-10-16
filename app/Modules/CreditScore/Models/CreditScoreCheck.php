@@ -63,10 +63,22 @@ class CreditScoreCheck extends Model
             return null;
         }
 
-        return match ($this->bureau) {
+        return match ($this->sourceBureau()) {
             BureauName::Equifax => EquifaxErrorCode::tryFrom($error),
             BureauName::Experian => ExperianErrorCode::tryFrom($error),
             default => CrifErrorCode::tryFrom($error),
         };
+    }
+
+    /**
+     * The bureau whose answer this check holds — the page's own bureau, except
+     * where a stand-in source answered it (the CIBIL page, by Experian, until a
+     * CIBIL API exists; recorded as raw_response.source_bureau).
+     */
+    public function sourceBureau(): ?BureauName
+    {
+        $source = is_array($this->raw_response) ? ($this->raw_response['source_bureau'] ?? null) : null;
+
+        return is_string($source) ? BureauName::tryFrom($source) : $this->bureau;
     }
 }

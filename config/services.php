@@ -109,4 +109,12 @@ return [
         'experian_public_score_source' => env('SUREPASS_EXPERIAN_PUBLIC_SCORE_SOURCE', 'report'),
     ],
 
+    'cibil' => [
+        // FynnEdge has no CIBIL API yet: where the public Free CIBIL Score page gets real
+        // scores (App\Modules\Cibil\Services\CibilSettings::SOURCES) while CIBIL Settings →
+        // "shows real scores" is on. "experian" = the visitor's Experian score, labelled as such.
+        // When a CIBIL API is added, register its provider in SOURCES and switch this value.
+        'public_score_source' => env('CIBIL_PUBLIC_SCORE_SOURCE', 'experian'),
+    ],
+
 ];

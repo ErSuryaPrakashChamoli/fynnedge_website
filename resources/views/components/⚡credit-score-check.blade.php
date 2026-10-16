@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Cibil\Services\CibilSettings;
 use App\Modules\CreditBureau\Enums\CreditCheckStatus;
 use App\Modules\CreditBureau\Enums\CrifErrorCode;
 use App\Modules\CreditBureau\Services\CrifSettings;
@@ -113,10 +114,10 @@ new class extends Component
     }
 
     /**
-     * Real scores (a paid Surepass call per new check) only on the CRIF,
-     * Equifax and Experian pages, each while its own Settings page → "Free …
-     * Score page uses real scores" is on — each also needs the server's
-     * Surepass token. Every other bureau (CIBIL) stays a demo.
+     * Real scores (a paid Surepass call per new check) only while the page's
+     * own Settings switch is on (CRIF, Equifax, Experian, CIBIL Settings) and
+     * the server has the token. The CIBIL page has no CIBIL API behind it: its
+     * real scores come from a stand-in bureau (see standInSource()).
      */
     #[Computed]
     public function isLive(): bool
@@ -125,8 +126,27 @@ new class extends Component
             BureauName::Crif->value => CrifSettings::publicScoreLive(),
             BureauName::Equifax->value => EquifaxSettings::publicScoreLive(),
             BureauName::Experian->value => ExperianSettings::publicScoreLive(),
-            default => false,
+            BureauName::Cibil->value => CibilSettings::publicScoreLive(),
         };
+    }
+
+    /**
+     * The bureau whose real score this page shows when it is not the page's
+     * own — Experian on the CIBIL page while no CIBIL API exists. The page then
+     * says so at every step: a visitor is never told an Experian score is
+     * their CIBIL score.
+     */
+    #[Computed]
+    public function standInSource(): ?string
+    {
+        return $this->bureau === BureauName::Cibil->value && $this->isLive ? CibilSettings::sourceLabel() : null;
+    }
+
+    /** The bureau named on a live result: the stand-in when there is one. */
+    #[Computed]
+    public function scoreBureau(): string
+    {
+        return $this->standInSource ?? $this->bureauLabel;
     }
 
     #[Computed]
@@ -139,7 +159,7 @@ new class extends Component
     #[Computed]
     public function liveSource(): string
     {
-        return $this->bureau === BureauName::Crif->value ? 'CRIF High Mark' : $this->bureauLabel;
+        return $this->standInSource ?? ($this->bureau === BureauName::Crif->value ? 'CRIF High Mark' : $this->bureauLabel);
     }
 
     #[Computed]
@@ -309,7 +329,11 @@ new class extends Component
     @if ($step === 'mobile')
         <div class="flex items-center gap-2.5 bg-accent-soft px-6 py-3 text-sm text-accent-strong">
             <svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 shrink-0" aria-hidden="true"><path d="M10 2a6 6 0 0 0-6 6c0 4-2 5.5-2 5.5h16S16 12 16 8a6 6 0 0 0-6-6ZM8.5 16a1.5 1.5 0 0 0 3 0h-3Z" /></svg>
-            {{ __('Check your free :bureau score in under 2 minutes', ['bureau' => $this->bureauLabel]) }}
+            @if ($this->standInSource)
+                {{ __('Check your free credit score in under 2 minutes') }}
+            @else
+                {{ __('Check your free :bureau score in under 2 minutes', ['bureau' => $this->bureauLabel]) }}
+            @endif
         </div>
     @endif
 
@@ -341,12 +365,14 @@ new class extends Component
                         {!! __('By continuing, you agree to FynnEdge\'s <a href=":terms_url" class="underline hover:text-ink">Terms</a> and <a href=":privacy_policy_url" class="underline hover:text-ink">Privacy Policy</a>.', ['terms_url' => e(route('terms')), 'privacy_policy_url' => e(route('privacy-policy'))]) !!}
                     </p>
                     <x-ui.button wire:click="sendOtp" wire:loading.attr="disabled" class="w-full justify-center">
-                        {{ __('Get Free :bureau Score', ['bureau' => $this->bureauLabel]) }}
+                        {{ $this->standInSource ? __('Get Free Credit Score') : __('Get Free :bureau Score', ['bureau' => $this->bureauLabel]) }}
                         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8h10m0 0-4-4m4 4-4 4" /></svg>
                     </x-ui.button>
                     <p class="flex items-center justify-center gap-1.5 text-xs text-ink-faint">
                         <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 text-pass" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4L8 11.6l6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd" /></svg>
-                        @if ($this->isLive)
+                        @if ($this->standInSource)
+                            {{ __(':bureau isn\'t connected yet — you\'ll see your real :source score instead, free', ['bureau' => $this->bureauLabel, 'source' => $this->standInSource]) }}
+                        @elseif ($this->isLive)
                             {{ __('Your real :bureau score, free — checking your own score does not lower it', ['bureau' => $this->bureauLabel]) }}
                         @else
                             {{ __('Demo mode — see a sample score instantly, no real bureau pull') }}
@@ -498,29 +524,34 @@ new class extends Component
                     @if ($resultKind === 'live')
                         <x-ui.badge tone="pass">{{ __('Live score from :provider', ['provider' => $this->liveSource]) }}</x-ui.badge>
                         <div>
-                            <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Your :bureau score', ['bureau' => $this->bureauLabel]) }}</p>
+                            <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Your :bureau score', ['bureau' => $this->scoreBureau]) }}</p>
                             <p class="mt-1 font-display text-5xl font-semibold text-accent">{{ $resultScore }}</p>
                         </div>
                         <p class="max-w-sm text-sm text-ink-muted">
-                            {{ __(':bureau scores range from 300 to 900 — the higher, the better your chances of a loan approval at a good rate. Checking your own score does not lower it.', ['bureau' => $this->bureauLabel]) }}
+                            {{ __(':bureau scores range from 300 to 900 — the higher, the better your chances of a loan approval at a good rate. Checking your own score does not lower it.', ['bureau' => $this->scoreBureau]) }}
                         </p>
+                        @if ($this->standInSource)
+                            <p class="max-w-sm text-xs text-ink-faint">
+                                {{ __(':bureau isn\'t connected yet, so this is your score from :source, another RBI-licensed credit bureau. Scores can differ a little between bureaus.', ['bureau' => $this->bureauLabel, 'source' => $this->standInSource]) }}
+                            </p>
+                        @endif
                     @elseif ($resultKind === 'no_score')
                         <x-ui.badge tone="muted">{{ __('No score yet') }}</x-ui.badge>
                         <p class="max-w-sm text-sm text-ink-muted">
-                            {{ __(':bureau found your record but has no score for you yet. This usually means there is not enough credit history — a score appears a few months after your first loan or credit card.', ['bureau' => $this->bureauLabel]) }}
+                            {{ __(':bureau found your record but has no score for you yet. This usually means there is not enough credit history — a score appears a few months after your first loan or credit card.', ['bureau' => $this->scoreBureau]) }}
                         </p>
                     @elseif ($resultKind === 'pending')
                         <x-ui.badge tone="warn">{{ __('Still checking') }}</x-ui.badge>
                         <p class="max-w-sm text-sm text-ink-muted">
-                            {{ __('We could not confirm your score with :bureau just now. Please try again in an hour.', ['bureau' => $this->bureauLabel]) }}
+                            {{ __('We could not confirm your score with :bureau just now. Please try again in an hour.', ['bureau' => $this->scoreBureau]) }}
                         </p>
                     @elseif ($resultKind === 'failed')
                         <x-ui.badge tone="warn">{{ __('Score not available') }}</x-ui.badge>
                         <p class="max-w-sm text-sm text-ink-muted">
                             @if (in_array($resultError, [CrifErrorCode::NoRecordFound->value, CrifErrorCode::InvalidRequest->value, CrifErrorCode::ProviderRejected->value], true))
-                                {{ __(':bureau could not find a credit record matching these details. Check that your name and PAN are exactly as on your PAN card, and that this mobile number is the one your bank or lender has.', ['bureau' => $this->bureauLabel]) }}
+                                {{ __(':bureau could not find a credit record matching these details. Check that your name and PAN are exactly as on your PAN card, and that this mobile number is the one your bank or lender has.', ['bureau' => $this->scoreBureau]) }}
                             @else
-                                {{ __('We could not fetch your :bureau score right now. Please try again a little later.', ['bureau' => $this->bureauLabel]) }}
+                                {{ __('We could not fetch your :bureau score right now. Please try again a little later.', ['bureau' => $this->scoreBureau]) }}
                             @endif
                         </p>
                     @else
