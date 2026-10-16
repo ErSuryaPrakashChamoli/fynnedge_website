@@ -67,6 +67,16 @@ class ProcessEquifaxRequest
             ? $this->surepass->fetchScore($subject)
             : $this->surepass->fetchReport($subject);
 
+        $this->record($request, $result);
+    }
+
+    /**
+     * Stores what Surepass answered for a request that is being processed —
+     * from the queued job above, or from the public score page, which makes
+     * its call in the visitor's request (RecordWebsiteEquifaxCheck).
+     */
+    public function record(EquifaxCreditRequest $request, SurepassEquifaxResult $result): void
+    {
         match (true) {
             $result->isSuccessful() => $this->succeed($request, $result),
             $result->isUncertain() => $this->needsReconciliation($request, $result->errorCode, $result),

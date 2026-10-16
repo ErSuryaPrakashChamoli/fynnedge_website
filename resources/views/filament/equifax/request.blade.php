@@ -36,7 +36,7 @@
         'Report order number' => $record->provider_report_id,
         'Surepass client ID' => $record->provider_client_id,
         'Reusable until' => $record->isReusable() ? $record->reusableUntil()?->format('d M Y') : null,
-        'Requested by' => $record->requestedBy?->name,
+        'Requested by' => $record->requestedBy?->name ?? ($record->channel === 'website' ? 'Website visitor (public score page)' : null),
         'Channel' => ucfirst($record->channel),
         'Linked application' => $record->journeySession?->public_id,
         'Consent' => $record->consent

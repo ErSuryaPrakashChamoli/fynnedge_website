@@ -36,7 +36,10 @@ class EquifaxCreditRequestsTable
                     ->badge()
                     ->description(fn (EquifaxCreditRequest $record): ?string => $record->error_code?->getLabel()),
                 TextColumn::make('request_type')->label('Request')->badge(),
-                TextColumn::make('requestedBy.name')->label('Requested by')->placeholder('—'),
+                TextColumn::make('requestedBy.name')
+                    ->label('Requested by')
+                    ->state(fn (EquifaxCreditRequest $record): ?string => $record->requestedBy?->name ?? ($record->channel === 'website' ? 'Website visitor' : null))
+                    ->placeholder('—'),
                 TextColumn::make('requested_at')->label('Requested')->dateTime('d M Y, H:i')->sortable(),
                 TextColumn::make('completed_at')->label('Completed')->dateTime('d M Y, H:i')->placeholder('—')->sortable(),
                 TextColumn::make('provider_report_id')->label('Provider reference')->placeholder('—')->searchable(),
@@ -68,6 +71,7 @@ class EquifaxCreditRequestsTable
                 SelectFilter::make('status')->options(EquifaxRequestStatus::class)->multiple(),
                 SelectFilter::make('product')->label('Type')->options(EquifaxProduct::class),
                 SelectFilter::make('request_type')->label('Request')->options(EquifaxRequestType::class),
+                SelectFilter::make('channel')->label('Channel')->options(['admin' => 'Admin', 'api' => 'Internal API', 'website' => 'Website (public score page)']),
                 SelectFilter::make('requested_by')
                     ->label('Employee')
                     ->options(fn (): array => User::query()

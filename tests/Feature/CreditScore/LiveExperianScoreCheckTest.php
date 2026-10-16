@@ -1,9 +1,16 @@
 <?php
 
+use App\Filament\Resources\ExperianCreditRequests\Pages\ListExperianCreditRequests;
 use App\Models\Setting;
+use App\Models\User;
+use App\Modules\CreditBureau\Enums\ConsentMethod;
+use App\Modules\CreditBureau\Enums\ConsentStatus;
 use App\Modules\CreditBureau\Enums\CreditCheckStatus;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
+use App\Modules\Customers\Models\Customer;
 use App\Modules\Experian\Enums\ExperianErrorCode;
+use App\Modules\Experian\Enums\ExperianProduct;
+use App\Modules\Experian\Enums\ExperianRequestStatus;
 use App\Modules\Experian\Models\ExperianCreditRequest;
 use App\Modules\Experian\Services\ExperianSettings;
 use Illuminate\Http\Client\Request;
@@ -57,13 +64,49 @@ it('shows a real Experian score read from the full report, sending only name, PA
     Http::assertSent(fn (Request $request) => str_ends_with($request->url(), '/credit-report-experian/fetch-report')
         && $request->data() === ['name' => 'Test Fixture', 'pan' => 'AAAPZ9999Z', 'mobile' => '9000000001', 'consent' => 'Y']);
 
+    $request = ExperianCreditRequest::query()->sole();
+
     expect(CreditScoreCheck::query()->sole())
         ->provider->toBe('surepass')
         ->gender->toBeNull()
         ->score->toBe(792)
-        ->raw_response->toBe(['client_id' => 'credit_report_experian_TESTFIXTURE0001', 'message_code' => 'success', 'source' => 'report'])
-        ->and(ExperianCreditRequest::query()->count())->toBe(0);
+        ->raw_response->toBe(['client_id' => 'credit_report_experian_TESTFIXTURE0001', 'message_code' => 'success', 'source' => 'report', 'experian_request' => $request->public_id]);
 });
+
+it('records every paid website check as an Experian request with its full report and the visitor\'s consent', function () {
+    liveExperianScorePage();
+    $customer = Customer::factory()->create(['phone' => '9000000001']);
+
+    checkExperianOnPage();
+
+    $request = ExperianCreditRequest::query()->sole();
+    expect($request)
+        ->channel->toBe('website')
+        ->product->toBe(ExperianProduct::Report)
+        ->status->toBe(ExperianRequestStatus::Success)
+        ->score->toBe(792)
+        ->customer_id->toBe($customer->id)
+        ->requested_by->toBeNull()
+        ->provider_client_id->toBe('credit_report_experian_TESTFIXTURE0001')
+        ->and($request->raw_response)->toBe(experianFixture())
+        ->and($request->consent)->status->toBe(ConsentStatus::Given)->method->toBe(ConsentMethod::Otp)
+        ->and($request->consent->purpose)->toBe('Free Experian score check on the website');
+
+    $this->actingAs(User::factory()->create(['is_admin' => true]));
+    $this->get('/admin/experian-dashboard')->assertSee('Website visitors (public score page)');
+    Livewire::test(ListExperianCreditRequests::class, ['activeTab' => 'reports'])->assertCanSeeTableRecords([$request]);
+});
+
+it('records a failed or uncertain website check where admins look for them', function (mixed $stub, ExperianRequestStatus $status, ExperianErrorCode $code) {
+    liveExperianScorePage($stub);
+
+    checkExperianOnPage();
+
+    expect(ExperianCreditRequest::query()->sole())->channel->toBe('website')->status->toBe($status)->error_code->toBe($code)->raw_response->toBeNull();
+})->with([
+    'no record (definite)' => [fn () => Http::response(['success' => false, 'message_code' => 'no_record_found'], 422), ExperianRequestStatus::Failed, ExperianErrorCode::NoRecordFound],
+    'server error (maybe charged)' => [fn () => Http::response('', 500), ExperianRequestStatus::ReconciliationRequired, ExperianErrorCode::ProviderError],
+]);
 
 it('never asks for gender on the Experian page', function () {
     liveExperianScorePage();
@@ -81,7 +124,8 @@ it('shows the same person their stored Experian score without paying again', fun
 
     checkExperianOnPage()->assertSet('resultKind', 'live')->assertSet('resultScore', 792);
 
-    expect(surepassExperianCalls())->toBe(1);
+    expect(surepassExperianCalls())->toBe(1)
+        ->and(ExperianCreditRequest::query()->count())->toBe(1);
 });
 
 it('never shows a demo score when the live check fails, and explains the plan to admins only', function () {

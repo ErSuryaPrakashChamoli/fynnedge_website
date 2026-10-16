@@ -37,7 +37,7 @@
         'Surepass client ID' => $record->provider_client_id,
         'PDF' => $isPdf ? ($record->hasStoredPdf() ? 'Stored (encrypted) '.$record->pdf_fetched_at?->format('d M Y, H:i').' UTC' : ($record->pdf_error_code ? 'Not available — '.$record->pdf_error_code : 'Not stored')) : null,
         'Reusable until' => $record->isReusable() ? $record->reusableUntil()?->format('d M Y') : null,
-        'Requested by' => $record->requestedBy?->name,
+        'Requested by' => $record->requestedBy?->name ?? ($record->channel === 'website' ? 'Website visitor (public score page)' : null),
         'Channel' => ucfirst($record->channel),
         'Linked application' => $record->journeySession?->public_id,
         'Consent' => $record->consent

@@ -64,13 +64,16 @@ it('shows the visitor their real Experian score on the CIBIL page, labelled as E
     Http::assertSent(fn (Request $request) => str_ends_with($request->url(), '/credit-report-experian/fetch-report')
         && $request->data() === ['name' => 'Test Fixture', 'pan' => 'AAAPZ9999Z', 'mobile' => '9000000001', 'consent' => 'Y']);
 
+    $request = ExperianCreditRequest::query()->sole();
+
     expect(CreditScoreCheck::query()->sole())
         ->bureau->toBe(BureauName::Cibil)
         ->provider->toBe('surepass')
         ->score->toBe(792)
-        ->raw_response->toBe(['client_id' => 'credit_report_experian_TESTFIXTURE0001', 'message_code' => 'success', 'source' => 'report', 'source_bureau' => 'experian'])
+        ->raw_response->toBe(['client_id' => 'credit_report_experian_TESTFIXTURE0001', 'message_code' => 'success', 'source' => 'report', 'experian_request' => $request->public_id, 'source_bureau' => 'experian'])
         ->and(CreditScoreCheck::query()->sole()->sourceBureau())->toBe(BureauName::Experian)
-        ->and(ExperianCreditRequest::query()->count())->toBe(0);
+        ->and($request)->channel->toBe('website')->score->toBe(792)
+        ->and($request->consent->purpose)->toBe('Free CIBIL score check on the website');
 });
 
 it('says up front that CIBIL is not connected and which bureau will answer', function () {

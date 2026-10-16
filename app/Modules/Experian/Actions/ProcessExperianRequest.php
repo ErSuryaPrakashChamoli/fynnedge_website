@@ -71,6 +71,16 @@ class ProcessExperianRequest
             ExperianProduct::Pdf => $this->surepass->fetchPdfReport($subject),
         };
 
+        $this->record($request, $result);
+    }
+
+    /**
+     * Stores what Surepass answered for a request that is being processed —
+     * from the queued job above, or from the public score page, which makes
+     * its call in the visitor's request (RecordWebsiteExperianCheck).
+     */
+    public function record(ExperianCreditRequest $request, SurepassExperianResult $result): void
+    {
         match (true) {
             $result->isSuccessful() => $this->succeed($request, $result),
             $result->isUncertain() => $this->needsReconciliation($request, $result->errorCode, $result),

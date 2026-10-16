@@ -232,7 +232,8 @@ The read methods never call Surepass, so they are safe on every page load. Openi
 ## 11. Public Free Experian Score page (`/credit-score/experian`)
 
 **Experian Settings → "Free Experian Score page uses real scores"** (off by default) switches the page from the demo score to real scores:
-- The visitor's details (OTP-verified mobile, name, PAN, consent tick) go to `credit-report-experian/fetch-report`. No gender is asked. Only the score, client id and message code are kept, in `credit_score_checks`; the rest of the report is discarded.
+- The visitor's details (OTP-verified mobile, name, PAN, consent tick) go to `credit-report-experian/fetch-report`. No gender is asked.
+- **Every paid website check is also an Experian request** (channel `website`, `RecordWebsiteExperianCheck`), on the CIBIL page too. It is created before the call with an OTP consent record and stored by the staff rules, so the full report and any failure show in the Experian admin. `credit_score_checks` keeps only the score, client id, message code and `experian_request`.
 - The same PAN and mobile checking again inside the score reuse period sees the stored score at no cost. Uncertain answers are held for an hour.
 - A failed live check is never replaced by a demo score. The visitor sees "Live score from Experian", "No score yet", a no-match message or "try later". The admin reason is under Catalog → Credit Score Checks.
 - Switched off, the page shows a demo score that is clearly labelled "Demo score — not your real credit report".

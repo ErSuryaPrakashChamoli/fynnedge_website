@@ -221,7 +221,12 @@ The read methods never call Surepass, so they are safe on every page load. `requ
 
 **Equifax Settings → "Free Equifax Score page uses real scores"** (off by default) switches the page from the demo score to real scores:
 - The page asks for **gender** (male/female), which Equifax requires.
-- The visitor's details (OTP-verified mobile, name, PAN, consent tick) go to `credit-report-v2/fetch-report`. Only the score, client id and message code are kept, in `credit_score_checks`; the rest of the report is discarded.
+- The visitor's details (OTP-verified mobile, name, PAN, consent tick) go to `credit-report-v2/fetch-report`.
+- **Every paid website check is also an Equifax request** (channel `website`, `RecordWebsiteEquifaxCheck`).
+  - The row is created as *processing* before the call, with a consent record (method OTP, evidence = the score check's id). A crash mid-call is then caught by `equifax:flag-stale`.
+  - The answer is stored by the same rules as staff requests, so the full report is kept encrypted and shows under Equifax Credit Reports, the dashboard ("Website visitors"), failed / reconciliation lists and audit.
+  - The row is linked to the newest customer with the same mobile, if any. It holds no in-flight key, and as a successful report it can answer a later staff request for the same PAN inside the reuse period.
+  - `credit_score_checks` keeps only the score, client id, message code and `equifax_request` (the request's id).
 - The same PAN and mobile checking again inside the score reuse period sees the stored score at no cost. Uncertain answers are held for an hour.
 - The visitor sees "Live score from Equifax", "No score yet", a no-match message or "try later". The admin reason is under Catalog → Credit Score Checks.
 

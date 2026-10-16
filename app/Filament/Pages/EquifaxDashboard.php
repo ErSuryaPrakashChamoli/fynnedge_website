@@ -91,7 +91,7 @@ class EquifaxDashboard extends Page
 
         return $rows->groupBy('requested_by')
             ->map(fn (Collection $group, $userId): array => [
-                'name' => $names->get($userId, 'Deleted user'),
+                'name' => blank($userId) ? 'Website visitors (public score page)' : $names->get($userId, 'Deleted user'),
                 'total' => (int) $group->sum('total'),
                 'scores' => (int) $group->filter(fn ($row) => $row->product === EquifaxProduct::Score)->sum('total'),
                 'reports' => (int) $group->filter(fn ($row) => $row->product === EquifaxProduct::Report)->sum('total'),

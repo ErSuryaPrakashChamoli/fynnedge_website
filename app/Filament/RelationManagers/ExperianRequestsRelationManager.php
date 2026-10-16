@@ -41,7 +41,10 @@ class ExperianRequestsRelationManager extends RelationManager
                 TextColumn::make('score')->placeholder('—'),
                 TextColumn::make('pan_masked')->label('PAN'),
                 TextColumn::make('request_type')->label('Request')->badge(),
-                TextColumn::make('requestedBy.name')->label('Requested by')->placeholder('—'),
+                TextColumn::make('requestedBy.name')
+                    ->label('Requested by')
+                    ->state(fn (ExperianCreditRequest $record): ?string => $record->requestedBy?->name ?? ($record->channel === 'website' ? 'Website visitor' : null))
+                    ->placeholder('—'),
                 TextColumn::make('requested_at')->label('Requested')->dateTime('d M Y, H:i'),
             ])
             ->defaultSort('id', 'desc')
