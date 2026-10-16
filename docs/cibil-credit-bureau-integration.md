@@ -33,7 +33,7 @@ Before this work, CIBIL had:
 - **One permission:** `View:CibilSettings`.
 
 There was no CIBIL provider, table, API or request screen. All of that is kept and extended:
-- The stand-in stays available, and **stays the default** (`CIBIL_PUBLIC_SCORE_SOURCE=experian`), so deploying does not change the live page. The real CIBIL bureau is the new `cibil` source.
+- The stand-in stays available. The real CIBIL bureau is the new `cibil` source, and the page **switches to it by itself once `SUREPASS_CIBIL_TOKEN` is set**. Until then it keeps using the Experian stand-in, so the live page never drops to demo scores for want of a token.
 - CIBIL Settings gains the same settings sections as the other bureaus. Its existing switch, "Free CIBIL Score page shows real scores", keeps its setting key.
 
 ## 3. Architecture
@@ -211,12 +211,12 @@ The **request page** has two levels:
 
 ## 12. The public Free CIBIL Score page
 
-**CIBIL Settings → "Free CIBIL Score page shows real scores"** is off by default, which shows a labelled demo score. When it's on, the page is answered by the source named in `CIBIL_PUBLIC_SCORE_SOURCE`:
+**CIBIL Settings → "Free CIBIL Score page shows real scores"** is off by default, which shows a labelled demo score. When it's on, the page is answered by a source:
 
-| Source | What the visitor sees |
-| --- | --- |
-| `experian` (default, the original stand-in) | Their real **Experian** score, labelled "Live score from Experian / Your Experian score", with a note that CIBIL isn't connected. Recorded in the Experian admin. |
-| `cibil` | Their genuine **CIBIL** score: "Live score from CIBIL / Your CIBIL score". The page asks for **gender** (CIBIL requires it). Recorded in the CIBIL admin as a `website` request, with consent and the full report. |
+| Source | When | What the visitor sees |
+| --- | --- | --- |
+| `cibil` | Automatically, once `SUREPASS_CIBIL_TOKEN` is set (or forced with `CIBIL_PUBLIC_SCORE_SOURCE=cibil`) | Their genuine **CIBIL** score: "Live score from CIBIL / Your CIBIL score". The page asks for **gender** (CIBIL requires it). Recorded in the CIBIL admin as a `website` request, with consent and the full report. |
+| `experian` (the original stand-in) | Until the CIBIL token is set (or forced with `CIBIL_PUBLIC_SCORE_SOURCE=experian`) | Their real **Experian** score, labelled "Live score from Experian / Your Experian score", with a note that CIBIL isn't connected. Recorded in the Experian admin. |
 
 With either source:
 - **No repeat charges:** the same PAN and mobile checking again within the reuse period sees the stored score at no cost, and an uncertain answer is held for an hour.
@@ -230,7 +230,7 @@ With either source:
 | `SUREPASS_CIBIL_TOKEN` | secret, server only, **required**; no fallback |
 | `SUREPASS_CIBIL_BASE_URL` | `https://kyc-api.surepass.app` |
 | `SUREPASS_CIBIL_PUBLIC_SCORE_ENDPOINT` | `report` (`score` once Surepass enables it) |
-| `CIBIL_PUBLIC_SCORE_SOURCE` | `experian` (set `cibil` to use the CIBIL bureau) |
+| `CIBIL_PUBLIC_SCORE_SOURCE` | blank = automatic (`cibil` once `SUREPASS_CIBIL_TOKEN` is set, else `experian`); or force `cibil` / `experian` |
 | `SUREPASS_TIMEOUT` / `SUREPASS_CONNECT_TIMEOUT` | 60 / 10 seconds (shared) |
 
 **CIBIL Settings** (stored in the shared `settings` table):
@@ -257,7 +257,7 @@ Then:
 1. Set `SUREPASS_CIBIL_TOKEN` in the server's `.env`, then run `php artisan optimize` again.
 2. Run `php artisan cibil:check-access`. "Token loaded" must say `yes (SUREPASS_CIBIL_TOKEN)`, and fetch-report must show **Allowed**.
 3. Under **CIBIL → CIBIL Settings**, switch on what you need and set the alert email. Nothing is enabled automatically.
-4. To have the public CIBIL page show genuine CIBIL scores, set `CIBIL_PUBLIC_SCORE_SOURCE=cibil` and run `php artisan optimize`.
+4. The public CIBIL page now shows genuine CIBIL scores by itself (when its switch is on), because the token is set. Leave `CIBIL_PUBLIC_SCORE_SOURCE` blank unless you want to force a source.
 5. Make sure the queue worker and the scheduler cron run. Staff and API requests are queued; the public page is not. `cibil:flag-stale` runs every 5 minutes, and `cibil:enforce-retention` runs daily at 02:55.
 
 ## 15. Operations

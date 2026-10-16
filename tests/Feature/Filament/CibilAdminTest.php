@@ -298,7 +298,7 @@ it('saves the CIBIL settings independently of the other bureaus, never shows the
     $this->get('/admin/cibil-settings')
         ->assertSee('CIBIL API token is configured on this server')
         ->assertSee('SUREPASS_CIBIL_TOKEN')
-        ->assertSee('CIBIL API not connected — the page uses Experian scores')
+        ->assertSee('Answered by the CIBIL bureau through Surepass')
         ->assertDontSee('test-cibil-token');
 
     Livewire::test(CibilSettings::class)

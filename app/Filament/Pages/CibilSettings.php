@@ -24,7 +24,8 @@ use Filament\Support\Icons\Heroicon;
  * environment (SUREPASS_CIBIL_TOKEN, with no fallback to another bureau's
  * token); this page only says whether it is set and can run the free access
  * check. Which source answers the public page (the CIBIL bureau, or Experian
- * standing in) is server configuration: CIBIL_PUBLIC_SCORE_SOURCE.
+ * standing in) follows the server: CIBIL once SUREPASS_CIBIL_TOKEN is set,
+ * unless CIBIL_PUBLIC_SCORE_SOURCE forces one.
  */
 class CibilSettings extends Page
 {
@@ -85,8 +86,8 @@ class CibilSettings extends Page
                     ->description($source === null
                         ? 'CIBIL_PUBLIC_SCORE_SOURCE names no known source, so the page shows demo scores.'
                         : (Settings::isStandIn()
-                            ? 'CIBIL API not connected — the page uses '.$source.' scores, and tells the visitor they are '.$source.' scores, never CIBIL scores. Set CIBIL_PUBLIC_SCORE_SOURCE=cibil on the server to use the CIBIL bureau.'
-                            : 'Answered by the CIBIL bureau through Surepass (CIBIL_PUBLIC_SCORE_SOURCE=cibil); the visitor is asked their gender, which CIBIL requires.').' '.(Settings::publicSourceConfigured()
+                            ? 'CIBIL API not connected — the page uses '.$source.' scores, and tells the visitor they are '.$source.' scores, never CIBIL scores. It switches to the CIBIL bureau by itself once SUREPASS_CIBIL_TOKEN is set on the server (unless CIBIL_PUBLIC_SCORE_SOURCE forces a source).'
+                            : 'Answered by the CIBIL bureau through Surepass; the visitor is asked their gender, which CIBIL requires.').' '.(Settings::publicSourceConfigured()
                             ? 'The '.$source.' token is configured on this server.'
                             : 'The '.($source ?? 'source').' token is NOT configured on this server, so the page shows demo scores until it is.'))
                     ->components([

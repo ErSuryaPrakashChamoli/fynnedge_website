@@ -125,3 +125,22 @@ it('keeps the labelled demo without the CIBIL token, never borrowing another bur
     expect(surepassCibilCalls())->toBe(0)
         ->and(CreditScoreCheck::query()->sole()->provider)->toBe('demo');
 });
+
+it('answers the CIBIL page with CIBIL by itself once the CIBIL token is set, unless a source is forced', function () {
+    liveCibilBureauPage();
+    config(['services.cibil.public_score_source' => null]);
+
+    expect(CibilSettings::source())->toBe('cibil')->and(CibilSettings::isStandIn())->toBeFalse();
+    checkCibilBureauOnPage()->assertSet('resultKind', 'live')->assertSee('Your CIBIL score');
+    expect(surepassCibilCalls())->toBe(1);
+
+    config(['services.cibil.public_score_source' => 'experian']);
+    expect(CibilSettings::source())->toBe('experian')->and(CibilSettings::isStandIn())->toBeTrue();
+
+    config(['services.cibil.public_score_source' => '', 'services.surepass.cibil_token' => null]);
+    expect(CibilSettings::source())->toBe('experian')
+        ->and(CibilSettings::sourceLabel())->toBe('Experian');
+
+    config(['services.cibil.public_score_source' => 'transunion']);
+    expect(CibilSettings::source())->toBeNull()->and(CibilSettings::publicScoreLive())->toBeFalse();
+});

@@ -21,7 +21,8 @@ use Illuminate\Support\Facades\Log;
  * A real CIBIL score for the public "Free CIBIL Score" page, through the CIBIL
  * module's Surepass service — the "cibil" source in CibilSettings::SOURCES,
  * used while CIBIL Settings → "Free CIBIL Score page shows real scores" is on
- * and CIBIL_PUBLIC_SCORE_SOURCE=cibil.
+ * and the page's source is "cibil" (automatic once SUREPASS_CIBIL_TOKEN is
+ * set, unless CIBIL_PUBLIC_SCORE_SOURCE forces another).
  *
  * The score comes from credit-report-cibil/fetch-report by default
  * (services.surepass.cibil_public_score_endpoint = "report"): FynnEdge's
