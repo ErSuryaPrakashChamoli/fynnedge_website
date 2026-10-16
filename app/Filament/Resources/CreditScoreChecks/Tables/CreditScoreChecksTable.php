@@ -28,7 +28,11 @@ class CreditScoreChecksTable
                 TextColumn::make('provider')
                     ->label('Source')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => $state === 'surepass' ? 'Live (Surepass)' : 'Demo')
+                    ->formatStateUsing(fn (string $state, $record): string => match (true) {
+                        $state !== 'surepass' => 'Demo',
+                        $record->sourceBureau() !== $record->bureau => 'Live ('.$record->sourceBureau()?->getLabel().' via Surepass)',
+                        default => 'Live (Surepass)',
+                    })
                     ->color(fn (string $state): string => $state === 'surepass' ? 'success' : 'gray'),
                 TextColumn::make('status')
                     ->badge()

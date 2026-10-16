@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Modules\Cibil\Services\CibilRoles;
 use App\Modules\CreditBureau\Services\CrifRoles;
 use App\Modules\Equifax\Services\EquifaxRoles;
 use App\Modules\Experian\Services\ExperianRoles;
@@ -100,6 +101,9 @@ class RoleSeeder extends Seeder
 
         // Experian: the same pattern, its own permissions.
         ExperianRoles::grant();
+
+        // CIBIL Settings (the public CIBIL page's real-score switch): no starter role.
+        CibilRoles::grant();
     }
 
     /**

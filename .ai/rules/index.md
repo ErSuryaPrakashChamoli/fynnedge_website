@@ -14,6 +14,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/** | .ai/rules/app.md |
 | app/Support/Loans/LoanMegaMenu.php,app/Support/Calculators/CalculatorCatalog.php,app/Models/NavigationLink.php | .ai/rules/calculators-models.md |
 | app/Support/Calculators/CalculatorPagesContent.php,app/Filament/Pages/CalculatorPagesSettings.php,resources/views/calculators/** | .ai/rules/calculators.md |
+| app/Modules/Cibil/** | .ai/rules/cibil.md |
 | app/Support/Rates/RateBook.php,app/Console/Commands/RatesStatusCommand.php | .ai/rules/commands.md |
 | app/Support/Seo/SeoDefaults.php,app/Support/Seo/Sitemap.php,app/Support/Seo/CrawlerPolicy.php,resources/views/components/layouts/app.blade.php | .ai/rules/components-layouts.md |
 | resources/views/components/⚡credit-score-check.blade.php,app/Modules/CreditScore/** | .ai/rules/components-modules-credit-score.md |

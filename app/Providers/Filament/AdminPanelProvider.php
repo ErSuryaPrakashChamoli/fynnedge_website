@@ -58,6 +58,7 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make('Credit Bureau'),
                 NavigationGroup::make('Equifax'),
                 NavigationGroup::make('Experian'),
+                NavigationGroup::make('CIBIL'),
                 NavigationGroup::make('Content'),
                 NavigationGroup::make('Access Control'),
                 NavigationGroup::make('Marketing'),

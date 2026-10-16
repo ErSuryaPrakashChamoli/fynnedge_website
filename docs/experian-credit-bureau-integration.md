@@ -235,7 +235,15 @@ The read methods never call Surepass, so they are safe on every page load. Openi
 - The visitor's details (OTP-verified mobile, name, PAN, consent tick) go to `credit-report-experian/fetch-report`. No gender is asked. Only the score, client id and message code are kept, in `credit_score_checks`; the rest of the report is discarded.
 - The same PAN and mobile checking again inside the score reuse period sees the stored score at no cost. Uncertain answers are held for an hour.
 - A failed live check is never replaced by a demo score. The visitor sees "Live score from Experian", "No score yet", a no-match message or "try later". The admin reason is under Catalog → Credit Score Checks.
-- Switched off, the page shows a demo score that is clearly labelled "Demo score — not your real credit report". The CIBIL page is always a demo.
+- Switched off, the page shows a demo score that is clearly labelled "Demo score — not your real credit report".
+
+### The Free CIBIL Score page uses Experian until a CIBIL API exists
+
+FynnEdge has no CIBIL API. A separate module, `app/Modules/Cibil/`, lets the CIBIL page show real scores from a stand-in source, which is Experian today.
+- **Switch:** Admin → **CIBIL → CIBIL Settings** → "Free CIBIL Score page shows real scores". It is off by default, independent of the Experian page's switch, and needs `View:CibilSettings`.
+- **Source:** `CIBIL_PUBLIC_SCORE_SOURCE` (`config/services.php` → `cibil.public_score_source`, default `experian`). `CibilSettings::SOURCES` maps it to a provider. `experian` → `ExperianCibilScoreProvider` makes the same `credit-report-experian/fetch-report` call as the Experian page and tags the check `source_bureau: experian`.
+- **Honest labelling:** the visitor is told before and after the check that CIBIL isn't connected and that the score is their **Experian** score ("Live score from Experian", "Your Experian score"). It is never presented as a CIBIL score. Admins see "Live (Experian via Surepass)" under Credit Score Checks.
+- **Switching to a real CIBIL API later:** add its provider class to `CibilSettings::SOURCES` (for example `'cibil' => TransUnionCibilScoreProvider::class`) and set `CIBIL_PUBLIC_SCORE_SOURCE=cibil`. The page, the Livewire component and `SubmitCreditScoreCheck` need no change.
 
 ## 12. Configuration
 

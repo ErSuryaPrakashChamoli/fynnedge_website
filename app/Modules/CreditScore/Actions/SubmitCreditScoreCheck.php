@@ -2,6 +2,7 @@
 
 namespace App\Modules\CreditScore\Actions;
 
+use App\Modules\Cibil\Services\CibilSettings;
 use App\Modules\CreditBureau\Enums\CreditCheckStatus;
 use App\Modules\CreditBureau\Services\CrifSettings;
 use App\Modules\CreditBureau\Services\PanNumber;
@@ -32,13 +33,18 @@ class SubmitCreditScoreCheck
     /**
      * Real scores for the bureaus whose public page is switched to live (CRIF:
      * CRIF Settings, Equifax: Equifax Settings, Experian: Experian Settings —
-     * each independently); the bound demo provider for everything else.
+     * each independently; CIBIL: CIBIL Settings, answered by its stand-in
+     * source, Experian, until a CIBIL API exists); the bound demo provider for
+     * everything else.
      *
      * @param  array{first_name: string, middle_name: string, last_name: string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
      */
     public function handle(array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress = null): CreditScoreCheck
     {
+        $cibil = $bureau === BureauName::Cibil ? CibilSettings::liveProvider() : null;
+
         return match (true) {
+            $cibil !== null => $this->live($cibil, $bureau, CibilSettings::scoreReuseDays(), $data, $mobileNumber, $ipAddress),
             $bureau === BureauName::Crif && CrifSettings::publicScoreLive() => $this->live($this->liveCrif, $bureau, CrifSettings::reuseDays(), $data, $mobileNumber, $ipAddress),
             $bureau === BureauName::Equifax && EquifaxSettings::publicScoreLive() => $this->live($this->liveEquifax, $bureau, EquifaxSettings::scoreReuseDays(), $data, $mobileNumber, $ipAddress),
             $bureau === BureauName::Experian && ExperianSettings::publicScoreLive() => $this->live($this->liveExperian, $bureau, ExperianSettings::scoreReuseDays(), $data, $mobileNumber, $ipAddress),
@@ -79,7 +85,10 @@ class SubmitCreditScoreCheck
                         'provider' => $provider->name(),
                         'status' => CreditCheckStatus::Completed,
                         'score' => $reusable->score,
-                        'raw_response' => ['reused_from' => $reusable->public_id],
+                        'raw_response' => array_filter([
+                            'reused_from' => $reusable->public_id,
+                            'source_bureau' => $reusable->raw_response['source_bureau'] ?? null,
+                        ]),
                         'completed_at' => now(),
                     ]);
                 }

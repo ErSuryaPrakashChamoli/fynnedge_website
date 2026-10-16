@@ -36,6 +36,12 @@ class CreditScoreCheckForm
                     ->visible(fn (?CreditScoreCheck $record): bool => $record?->provider === 'surepass')
                     ->columns(3)
                     ->components([
+                        TextEntry::make('source_bureau')
+                            ->label('Score from')
+                            ->state(fn (CreditScoreCheck $record): ?string => $record->sourceBureau() !== $record->bureau
+                                ? $record->sourceBureau()?->getLabel().' (standing in: no '.$record->bureau->getLabel().' API yet)'
+                                : $record->bureau->getLabel())
+                            ->columnSpanFull(),
                         TextEntry::make('reason')
                             ->label('Reason')
                             ->state(fn (CreditScoreCheck $record): string => $record->liveFailure()?->getLabel()
