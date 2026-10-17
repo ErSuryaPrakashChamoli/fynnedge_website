@@ -71,6 +71,13 @@ class SubmitJourneyStepResponses
      * Identifies the customer by email — whichever step collects it — and dedupes
      * across products, so the same person applying for two loans is one customer.
      *
+     * Customer-portal accounts are protected from this email match, because
+     * anyone can type anyone's email:
+     *  - a session the account holder started from their portal (linked to them
+     *    and verified for their mobile) stays theirs whatever email is typed —
+     *    it only fills the account's email when it has none and no one else uses it;
+     *  - a portal account's name and phone are never rewritten by journey input.
+     *
      * @param  array<string, mixed>  $validated
      */
     private function linkCustomer(JourneySession $session, array $validated): void
@@ -79,7 +86,20 @@ class SubmitJourneyStepResponses
             return;
         }
 
-        $customer = Customer::query()->updateOrCreate(
+        $owner = $session->customer;
+
+        if ($owner !== null && $session->isVerifiedFor($owner)) {
+            if (blank($owner->email) && Customer::query()->where('email', $validated['email'])->doesntExist()) {
+                $owner->update(['email' => $validated['email']]);
+                $owner->recordEvent('profile_updated', ['fields' => 'email', 'source' => 'loan_application']);
+            }
+
+            return;
+        }
+
+        $existing = Customer::query()->where('email', $validated['email'])->first();
+
+        $customer = $existing?->verified_mobile !== null ? $existing : Customer::query()->updateOrCreate(
             ['email' => $validated['email']],
             array_filter([
                 'full_name' => $validated['full_name'] ?? null,

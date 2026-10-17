@@ -102,7 +102,9 @@ trait Auditable
         AuditLog::query()->create([
             'auditable_type' => static::class,
             'auditable_id' => $this->getKey(),
-            'user_id' => Auth::id(),
+            // The staff guard by name: audit_logs.user_id references users, and on
+            // customer-portal requests the default guard can be `customer`.
+            'user_id' => Auth::guard('web')->id(),
             'action' => $action,
             'changes' => $changes,
         ]);

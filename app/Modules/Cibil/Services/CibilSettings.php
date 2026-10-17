@@ -21,9 +21,10 @@ use App\Modules\Experian\Services\ExperianSettings;
  *    token is SUREPASS_CIBIL_TOKEN only — deliberately NO fallback to the
  *    shared or another bureau's token — and no screen shows it.
  *  - The public "Free CIBIL Score" page: off (a labelled demo score) or on,
- *    answered by the SOURCE named in CIBIL_PUBLIC_SCORE_SOURCE — "cibil" (the
- *    real CIBIL bureau) or "experian" (the stand-in used before CIBIL was
- *    integrated, which tells the visitor the score is Experian's).
+ *    answered by a SOURCE — "cibil" (the real CIBIL bureau) or "experian" (the
+ *    stand-in used before CIBIL was integrated, which tells the visitor the
+ *    score is Experian's). CIBIL_PUBLIC_SCORE_SOURCE forces one; left blank it
+ *    is "cibil" once SUREPASS_CIBIL_TOKEN is set and "experian" until then.
  */
 final class CibilSettings
 {
@@ -108,10 +109,18 @@ final class CibilSettings
         return filled(config('services.surepass.cibil_token')) ? 'SUREPASS_CIBIL_TOKEN' : null;
     }
 
-    /** The configured public-page source key, or null when it names no known source. */
+    /**
+     * The public page's source key: the one CIBIL_PUBLIC_SCORE_SOURCE forces,
+     * or — when it is blank — "cibil" once the CIBIL token is set and the
+     * "experian" stand-in until then. Null when it names no known source.
+     */
     public static function source(): ?string
     {
         $source = config('services.cibil.public_score_source');
+
+        if (blank($source)) {
+            return self::isConfigured() ? self::SOURCE_CIBIL : 'experian';
+        }
 
         return is_string($source) && array_key_exists($source, self::SOURCES) ? $source : null;
     }

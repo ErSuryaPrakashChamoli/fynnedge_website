@@ -154,7 +154,7 @@ it('lets only permitted admins switch the CIBIL page, and says where its scores 
     $this->actingAs(User::factory()->create(['is_admin' => true]))
         ->get('/admin/cibil-settings')
         ->assertOk()
-        ->assertSee('CIBIL API not connected — the page uses Experian scores')
+        ->assertSee('The CIBIL API token is not configured, so the page uses Experian scores')
         ->assertSee('The Experian token is configured on this server')
         ->assertDontSee('test-surepass-token');
 

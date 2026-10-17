@@ -5,11 +5,17 @@ use App\Modules\CreditBureau\Enums\CreditCheckStatus;
 use App\Modules\CreditBureau\Enums\CrifErrorCode;
 use App\Modules\CreditBureau\Services\CrifSettings;
 use App\Modules\CreditBureau\Services\PanName;
+use App\Modules\CreditBureau\Services\PanNumber;
 use App\Modules\CreditScore\Actions\SubmitCreditScoreCheck;
 use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\CreditScore\Enums\ScoreBand;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
 use App\Modules\CreditScore\Services\CreditScoreAdvice;
+use App\Modules\CreditScore\DataTransferObjects\RegenerationDecision;
+use App\Modules\CreditScore\Services\CreditReportRegenerationLimit;
+use App\Modules\Customers\Actions\LogInCustomer;
+use App\Modules\Customers\Actions\ResolveCustomerAccount;
+use App\Modules\Customers\Models\Customer;
 use App\Modules\Equifax\Enums\Gender;
 use App\Modules\Equifax\Services\EquifaxSettings;
 use App\Modules\Experian\Services\ExperianSettings;
@@ -21,6 +27,10 @@ use App\Modules\MobileOtp\Enums\MobileOtpVerificationResult;
 use App\Modules\MobileOtp\Exceptions\MobileOtpThrottled;
 use App\Modules\MobileOtp\Models\MobileOtpChallenge;
 use App\Modules\MobileOtp\Services\MobileNumber;
+use Illuminate\Contracts\Cache\LockTimeoutException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -31,6 +41,13 @@ use Livewire\Component;
 new class extends Component
 {
     public string $bureau;
+
+    /**
+     * 'public' on /credit-score/{bureau}; 'portal' when a signed-in customer
+     * refreshes a score from /my-profile (only the result step's links differ).
+     */
+    #[Locked]
+    public string $context = 'public';
 
     /**
      * Locked: every public property is otherwise writable from the browser, and
@@ -116,15 +133,88 @@ new class extends Component
     public ?array $resultInsights = null;
 
     /**
+     * The check just run, by public id, when it was saved to a portal account —
+     * for the "View report" link. Never a bureau request id or report data.
+     */
+    #[Locked]
+    public ?string $resultCheckId = null;
+
+    /** 'signed_in' once the check's account is open in this browser, 'disabled' when staff switched it off. */
+    #[Locked]
+    public ?string $accountStatus = null;
+
+    /**
+     * The regeneration limit (CreditReportRegenerationLimit): when this
+     * number's next new report is due, shown on the details step once the
+     * number is verified…
+     */
+    #[Locked]
+    public ?string $limitNotice = null;
+
+    /**
+     * …why a check was refused (the bureau was not asked and the verification
+     * not spent)…
+     *
+     * @var array{for_pan: bool, months: int, max: int, bureau?: string, date?: string, next?: string, report?: ?string}|null
+     */
+    #[Locked]
+    public ?array $limitReached = null;
+
+    /** …and, on the result, that a saved score was shown instead of a new report. */
+    #[Locked]
+    public ?string $savedScoreNote = null;
+
+    /**
      * Accepts a plain string (from the `:bureau="$bureau->value"` the controller
      * passes in) rather than requiring a typed BureauName — Livewire's test
      * harness assigns initial params to typed public properties directly, before
      * mount() runs, so a strict enum type here would reject the raw string it's
      * given. Mirrors the same accepts-string pattern used by the EMI calculator.
      */
-    public function mount(string $bureau): void
+    public function mount(string $bureau, string $context = 'public'): void
     {
         $this->bureau = (BureauName::tryFrom($bureau) ?? BureauName::Cibil)->value;
+        $this->context = $context === 'portal' ? 'portal' : 'public';
+        $this->mobileNumber = $this->lockedToAccount ? (string) $this->signedInCustomer->verified_mobile : '';
+    }
+
+    /** The signed-in portal customer, if any. */
+    #[Computed]
+    public function signedInCustomer(): ?Customer
+    {
+        $customer = Auth::guard(LogInCustomer::GUARD)->user();
+
+        return $customer instanceof Customer && $customer->hasPortalAccess() ? $customer : null;
+    }
+
+    /**
+     * A refresh from the portal always goes to the customer's own registered
+     * mobile. The public page stays open to any number — a second person on a
+     * shared browser checks their own — and nothing of the signed-in
+     * customer's is shown until an OTP proves the number is theirs.
+     */
+    #[Computed]
+    public function lockedToAccount(): bool
+    {
+        return $this->context === 'portal' && $this->signedInCustomer !== null;
+    }
+
+    /**
+     * The customer's own details, once their OTP is verified: from their last
+     * check on this bureau's page, else from their profile. They can still
+     * correct anything before submitting.
+     */
+    private function prefillFrom(Customer $customer): void
+    {
+        $latest = $customer->creditScoreChecks()->where('bureau', $this->bureau)->latest('id')->first();
+
+        $this->fullName = (string) ($latest?->full_name ?? $customer->full_name ?? '');
+        $this->firstName = (string) ($latest?->first_name ?? '');
+        $this->middleName = (string) ($latest?->middle_name ?? '');
+        $this->lastName = (string) ($latest?->last_name ?? '');
+        $this->dateOfBirth = (string) (($latest?->date_of_birth ?? $customer->date_of_birth)?->toDateString() ?? '');
+        $this->gender = (string) ($latest?->gender ?? $customer->gender?->value ?? '');
+        $this->panNumber = (string) ($latest?->pan_number ?? $customer->pan() ?? '');
     }
 
     #[Computed]
@@ -229,7 +319,7 @@ new class extends Component
 
     public function sendOtp(RequestMobileOtp $action): void
     {
-        $this->mobileNumber = MobileNumber::normalize($this->mobileNumber);
+        $this->mobileNumber = MobileNumber::normalize($this->lockedToAccount ? $this->signedInCustomer->verified_mobile : $this->mobileNumber);
 
         $this->validate([
             'mobileNumber' => ['required', 'regex:'.MobileNumber::PATTERN],
@@ -267,6 +357,10 @@ new class extends Component
             'otpCode' => ['required', 'digits:'.$this->otpLength],
         ]);
 
+        if ($this->lockedToAccount) {
+            $this->mobileNumber = (string) $this->signedInCustomer->verified_mobile;
+        }
+
         // Matched on the number too: editing the input after the code was sent
         // can never verify a different number than the one that received it.
         $challenge = MobileOtpChallenge::findForVerification($this->otpChallengeId, $this->mobileNumber, MobileOtpPurpose::CreditScoreCheck);
@@ -282,6 +376,11 @@ new class extends Component
 
         $this->verifiedMobileNumber = $challenge->mobile_number;
         $this->step = 'details';
+        $this->limitNotice = $this->previewLimit();
+
+        if ($this->signedInCustomer?->verified_mobile === $this->verifiedMobileNumber) {
+            $this->prefillFrom($this->signedInCustomer);
+        }
     }
 
     /** "SURYA" → "Surya", "sen GUPTA" → "Sen Gupta", whichever case each name was typed in. */
@@ -297,7 +396,7 @@ new class extends Component
         $this->panNumber = strtoupper($value);
     }
 
-    public function submitDetails(SubmitCreditScoreCheck $action): void
+    public function submitDetails(SubmitCreditScoreCheck $action, ResolveCustomerAccount $accounts, LogInCustomer $logIn, CreditReportRegenerationLimit $limit): void
     {
         if ($this->step !== 'details' || $this->verifiedMobileNumber === null) {
             $this->restart();
@@ -326,17 +425,6 @@ new class extends Component
             'consent.accepted' => __('Please provide consent to continue.'),
         ]);
 
-        // The verification is spent on exactly one check — re-submitting, or a
-        // second tab replaying the same component state, has nothing left to spend.
-        $challenge = MobileOtpChallenge::findForVerification($this->otpChallengeId, $this->verifiedMobileNumber, MobileOtpPurpose::CreditScoreCheck);
-
-        if (! $challenge?->consumeFor($this->verifiedMobileNumber, MobileOtpPurpose::CreditScoreCheck)) {
-            $this->restart();
-            $this->addError('mobileNumber', __('Your verification has expired. Please verify your mobile number again.'));
-
-            return;
-        }
-
         $name = $this->takesSplitName
             ? [
                 'full_name' => Str::squish(implode(' ', [$validated['firstName'], $validated['middleName'] ?? '', $validated['lastName']])),
@@ -346,17 +434,40 @@ new class extends Component
             ]
             : ['full_name' => $validated['fullName'], 'first_name' => null, 'middle_name' => null, 'last_name' => null];
 
-        $check = $action->handle(
-            [
-                ...$name,
-                'date_of_birth' => $validated['dateOfBirth'],
-                'pan_number' => $validated['panNumber'],
-                'gender' => $this->needsGender ? $validated['gender'] : null,
-            ],
-            BureauName::from($this->bureau),
-            $this->verifiedMobileNumber,
-            request()->ip(),
-        );
+        $details = [
+            ...$name,
+            'date_of_birth' => $validated['dateOfBirth'],
+            'pan_number' => $validated['panNumber'],
+            'gender' => $this->needsGender ? $validated['gender'] : null,
+        ];
+        $bureau = BureauName::from($this->bureau);
+        $customer = $this->accountFor($this->verifiedMobileNumber, $accounts);
+        $this->limitReached = null;
+
+        try {
+            // One check per person at a time, so two tabs can never both use
+            // the same allowance on two bureaus.
+            $check = Cache::lock('credit-report-limit:'.($customer?->getKey() ?? PanNumber::hash(PanNumber::normalize($details['pan_number']))), 120)
+                ->block(15, fn (): ?CreditScoreCheck => $this->runWithinLimit($action, $limit, $logIn, $customer, $bureau, $details));
+        } catch (LockTimeoutException) {
+            $this->addError('consent', __('Another credit check for your profile is still running. Please wait a moment and try again.'));
+
+            return;
+        }
+
+        if ($check === null) {
+            return;
+        }
+
+        if ($customer !== null) {
+            if ($check->isSuccessful()) {
+                $customer->fillBlankProfileDetails($details);
+            }
+
+            $this->resultCheckId = $check->exists && $check->customer_id === $customer->id ? $check->public_id : null;
+            $this->accountStatus = $this->signedInCustomer?->is($customer) || $logIn->handle($customer, 'credit_score_check') ? 'signed_in' : 'disabled';
+            unset($this->signedInCustomer, $this->lockedToAccount);
+        }
 
         $this->resultScore = $check->score;
         $this->resultInsights = $check->report_insights;
@@ -371,12 +482,146 @@ new class extends Component
         $this->step = 'result';
     }
 
+    /**
+     * The verification is spent on exactly one check — re-submitting, or a
+     * second tab replaying the same component state, has nothing left to spend.
+     */
+    private function spendVerification(): bool
+    {
+        $challenge = MobileOtpChallenge::findForVerification($this->otpChallengeId, $this->verifiedMobileNumber, MobileOtpPurpose::CreditScoreCheck);
+
+        if (! $challenge?->consumeFor($this->verifiedMobileNumber, MobileOtpPurpose::CreditScoreCheck)) {
+            $this->restart();
+            $this->addError('mobileNumber', __('Your verification has expired. Please verify your mobile number again.'));
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Runs the check if the regeneration limit allows a new report — or shows
+     * the saved score for this bureau when it does not. A refused check never
+     * reaches the bureau and leaves the verification unspent. Null when it
+     * did not run.
+     *
+     * @param  array<string, mixed>  $details
+     */
+    private function runWithinLimit(SubmitCreditScoreCheck $action, CreditReportRegenerationLimit $limit, LogInCustomer $logIn, ?Customer $customer, BureauName $bureau, array $details): ?CreditScoreCheck
+    {
+        $decision = $limit->decide($customer, $bureau, $details['pan_number'], $this->verifiedMobileNumber);
+
+        if ($decision->isBlocked()) {
+            $this->limitReached = $this->limitReachedFor($decision, $customer);
+
+            // The number is proved: open their profile so "View my saved report" works.
+            if ($customer !== null && ! $this->signedInCustomer?->is($customer)) {
+                $logIn->handle($customer, 'credit_score_check');
+                unset($this->signedInCustomer, $this->lockedToAccount);
+            }
+
+            return null;
+        }
+
+        if (! $this->spendVerification()) {
+            return null;
+        }
+
+        $check = $action->handle($details, $bureau, $this->verifiedMobileNumber, request()->ip(), $customer, $decision->reuseSince);
+
+        if ($decision->outcome === RegenerationDecision::SAVED_SCORE && $check->reusedFromId() !== null) {
+            $this->savedScoreNote = __('This is your saved :bureau score from :date. A new credit report can be generated once every :months months, up to :max times a year — your next one is available on :next.', [
+                'bureau' => $decision->lastReport->sourceBureau()?->getLabel() ?? $bureau->getLabel(),
+                'date' => $decision->lastReport->completed_at->translatedFormat('d M Y'),
+                'months' => CreditReportRegenerationLimit::everyMonths(),
+                'max' => CreditReportRegenerationLimit::maxPerYear(),
+                'next' => $decision->nextAt->translatedFormat('d M Y'),
+            ]);
+        }
+
+        return $check;
+    }
+
+    /**
+     * @return array{for_pan: bool, months: int, max: int, bureau?: string, date?: string, next?: string, report?: ?string}
+     */
+    private function limitReachedFor(RegenerationDecision $decision, ?Customer $customer): array
+    {
+        $limits = ['months' => CreditReportRegenerationLimit::everyMonths(), 'max' => CreditReportRegenerationLimit::maxPerYear()];
+
+        // Another account's reports for this PAN: say nothing about when or which.
+        if ($decision->outcome === RegenerationDecision::BLOCKED_FOR_PAN) {
+            return ['for_pan' => true, ...$limits];
+        }
+
+        return [
+            'for_pan' => false,
+            ...$limits,
+            'bureau' => $decision->lastReport->sourceBureau()?->getLabel() ?? $decision->lastReport->bureau->getLabel(),
+            'date' => $decision->lastReport->completed_at->translatedFormat('d M Y'),
+            'next' => $decision->nextAt->translatedFormat('d M Y'),
+            'report' => $decision->lastReport->customer_id === $customer?->getKey() ? $decision->lastReport->public_id : null,
+        ];
+    }
+
+    /**
+     * When this number's account can next get a new report, before the
+     * details are submitted. Read-only: an account is looked up, never opened.
+     */
+    private function previewLimit(): ?string
+    {
+        if (! SubmitCreditScoreCheck::isLive(BureauName::from($this->bureau))) {
+            return null;
+        }
+
+        $customer = $this->signedInCustomer?->verified_mobile === $this->verifiedMobileNumber
+            ? $this->signedInCustomer
+            : Customer::query()->where('verified_mobile', $this->verifiedMobileNumber)->first();
+        $next = $customer !== null ? app(CreditReportRegenerationLimit::class)->nextNewReportAt($customer) : null;
+
+        return $next === null ? null : __('A new credit report can be generated once every :months months, up to :max times a year, across all bureaus. Your next new report is available on :next. Until then, checking a bureau you already have a recent report from shows your saved score.', [
+            'months' => CreditReportRegenerationLimit::everyMonths(),
+            'max' => CreditReportRegenerationLimit::maxPerYear(),
+            'next' => $next->translatedFormat('d M Y'),
+        ]);
+    }
+
+    /**
+     * The portal account for the number just verified: the signed-in customer's
+     * own, else the one ResolveCustomerAccount finds or opens. A failure here is
+     * logged and never stops the visitor's check.
+     */
+    private function accountFor(string $verifiedMobile, ResolveCustomerAccount $accounts): ?Customer
+    {
+        $signedIn = $this->signedInCustomer;
+
+        if ($signedIn !== null && $signedIn->verified_mobile === $verifiedMobile) {
+            return $signedIn;
+        }
+
+        try {
+            return $accounts->forVerifiedMobile($verifiedMobile);
+        } catch (\Throwable $exception) {
+            Log::error('Customer account could not be resolved for a credit score check', ['exception' => $exception::class]);
+
+            return null;
+        }
+    }
+
     public function restart(): void
     {
         $this->reset([
             'step', 'mobileNumber', 'otpCode', 'otpChallengeId', 'verifiedMobileNumber', 'resendAfterSeconds',
             'fullName', 'firstName', 'middleName', 'lastName', 'gender', 'dateOfBirth', 'panNumber', 'consent', 'resultScore', 'resultKind', 'resultError', 'resultInsights',
+            'resultCheckId', 'accountStatus', 'limitNotice', 'limitReached', 'savedScoreNote',
         ]);
+
+        unset($this->signedInCustomer, $this->lockedToAccount);
+
+        if ($this->lockedToAccount) {
+            $this->mobileNumber = (string) $this->signedInCustomer->verified_mobile;
+        }
     }
 };
 ?>
@@ -400,23 +645,35 @@ new class extends Component
             @if ($step === 'mobile')
                 <p class="font-display text-xl font-semibold text-ink">{{ __('Let\'s get started') }}</p>
                 <div class="mt-4 flex flex-col gap-4">
-                    <div>
-                        <label for="mobileNumber" class="text-sm font-medium text-ink">{{ __('Mobile number') }}</label>
-                        <input
-                            id="mobileNumber"
-                            type="tel"
-                            inputmode="numeric"
-                            maxlength="10"
-                            placeholder="{{ __('10-digit mobile number') }}"
-                            wire:model="mobileNumber"
-                            class="mt-1.5 w-full rounded-lg border border-line-strong bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
-                        >
-                        @error('mobileNumber')
-                            <p class="mt-1 text-xs text-warn">{{ $message }}</p>
-                        @else
-                            <p class="mt-1.5 text-xs text-ink-faint">{{ __('You\'ll receive an OTP on this number.') }}</p>
-                        @enderror
-                    </div>
+                    @if ($this->lockedToAccount)
+                        <div>
+                            <p class="text-sm font-medium text-ink">{{ __('Mobile number') }}</p>
+                            <p class="mt-1.5 rounded-lg border border-line bg-surface-2 px-3.5 py-2.5 font-mono text-sm text-ink-muted">+91 {{ $this->signedInCustomer->maskedMobile() }}</p>
+                            @error('mobileNumber')
+                                <p class="mt-1 text-xs text-warn">{{ $message }}</p>
+                            @else
+                                <p class="mt-1.5 text-xs text-ink-faint">{{ __('We\'ll send the OTP to your registered mobile number.') }}</p>
+                            @enderror
+                        </div>
+                    @else
+                        <div>
+                            <label for="mobileNumber" class="text-sm font-medium text-ink">{{ __('Mobile number') }}</label>
+                            <input
+                                id="mobileNumber"
+                                type="tel"
+                                inputmode="numeric"
+                                maxlength="10"
+                                placeholder="{{ __('10-digit mobile number') }}"
+                                wire:model="mobileNumber"
+                                class="mt-1.5 w-full rounded-lg border border-line-strong bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+                            >
+                            @error('mobileNumber')
+                                <p class="mt-1 text-xs text-warn">{{ $message }}</p>
+                            @else
+                                <p class="mt-1.5 text-xs text-ink-faint">{{ __('You\'ll receive an OTP on this number.') }}</p>
+                            @enderror
+                        </div>
+                    @endif
                     <p class="text-xs text-ink-faint">
                         {!! __('By continuing, you agree to FynnEdge\'s <a href=":terms_url" class="underline hover:text-ink">Terms</a> and <a href=":privacy_policy_url" class="underline hover:text-ink">Privacy Policy</a>.', ['terms_url' => e(route('terms')), 'privacy_policy_url' => e(route('privacy-policy'))]) !!}
                     </p>
@@ -591,6 +848,23 @@ new class extends Component
                         </span>
                     </label>
                     @error('consent') <p class="text-xs text-warn">{{ $message }}</p> @enderror
+                    @if ($limitReached)
+                        <div class="flex flex-col gap-3 rounded-xl border border-warn/25 bg-warn-soft p-4 text-sm" role="alert" data-limit-reached>
+                            <p class="font-semibold text-warn">{{ __('A new credit report isn\'t available yet') }}</p>
+                            <p class="text-ink-muted">
+                                @if ($limitReached['for_pan'])
+                                    {{ __('A new report for this PAN can be generated once every :months months, up to :max times a year, and that limit has been reached. If you checked it before with another mobile number, sign in with that number to see your saved report.', \Illuminate\Support\Arr::only($limitReached, ['months', 'max'])) }}
+                                @else
+                                    {{ __('A new credit report can be generated once every :months months, up to :max times a year, across all bureaus. Your last new report was from :bureau on :date; your next one is available on :next.', \Illuminate\Support\Arr::only($limitReached, ['months', 'max', 'bureau', 'date', 'next'])) }}
+                                @endif
+                            </p>
+                            @if (! $limitReached['for_pan'] && $limitReached['report'])
+                                <x-ui.button tag="a" href="{{ route('portal.reports.show', $limitReached['report']) }}" target="_blank" rel="noopener" size="sm" class="justify-center sm:self-start">{{ __('View my saved report') }}</x-ui.button>
+                            @endif
+                        </div>
+                    @elseif ($limitNotice)
+                        <x-ui.alert data-limit-notice>{{ $limitNotice }}</x-ui.alert>
+                    @endif
                     <x-ui.button wire:click="submitDetails" wire:loading.attr="disabled" class="w-full justify-center">
                         {{ __('Check my score') }}
                     </x-ui.button>
@@ -632,10 +906,10 @@ new class extends Component
                         <ol class="grid grid-cols-4 gap-1.5" aria-label="{{ __('Score ranges') }}">
                             @foreach (ScoreBand::cases() as $legendBand)
                                 <li @class([
-                                    'rounded-lg px-1.5 py-2 text-center',
+                                    'group rounded-lg px-1.5 py-2 text-center transition duration-200 ease-out hover:bg-surface-2 hover:shadow-sm motion-safe:hover:-translate-y-0.5',
                                     'bg-surface-2 ring-1 ring-line-strong' => $legendBand === $this->advice->band(),
                                 ])>
-                                    <span class="mx-auto block h-1.5 w-8 rounded-full" style="background: var(--color-score-{{ $legendBand->value }})"></span>
+                                    <span class="mx-auto block h-1.5 w-8 rounded-full transition-transform duration-300 ease-out motion-safe:group-hover:scale-x-150" style="background: var(--color-score-{{ $legendBand->value }})"></span>
                                     <span class="mt-1.5 block text-xs font-medium text-ink">{{ $legendBand->getLabel() }}</span>
                                     <span class="block font-mono text-[0.62rem] text-ink-faint">{{ $legendBand->min() }}–{{ $legendBand->max() }}</span>
                                 </li>
@@ -690,14 +964,52 @@ new class extends Component
                         </div>
                     @endif
 
+                    @if ($savedScoreNote)
+                        <p class="text-center text-sm text-ink-muted" data-saved-score-note>{{ $savedScoreNote }}</p>
+                    @endif
+
+                    @if ($accountStatus === 'signed_in')
+                        {{-- A plain link the visitor clicks, so a new tab is never blocked
+                             as a pop-up; it carries no report data — the profile reads
+                             the saved check server-side for the signed-in customer. --}}
+                        <div class="flex flex-col gap-3 rounded-xl border border-line bg-surface-2 p-4 text-sm sm:flex-row sm:items-center sm:justify-between" data-portal-handoff>
+                            <div>
+                                <p class="font-medium text-ink">
+                                    @if (in_array($resultKind, ['live', 'no_score'], true))
+                                        {{ __('Saved to your :brand profile', ['brand' => config('customer_portal.brand')]) }}
+                                    @else
+                                        {{ __('You\'re signed in to your :brand profile', ['brand' => config('customer_portal.brand')]) }}
+                                    @endif
+                                </p>
+                                <p class="mt-1 text-ink-muted">{{ __('Sign in any time with your mobile number to see your saved scores and reports — opening them never runs a new credit check.') }}</p>
+                            </div>
+                            @if ($context === 'portal')
+                                @if ($resultCheckId && in_array($resultKind, ['live', 'no_score'], true))
+                                    <x-ui.button tag="a" href="{{ route('portal.reports.show', $resultCheckId) }}" size="sm" class="shrink-0 justify-center">{{ __('View report') }}</x-ui.button>
+                                @else
+                                    <x-ui.button tag="a" href="{{ route('portal.credit-score') }}" size="sm" class="shrink-0 justify-center">{{ __('Back to my credit score') }}</x-ui.button>
+                                @endif
+                            @else
+                                <x-ui.button tag="a" href="{{ route('portal.dashboard') }}" target="_blank" rel="noopener" size="sm" class="shrink-0 justify-center">
+                                    {{ __('Open my profile') }}
+                                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 3h4v4M13 3 7 9M11 9.5V13H3V5h3.5" /></svg>
+                                </x-ui.button>
+                            @endif
+                        </div>
+                    @elseif ($accountStatus === 'disabled')
+                        <x-ui.alert tone="warn">{{ __('Access to your profile is switched off. Please contact us to restore it.') }}</x-ui.alert>
+                    @endif
+
                     <div class="flex flex-col gap-2.5 border-t border-line pt-5 sm:flex-row sm:justify-center">
                         @if (in_array($resultKind, ['live', 'demo'], true))
-                            <x-ui.button tag="a" href="{{ route('eligibility.index') }}" class="justify-center">
-                                {{ __('Check Eligibility') }}
+                            <x-ui.button tag="a" href="{{ $context === 'portal' ? route('portal.apply') : route('eligibility.index') }}" class="justify-center">
+                                {{ $context === 'portal' ? __('Apply for a Loan') : __('Check Eligibility') }}
                                 <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8h10m0 0-4-4m4 4-4 4" /></svg>
                             </x-ui.button>
                         @endif
-                        <x-ui.button wire:click="restart" variant="secondary" class="justify-center">{{ __('Check another number') }}</x-ui.button>
+                        <x-ui.button wire:click="restart" variant="secondary" class="justify-center">
+                            {{ $this->lockedToAccount ? __('Start again') : __('Check another number') }}
+                        </x-ui.button>
                     </div>
 
                     @if ($resultKind === 'live')

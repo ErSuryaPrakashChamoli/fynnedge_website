@@ -33,7 +33,8 @@ Everything lives in `app/Modules/MobileOtp/`. Every OTP on the site goes through
 | Loan application journey | `loan_application` | `POST /journey/{session}/phone/send-otp`, `.../verify-otp` | `journey_sessions.phone_verified_at`; `JourneyController::update()` refuses any other number |
 | Free credit-score check (Livewire) | `credit_score_check` | Livewire actions | `CreditScoreCheck` row |
 | Contact page, only when a phone is filled in | `contact_enquiry` | The public API from the page, then `POST /contact` with `otp_challenge_id` | `contact_enquiries` row with `phone_verified_at`; a blank phone needs no code |
-| Public API | any purpose | `POST /api/v1/mobile-otp/send`, `/verify` | Redeemable once on `POST /quick-enquiry` (see §15) |
+| Customer portal sign-in (`/existing-customer`, Livewire) | `customer_login` | Livewire actions | A `customer` guard session (docs/customer-portal.md) |
+| Public API | any purpose except `customer_login` | `POST /api/v1/mobile-otp/send`, `/verify` | Redeemable once on `POST /quick-enquiry` (see §15) |
 
 Not OTP-protected (unchanged and deliberate): the loan-page enquiry form and the `/quick-enquiry` page form.
 

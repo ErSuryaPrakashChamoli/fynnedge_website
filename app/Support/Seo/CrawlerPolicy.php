@@ -85,6 +85,8 @@ class CrawlerPolicy
         return [
             '/admin', '/login', '/register', '/password', '/api',
             '/journey/', '/applications/', '/credit-score/',
+            // The customer portal and its sign-in page: personal, never content.
+            '/my-profile', '/existing-customer',
             // The header's language switch: a redirect back to the page, not content.
             '/language/',
             '/storage/private', '/up',

@@ -12,9 +12,12 @@ use App\Modules\CreditScore\Models\CreditScoreCheck;
 use App\Modules\CreditScore\Providers\SurepassCrifScoreProvider;
 use App\Modules\CreditScore\Providers\SurepassEquifaxScoreProvider;
 use App\Modules\CreditScore\Providers\SurepassExperianScoreProvider;
+use App\Modules\Customers\Models\Customer;
 use App\Modules\Equifax\Services\EquifaxSettings;
 use App\Modules\Experian\Services\ExperianSettings;
+use Carbon\CarbonInterface;
 use Illuminate\Contracts\Cache\LockTimeoutException;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -22,6 +25,8 @@ class SubmitCreditScoreCheck
 {
     /** A live check whose outcome was uncertain is not re-sent for this long. */
     private const UNCERTAIN_HOLD_MINUTES = 60;
+
+    private ?CarbonInterface $reuseSince = null;
 
     public function __construct(
         private readonly CreditScoreProvider $provider,
@@ -41,10 +46,21 @@ class SubmitCreditScoreCheck
      * first, middle and last name apart (full_name is the three joined), the
      * other pages for one full name (first/middle/last null).
      *
+     * $customer is the portal account the OTP-verified mobile resolved to
+     * (ResolveCustomerAccount); the check is recorded against it so the
+     * customer finds it in their profile later.
+     *
+     * $reuseSince widens the reuse period for this one check: a stored score
+     * completed since then is shown again instead of a new pull — how the
+     * regeneration limit (CreditReportRegenerationLimit) shows a saved score
+     * older than the bureau's own reuse period.
+     *
      * @param  array{full_name: string, first_name: ?string, middle_name: ?string, last_name: ?string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
      */
-    public function handle(array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress = null): CreditScoreCheck
+    public function handle(array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress = null, ?Customer $customer = null, ?CarbonInterface $reuseSince = null): CreditScoreCheck
     {
+        $data = [...$data, 'customer_id' => $customer?->id];
+        $this->reuseSince = $reuseSince;
         $cibil = $bureau === BureauName::Cibil ? CibilSettings::liveProvider() : null;
 
         return match (true) {
@@ -54,6 +70,90 @@ class SubmitCreditScoreCheck
             $bureau === BureauName::Experian && ExperianSettings::publicScoreLive() => $this->live($this->liveExperian, $bureau, ExperianSettings::scoreReuseDays(), $data, $mobileNumber, $ipAddress),
             default => $this->run($this->provider, $data, $bureau, $mobileNumber, $ipAddress),
         };
+    }
+
+    /**
+     * Whether a new check for this bureau would be sent to the real bureau
+     * (its public page is switched to live and configured) rather than
+     * answered with a demo score.
+     */
+    public static function isLive(BureauName $bureau): bool
+    {
+        return match ($bureau) {
+            BureauName::Cibil => CibilSettings::publicScoreLive(),
+            BureauName::Crif => CrifSettings::publicScoreLive(),
+            BureauName::Equifax => EquifaxSettings::publicScoreLive(),
+            BureauName::Experian => ExperianSettings::publicScoreLive(),
+        };
+    }
+
+    /**
+     * The existing reuse period for a bureau's public score: a stored score
+     * younger than this is shown again instead of paying for a new one. The
+     * customer portal's monthly refresh policy is this same period.
+     */
+    public static function reuseDays(BureauName $bureau): int
+    {
+        return match ($bureau) {
+            BureauName::Cibil => CibilSettings::publicScoreReuseDays(),
+            BureauName::Crif => CrifSettings::reuseDays(),
+            BureauName::Equifax => EquifaxSettings::scoreReuseDays(),
+            BureauName::Experian => ExperianSettings::scoreReuseDays(),
+        };
+    }
+
+    /**
+     * Whether a live check by this person (bureau, PAN and verified mobile)
+     * would be answered without a new paid pull — a stored score inside the
+     * reuse period, or an uncertain check still inside its hold. The same
+     * rule live() applies, for callers that must know before running it
+     * (customer billing).
+     */
+    public static function wouldAnswerFromStore(BureauName $bureau, string $pan, string $mobileNumber): bool
+    {
+        $previous = fn () => self::previousChecks($bureau, CreditScoreCheck::LIVE_PROVIDER, PanNumber::normalize($pan), $mobileNumber);
+
+        return self::reusable($previous(), now()->subDays(self::reuseDays($bureau)))->exists()
+            || self::unresolved($previous())->exists();
+    }
+
+    /**
+     * @return Builder<CreditScoreCheck>
+     */
+    private static function previousChecks(BureauName $bureau, string $provider, string $pan, string $mobileNumber): Builder
+    {
+        return CreditScoreCheck::query()
+            ->where('bureau', $bureau)
+            ->where('provider', $provider)
+            ->where('pan_number', $pan)
+            ->where('mobile_number', $mobileNumber);
+    }
+
+    /**
+     * @param  Builder<CreditScoreCheck>  $query
+     * @return Builder<CreditScoreCheck>
+     */
+    private static function reusable(Builder $query, CarbonInterface $since): Builder
+    {
+        return $query->where('status', CreditCheckStatus::Completed)
+            ->where('completed_at', '>=', $since)
+            ->whereNull('raw_response->reused_from');
+    }
+
+    /**
+     * @param  Builder<CreditScoreCheck>  $query
+     * @return Builder<CreditScoreCheck>
+     */
+    private static function unresolved(Builder $query): Builder
+    {
+        return $query->where('status', CreditCheckStatus::Pending)
+            ->where('created_at', '>=', now()->subMinutes(self::UNCERTAIN_HOLD_MINUTES));
+    }
+
+    /** How long an uncertain live check blocks a new paid one for the same person. */
+    public static function uncertainHoldMinutes(): int
+    {
+        return self::UNCERTAIN_HOLD_MINUTES;
     }
 
     /**
@@ -69,18 +169,14 @@ class SubmitCreditScoreCheck
     {
         $pan = PanNumber::normalize($data['pan_number']);
         $data = [...$data, 'pan_number' => $pan];
-        $previous = fn () => CreditScoreCheck::query()
-            ->where('bureau', $bureau)
-            ->where('provider', $provider->name())
-            ->where('pan_number', $pan)
-            ->where('mobile_number', $mobileNumber);
+        $previous = fn () => self::previousChecks($bureau, $provider->name(), $pan, $mobileNumber);
 
         try {
             return Cache::lock($bureau->value.'-public-score:'.PanNumber::hash($pan.'|'.$mobileNumber), 90)->block(10, function () use ($provider, $bureau, $reuseDays, $data, $mobileNumber, $ipAddress, $previous): CreditScoreCheck {
-                $reusable = $previous()
-                    ->where('status', CreditCheckStatus::Completed)
-                    ->where('completed_at', '>=', now()->subDays($reuseDays))
-                    ->whereNull('raw_response->reused_from')
+                $since = now()->subDays($reuseDays);
+                $since = $this->reuseSince !== null && $this->reuseSince->lessThan($since) ? $this->reuseSince : $since;
+
+                $reusable = self::reusable($previous(), $since)
                     ->latest('completed_at')
                     ->first();
 
@@ -98,9 +194,7 @@ class SubmitCreditScoreCheck
                     ]);
                 }
 
-                $unresolved = $previous()
-                    ->where('status', CreditCheckStatus::Pending)
-                    ->where('created_at', '>=', now()->subMinutes(self::UNCERTAIN_HOLD_MINUTES))
+                $unresolved = self::unresolved($previous())
                     ->latest('id')
                     ->first();
 
@@ -148,12 +242,13 @@ class SubmitCreditScoreCheck
     }
 
     /**
-     * @param  array{full_name: string, first_name: ?string, middle_name: ?string, last_name: ?string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
+     * @param  array{full_name: string, first_name: ?string, middle_name: ?string, last_name: ?string, date_of_birth: string, pan_number: string, gender?: ?string, customer_id?: ?int}  $data
      * @param  array<string, mixed>  $outcome
      */
     private function record(array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress, array $outcome): CreditScoreCheck
     {
         return CreditScoreCheck::query()->create([
+            'customer_id' => $data['customer_id'] ?? null,
             'bureau' => $bureau,
             'mobile_number' => $mobileNumber,
             'mobile_verified_at' => now(),

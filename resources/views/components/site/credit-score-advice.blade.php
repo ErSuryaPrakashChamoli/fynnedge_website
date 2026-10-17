@@ -10,16 +10,18 @@
     $figures = $advice->figures();
     $tips = $advice->tips();
 
+    // Per rating: [status pill, card border on hover, value colour on hover].
     $ratings = [
-        'good' => 'bg-pass-soft text-pass',
-        'fair' => 'bg-warn-soft text-warn',
-        'poor' => 'bg-score-poor/10 text-score-poor',
+        'good' => ['bg-pass-soft text-pass', 'hover:border-pass/40', 'group-hover:text-pass'],
+        'fair' => ['bg-warn-soft text-warn', 'hover:border-warn/40', 'group-hover:text-warn'],
+        'poor' => ['bg-score-poor/10 text-score-poor', 'hover:border-score-poor/40', 'group-hover:text-score-poor'],
     ];
+    // Per tone: [card, icon, card border on hover].
     $tipTones = [
-        'urgent' => ['border-score-poor/25 bg-score-poor/5', 'bg-score-poor text-surface'],
-        'improve' => ['border-warn/25 bg-warn-soft/60', 'bg-warn text-surface'],
-        'keep' => ['border-pass/25 bg-pass-soft/60', 'bg-pass text-surface'],
-        'info' => ['border-line bg-surface-2/60', 'bg-accent text-surface'],
+        'urgent' => ['border-score-poor/25 bg-score-poor/5', 'bg-score-poor text-surface', 'hover:border-score-poor/50'],
+        'improve' => ['border-warn/25 bg-warn-soft/60', 'bg-warn text-surface', 'hover:border-warn/50'],
+        'keep' => ['border-pass/25 bg-pass-soft/60', 'bg-pass text-surface', 'hover:border-pass/50'],
+        'info' => ['border-line bg-surface-2/60', 'bg-accent text-surface', 'hover:border-line-strong'],
     ];
 @endphp
 
@@ -34,12 +36,12 @@
             @if ($factors !== [])
                 <div class="mt-3 grid gap-3 sm:grid-cols-2">
                     @foreach ($factors as $factor)
-                        <div class="flex flex-col rounded-xl border border-line bg-surface p-4">
+                        <div class="group flex flex-col rounded-xl border border-line bg-surface p-4 transition duration-300 ease-out hover:shadow-lg motion-safe:hover:-translate-y-1 motion-safe:hover:animate-card-swing {{ $ratings[$factor['rating']][1] }}">
                             <div class="flex items-start justify-between gap-2">
                                 <p class="text-sm font-medium text-ink">{{ $factor['label'] }}</p>
-                                <span class="shrink-0 rounded-full px-2 py-0.5 text-[0.7rem] font-semibold {{ $ratings[$factor['rating']] }}">{{ $factor['status'] }}</span>
+                                <span class="shrink-0 rounded-full px-2 py-0.5 text-[0.7rem] font-semibold transition-transform duration-300 ease-out motion-safe:group-hover:scale-110 {{ $ratings[$factor['rating']][0] }}">{{ $factor['status'] }}</span>
                             </div>
-                            <p class="mt-2 font-display text-2xl font-semibold leading-tight text-ink">{{ $factor['value'] }}</p>
+                            <p class="mt-2 origin-left font-display text-2xl font-semibold leading-tight text-ink transition duration-300 ease-out motion-safe:group-hover:scale-105 {{ $ratings[$factor['rating']][2] }}">{{ $factor['value'] }}</p>
                             <p class="mt-0.5 text-xs text-ink-muted">{{ $factor['caption'] }}</p>
                             <p class="mt-auto pt-3 font-mono text-[0.62rem] font-semibold uppercase tracking-wider text-ink-faint">{{ $factor['impact'] }}</p>
                         </div>
@@ -49,15 +51,15 @@
 
             @if ($figures !== [])
                 <dl @class([
-                    'mt-3 grid divide-x divide-line rounded-xl border border-line bg-surface-2/50',
+                    'mt-3 grid divide-x divide-line overflow-hidden rounded-xl border border-line bg-surface-2/50 transition-shadow duration-300 hover:shadow-md',
                     'grid-cols-1' => count($figures) === 1,
                     'grid-cols-2' => count($figures) === 2,
                     'grid-cols-3' => count($figures) >= 3,
                 ])>
                     @foreach ($figures as $figure)
-                        <div class="px-3 py-3 text-center">
+                        <div class="group px-3 py-3 text-center transition-colors duration-200 hover:bg-surface">
                             <dt class="text-[0.7rem] text-ink-faint">{{ $figure['label'] }}</dt>
-                            <dd @class(['mt-0.5 text-sm font-semibold tabular-nums', 'text-score-poor' => $figure['alert'], 'text-ink' => ! $figure['alert']])>{{ $figure['value'] }}</dd>
+                            <dd @class(['mt-0.5 text-sm font-semibold tabular-nums transition-transform duration-200 ease-out motion-safe:group-hover:scale-110', 'text-score-poor' => $figure['alert'], 'text-ink' => ! $figure['alert']])>{{ $figure['value'] }}</dd>
                         </div>
                     @endforeach
                 </dl>
@@ -74,8 +76,8 @@
 
             <ol class="mt-3 flex flex-col gap-2.5">
                 @foreach ($tips as $tip)
-                    <li class="flex gap-3 rounded-xl border p-3.5 {{ $tipTones[$tip['tone']][0] }}">
-                        <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full {{ $tipTones[$tip['tone']][1] }}" aria-hidden="true">
+                    <li class="group flex gap-3 rounded-xl border p-3.5 transition duration-300 ease-out hover:shadow-md motion-safe:hover:translate-x-1 {{ $tipTones[$tip['tone']][0] }} {{ $tipTones[$tip['tone']][2] }}">
+                        <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-transform duration-300 ease-out motion-safe:group-hover:scale-115 motion-safe:group-hover:-rotate-12 {{ $tipTones[$tip['tone']][1] }}" aria-hidden="true">
                             @switch($tip['tone'])
                                 @case('urgent')
                                     <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5"><path d="M10 3.5a1.25 1.25 0 0 1 1.25 1.25v5.5a1.25 1.25 0 1 1-2.5 0v-5.5A1.25 1.25 0 0 1 10 3.5Zm0 9.75a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z" /></svg>

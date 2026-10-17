@@ -119,11 +119,11 @@ return [
 
     'cibil' => [
         // Where the public Free CIBIL Score page gets real scores (CibilSettings::SOURCES) while
-        // CIBIL Settings → "shows real scores" is on: "cibil" = the CIBIL bureau through Surepass
-        // (needs SUREPASS_CIBIL_TOKEN), "experian" = the visitor's Experian score, labelled as such
-        // (the stand-in used before CIBIL was integrated, kept as the default so deploying this
-        // does not change the live page; switch to "cibil" once cibil:check-access shows Allowed).
-        'public_score_source' => env('CIBIL_PUBLIC_SCORE_SOURCE', 'experian'),
+        // CIBIL Settings → "shows real scores" is on: "cibil" = the CIBIL bureau through Surepass,
+        // "experian" = the visitor's Experian score, labelled as such (the stand-in used before
+        // CIBIL was integrated). Left blank, it is automatic: "cibil" once SUREPASS_CIBIL_TOKEN is
+        // set, "experian" until then — so the live page never drops to demo scores for want of a token.
+        'public_score_source' => env('CIBIL_PUBLIC_SCORE_SOURCE'),
     ],
 
 ];

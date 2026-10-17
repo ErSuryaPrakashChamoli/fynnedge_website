@@ -14,6 +14,7 @@ use App\Modules\Experian\Models\ExperianCreditRequest;
 use App\Modules\Journey\Enums\JourneySessionStatus;
 use Database\Factories\JourneySessionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -98,6 +99,28 @@ class JourneySession extends Model
     public function cibilRequests(): HasMany
     {
         return $this->hasMany(CibilCreditRequest::class);
+    }
+
+    /**
+     * Sessions whose mobile number was verified by OTP as this customer's own
+     * verified mobile — the customer portal's ownership rule. A session merely
+     * linked to the customer record (customer_id, matched by a typed email) is
+     * NOT enough: anyone can type someone else's email, nobody can verify
+     * someone else's phone.
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeVerifiedFor(Builder $query, Customer $customer): void
+    {
+        $query->whereNotNull('phone_verified_at')
+            ->where('phone_number', $customer->verified_mobile ?? '');
+    }
+
+    public function isVerifiedFor(Customer $customer): bool
+    {
+        return $this->phone_verified_at !== null
+            && $customer->verified_mobile !== null
+            && $this->phone_number === $customer->verified_mobile;
     }
 
     /**

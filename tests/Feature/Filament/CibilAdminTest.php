@@ -7,6 +7,7 @@ use App\Filament\Resources\CibilCreditRequests\Pages\ListCibilCreditRequests;
 use App\Filament\Resources\CibilCreditRequests\Pages\ViewCibilCreditRequest;
 use App\Filament\Resources\Customers\Pages\EditCustomer;
 use App\Filament\Resources\JourneySessions\Pages\ViewJourneySession;
+use App\Models\Setting;
 use App\Models\User;
 use App\Modules\Cibil\Actions\FetchCibilPdf;
 use App\Modules\Cibil\Enums\CibilErrorCode;
@@ -298,7 +299,7 @@ it('saves the CIBIL settings independently of the other bureaus, never shows the
     $this->get('/admin/cibil-settings')
         ->assertSee('CIBIL API token is configured on this server')
         ->assertSee('SUREPASS_CIBIL_TOKEN')
-        ->assertSee('CIBIL API not connected — the page uses Experian scores')
+        ->assertSee('Answered by the CIBIL bureau through Surepass')
         ->assertDontSee('test-cibil-token');
 
     Livewire::test(CibilSettings::class)
@@ -317,6 +318,42 @@ it('saves the CIBIL settings independently of the other bureaus, never shows the
         ->and(EquifaxSettingsStore::publicScoreEnabled())->toBeFalse();
     Http::assertSentCount(3);
     Http::assertNotSent(fn (Request $request) => $request->data() !== []);
+});
+
+it('describes the Free CIBIL Score page without contradicting the token callout', function (?string $token, ?string $forcedSource, string $describes, array $neverSays) {
+    config([
+        'services.surepass.cibil_token' => $token,
+        'services.surepass.experian_token' => 'test-experian-token',
+        'services.cibil.public_score_source' => $forcedSource,
+    ]);
+
+    $this->get('/admin/cibil-settings')->assertSee($describes)->assertDontSee($neverSays);
+})->with([
+    'token set, source automatic' => ['test-cibil-token', null, 'Answered by the CIBIL bureau through Surepass', ['token is not configured', 'token is NOT configured']],
+    'token set, Experian forced' => ['test-cibil-token', 'experian', 'The CIBIL API token is configured, but CIBIL_PUBLIC_SCORE_SOURCE=experian on the server keeps this page on Experian scores', ['token is not configured', 'token is NOT configured', 'Answered by the CIBIL bureau']],
+    'no token, source automatic' => [null, null, 'It switches to the CIBIL bureau by itself once SUREPASS_CIBIL_TOKEN is set on the server.', ['CIBIL API token is configured', 'Answered by the CIBIL bureau']],
+    'no token, Experian forced' => [null, 'experian', 'To use the CIBIL bureau, set SUREPASS_CIBIL_TOKEN and remove CIBIL_PUBLIC_SCORE_SOURCE.', ['CIBIL API token is configured', 'switches to the CIBIL bureau by itself']],
+]);
+
+it('turns the other CIBIL switch off when one is turned on', function () {
+    Livewire::test(CibilSettings::class)
+        ->fillForm(['cibil_enabled' => true, 'cibil_public_score_enabled' => false])
+        ->fillForm(['cibil_public_score_enabled' => true])
+        ->assertSchemaStateSet(['cibil_enabled' => false, 'cibil_public_score_enabled' => true])
+        ->fillForm(['cibil_enabled' => true])
+        ->assertSchemaStateSet(['cibil_enabled' => true, 'cibil_public_score_enabled' => false]);
+});
+
+it('refuses to save the CIBIL settings with both switches on', function () {
+    Setting::set(CibilSettingsStore::ENABLED, true);
+    Setting::set(CibilSettingsStore::PUBLIC_SCORE_ENABLED, true);
+
+    Livewire::test(CibilSettings::class)
+        ->fillForm(['cibil_score_reuse_days' => 9])
+        ->call('save')
+        ->assertHasFormErrors(['cibil_public_score_enabled']);
+
+    expect(CibilSettingsStore::scoreReuseDays())->not->toBe(9);
 });
 
 it('lists CIBIL events in the CIBIL audit history', function () {

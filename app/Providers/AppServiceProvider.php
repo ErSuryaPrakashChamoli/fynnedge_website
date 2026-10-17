@@ -258,6 +258,12 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('mobile-otp-verify', fn (Request $request) => app()->runningUnitTests()
             ? Limit::none()
             : [Limit::perMinute(10)->by('minute:'.$request->ip()), Limit::perHour(60)->by('hour:'.$request->ip())]);
+
+        // The customer portal (/my-profile): per signed-in customer, so one
+        // session cannot script report reads, PDF downloads or profile writes.
+        RateLimiter::for('customer-portal', fn (Request $request) => app()->runningUnitTests()
+            ? Limit::none()
+            : Limit::perMinute(60)->by('customer-portal:'.($request->user('customer')?->getAuthIdentifier() ?? $request->ip())));
     }
 
     private static function settingFileUrl(string $key): ?string
