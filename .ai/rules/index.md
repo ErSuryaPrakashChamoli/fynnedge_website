@@ -32,6 +32,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Http/Controllers/QuickEnquiryController.php,resources/views/components/site/quick-enquiry.blade.php | .ai/rules/controllers-views-components-site.md |
 | app/Filament/RelationManagers/FaqsRelationManager.php,app/Models/Page.php,app/Http/Controllers/PageController.php | .ai/rules/controllers.md |
 | app/Modules/CreditBureau/** | .ai/rules/credit-bureau.md |
+| app/Http/Controllers/Portal/CreditReportController.php,resources/views/portal/credit-reports/** | .ai/rules/credit-reports.md |
 | app/Modules/Customers/Services/CustomerCreditReports.php,app/Modules/CreditScore/Actions/SubmitCreditScoreCheck.php,app/Modules/CreditScore/Services/CreditReportRegenerationLimit.php,resources/views/components/⚡credit-score-check.blade.php | .ai/rules/credit-score-actions.md |
 | app/Modules/CreditScore/Actions/SubmitCreditScoreCheck.php,app/Modules/CreditScore/Services/CreditReportRegenerationLimit.php,app/Modules/CreditScore/Models/CreditScoreCheck.php | .ai/rules/credit-score-models.md |
 | app/Modules/CreditScore/Providers/** | .ai/rules/credit-score-providers.md |
@@ -73,6 +74,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Support/Loans/LoanMegaMenu.php,resources/views/components/site/header.blade.php,app/Models/LoanLandingPage.php,database/seeders/LoanLocationPageSeeder.php | .ai/rules/models-seeders.md |
 | app/Filament/Resources/Articles/**,app/Models/Article.php,resources/views/home.blade.php | .ai/rules/models-views.md |
 | app/Modules/**/Models/*.php | .ai/rules/models.md |
+| app/Modules/Customers/**,resources/views/components/⚡credit-score-check.blade.php,app/Modules/CreditScore/Actions/SubmitCreditScoreCheck.php | .ai/rules/modules-credit-score-actions.md |
 | app/Modules/CreditScore/** | .ai/rules/modules-credit-score.md |
 | app/Http/Controllers/**,app/Modules/**,resources/js/app.js | .ai/rules/modules-js.md |
 | app/Models/**,app/Modules/**/Models/*.php | .ai/rules/modules-models.md |

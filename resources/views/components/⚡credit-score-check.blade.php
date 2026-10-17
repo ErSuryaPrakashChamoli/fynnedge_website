@@ -13,6 +13,7 @@ use App\Modules\CreditScore\Models\CreditScoreCheck;
 use App\Modules\CreditScore\Services\CreditScoreAdvice;
 use App\Modules\CreditScore\DataTransferObjects\RegenerationDecision;
 use App\Modules\CreditScore\Services\CreditReportRegenerationLimit;
+use App\Modules\Customers\Actions\ClaimCreditScoreChecks;
 use App\Modules\Customers\Actions\LogInCustomer;
 use App\Modules\Customers\Actions\ResolveCustomerAccount;
 use App\Modules\Customers\Models\Customer;
@@ -411,7 +412,7 @@ new class extends Component
         $this->panNumber = strtoupper($value);
     }
 
-    public function submitDetails(SubmitCreditScoreCheck $action, ResolveCustomerAccount $accounts, LogInCustomer $logIn, CreditReportRegenerationLimit $limit): void
+    public function submitDetails(SubmitCreditScoreCheck $action, ResolveCustomerAccount $accounts, ClaimCreditScoreChecks $claims, LogInCustomer $logIn, CreditReportRegenerationLimit $limit): void
     {
         if ($this->step !== 'details' || $this->verifiedMobileNumber === null) {
             $this->restart();
@@ -466,6 +467,12 @@ new class extends Component
         $bureau = BureauName::from($this->bureau);
         $customer = $this->accountFor($this->verifiedMobileNumber, $accounts);
         $this->limitReached = null;
+
+        // Their own earlier checks saved before the account existed: linked
+        // first, so the limit and the saved score treat them as theirs.
+        if ($customer !== null) {
+            $claims->handle($customer, $details['pan_number'], $this->verifiedMobileNumber);
+        }
 
         try {
             // One check per person at a time, so two tabs can never both use

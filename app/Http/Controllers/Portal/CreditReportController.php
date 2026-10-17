@@ -3,17 +3,20 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Modules\Cibil\Models\CibilCreditRequest;
+use App\Modules\CreditBureau\Enums\CreditCheckStatus;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
 use App\Modules\Customers\Models\Customer;
 use App\Modules\Customers\Services\CreditReportView;
 use App\Modules\Customers\Services\CustomerCreditReports;
 use App\Modules\Equifax\Models\EquifaxCreditRequest;
 use App\Modules\Experian\Models\ExperianCreditRequest;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Traits\Localizable;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -26,6 +29,8 @@ use Throwable;
  */
 class CreditReportController extends PortalController
 {
+    use Localizable;
+
     public function index(Request $request, CustomerCreditReports $reports): View
     {
         $customer = $this->customer($request);
@@ -82,6 +87,39 @@ class CreditReportController extends PortalController
         return response($bytes, 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="'.$check->bureau->value.'-credit-report-'.$check->completed_at?->format('Y-m-d').'.pdf"',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
+
+    /**
+     * The saved report as a PDF file the customer keeps: the score and the
+     * same report sections the report page shows, laid out by FynnEdge. It is
+     * not the bureau's own PDF (pdf() serves that, when one is stored) and it
+     * never calls a bureau. Always in English: dompdf cannot join Devanagari
+     * letters, so Hindi text would print broken.
+     */
+    public function download(Request $request, string $report, CustomerCreditReports $reports): Response
+    {
+        $customer = $this->customer($request);
+        $check = $reports->find($customer, $report) ?? abort(404);
+
+        abort_unless($check->status === CreditCheckStatus::Completed, 404);
+
+        $view = CreditReportView::for($check);
+        $bytes = $this->withLocale('en', fn (): string => Pdf::loadView('portal.credit-reports.pdf', [
+            'customer' => $customer,
+            'check' => $check,
+            'report' => $view,
+        ])->setPaper('a4')->setOption('isFontSubsettingEnabled', true)->output());
+
+        if ($view->request !== null) {
+            $this->logCustomerAccess($view->request, 'report_pdf_downloaded_by_customer', $check, $customer);
+        }
+
+        return response($bytes, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="fynnedge-'.$view->sourceBureau()->value.'-credit-report-'.$view->reportDate()?->format('Y-m-d').'.pdf"',
+            'Cache-Control' => 'private, no-store',
             'X-Content-Type-Options' => 'nosniff',
         ]);
     }
