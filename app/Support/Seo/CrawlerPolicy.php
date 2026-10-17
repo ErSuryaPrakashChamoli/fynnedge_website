@@ -6,6 +6,7 @@ use App\Models\Setting;
 use App\Modules\CreditScore\Enums\BureauName;
 use App\Support\Pages\CreditScoreIndexing;
 
+//stage1
 /**
  * The crawler policy /robots.txt is generated from.
  *
