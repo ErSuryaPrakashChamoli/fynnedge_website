@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\StoreCibilCheckRequest;
+use App\Http\Requests\Api\V1\StoreExternalCibilCheckRequest;
 use App\Http\Resources\Api\V1\CibilRequestResource;
 use App\Models\User;
 use App\Modules\Cibil\Actions\FetchCibilPdf;
@@ -13,6 +14,7 @@ use App\Modules\Cibil\Enums\CibilProduct;
 use App\Modules\Cibil\Exceptions\CibilRequestRefused;
 use App\Modules\Cibil\Models\CibilCreditRequest;
 use App\Modules\Cibil\Services\CibilCreditService;
+use App\Modules\Customers\Actions\MatchCustomerForBureauRequest;
 use App\Modules\Customers\Models\Customer;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -21,9 +23,12 @@ use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * The CIBIL internal API (routes/cibil.php). Thin: every decision —
- * permission, consent, duplicate, reuse — is made by the CIBIL module itself
- * (CibilCreditService → RequestCibilCheck), exactly as for the admin.
+ * The CIBIL internal API (routes/cibil.php) and the external API other systems
+ * call with an API key (routes/external.php — the externalScore/externalReport
+ * actions, plus show, status and pdf shared with the internal API). Thin:
+ * every decision — permission, consent, duplicate, reuse — is made by the
+ * CIBIL module itself (CibilCreditService → RequestCibilCheck), exactly as
+ * for the admin.
  *
  * Envelope: { success, message, data | error_code }. Status codes: 202 a new
  * paid request was queued, 200 an existing result was reused / read, 409 an
@@ -43,6 +48,22 @@ class CibilController extends Controller
         return $this->requestCheck($request, $cibil, CibilProduct::Report);
     }
 
+    /**
+     * External API: the person's details instead of a customer id.
+     */
+    public function externalScore(StoreExternalCibilCheckRequest $request, CibilCreditService $cibil, MatchCustomerForBureauRequest $matchCustomer): JsonResponse
+    {
+        return $this->requestExternalCheck($request, $cibil, $matchCustomer, CibilProduct::Score);
+    }
+
+    /**
+     * External API: the person's details instead of a customer id.
+     */
+    public function externalReport(StoreExternalCibilCheckRequest $request, CibilCreditService $cibil, MatchCustomerForBureauRequest $matchCustomer): JsonResponse
+    {
+        return $this->requestExternalCheck($request, $cibil, $matchCustomer, CibilProduct::Report);
+    }
+
     public function show(Request $request, CibilCreditRequest $cibilRequest): JsonResponse
     {
         $this->authorizeRequest($request, $cibilRequest);
@@ -50,11 +71,11 @@ class CibilController extends Controller
         $includes = array_map('trim', explode(',', (string) $request->query('include', '')));
 
         if (in_array('report', $includes, true) && $request->user()->can('viewReport', $cibilRequest) && $cibilRequest->hasReport()) {
-            $cibilRequest->recordEvent('viewed', ['channel' => 'api']);
+            $cibilRequest->recordEvent('viewed', ['channel' => $this->channel($request)]);
         }
 
         if (in_array('raw', $includes, true) && $request->user()->can('viewRaw', $cibilRequest)) {
-            $cibilRequest->recordEvent('raw_viewed', ['channel' => 'api']);
+            $cibilRequest->recordEvent('raw_viewed', ['channel' => $this->channel($request)]);
         }
 
         return $this->respond($cibilRequest->load(['customer', 'journeySession']), 'CIBIL request.');
@@ -100,7 +121,7 @@ class CibilController extends Controller
                 return $this->pdfResponse($cibilRequest, $fetchPdf->handle($cibilRequest, $user));
             }
 
-            $outcome = $cibil->request(CibilCheckRequest::pdfFor($cibilRequest, 'api'), $user);
+            $outcome = $cibil->request(CibilCheckRequest::pdfFor($cibilRequest, $this->channel($request)), $user);
 
             if ($outcome->kind === CibilOutcome::REUSED) {
                 $this->authorizeRequest($request, $outcome->request);
@@ -152,6 +173,37 @@ class CibilController extends Controller
         }
 
         return $this->outcomeResponse($outcome);
+    }
+
+    private function requestExternalCheck(StoreExternalCibilCheckRequest $request, CibilCreditService $cibil, MatchCustomerForBureauRequest $matchCustomer, CibilProduct $product): JsonResponse
+    {
+        // Before matching: a client that may not request CIBIL never creates a customer.
+        Gate::authorize($request->wantsFresh() ? 'fetchFresh' : 'create', CibilCreditRequest::class);
+
+        $user = $this->user($request);
+        $customer = $matchCustomer->handle(
+            (string) $request->validated('name'),
+            (string) $request->validated('mobile'),
+            (string) $request->validated('pan'),
+            $request->validated('gender'),
+            $user,
+        );
+
+        try {
+            $outcome = $cibil->request($request->toCheckRequest($product, $customer, null), $user);
+        } catch (CibilRequestRefused $exception) {
+            return $this->refused($exception);
+        }
+
+        return $this->outcomeResponse($outcome);
+    }
+
+    /**
+     * Recorded on the request and its audit events: who asked through which door.
+     */
+    private function channel(Request $request): string
+    {
+        return $request->routeIs('api.v1.external.*') ? 'external' : 'api';
     }
 
     private function outcomeResponse(CibilOutcome $outcome): JsonResponse

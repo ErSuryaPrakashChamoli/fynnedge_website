@@ -47,6 +47,25 @@ it('walks through mobile, OTP, details and result end to end', function () {
         ->consumed_at->not->toBeNull();
 });
 
+it('shows the steps as an arrow chart that moves on with the visitor', function () {
+    fakeAreachSms();
+
+    Livewire::test('credit-score-check', ['bureau' => 'cibil'])
+        ->assertSeeHtmlInOrder([
+            'step-arrow-active', 'Mobile number',
+            'step-arrow-upcoming', 'Verify OTP',
+            'step-arrow-upcoming', 'Your details',
+            'step-arrow-upcoming', 'Your score',
+        ])
+        ->set('mobileNumber', '9876543210')
+        ->call('sendOtp')
+        ->assertSeeHtmlInOrder([
+            'step-arrow-done', 'Mobile number',
+            'aria-current="step"', 'Verify OTP',
+            'step-arrow-upcoming', 'Your details',
+        ]);
+});
+
 it('saves the name as per PAN with each word capitalised, however it was typed', function (string $typed, string $saved) {
     fakeAreachSms();
     $component = Livewire::test('credit-score-check', ['bureau' => 'experian'])

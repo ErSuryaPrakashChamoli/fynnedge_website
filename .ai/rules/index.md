@@ -8,6 +8,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Models/Achievement.php,app/Filament/Resources/Achievements/**,resources/views/home.blade.php | .ai/rules/achievements-views.md |
 | app/Modules/Customers/Services/**,app/Http/Controllers/Portal/**,resources/views/components/⚡credit-score-check.blade.php,app/Modules/CreditScore/Actions/SubmitCreditScoreCheck.php | .ai/rules/actions.md |
 | app/Support/Privacy/**,app/Support/Analytics/**,resources/views/components/site/cookie-consent.blade.php | .ai/rules/analytics-views-components-site.md |
+| routes/external.php,config/auth.php,app/Support/ApiClients/**,app/Models/ApiClient.php,app/Filament/Resources/ApiClients/** | .ai/rules/api-clients.md |
 | app/Filament/**/FileUpload*,config/filesystems.php, app/Filament/** | .ai/rules/app-filament.md |
 | app/Http/Controllers/** | .ai/rules/app-http-controllers.md |
 | app/Models/Article.php | .ai/rules/app-models.md |
@@ -114,7 +115,9 @@ Before planning or editing, find the row whose globs match the file's path and r
 | tests/** | .ai/rules/tests.md |
 | resources/css/**,resources/views/**,app/Support/Theme/**,app/Filament/Pages/Settings.php | .ai/rules/theme-filament-pages.md |
 | app/Models/Banner.php,resources/views/components/site/banner-carousel.blade.php,app/Support/Theme/SiteThemeStyles.php | .ai/rules/theme.md |
+| resources/views/components/ui/stepper.blade.php,resources/views/components/⚡credit-score-check.blade.php | .ai/rules/ui-views-components.md |
 | app/Support/Options/**,resources/views/components/ui/searchable-select.blade.php | .ai/rules/ui.md |
+| app/Modules/Customers/Actions/MatchCustomerForBureauRequest.php,app/Http/Requests/Api/V1/StoreExternalCibilCheckRequest.php,app/Http/Controllers/Api/V1/CibilController.php | .ai/rules/v1.md |
 | app/Models/VideoTestimonial.php,app/Support/Testimonials/**,app/Filament/Resources/VideoTestimonials/**,resources/views/components/site/video-testimonial*.blade.php | .ai/rules/video-testimonials-views-components-site.md |
 | config/filesystems.php,resources/views/components/layouts/app.blade.php,tests/** | .ai/rules/views-components-layouts.md |
 | app/Support/Calculators/**,app/Http/Controllers/LoanProductController.php,resources/views/loans/**,resources/views/components/site/flexi-hybrid-hero.blade.php | .ai/rules/views-components-site.md |

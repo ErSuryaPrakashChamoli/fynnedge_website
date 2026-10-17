@@ -28,6 +28,8 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware('web')->group(base_path('routes/equifax.php'));
             Route::middleware('web')->group(base_path('routes/experian.php'));
             Route::middleware('web')->group(base_path('routes/cibil.php'));
+            // The external API for our other systems (e.g. the LMS): stateless, API key.
+            Route::middleware('api')->group(base_path('routes/external.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {

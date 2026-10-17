@@ -18,12 +18,14 @@ use App\Modules\Experian\Services\ExperianSettings;
 use App\Modules\Experian\Services\SurepassExperianService;
 use App\Modules\MobileOtp\Contracts\SmsProvider;
 use App\Support\Analytics\TrackingScripts;
+use App\Support\ApiClients\AuthenticateApiClient;
 use App\Support\Contact\OfficeMap;
 use App\Support\Rates\RateBook;
 use App\Support\Seo\Sitemap;
 use App\Support\Theme\SiteThemeStyles;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
@@ -86,6 +88,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // The `api-client` guard (config/auth.php): API keys of other systems.
+        Auth::viaRequest('api-key', new AuthenticateApiClient);
+
         // Gold Loan, Two Wheeler, Term, Tractor and Mudra loans are excluded here to keep
         // this list short — they stay listed everywhere else (home, /loans, header mega-menu).
         View::composer(
@@ -254,6 +259,10 @@ class AppServiceProvider extends ServiceProvider
 
         // The CIBIL internal API (routes/cibil.php), on its own counter.
         RateLimiter::for('cibil-api', fn (Request $request) => Limit::perMinute(30)->by('cibil:'.($request->user()?->getAuthIdentifier() ?? $request->ip())));
+
+        // The external CIBIL API (routes/external.php): per API client (its service
+        // account), so one system's runaway loop cannot spend the Surepass balance.
+        RateLimiter::for('cibil-external-api', fn (Request $request) => Limit::perMinute(60)->by('cibil-external:'.($request->user()?->getAuthIdentifier() ?? $request->ip())));
 
         RateLimiter::for('mobile-otp-verify', fn (Request $request) => app()->runningUnitTests()
             ? Limit::none()
