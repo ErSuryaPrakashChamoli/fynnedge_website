@@ -37,7 +37,7 @@
         </div>
 
         @if ($report->isStandIn())
-            <x-ui.alert class="mt-5">{{ __('This report is from :source, shown on the :bureau page because :bureau was not connected when you checked. Scores can differ a little between bureaus.', ['source' => $report->sourceBureau()->getLabel(), 'bureau' => $check->bureau->getLabel()]) }}</x-ui.alert>
+            <x-ui.alert class="mt-5">{{ __('This report is from :source, fetched on the :bureau page — it is not a :bureau report. Scores can differ a little between bureaus.', ['source' => $report->sourceBureau()->getLabel(), 'bureau' => $check->bureau->getLabel()]) }}</x-ui.alert>
         @endif
 
         @if ($check->status === \App\Modules\CreditBureau\Enums\CreditCheckStatus::Failed)

@@ -19,7 +19,7 @@
                             <p class="mt-2 max-w-xs text-sm text-ink-muted">{{ __(':bureau found your record but has no score for you yet.', ['bureau' => $latest->sourceBureau()->getLabel()]) }}</p>
                         @endif
                         @if ($latest->sourceBureau() !== $latest->bureau)
-                            <p class="mt-2 max-w-xs text-xs text-ink-faint">{{ __('This is your :source score, shown because :bureau was not connected when you checked.', ['source' => $latest->sourceBureau()->getLabel(), 'bureau' => $latest->bureau->getLabel()]) }}</p>
+                            <p class="mt-2 max-w-xs text-xs text-ink-faint">{{ __('This is your :source score from the :bureau page — not a :bureau score.', ['source' => $latest->sourceBureau()->getLabel(), 'bureau' => $latest->bureau->getLabel()]) }}</p>
                         @endif
                     </div>
                     <dl class="mt-4 grid grid-cols-2 gap-3 text-sm">

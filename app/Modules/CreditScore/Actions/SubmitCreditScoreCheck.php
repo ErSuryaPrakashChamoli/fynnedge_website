@@ -38,9 +38,10 @@ class SubmitCreditScoreCheck
     /**
      * Real scores for the bureaus whose public page is switched to live (CRIF:
      * CRIF Settings, Equifax: Equifax Settings, Experian: Experian Settings —
-     * each independently; CIBIL: CIBIL Settings, answered by the source
-     * CIBIL_PUBLIC_SCORE_SOURCE names — the CIBIL bureau or the Experian
-     * stand-in); the bound demo provider for everything else.
+     * each independently; CIBIL: CIBIL Settings → "Real CIBIL score enabled",
+     * answered by CIBIL, or by Experian while "Fetch Experian instead of
+     * CIBIL" is on — see CibilSettings); the bound demo provider for
+     * everything else, which calls no bureau.
      *
      * The name arrives the way the bureau's API takes it: CRIF's page asks for
      * first, middle and last name apart (full_name is the three joined), the
@@ -88,6 +89,16 @@ class SubmitCreditScoreCheck
     }
 
     /**
+     * The bureau that answers a page's real checks: the page's own, except the
+     * CIBIL page while "Fetch Experian instead of CIBIL" is on. Stored checks
+     * are only reused, held or treated as a saved score within this bureau.
+     */
+    public static function sourceBureau(BureauName $bureau): BureauName
+    {
+        return $bureau === BureauName::Cibil ? CibilSettings::sourceBureau() : $bureau;
+    }
+
+    /**
      * The existing reuse period for a bureau's public score: a stored score
      * younger than this is shown again instead of paying for a new one. The
      * customer portal's monthly refresh policy is this same period.
@@ -123,7 +134,7 @@ class SubmitCreditScoreCheck
     private static function previousChecks(BureauName $bureau, string $provider, string $pan, string $mobileNumber): Builder
     {
         return CreditScoreCheck::query()
-            ->where('bureau', $bureau)
+            ->answeredBy($bureau, self::sourceBureau($bureau))
             ->where('provider', $provider)
             ->where('pan_number', $pan)
             ->where('mobile_number', $mobileNumber);
@@ -160,8 +171,10 @@ class SubmitCreditScoreCheck
      * Every new live check is a paid Surepass call, so the same person — same
      * bureau, PAN AND verified mobile, so a typed-in PAN never reveals someone
      * else's stored score — checking again inside the reuse period is shown the
-     * score already fetched, and a check whose outcome was uncertain is not
-     * re-sent for an hour. A per-person lock stops two tabs paying twice.
+     * score already fetched FROM THE SAME SOURCE BUREAU (never a CIBIL score
+     * as an Experian one, or the other way round), and a check whose outcome
+     * was uncertain is not re-sent for an hour. A per-person lock stops two
+     * tabs paying twice.
      *
      * @param  array{full_name: string, first_name: ?string, middle_name: ?string, last_name: ?string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
      */
@@ -198,7 +211,7 @@ class SubmitCreditScoreCheck
                     ->latest('id')
                     ->first();
 
-                return $unresolved ?? $this->run($provider, $data, $bureau, $mobileNumber, $ipAddress);
+                return $unresolved ?? $this->run($provider, $data, $bureau, $mobileNumber, $ipAddress, self::sourceBureau($bureau));
             });
         } catch (LockTimeoutException) {
             // The same person's previous check is still waiting for Surepass.
@@ -209,11 +222,13 @@ class SubmitCreditScoreCheck
     /**
      * @param  array{full_name: string, first_name: ?string, middle_name: ?string, last_name: ?string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
      */
-    private function run(CreditScoreProvider $provider, array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress): CreditScoreCheck
+    private function run(CreditScoreProvider $provider, array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress, ?BureauName $source = null): CreditScoreCheck
     {
         $check = $this->record($data, $bureau, $mobileNumber, $ipAddress, [
             'provider' => $provider->name(),
             'status' => CreditCheckStatus::Pending,
+            // Tagged before the call, so an uncertain check holds only its own bureau.
+            'raw_response' => $source !== null && $source !== $bureau ? ['source_bureau' => $source->value] : null,
         ]);
 
         $result = $provider->check($check);

@@ -238,13 +238,11 @@ The read methods never call Surepass, so they are safe on every page load. Openi
 - A failed live check is never replaced by a demo score. The visitor sees "Live score from Experian", "No score yet", a no-match message or "try later". The admin reason is under Catalog → Credit Score Checks.
 - Switched off, the page shows a demo score that is clearly labelled "Demo score — not your real credit report".
 
-### The Free CIBIL Score page uses Experian until a CIBIL API exists
+### The Get CIBIL Score page can fetch Experian instead of CIBIL
 
-FynnEdge has no CIBIL API. A separate module, `app/Modules/Cibil/`, lets the CIBIL page show real scores from a stand-in source, which is Experian today.
-- **Switch:** Admin → **CIBIL → CIBIL Settings** → "Free CIBIL Score page shows real scores". It is off by default, independent of the Experian page's switch, and needs `View:CibilSettings`.
-- **Source:** `CIBIL_PUBLIC_SCORE_SOURCE` (`config/services.php` → `cibil.public_score_source`, default `experian`). `CibilSettings::SOURCES` maps it to a provider. `experian` → `ExperianCibilScoreProvider` makes the same `credit-report-experian/fetch-report` call as the Experian page and tags the check `source_bureau: experian`.
-- **Honest labelling:** the visitor is told before and after the check that CIBIL isn't connected and that the score is their **Experian** score ("Live score from Experian", "Your Experian score"). It is never presented as a CIBIL score. Admins see "Live (Experian via Surepass)" under Credit Score Checks.
-- **Switching to a real CIBIL API later:** add its provider class to `CibilSettings::SOURCES` (for example `'cibil' => TransUnionCibilScoreProvider::class`) and set `CIBIL_PUBLIC_SCORE_SOURCE=cibil`. The page, the Livewire component and `SubmitCreditScoreCheck` need no change.
+- **Switches:** Admin → **CIBIL → CIBIL Settings** → "Real CIBIL score enabled" and "Fetch Experian instead of CIBIL" (docs/cibil-credit-bureau-integration.md §12). Both are independent of the Experian page's own switch and need `View:CibilSettings`.
+- **Source:** with both on, `ExperianCibilScoreProvider` makes the same `credit-report-experian/fetch-report` call as the Experian page and tags the check `source_bureau: experian`. With Experian off, the CIBIL bureau answers and Experian is never called, even if CIBIL fails.
+- **Honest labelling:** the visitor is told before and after the check that the score is their **Experian** score, not a CIBIL score ("Live score from Experian", "Your Experian score"). Admins see "Live (Experian via Surepass)" under Credit Score Checks.
 
 ## 12. Configuration
 

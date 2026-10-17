@@ -7,6 +7,7 @@ use App\Modules\Cibil\Providers\ExperianCibilScoreProvider;
 use App\Modules\Cibil\Providers\SurepassCibilScoreProvider;
 use App\Modules\CreditBureau\Services\SurepassClient;
 use App\Modules\CreditScore\Contracts\CreditScoreProvider;
+use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\Experian\Services\ExperianSettings;
 
 /**
@@ -20,17 +21,26 @@ use App\Modules\Experian\Services\ExperianSettings;
  *    API requests, reuse periods, consent validity, retention, alerts. Its
  *    token is SUREPASS_CIBIL_TOKEN only — deliberately NO fallback to the
  *    shared or another bureau's token — and no screen shows it.
- *  - The public "Free CIBIL Score" page: off (a labelled demo score) or on,
- *    answered by a SOURCE — "cibil" (the real CIBIL bureau) or "experian" (the
- *    stand-in used before CIBIL was integrated, which tells the visitor the
- *    score is Experian's). CIBIL_PUBLIC_SCORE_SOURCE forces one; left blank it
- *    is "cibil" once SUREPASS_CIBIL_TOKEN is set and "experian" until then.
+ *  - The public "Get CIBIL Score" page, decided here and nowhere else by two
+ *    independent admin switches (user decision, 2026-10-17):
+ *      1. "Real CIBIL score enabled" (PUBLIC_SCORE_ENABLED): off = a labelled
+ *         demo score and no bureau call at all, whatever switch 2 says.
+ *      2. "Fetch Experian instead of CIBIL" (PUBLIC_SCORE_USE_EXPERIAN): off =
+ *         the real CIBIL score (Surepass CIBIL), on = the real Experian score
+ *         (Surepass Experian), shown and stored as Experian's. Neither source
+ *         ever falls back to the other.
+ *    A chosen source whose token is missing shows the labelled demo score, as
+ *    before; the settings page says so.
  */
 final class CibilSettings
 {
     public const ENABLED = 'cibil_enabled';
 
+    /** Switch 1: the public page shows real scores (off = labelled demo, no bureau call). */
     public const PUBLIC_SCORE_ENABLED = 'cibil_public_score_enabled';
+
+    /** Switch 2: those real scores come from Experian instead of CIBIL. */
+    public const PUBLIC_SCORE_USE_EXPERIAN = 'cibil_public_score_use_experian';
 
     public const SCORE_REUSE_DAYS = 'cibil_score_reuse_days';
 
@@ -53,14 +63,17 @@ final class CibilSettings
     /** The real CIBIL bureau, as a public-page source. */
     public const SOURCE_CIBIL = 'cibil';
 
+    /** The visitor's Experian score, labelled as Experian's, as a public-page source. */
+    public const SOURCE_EXPERIAN = 'experian';
+
     /**
-     * Where real scores for the public CIBIL page come from, by config value.
+     * Where real scores for the public CIBIL page come from, by source key.
      *
      * @var array<string, array{label: string, provider: class-string<CreditScoreProvider>}>
      */
     public const SOURCES = [
         self::SOURCE_CIBIL => ['label' => 'CIBIL', 'provider' => SurepassCibilScoreProvider::class],
-        'experian' => ['label' => 'Experian', 'provider' => ExperianCibilScoreProvider::class],
+        self::SOURCE_EXPERIAN => ['label' => 'Experian', 'provider' => ExperianCibilScoreProvider::class],
     ];
 
     /**
@@ -72,10 +85,16 @@ final class CibilSettings
         return (bool) Setting::get(self::ENABLED, false);
     }
 
-    /** Off by default: every new check on the public page is a paid call triggered by a website visitor. */
+    /** Switch 1. Off by default: every new check on the public page is a paid call triggered by a website visitor. */
     public static function publicScoreEnabled(): bool
     {
         return (bool) Setting::get(self::PUBLIC_SCORE_ENABLED, false);
+    }
+
+    /** Switch 2. Off by default: real scores come from CIBIL. */
+    public static function publicScoreUsesExperian(): bool
+    {
+        return (bool) Setting::get(self::PUBLIC_SCORE_USE_EXPERIAN, false);
     }
 
     /** Whether the CIBIL token (SUREPASS_CIBIL_TOKEN) and base URL are set on this server. */
@@ -109,45 +128,36 @@ final class CibilSettings
         return filled(config('services.surepass.cibil_token')) ? 'SUREPASS_CIBIL_TOKEN' : null;
     }
 
-    /**
-     * The public page's source key: the one CIBIL_PUBLIC_SCORE_SOURCE forces,
-     * or — when it is blank — "cibil" once the CIBIL token is set and the
-     * "experian" stand-in until then. Null when it names no known source.
-     */
-    public static function source(): ?string
+    /** The public page's source key, from switch 2 alone — never chosen by which tokens happen to be set. */
+    public static function source(): string
     {
-        $source = config('services.cibil.public_score_source');
-
-        if (blank($source)) {
-            return self::isConfigured() ? self::SOURCE_CIBIL : 'experian';
-        }
-
-        return is_string($source) && array_key_exists($source, self::SOURCES) ? $source : null;
+        return self::publicScoreUsesExperian() ? self::SOURCE_EXPERIAN : self::SOURCE_CIBIL;
     }
 
-    /** The bureau whose score the public CIBIL page shows — "CIBIL", or "Experian" while it stands in. */
-    public static function sourceLabel(): ?string
+    /** The bureau whose score the public CIBIL page shows — "CIBIL", or "Experian" while switch 2 is on. */
+    public static function sourceLabel(): string
     {
-        $source = self::source();
-
-        return $source === null ? null : self::SOURCES[$source]['label'];
+        return self::SOURCES[self::source()]['label'];
     }
 
-    /** Whether the public CIBIL page is answered by another bureau standing in for CIBIL. */
+    /** The bureau that answers the public CIBIL page's real checks — what its stored scores are kept apart by. */
+    public static function sourceBureau(): BureauName
+    {
+        return self::isStandIn() ? BureauName::Experian : BureauName::Cibil;
+    }
+
+    /** Whether the public CIBIL page is answered by Experian instead of CIBIL. */
     public static function isStandIn(): bool
     {
-        $source = self::source();
-
-        return $source !== null && $source !== self::SOURCE_CIBIL;
+        return self::source() !== self::SOURCE_CIBIL;
     }
 
-    /** Whether the public page's source can be called from this server (its token is set). */
+    /** Whether the chosen source can be called from this server (its token is set). */
     public static function publicSourceConfigured(): bool
     {
         return match (self::source()) {
             self::SOURCE_CIBIL => self::isConfigured(),
-            'experian' => ExperianSettings::isConfigured(),
-            default => false,
+            self::SOURCE_EXPERIAN => ExperianSettings::isConfigured(),
         };
     }
 
@@ -159,17 +169,15 @@ final class CibilSettings
     /** The provider answering the public page right now, or null when it shows demo scores. */
     public static function liveProvider(): ?CreditScoreProvider
     {
-        $source = self::source();
-
-        return self::publicScoreLive() && $source !== null ? app(self::SOURCES[$source]['provider']) : null;
+        return self::publicScoreLive() ? app(self::SOURCES[self::source()]['provider']) : null;
     }
 
     /** How long a visitor's stored score is shown again instead of paying for a new one — the source bureau's own period. */
     public static function publicScoreReuseDays(): int
     {
         return match (self::source()) {
-            'experian' => ExperianSettings::scoreReuseDays(),
-            default => self::scoreReuseDays(),
+            self::SOURCE_EXPERIAN => ExperianSettings::scoreReuseDays(),
+            self::SOURCE_CIBIL => self::scoreReuseDays(),
         };
     }
 

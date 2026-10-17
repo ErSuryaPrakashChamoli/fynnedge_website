@@ -38,8 +38,13 @@ class CibilCheckAccessCommand extends Command
             ? 'yes ('.CibilSettings::tokenSource().')'
             : '<fg=red>NO</> — set SUREPASS_CIBIL_TOKEN (CIBIL never uses another bureau\'s token), then php artisan config:clear');
         $this->components->twoColumnDetail('CIBIL requests (admin / API)', CibilSettings::enabled() ? 'on' : 'off');
-        $this->components->twoColumnDetail('Free CIBIL Score page uses real scores', CibilSettings::publicScoreEnabled() ? 'on' : 'off');
-        $this->components->twoColumnDetail('Free CIBIL Score page answered by', CibilSettings::sourceLabel() ?? 'no known source (CIBIL_PUBLIC_SCORE_SOURCE)');
+        $this->components->twoColumnDetail('Get CIBIL Score page: Real CIBIL score enabled', CibilSettings::publicScoreEnabled() ? 'on' : 'off');
+        $this->components->twoColumnDetail('Get CIBIL Score page: Fetch Experian instead of CIBIL', CibilSettings::publicScoreUsesExperian() ? 'on' : 'off');
+        $this->components->twoColumnDetail('Get CIBIL Score page shows', match (true) {
+            ! CibilSettings::publicScoreEnabled() => 'demo scores (no bureau is called)',
+            ! CibilSettings::publicSourceConfigured() => '<fg=red>demo scores</> — the '.CibilSettings::sourceLabel().' token is not set',
+            default => 'real '.CibilSettings::sourceLabel().' scores',
+        });
         $this->components->twoColumnDetail('Public score endpoint (when answered by CIBIL)', $source);
         $this->newLine();
 

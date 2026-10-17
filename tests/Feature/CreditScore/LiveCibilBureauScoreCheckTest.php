@@ -14,9 +14,9 @@ use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
 /**
- * The public CIBIL page answered by the CIBIL bureau itself
- * (CIBIL_PUBLIC_SCORE_SOURCE=cibil), with Surepass's credit-report-cibil faked
- * (and the SMS gateway, for the OTP step).
+ * The public CIBIL page answered by the CIBIL bureau itself (CIBIL Settings →
+ * "Fetch Experian instead of CIBIL" off), with Surepass's credit-report-cibil
+ * faked (and the SMS gateway, for the OTP step).
  */
 function liveCibilBureauPage(mixed $response = null): void
 {
@@ -24,7 +24,7 @@ function liveCibilBureauPage(mixed $response = null): void
     fakeSurepassCibil($response);
     Setting::set(CibilSettings::ENABLED, false);
     Setting::set(CibilSettings::PUBLIC_SCORE_ENABLED, true);
-    config(['services.cibil.public_score_source' => 'cibil']);
+    Setting::set(CibilSettings::PUBLIC_SCORE_USE_EXPERIAN, false);
 }
 
 function checkCibilBureauOnPage(string $mobile = '9000000001', string $gender = 'male'): Testable
@@ -86,7 +86,8 @@ it('asks for gender on the CIBIL page only while CIBIL itself answers it', funct
     checkCibilBureauOnPage(mobile: '9000000002', gender: '')->assertSet('step', 'details')->assertHasErrors('gender');
     expect(surepassCibilCalls())->toBe(0);
 
-    config(['services.cibil.public_score_source' => 'experian', 'services.surepass.token' => 'test-surepass-token']);
+    Setting::set(CibilSettings::PUBLIC_SCORE_USE_EXPERIAN, true);
+    config(['services.surepass.token' => 'test-surepass-token']);
     Livewire::test('credit-score-check', ['bureau' => 'cibil'])
         ->set('mobileNumber', '9000000003')->call('sendOtp')->set('otpCode', lastTextedOtp())->call('verifyOtp')
         ->assertDontSee('needs this to find your credit record.');
@@ -126,21 +127,19 @@ it('keeps the labelled demo without the CIBIL token, never borrowing another bur
         ->and(CreditScoreCheck::query()->sole()->provider)->toBe('demo');
 });
 
-it('answers the CIBIL page with CIBIL by itself once the CIBIL token is set, unless a source is forced', function () {
+it('takes the CIBIL page\'s bureau from the admin switch alone, never from which tokens are set', function () {
     liveCibilBureauPage();
-    config(['services.cibil.public_score_source' => null]);
+    Setting::set(CibilSettings::PUBLIC_SCORE_USE_EXPERIAN, null);
 
     expect(CibilSettings::source())->toBe('cibil')->and(CibilSettings::isStandIn())->toBeFalse();
     checkCibilBureauOnPage()->assertSet('resultKind', 'live')->assertSee('Your CIBIL score');
     expect(surepassCibilCalls())->toBe(1);
 
-    config(['services.cibil.public_score_source' => 'experian']);
-    expect(CibilSettings::source())->toBe('experian')->and(CibilSettings::isStandIn())->toBeTrue();
-
-    config(['services.cibil.public_score_source' => '', 'services.surepass.cibil_token' => null]);
-    expect(CibilSettings::source())->toBe('experian')
+    Setting::set(CibilSettings::PUBLIC_SCORE_USE_EXPERIAN, true);
+    expect(CibilSettings::source())->toBe('experian')->and(CibilSettings::isStandIn())->toBeTrue()
         ->and(CibilSettings::sourceLabel())->toBe('Experian');
 
-    config(['services.cibil.public_score_source' => 'transunion']);
-    expect(CibilSettings::source())->toBeNull()->and(CibilSettings::publicScoreLive())->toBeFalse();
+    Setting::set(CibilSettings::PUBLIC_SCORE_USE_EXPERIAN, false);
+    config(['services.surepass.cibil_token' => null, 'services.surepass.token' => 'shared-token']);
+    expect(CibilSettings::source())->toBe('cibil')->and(CibilSettings::publicScoreLive())->toBeFalse();
 });
