@@ -50,6 +50,16 @@ return [
             'driver' => 'session',
             'provider' => 'customers',
         ],
+
+        // Other systems (e.g. the LMS) on routes/external.php: a key from
+        // Admin → Access Control → API Clients signs in as that client's
+        // service account (App\Support\ApiClients\AuthenticateApiClient).
+        // Deliberately no 'provider': the guard finds the user itself, and
+        // without one spatie/laravel-permission keeps checking that user's
+        // roles on the `web` guard they were granted on.
+        'api-client' => [
+            'driver' => 'api-key',
+        ],
     ],
 
     /*

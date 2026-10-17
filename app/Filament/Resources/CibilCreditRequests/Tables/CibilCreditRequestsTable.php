@@ -82,7 +82,7 @@ class CibilCreditRequestsTable
                 SelectFilter::make('status')->options(CibilRequestStatus::class)->multiple(),
                 SelectFilter::make('product')->label('Type')->options(CibilProduct::class),
                 SelectFilter::make('request_type')->label('Request')->options(CibilRequestType::class),
-                SelectFilter::make('channel')->label('Channel')->options(['admin' => 'Admin', 'api' => 'Internal API', 'website' => 'Website (public score page)']),
+                SelectFilter::make('channel')->label('Channel')->options(['admin' => 'Admin', 'api' => 'Internal API', 'external' => 'External system (API key)', 'website' => 'Website (public score page)']),
                 SelectFilter::make('requested_by')
                     ->label('Employee')
                     ->options(fn (): array => User::query()

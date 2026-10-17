@@ -172,6 +172,60 @@ Request body (`score` and `reports`):
 
 Responses never include the full PAN or mobile, the token, Surepass's error text, the stored PDF path, the temporary PDF link or an inline PDF.
 
+## 9a. External API for other systems (the LMS) — `routes/external.php`
+
+For another of our systems (such as the LMS) calling FynnEdge **server to server**. Same CIBIL rules, same answers; only the sign-in and the way the person is named differ.
+
+**Set up a client (Admin → Access Control → API Clients, super admin):**
+1. **New API client.** Name: e.g. "FynnEdge LMS". Role: what the key may do, e.g. **Credit Officer**. Super admin is never offered. Allowed IP addresses: the LMS server's fixed IP or a CIDR range (recommended; blank means any address).
+2. Saving creates the client's own **service account** (named "FynnEdge LMS (API client)", cannot sign in to the admin) and shows the **API key once**. FynnEdge stores only its SHA-256 hash, so copy the key into the LMS's secret store straight away.
+3. **Generate new key** replaces the key; the old one stops working at once. **Revoke** stops it without a new one. Clients are never deleted, so their requests keep "requested by".
+
+**Every call:**
+- Header `Authorization: Bearer fyn_…` and `Accept: application/json`. There is no session, cookie or CSRF.
+- The key acts as the service account: its role decides access (the permissions in §11). Consent, in-flight blocking, reuse and rejected-details rules (§6–7) apply exactly as for staff.
+- Requests are recorded with channel **External system (API key)** and "requested by" = the client's service account (filter on the CIBIL request list).
+- **Rate limit:** 60 calls a minute per client. **401** = missing, unknown or revoked key, or a call from an address the client does not allow.
+
+| Method & path | Purpose |
+| --- | --- |
+| `POST /api/v1/external/cibil/reports` | Request a full report |
+| `POST /api/v1/external/cibil/score` | Request a score (a recent report or PDF also answers it) |
+| `GET /api/v1/external/cibil/requests/{id}/status` | Poll after a 202: status, score, `pdf_available`, safe error |
+| `GET /api/v1/external/cibil/reports/{id}` | The request; `?include=report` adds the masked full report (needs ViewReport) |
+| `POST /api/v1/external/cibil/reports/{id}/pdf` | The PDF, as in §9 (the Surepass plan has no PDF endpoint yet) |
+
+Request body (`score` and `reports`). The LMS does not know FynnEdge ids, so it sends the person's details and the consent it collected:
+```json
+{
+  "name": "Name as on PAN",
+  "mobile": "9876543210",
+  "pan": "ABCDE1234F",
+  "gender": "male",
+  "consent": { "method": "otp", "evidence_reference": "LMS-LOAN-1042-OTP", "consented_at": "2026-10-17T10:15:00+05:30", "attested": true },
+  "fresh": false
+}
+```
+- `consent.method`: `otp`, `written_form`, `recorded_call` or `email`. The consent must be no older than **Consent validity (days)**.
+- `fresh: true` (with `fresh_reason`, 15+ characters) needs `FetchFresh`, which Credit Officer does not have.
+
+**Which customer the request belongs to:** an existing customer whose verified mobile or contact phone is `mobile`. A customer with this PAN on file comes first, then the portal account, then the newest record. A customer with a *different* PAN on file is never chosen, because that is another person sharing the phone. Otherwise a new customer is created from the name, phone, gender and PAN. An existing customer's details are never changed, and no portal account is activated. Any `customer_id` in the body is ignored.
+
+**Answers:** the §9 envelope and codes:
+- **202:** queued. Poll `status` until `success` or `failed`; a paid call usually finishes within a minute.
+- **200:** a reusable result was returned, with no charge; its `id` may be an earlier request.
+- **409:** the same request is already in flight.
+- **422:** validation failed or the request was refused.
+- **403:** the role may not do this.
+
+Store the returned `id` against the LMS loan record.
+
+```bash
+curl -X POST https://fynnedge.com/api/v1/external/cibil/reports \
+  -H "Authorization: Bearer $FYNNEDGE_API_KEY" -H "Accept: application/json" -H "Content-Type: application/json" \
+  -d @request.json
+```
+
 ## 10. Reuse from other modules
 
 ```php
@@ -272,7 +326,7 @@ Then:
 Every Surepass call in the suite goes through `Http::fake()` with `Http::preventStrayRequests()` (`fakeSurepassCibil()` in `tests/Pest.php`, with a fake CIBIL-only token). The fixtures `tests/Fixtures/Surepass/cibil-{score,report,pdf}-success.json` are fabricated.
 
 ```
-php artisan test --compact tests/Feature/Cibil tests/Feature/Filament/CibilAdminTest.php tests/Feature/CreditScore/LiveCibilBureauScoreCheckTest.php tests/Feature/CreditScore/LiveCibilScoreCheckTest.php
+php artisan test --compact tests/Feature/Cibil tests/Feature/Filament/CibilAdminTest.php tests/Feature/Filament/ApiClientResourceTest.php tests/Feature/CreditScore/LiveCibilBureauScoreCheckTest.php tests/Feature/CreditScore/LiveCibilScoreCheckTest.php
 ```
 
 **Verify after the first live report:** the parser follows Surepass's documented example and TransUnion's published field names; no real CIBIL response was available. Compare the first report screen with its raw JSON, especially code labels and dates.

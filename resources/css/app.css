@@ -290,6 +290,143 @@ footer {
 }
 
 /*
+ * The customer portal's Sign in / My Profile pill in the top strip's right
+ * corner (x-site.header). Fixed navy with a gold avatar disc in both themes,
+ * like the promo bar: the dark theme's accent is a light blue that white text
+ * cannot sit on. The gold hairline ties it to the champagne Credit Score pill,
+ * and the same light sweep crosses it, on a slower beat so the two rarely
+ * shine together.
+ */
+.portal-pill {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1f4f86, #0d2340);
+    color: #ffffff;
+    box-shadow:
+        inset 0 0 0 1px rgb(217 172 85 / 0.55),
+        inset 0 1px 0 rgb(255 255 255 / 0.16),
+        0 6px 14px -8px rgb(13 35 64 / 0.8);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.portal-pill:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        inset 0 0 0 1px rgb(243 220 166 / 0.9),
+        inset 0 1px 0 rgb(255 255 255 / 0.2),
+        0 10px 20px -8px rgb(13 35 64 / 0.9);
+}
+
+.portal-pill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 45%;
+    background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.28), transparent);
+    transform: translateX(-160%) skewX(-15deg);
+    animation: promo-bar-sweep 6s ease-in-out 3s infinite;
+    pointer-events: none;
+}
+
+.portal-pill-avatar {
+    background: linear-gradient(135deg, #f3dca6, #d9ac55);
+    color: #0d2340;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6);
+}
+
+/* Signed in: a green dot on the avatar, ringed in the pill's navy. */
+.portal-pill-status {
+    background: #34d399;
+    box-shadow: 0 0 0 1.5px #0d2340;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .portal-pill::after {
+        display: none;
+    }
+
+    .portal-pill:hover {
+        transform: none;
+    }
+}
+
+/*
+ * x-ui.stepper variant="arrows" (the credit-score check's progress bar): a
+ * chain of chevrons. Each one is cut by clip-path with a notch on the left
+ * and a tip on the right (the first is flat on the left); the stepper's -ml-2
+ * overlap leaves a thin gap between neighbours. Done is soft green with a
+ * tick, the active step is a solid accent gradient with a pulsing dot and the
+ * promo bar's light sweep, and upcoming steps stay grey. Theme tokens only,
+ * so the dark theme gets dark text on its light-blue accent.
+ */
+.step-arrow {
+    --step-arrow-tip: 0.75rem;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding-left: calc(var(--step-arrow-tip) + 0.375rem);
+    padding-right: calc(var(--step-arrow-tip) + 0.125rem);
+    clip-path: polygon(0 0, calc(100% - var(--step-arrow-tip)) 0, 100% 50%, calc(100% - var(--step-arrow-tip)) 100%, 0 100%, var(--step-arrow-tip) 50%);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.step-arrow:first-child {
+    padding-left: 0.75rem;
+    clip-path: polygon(0 0, calc(100% - var(--step-arrow-tip)) 0, 100% 50%, calc(100% - var(--step-arrow-tip)) 100%, 0 100%);
+}
+
+.step-arrow-done {
+    background: var(--color-pass-soft);
+    color: var(--color-pass);
+    font-weight: 500;
+}
+
+.step-arrow-done .step-arrow-icon {
+    background: var(--color-pass);
+    color: var(--color-surface);
+}
+
+.step-arrow-active {
+    background: linear-gradient(110deg, var(--color-accent), var(--color-accent-strong));
+    color: var(--color-surface);
+    font-weight: 600;
+}
+
+.step-arrow-active .step-arrow-icon {
+    background: color-mix(in srgb, var(--color-surface) 22%, transparent);
+}
+
+.step-arrow-active::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 45%;
+    background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.3), transparent);
+    transform: translateX(-160%) skewX(-15deg);
+    animation: promo-bar-sweep 4s ease-in-out 1s infinite;
+    pointer-events: none;
+}
+
+.step-arrow-upcoming {
+    background: color-mix(in srgb, var(--color-surface-2) 80%, var(--color-line-strong));
+    color: var(--color-ink-faint);
+    font-weight: 500;
+}
+
+.step-arrow-upcoming .step-arrow-icon {
+    box-shadow: inset 0 0 0 1.5px var(--color-line-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .step-arrow-active::after {
+        display: none;
+    }
+}
+
+/*
  * Alpine's x-cloak directive does nothing on its own — it only hides an
  * element once this rule exists. Without it, every x-cloak'd panel (header
  * dropdowns, mobile nav) is visible in the initial HTML and only hidden

@@ -29,6 +29,9 @@ use Illuminate\Validation\Rule;
  */
 class StoreCibilCheckRequest extends FormRequest
 {
+    /** The `channel` recorded on the CIBIL request. */
+    protected const CHANNEL = 'api';
+
     public function authorize(): bool
     {
         return true;
@@ -91,9 +94,15 @@ class StoreCibilCheckRequest extends FormRequest
         return $id ? JourneySession::query()->where('public_id', $id)->first() : null;
     }
 
+    /** A fresh pull: a second paid request over a reusable result. */
+    public function wantsFresh(): bool
+    {
+        return (bool) $this->validated('fresh', false);
+    }
+
     public function toCheckRequest(CibilProduct $product, Customer $customer, ?JourneySession $journeySession): CibilCheckRequest
     {
-        $fresh = (bool) $this->validated('fresh', false);
+        $fresh = $this->wantsFresh();
 
         return new CibilCheckRequest(
             customer: $customer,
@@ -106,7 +115,7 @@ class StoreCibilCheckRequest extends FormRequest
             type: $fresh ? CibilRequestType::Fresh : CibilRequestType::Standard,
             freshReason: $fresh ? $this->validated('fresh_reason') : null,
             journeySession: $journeySession,
-            channel: 'api',
+            channel: static::CHANNEL,
         );
     }
 
