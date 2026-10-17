@@ -15,6 +15,7 @@ use App\Modules\CreditScore\Providers\SurepassExperianScoreProvider;
 use App\Modules\Customers\Models\Customer;
 use App\Modules\Equifax\Services\EquifaxSettings;
 use App\Modules\Experian\Services\ExperianSettings;
+use Carbon\CarbonInterface;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
@@ -24,6 +25,8 @@ class SubmitCreditScoreCheck
 {
     /** A live check whose outcome was uncertain is not re-sent for this long. */
     private const UNCERTAIN_HOLD_MINUTES = 60;
+
+    private ?CarbonInterface $reuseSince = null;
 
     public function __construct(
         private readonly CreditScoreProvider $provider,
@@ -47,11 +50,17 @@ class SubmitCreditScoreCheck
      * (ResolveCustomerAccount); the check is recorded against it so the
      * customer finds it in their profile later.
      *
+     * $reuseSince widens the reuse period for this one check: a stored score
+     * completed since then is shown again instead of a new pull — how the
+     * regeneration limit (CreditReportRegenerationLimit) shows a saved score
+     * older than the bureau's own reuse period.
+     *
      * @param  array{full_name: string, first_name: ?string, middle_name: ?string, last_name: ?string, date_of_birth: string, pan_number: string, gender?: ?string}  $data
      */
-    public function handle(array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress = null, ?Customer $customer = null): CreditScoreCheck
+    public function handle(array $data, BureauName $bureau, string $mobileNumber, ?string $ipAddress = null, ?Customer $customer = null, ?CarbonInterface $reuseSince = null): CreditScoreCheck
     {
         $data = [...$data, 'customer_id' => $customer?->id];
+        $this->reuseSince = $reuseSince;
         $cibil = $bureau === BureauName::Cibil ? CibilSettings::liveProvider() : null;
 
         return match (true) {
@@ -104,7 +113,7 @@ class SubmitCreditScoreCheck
     {
         $previous = fn () => self::previousChecks($bureau, CreditScoreCheck::LIVE_PROVIDER, PanNumber::normalize($pan), $mobileNumber);
 
-        return self::reusable($previous(), self::reuseDays($bureau))->exists()
+        return self::reusable($previous(), now()->subDays(self::reuseDays($bureau)))->exists()
             || self::unresolved($previous())->exists();
     }
 
@@ -124,10 +133,10 @@ class SubmitCreditScoreCheck
      * @param  Builder<CreditScoreCheck>  $query
      * @return Builder<CreditScoreCheck>
      */
-    private static function reusable(Builder $query, int $reuseDays): Builder
+    private static function reusable(Builder $query, CarbonInterface $since): Builder
     {
         return $query->where('status', CreditCheckStatus::Completed)
-            ->where('completed_at', '>=', now()->subDays($reuseDays))
+            ->where('completed_at', '>=', $since)
             ->whereNull('raw_response->reused_from');
     }
 
@@ -164,7 +173,10 @@ class SubmitCreditScoreCheck
 
         try {
             return Cache::lock($bureau->value.'-public-score:'.PanNumber::hash($pan.'|'.$mobileNumber), 90)->block(10, function () use ($provider, $bureau, $reuseDays, $data, $mobileNumber, $ipAddress, $previous): CreditScoreCheck {
-                $reusable = self::reusable($previous(), $reuseDays)
+                $since = now()->subDays($reuseDays);
+                $since = $this->reuseSince !== null && $this->reuseSince->lessThan($since) ? $this->reuseSince : $since;
+
+                $reusable = self::reusable($previous(), $since)
                     ->latest('completed_at')
                     ->first();
 

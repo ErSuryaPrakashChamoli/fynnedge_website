@@ -6,6 +6,7 @@ use App\Modules\CreditBureau\Enums\CreditCheckStatus;
 use App\Modules\CreditScore\Actions\SubmitCreditScoreCheck;
 use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
+use App\Modules\CreditScore\Services\CreditReportRegenerationLimit;
 use App\Modules\Customers\DataTransferObjects\RefreshEligibility;
 use App\Modules\Customers\Models\Customer;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,6 +28,8 @@ use Illuminate\Database\Eloquent\Collection;
  */
 class CustomerCreditReports
 {
+    public function __construct(private readonly CreditReportRegenerationLimit $limit) {}
+
     /**
      * Every bureau answer and attempt, newest first — without repeat views.
      *
@@ -104,12 +107,20 @@ class CustomerCreditReports
             ->all();
     }
 
+    /**
+     * A new report is available once both the bureau's reuse period and the
+     * regeneration limit (one new report every 3 months, at most 4 a year,
+     * across all bureaus — CreditReportRegenerationLimit) allow it.
+     */
     public function refreshEligibility(Customer $customer, BureauName $bureau): RefreshEligibility
     {
         $reuseDays = SubmitCreditScoreCheck::reuseDays($bureau);
         $latestSuccess = $this->latestSuccessFor($customer, $bureau);
         $latestAttempt = $this->attempts($customer)->where('bureau', $bureau)->first();
-        $nextEligibleAt = $latestSuccess?->completed_at?->copy()->addDays($reuseDays);
+        $nextEligibleAt = collect([
+            $latestSuccess?->completed_at?->copy()->addDays($reuseDays),
+            $this->limit->nextNewReportAt($customer),
+        ])->filter()->max();
 
         $inProgress = $this->attempts($customer)
             ->where('bureau', $bureau)

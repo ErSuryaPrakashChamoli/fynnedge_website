@@ -28,11 +28,10 @@ Before planning or editing, find the row whose globs match the file's path and r
 | config/database.php,.env*, config/cache.php,config/queue.php,config/session.php,.env*, config/{cache,queue,session}.php | .ai/rules/config.md |
 | app/Models/ContactEnquiry.php,app/Modules/Enquiries/**,app/Http/Controllers/QuickEnquiryController.php,app/Http/Controllers/LoanEnquiryController.php,app/Support/Enquiries/**,app/Filament/Resources/ContactEnquiries/**,resources/views/components/site/loan-enquiry*.blade.php | .ai/rules/contact-enquiries.md |
 | app/Support/Contact/** | .ai/rules/contact.md |
-| app/Modules/Wallet/**,resources/views/components/⚡credit-score-check.blade.php,app/Http/Controllers/Portal/WalletController.php | .ai/rules/controllers-portal.md |
 | app/Http/Controllers/QuickEnquiryController.php,resources/views/components/site/quick-enquiry.blade.php | .ai/rules/controllers-views-components-site.md |
 | app/Filament/RelationManagers/FaqsRelationManager.php,app/Models/Page.php,app/Http/Controllers/PageController.php | .ai/rules/controllers.md |
 | app/Modules/CreditBureau/** | .ai/rules/credit-bureau.md |
-| app/Modules/Customers/Services/CustomerCreditReports.php,app/Modules/CreditScore/Actions/SubmitCreditScoreCheck.php | .ai/rules/credit-score-actions.md |
+| app/Modules/Customers/Services/CustomerCreditReports.php,app/Modules/CreditScore/Actions/SubmitCreditScoreCheck.php,app/Modules/CreditScore/Services/CreditReportRegenerationLimit.php,resources/views/components/⚡credit-score-check.blade.php | .ai/rules/credit-score-actions.md |
 | app/Modules/CreditScore/Providers/** | .ai/rules/credit-score-providers.md |
 | resources/views/components/⚡credit-score-check.blade.php,app/Modules/CreditScore/**,resources/views/components/site/credit-score-*.blade.php | .ai/rules/credit-score-views-components-site.md |
 | app/Support/Pages/CreditScorePageContent.php,app/Filament/Pages/CreditScorePageSettings.php,resources/views/credit-score/show.blade.php | .ai/rules/credit-score.md |
@@ -79,7 +78,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Enums/FaqPlacement.php,app/Support/Faqs/**,app/Filament/Resources/PageFaqs/**,resources/views/components/site/page-faqs.blade.php | .ai/rules/page-faqs-views-components-site.md |
 | app/Models/PageSeo.php,app/Support/Seo/PageSeoOverrides.php,app/Filament/Resources/PageSeos/**,resources/views/components/layouts/app.blade.php | .ai/rules/page-seos-views-components-layouts.md |
 | app/Support/Enquiries/QuickEnquiryPageContent.php,app/Filament/Pages/QuickEnquiryPageSettings.php,resources/views/quick-enquiry.blade.php | .ai/rules/pages-views.md |
-| app/Filament/Pages/** | .ai/rules/pages.md |
+| app/Filament/Pages/**, app/Filament/Pages/CibilSettings.php | .ai/rules/pages.md |
 | app/Modules/Customers/**,app/Http/Controllers/Portal/**,resources/views/portal/**,resources/views/components/⚡customer-login.blade.php | .ai/rules/portal-views-components.md |
 | app/Models/Concerns/Auditable.php,app/Http/Middleware/EnsureCustomerPortalAccess.php,app/Http/Controllers/Portal/** | .ai/rules/portal.md |
 | app/Models/PromoBar.php,app/Support/PromoBars/**,app/Filament/Resources/PromoBars/**,resources/views/components/site/promo-bar.blade.php | .ai/rules/promo-bars-views-components-site.md |

@@ -9,16 +9,17 @@ use Carbon\CarbonInterface;
 /**
  * Whether a customer may ask one bureau for a new score now, and why not.
  *
- * The period is the bureau's existing public-score reuse period (30 days by
- * default, each editable in its bureau's Settings page) — the same rule that
- * already stops the public page paying twice. A refresh inside it would only
- * be answered from the stored score, so the portal offers none.
+ * Two rules decide it: the bureau's existing public-score reuse period (30
+ * days by default) and the regeneration limit — one new report every 3
+ * months, at most 4 a year, per customer and PAN across all bureaus
+ * (CreditReportRegenerationLimit). A refresh inside either would only show
+ * the saved score, so the portal offers none.
  */
 final readonly class RefreshEligibility
 {
     public const AVAILABLE = 'available';
 
-    /** The last successful report is younger than the reuse period. */
+    /** The reuse period or the regeneration limit has not passed yet. */
     public const TOO_SOON = 'too_soon';
 
     /** A check is still waiting for its outcome; another could pay twice. */

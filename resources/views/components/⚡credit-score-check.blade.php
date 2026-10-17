@@ -5,17 +5,14 @@ use App\Modules\CreditBureau\Enums\CreditCheckStatus;
 use App\Modules\CreditBureau\Enums\CrifErrorCode;
 use App\Modules\CreditBureau\Services\CrifSettings;
 use App\Modules\CreditBureau\Services\PanName;
+use App\Modules\CreditBureau\Services\PanNumber;
 use App\Modules\CreditScore\Actions\SubmitCreditScoreCheck;
 use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\CreditScore\Enums\ScoreBand;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
 use App\Modules\CreditScore\Services\CreditScoreAdvice;
-use App\Modules\Wallet\DataTransferObjects\BillingQuote;
-use App\Modules\Wallet\Enums\CheckBilling;
-use App\Modules\Wallet\Exceptions\InsufficientWalletBalance;
-use App\Modules\Wallet\Models\WalletTransaction;
-use App\Modules\Wallet\Services\CreditCheckBilling;
-use App\Modules\Wallet\Services\Wallet;
+use App\Modules\CreditScore\DataTransferObjects\RegenerationDecision;
+use App\Modules\CreditScore\Services\CreditReportRegenerationLimit;
 use App\Modules\Customers\Actions\LogInCustomer;
 use App\Modules\Customers\Actions\ResolveCustomerAccount;
 use App\Modules\Customers\Models\Customer;
@@ -147,25 +144,25 @@ new class extends Component
     public ?string $accountStatus = null;
 
     /**
-     * Paid refreshes (CreditCheckBilling): what this check would cost, shown
-     * on the details step once the number is verified…
+     * The regeneration limit (CreditReportRegenerationLimit): when this
+     * number's next new report is due, shown on the details step once the
+     * number is verified…
      */
     #[Locked]
-    public ?string $billingNotice = null;
+    public ?string $limitNotice = null;
 
     /**
-     * …the amounts when the wallet cannot cover it (the check does not run and
-     * the verification is not spent, so the customer can top up and submit
-     * again)…
+     * …why a check was refused (the bureau was not asked and the verification
+     * not spent)…
      *
-     * @var array{price: string, gst: string, total: string, balance: string, free_again: ?string}|null
+     * @var array{for_pan: bool, months: int, max: int, bureau?: string, date?: string, next?: string, report?: ?string}|null
      */
     #[Locked]
-    public ?array $paymentRequired = null;
+    public ?array $limitReached = null;
 
-    /** …and what was charged, on the result. */
+    /** …and, on the result, that a saved score was shown instead of a new report. */
     #[Locked]
-    public ?string $billingSummary = null;
+    public ?string $savedScoreNote = null;
 
     /**
      * Accepts a plain string (from the `:bureau="$bureau->value"` the controller
@@ -379,7 +376,7 @@ new class extends Component
 
         $this->verifiedMobileNumber = $challenge->mobile_number;
         $this->step = 'details';
-        $this->billingNotice = $this->previewBilling();
+        $this->limitNotice = $this->previewLimit();
 
         if ($this->signedInCustomer?->verified_mobile === $this->verifiedMobileNumber) {
             $this->prefillFrom($this->signedInCustomer);
@@ -399,7 +396,7 @@ new class extends Component
         $this->panNumber = strtoupper($value);
     }
 
-    public function submitDetails(SubmitCreditScoreCheck $action, ResolveCustomerAccount $accounts, LogInCustomer $logIn, CreditCheckBilling $billing): void
+    public function submitDetails(SubmitCreditScoreCheck $action, ResolveCustomerAccount $accounts, LogInCustomer $logIn, CreditReportRegenerationLimit $limit): void
     {
         if ($this->step !== 'details' || $this->verifiedMobileNumber === null) {
             $this->restart();
@@ -445,34 +442,21 @@ new class extends Component
         ];
         $bureau = BureauName::from($this->bureau);
         $customer = $this->accountFor($this->verifiedMobileNumber, $accounts);
-        $this->paymentRequired = null;
+        $this->limitReached = null;
 
-        if ($customer !== null && CreditCheckBilling::enabled()) {
-            try {
-                // One billed check per customer at a time: two tabs can never
-                // both spend the free check or the same wallet balance.
-                $check = Cache::lock('credit-check-billing:'.$customer->getKey(), 120)
-                    ->block(15, fn (): ?CreditScoreCheck => $this->runBilled($action, $billing, $logIn, $customer, $bureau, $details));
-            } catch (LockTimeoutException) {
-                $this->addError('consent', __('Another credit check for your profile is still running. Please wait a moment and try again.'));
-
-                return;
-            }
-
-            if ($check === null) {
-                return;
-            }
-        } elseif (CreditCheckBilling::enabled() && SubmitCreditScoreCheck::isLive($bureau)) {
-            // A paid pull that cannot be billed to anyone never runs.
-            $this->addError('consent', __('We could not start your check right now. Please try again in a few minutes.'));
+        try {
+            // One check per person at a time, so two tabs can never both use
+            // the same allowance on two bureaus.
+            $check = Cache::lock('credit-report-limit:'.($customer?->getKey() ?? PanNumber::hash(PanNumber::normalize($details['pan_number']))), 120)
+                ->block(15, fn (): ?CreditScoreCheck => $this->runWithinLimit($action, $limit, $logIn, $customer, $bureau, $details));
+        } catch (LockTimeoutException) {
+            $this->addError('consent', __('Another credit check for your profile is still running. Please wait a moment and try again.'));
 
             return;
-        } else {
-            if (! $this->spendVerification()) {
-                return;
-            }
+        }
 
-            $check = $action->handle($details, $bureau, $this->verifiedMobileNumber, request()->ip(), $customer);
+        if ($check === null) {
+            return;
         }
 
         if ($customer !== null) {
@@ -517,110 +501,90 @@ new class extends Component
     }
 
     /**
-     * A check with billing on: priced, the price held, the verification spent,
-     * the bureau asked, then the hold captured (new answer) or released.
-     * Null when it did not run (wallet short, or verification expired).
+     * Runs the check if the regeneration limit allows a new report — or shows
+     * the saved score for this bureau when it does not. A refused check never
+     * reaches the bureau and leaves the verification unspent. Null when it
+     * did not run.
      *
      * @param  array<string, mixed>  $details
      */
-    private function runBilled(SubmitCreditScoreCheck $action, CreditCheckBilling $billing, LogInCustomer $logIn, Customer $customer, BureauName $bureau, array $details): ?CreditScoreCheck
+    private function runWithinLimit(SubmitCreditScoreCheck $action, CreditReportRegenerationLimit $limit, LogInCustomer $logIn, ?Customer $customer, BureauName $bureau, array $details): ?CreditScoreCheck
     {
-        $quote = $billing->quote($customer, $bureau, $details['pan_number'], $this->verifiedMobileNumber);
+        $decision = $limit->decide($customer, $bureau, $details['pan_number'], $this->verifiedMobileNumber);
 
-        try {
-            $hold = $quote->needsTopUp() ? throw new InsufficientWalletBalance($quote->balancePaise, $quote->price->totalPaise()) : $billing->reserve($customer, $bureau, $quote);
-        } catch (InsufficientWalletBalance) {
-            $this->askForPayment($quote, $customer, $logIn);
+        if ($decision->isBlocked()) {
+            $this->limitReached = $this->limitReachedFor($decision, $customer);
+
+            // The number is proved: open their profile so "View my saved report" works.
+            if ($customer !== null && ! $this->signedInCustomer?->is($customer)) {
+                $logIn->handle($customer, 'credit_score_check');
+                unset($this->signedInCustomer, $this->lockedToAccount);
+            }
 
             return null;
         }
 
         if (! $this->spendVerification()) {
-            $hold !== null && app(Wallet::class)->release($hold);
-
             return null;
         }
 
-        try {
-            $check = $action->handle($details, $bureau, $this->verifiedMobileNumber, request()->ip(), $customer);
-        } catch (\Throwable $exception) {
-            $hold !== null && app(Wallet::class)->release($hold);
+        $check = $action->handle($details, $bureau, $this->verifiedMobileNumber, request()->ip(), $customer, $decision->reuseSince);
 
-            throw $exception;
+        if ($decision->outcome === RegenerationDecision::SAVED_SCORE && $check->reusedFromId() !== null) {
+            $this->savedScoreNote = __('This is your saved :bureau score from :date. A new credit report can be generated once every :months months, up to :max times a year — your next one is available on :next.', [
+                'bureau' => $decision->lastReport->sourceBureau()?->getLabel() ?? $bureau->getLabel(),
+                'date' => $decision->lastReport->completed_at->translatedFormat('d M Y'),
+                'months' => CreditReportRegenerationLimit::everyMonths(),
+                'max' => CreditReportRegenerationLimit::maxPerYear(),
+                'next' => $decision->nextAt->translatedFormat('d M Y'),
+            ]);
         }
-
-        $billing->settle($quote, $hold, $check);
-        $this->billingSummary = $this->billingSummaryFor($quote, $hold, $check);
 
         return $check;
     }
 
     /**
-     * Shows what the refresh costs and opens the customer's profile in this
-     * browser, so "Add money" lands on their own wallet.
+     * @return array{for_pan: bool, months: int, max: int, bureau?: string, date?: string, next?: string, report?: ?string}
      */
-    private function askForPayment(BillingQuote $quote, Customer $customer, LogInCustomer $logIn): void
+    private function limitReachedFor(RegenerationDecision $decision, ?Customer $customer): array
     {
-        $this->paymentRequired = [
-            'price' => Wallet::format($quote->price->taxablePaise),
-            'gst' => Wallet::format($quote->price->gstPaise),
-            'total' => Wallet::format($quote->price->totalPaise()),
-            'balance' => Wallet::format($quote->balancePaise),
-            'free_again' => $quote->freeAgainAt?->translatedFormat('d M Y'),
-        ];
+        $limits = ['months' => CreditReportRegenerationLimit::everyMonths(), 'max' => CreditReportRegenerationLimit::maxPerYear()];
 
-        if (! $this->signedInCustomer?->is($customer)) {
-            $logIn->handle($customer, 'credit_score_check');
-            unset($this->signedInCustomer, $this->lockedToAccount);
+        // Another account's reports for this PAN: say nothing about when or which.
+        if ($decision->outcome === RegenerationDecision::BLOCKED_FOR_PAN) {
+            return ['for_pan' => true, ...$limits];
         }
-    }
 
-    private function billingSummaryFor(BillingQuote $quote, ?WalletTransaction $hold, CreditScoreCheck $check): ?string
-    {
-        $check->refresh();
-
-        return match (true) {
-            $check->billing === CheckBilling::Wallet => __(':amount (including GST) was paid from your wallet.', ['amount' => Wallet::format(abs($hold->amount_paise))]),
-            $check->billing === CheckBilling::Free => __('This was your free check. Your next free check is due on :date.', ['date' => $check->completed_at->copy()->addMonths(CreditCheckBilling::freeEveryMonths())->translatedFormat('d M Y')]),
-            $check->billing === CheckBilling::Plan => __('Included in your plan — no charge.'),
-            $check->billing === CheckBilling::Reused => __('No charge — your saved score is still current.'),
-            $hold !== null => __('You were not charged — the bureau did not return a new result.'),
-            default => null,
-        };
+        return [
+            'for_pan' => false,
+            ...$limits,
+            'bureau' => $decision->lastReport->sourceBureau()?->getLabel() ?? $decision->lastReport->bureau->getLabel(),
+            'date' => $decision->lastReport->completed_at->translatedFormat('d M Y'),
+            'next' => $decision->nextAt->translatedFormat('d M Y'),
+            'report' => $decision->lastReport->customer_id === $customer?->getKey() ? $decision->lastReport->public_id : null,
+        ];
     }
 
     /**
-     * What a check will cost this number's account, before the details are
-     * submitted. Read-only: an account is looked up, never opened, here.
+     * When this number's account can next get a new report, before the
+     * details are submitted. Read-only: an account is looked up, never opened.
      */
-    private function previewBilling(): ?string
+    private function previewLimit(): ?string
     {
-        $bureau = BureauName::from($this->bureau);
-
-        if (! CreditCheckBilling::enabled() || ! SubmitCreditScoreCheck::isLive($bureau)) {
+        if (! SubmitCreditScoreCheck::isLive(BureauName::from($this->bureau))) {
             return null;
         }
 
         $customer = $this->signedInCustomer?->verified_mobile === $this->verifiedMobileNumber
             ? $this->signedInCustomer
             : Customer::query()->where('verified_mobile', $this->verifiedMobileNumber)->first();
+        $next = $customer !== null ? app(CreditReportRegenerationLimit::class)->nextNewReportAt($customer) : null;
 
-        if ($customer === null) {
-            return null;
-        }
-
-        $quote = app(CreditCheckBilling::class)->quote($customer, $bureau);
-
-        return match ($quote->mode) {
-            CheckBilling::Plan => __('This check is included in your plan.'),
-            CheckBilling::Wallet => __('Your free check for this period has been used (free again on :date). Unless your last score is still current, this check costs :total (:price + GST) from your wallet. Wallet balance: :balance.', [
-                'date' => $quote->freeAgainAt?->translatedFormat('d M Y'),
-                'total' => Wallet::format($quote->price->totalPaise()),
-                'price' => Wallet::format($quote->price->taxablePaise),
-                'balance' => Wallet::format($quote->balancePaise),
-            ]),
-            default => null,
-        };
+        return $next === null ? null : __('A new credit report can be generated once every :months months, up to :max times a year, across all bureaus. Your next new report is available on :next. Until then, checking a bureau you already have a recent report from shows your saved score.', [
+            'months' => CreditReportRegenerationLimit::everyMonths(),
+            'max' => CreditReportRegenerationLimit::maxPerYear(),
+            'next' => $next->translatedFormat('d M Y'),
+        ]);
     }
 
     /**
@@ -650,7 +614,7 @@ new class extends Component
         $this->reset([
             'step', 'mobileNumber', 'otpCode', 'otpChallengeId', 'verifiedMobileNumber', 'resendAfterSeconds',
             'fullName', 'firstName', 'middleName', 'lastName', 'gender', 'dateOfBirth', 'panNumber', 'consent', 'resultScore', 'resultKind', 'resultError', 'resultInsights',
-            'resultCheckId', 'accountStatus', 'billingNotice', 'paymentRequired', 'billingSummary',
+            'resultCheckId', 'accountStatus', 'limitNotice', 'limitReached', 'savedScoreNote',
         ]);
 
         unset($this->signedInCustomer, $this->lockedToAccount);
@@ -884,22 +848,22 @@ new class extends Component
                         </span>
                     </label>
                     @error('consent') <p class="text-xs text-warn">{{ $message }}</p> @enderror
-                    @if ($paymentRequired)
-                        <div class="flex flex-col gap-3 rounded-xl border border-warn/25 bg-warn-soft p-4 text-sm" role="alert" data-payment-required>
-                            <p class="font-semibold text-warn">{{ __('Add money to your wallet to refresh your score') }}</p>
+                    @if ($limitReached)
+                        <div class="flex flex-col gap-3 rounded-xl border border-warn/25 bg-warn-soft p-4 text-sm" role="alert" data-limit-reached>
+                            <p class="font-semibold text-warn">{{ __('A new credit report isn\'t available yet') }}</p>
                             <p class="text-ink-muted">
-                                @if ($paymentRequired['free_again'])
-                                    {{ __('Your free check for this period has been used — your next free check is on :date.', ['date' => $paymentRequired['free_again']]) }}
+                                @if ($limitReached['for_pan'])
+                                    {{ __('A new report for this PAN can be generated once every :months months, up to :max times a year, and that limit has been reached. If you checked it before with another mobile number, sign in with that number to see your saved report.', \Illuminate\Support\Arr::only($limitReached, ['months', 'max'])) }}
+                                @else
+                                    {{ __('A new credit report can be generated once every :months months, up to :max times a year, across all bureaus. Your last new report was from :bureau on :date; your next one is available on :next.', \Illuminate\Support\Arr::only($limitReached, ['months', 'max', 'bureau', 'date', 'next'])) }}
                                 @endif
-                                {{ __('This refresh costs :price + GST :gst = :total. Your wallet balance is :balance.', \Illuminate\Support\Arr::only($paymentRequired, ['price', 'gst', 'total', 'balance'])) }}
                             </p>
-                            <div class="flex flex-col gap-2 sm:flex-row">
-                                <x-ui.button tag="a" href="{{ route('portal.wallet') }}" target="_blank" rel="noopener" size="sm" class="justify-center">{{ __('Add money or buy a plan') }}</x-ui.button>
-                            </div>
-                            <p class="text-xs text-ink-faint">{{ __('Once your wallet is topped up, come back to this tab and press Check my score again — no new code needed.') }}</p>
+                            @if (! $limitReached['for_pan'] && $limitReached['report'])
+                                <x-ui.button tag="a" href="{{ route('portal.reports.show', $limitReached['report']) }}" target="_blank" rel="noopener" size="sm" class="justify-center sm:self-start">{{ __('View my saved report') }}</x-ui.button>
+                            @endif
                         </div>
-                    @elseif ($billingNotice)
-                        <x-ui.alert data-billing-notice>{{ $billingNotice }}</x-ui.alert>
+                    @elseif ($limitNotice)
+                        <x-ui.alert data-limit-notice>{{ $limitNotice }}</x-ui.alert>
                     @endif
                     <x-ui.button wire:click="submitDetails" wire:loading.attr="disabled" class="w-full justify-center">
                         {{ __('Check my score') }}
@@ -942,10 +906,10 @@ new class extends Component
                         <ol class="grid grid-cols-4 gap-1.5" aria-label="{{ __('Score ranges') }}">
                             @foreach (ScoreBand::cases() as $legendBand)
                                 <li @class([
-                                    'rounded-lg px-1.5 py-2 text-center',
+                                    'group rounded-lg px-1.5 py-2 text-center transition duration-200 ease-out hover:bg-surface-2 hover:shadow-sm motion-safe:hover:-translate-y-0.5',
                                     'bg-surface-2 ring-1 ring-line-strong' => $legendBand === $this->advice->band(),
                                 ])>
-                                    <span class="mx-auto block h-1.5 w-8 rounded-full" style="background: var(--color-score-{{ $legendBand->value }})"></span>
+                                    <span class="mx-auto block h-1.5 w-8 rounded-full transition-transform duration-300 ease-out motion-safe:group-hover:scale-x-150" style="background: var(--color-score-{{ $legendBand->value }})"></span>
                                     <span class="mt-1.5 block text-xs font-medium text-ink">{{ $legendBand->getLabel() }}</span>
                                     <span class="block font-mono text-[0.62rem] text-ink-faint">{{ $legendBand->min() }}–{{ $legendBand->max() }}</span>
                                 </li>
@@ -1000,8 +964,8 @@ new class extends Component
                         </div>
                     @endif
 
-                    @if ($billingSummary)
-                        <p class="text-center text-sm text-ink-muted" data-billing-summary>{{ $billingSummary }}</p>
+                    @if ($savedScoreNote)
+                        <p class="text-center text-sm text-ink-muted" data-saved-score-note>{{ $savedScoreNote }}</p>
                     @endif
 
                     @if ($accountStatus === 'signed_in')

@@ -2,10 +2,9 @@
 
 namespace App\Filament\Resources\Customers\Schemas;
 
+use App\Modules\CreditScore\Services\CreditReportRegenerationLimit;
 use App\Modules\Customers\Models\Customer;
 use App\Modules\MobileOtp\Services\MobileNumber;
-use App\Modules\Wallet\Services\CreditCheckBilling;
-use App\Modules\Wallet\Services\Wallet;
 use Closure;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
@@ -78,16 +77,10 @@ class CustomerForm
                         TextEntry::make('pan_masked')->label('PAN (customer-provided)')->placeholder('—'),
                         TextEntry::make('date_of_birth')->label('Date of birth')->date('d M Y')->placeholder('—'),
                         TextEntry::make('gender')->placeholder('—'),
-                        TextEntry::make('wallet_balance')
-                            ->label('Wallet balance')
-                            ->state(fn (Customer $record): string => Wallet::format(app(Wallet::class)->balance($record))),
-                        TextEntry::make('active_plan')
-                            ->label('Refresh plan')
-                            ->state(fn (Customer $record): ?string => ($plan = app(CreditCheckBilling::class)->activePlan($record)) ? $plan->plan->getLabel().' until '.$plan->ends_at->format('d M Y') : null)
-                            ->placeholder('None'),
-                        TextEntry::make('next_free_check')
-                            ->label('Next free check')
-                            ->state(fn (Customer $record): string => app(CreditCheckBilling::class)->nextFreeCheckAt($record)?->format('d M Y') ?? 'Available now'),
+                        TextEntry::make('next_new_report')
+                            ->label('Next new credit report')
+                            ->helperText('One new bureau report every '.CreditReportRegenerationLimit::everyMonths().' months, at most '.CreditReportRegenerationLimit::maxPerYear().' a year, per customer and PAN.')
+                            ->state(fn (Customer $record): string => app(CreditReportRegenerationLimit::class)->nextNewReportAt($record)?->format('d M Y') ?? 'Available now'),
                         TextEntry::make('address')
                             ->label('Address')
                             ->state(fn (Customer $record): ?string => collect([$record->address_line1, $record->address_line2, $record->city, $record->state, $record->pincode])->filter()->implode(', ') ?: null)

@@ -42,10 +42,10 @@
                     <p class="mt-3 text-sm text-ink-muted">{{ __('No :bureau score saved yet.', ['bureau' => $eligibility->bureau->getLabel()]) }}</p>
                 @endif
 
-                <x-portal.refresh-status :eligibility="$eligibility" :quote="$quotes[$eligibility->bureau->value] ?? null" class="mt-4" />
+                <x-portal.refresh-status :eligibility="$eligibility" class="mt-4" />
             </x-ui.card>
         @endforeach
     </div>
 
-    <p class="mt-6 text-xs text-ink-faint">{{ __('A score is refreshed at most once per period set for its bureau (normally 30 days). A failed refresh never removes your last saved report, and checking your own score does not lower it.') }}</p>
+    <p class="mt-6 text-xs text-ink-faint">{{ __('Checking your credit score is free. You can generate a new credit report once every :months months, up to :max times a year, across all bureaus; in between, you see your saved score. A failed refresh never removes your last saved report, and checking your own score does not lower it.', ['months' => \App\Modules\CreditScore\Services\CreditReportRegenerationLimit::everyMonths(), 'max' => \App\Modules\CreditScore\Services\CreditReportRegenerationLimit::maxPerYear()]) }}</p>
 </x-layouts.portal>

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Portal;
 
 use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\Customers\Services\CustomerCreditReports;
-use App\Modules\Wallet\Services\CreditCheckBilling;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
@@ -18,18 +17,17 @@ use Illuminate\Http\Request;
  */
 class CreditScoreOverviewController extends PortalController
 {
-    public function index(Request $request, CustomerCreditReports $reports, CreditCheckBilling $billing): View
+    public function index(Request $request, CustomerCreditReports $reports): View
     {
         $customer = $this->customer($request);
 
         return view('portal.credit-score', [
             'customer' => $customer,
             'refresh' => $reports->refreshOverview($customer),
-            'quotes' => collect(BureauName::cases())->mapWithKeys(fn (BureauName $bureau): array => [$bureau->value => $billing->quote($customer, $bureau)])->all(),
         ]);
     }
 
-    public function refresh(Request $request, BureauName $bureau, CustomerCreditReports $reports, CreditCheckBilling $billing): View
+    public function refresh(Request $request, BureauName $bureau, CustomerCreditReports $reports): View
     {
         $customer = $this->customer($request);
 
@@ -37,7 +35,6 @@ class CreditScoreOverviewController extends PortalController
             'customer' => $customer,
             'bureau' => $bureau,
             'eligibility' => $reports->refreshEligibility($customer, $bureau),
-            'quote' => $billing->quote($customer, $bureau),
         ]);
     }
 }

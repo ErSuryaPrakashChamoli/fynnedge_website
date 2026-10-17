@@ -143,21 +143,36 @@ it('shows the same person their stored score within the reuse period without pay
         ->and(CreditScoreCheck::query()->latest('id')->first()->raw_response)->toHaveKey('reused_from');
 });
 
-it('pays for a new check when the same PAN arrives with a different verified mobile', function () {
+it('never shows one mobile\'s stored score to another, and holds the same PAN to its regeneration limit', function () {
     liveCrifScorePage();
 
     checkScoreOnPage(mobile: '9000000001');
+    // Same PAN inside the 3-month limit (per PAN, across accounts): refused
+    // without a new pull, and without revealing when or what was checked.
+    checkScoreOnPage(mobile: '9000000002')
+        ->assertSet('resultScore', null)
+        ->assertSee('A new report for this PAN can be generated once every 3 months');
+
+    expect(surepassScoreCalls())->toBe(1);
+
+    $this->travel(3)->months();
+    $this->travel(1)->days();
     checkScoreOnPage(mobile: '9000000002');
 
     expect(surepassScoreCalls())->toBe(2);
 });
 
-it('pays for a new check once the reuse period has passed', function () {
+it('pays for a new check once the reuse period and the regeneration limit have passed', function () {
     liveCrifScorePage();
     Setting::set(CrifSettings::REUSE_DAYS, 30);
     checkScoreOnPage();
     $this->travel(31)->days();
 
+    // Past the bureau's 30 days but inside the 3-month limit: the saved score.
+    checkScoreOnPage()->assertSee('This is your saved CRIF score');
+    expect(surepassScoreCalls())->toBe(1);
+
+    $this->travel(2)->months();
     checkScoreOnPage();
 
     expect(surepassScoreCalls())->toBe(2);

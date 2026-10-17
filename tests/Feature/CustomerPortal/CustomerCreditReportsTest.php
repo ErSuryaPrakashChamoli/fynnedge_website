@@ -5,7 +5,10 @@ use App\Models\Setting;
 use App\Modules\CreditBureau\Enums\CreditCheckStatus;
 use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
+use App\Modules\Customers\DataTransferObjects\RefreshEligibility;
 use App\Modules\Customers\Models\Customer;
+use App\Modules\Customers\Services\CustomerCreditReports;
+use App\Modules\Equifax\Services\EquifaxSettings;
 use App\Modules\Experian\Models\ExperianCreditRequest;
 use App\Modules\Experian\Services\ExperianSettings;
 use Illuminate\Support\Facades\Auth;
@@ -140,22 +143,38 @@ it('never fetches a provider PDF link for a customer', function () {
     Http::assertNothingSent();
 });
 
-it('keeps a refresh closed while the last report is inside the bureau\'s reuse period', function () {
+it('keeps a refresh closed until the regeneration limit allows a new report', function () {
     Setting::set(ExperianSettings::PUBLIC_SCORE_ENABLED, true);
     config(['services.surepass.token' => 'test-surepass-token']);
-    savedExperianReport($this->customer, ['completed_at' => now()->subDays(10)]);
+    $completedAt = now()->subDays(40);
+    savedExperianReport($this->customer, ['completed_at' => $completedAt]);
 
     $this->actingAs($this->customer, 'customer')
         ->get(route('portal.credit-score.refresh', 'experian'))
         ->assertOk()
-        ->assertSee('Next refresh available on '.now()->addDays(20)->translatedFormat('d M Y'))
+        ->assertSee('Next refresh available on '.$completedAt->copy()->addMonths(3)->translatedFormat('d M Y'))
         ->assertDontSeeLivewire('credit-score-check');
 });
 
-it('opens a refresh once the reuse period has passed', function () {
+it('applies the limit across bureaus: a recent Experian report closes the Equifax refresh too', function () {
+    Setting::set(ExperianSettings::PUBLIC_SCORE_ENABLED, true);
+    Setting::set(EquifaxSettings::PUBLIC_SCORE_ENABLED, true);
+    config(['services.surepass.token' => 'test-surepass-token']);
+    savedExperianReport($this->customer, ['completed_at' => now()->subDays(40)]);
+
+    $this->actingAs($this->customer, 'customer')
+        ->get(route('portal.credit-score'))
+        ->assertOk()
+        ->assertSee('Next refresh available on '.now()->subDays(40)->addMonths(3)->translatedFormat('d M Y'));
+
+    expect(app(CustomerCreditReports::class)->refreshEligibility($this->customer, BureauName::Equifax)->state)
+        ->toBe(RefreshEligibility::TOO_SOON);
+});
+
+it('opens a refresh once the regeneration limit has passed', function () {
     Setting::set(ExperianSettings::PUBLIC_SCORE_ENABLED, true);
     config(['services.surepass.token' => 'test-surepass-token']);
-    savedExperianReport($this->customer, ['completed_at' => now()->subDays(31)]);
+    savedExperianReport($this->customer, ['completed_at' => now()->subMonths(3)->subDay()]);
 
     $this->actingAs($this->customer, 'customer')
         ->get(route('portal.credit-score.refresh', 'experian'))
@@ -188,7 +207,7 @@ it('keeps the last successful report when a refresh fails, and adds the failure 
     fakeAreachSms();
     fakeSurepassExperian(Http::response('', 500));
     Setting::set(ExperianSettings::PUBLIC_SCORE_ENABLED, true);
-    $previous = savedExperianReport($this->customer, ['completed_at' => now()->subDays(31)]);
+    $previous = savedExperianReport($this->customer, ['completed_at' => now()->subMonths(3)->subDay()]);
     Auth::guard('customer')->login($this->customer);
 
     Livewire::test('credit-score-check', ['bureau' => 'experian', 'context' => 'portal'])
@@ -209,7 +228,7 @@ it('adds a successful refresh as a new report and keeps the earlier one', functi
     fakeAreachSms();
     fakeSurepassExperian();
     Setting::set(ExperianSettings::PUBLIC_SCORE_ENABLED, true);
-    $previous = savedExperianReport($this->customer, ['completed_at' => now()->subDays(31), 'score' => 700]);
+    $previous = savedExperianReport($this->customer, ['completed_at' => now()->subMonths(3)->subDay(), 'score' => 700]);
     Auth::guard('customer')->login($this->customer);
 
     Livewire::test('credit-score-check', ['bureau' => 'experian', 'context' => 'portal'])

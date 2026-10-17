@@ -27,7 +27,6 @@ use App\Http\Controllers\Portal\LoanApplicationController as PortalLoanApplicati
 use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\Portal\SettingsController as PortalSettingsController;
 use App\Http\Controllers\Portal\SupportController as PortalSupportController;
-use App\Http\Controllers\Portal\WalletController as PortalWalletController;
 use App\Http\Controllers\QuickEnquiryController;
 use App\Http\Controllers\QuickEnquiryPageController;
 use App\Http\Controllers\RobotsController;
@@ -166,9 +165,6 @@ Route::prefix('my-profile')
         Route::get('/loan-applications', [PortalLoanApplicationController::class, 'index'])->name('applications');
         Route::get('/documents', [PortalDocumentController::class, 'index'])->name('documents');
         Route::get('/documents/{document}', [PortalDocumentController::class, 'show'])->whereUuid('document')->name('documents.show');
-        Route::get('/wallet', [PortalWalletController::class, 'show'])->name('wallet');
-        Route::post('/wallet/plans/{plan}', [PortalWalletController::class, 'buyPlan'])->name('wallet.plans.buy');
-        Route::post('/wallet/top-up', [PortalWalletController::class, 'topUp'])->name('wallet.top-up');
         Route::get('/help', PortalSupportController::class)->name('support');
         Route::get('/settings', PortalSettingsController::class)->name('settings');
         Route::post('/logout', [CustomerSessionController::class, 'destroy'])->name('logout');

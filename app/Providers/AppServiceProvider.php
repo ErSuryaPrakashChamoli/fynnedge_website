@@ -17,8 +17,6 @@ use App\Modules\Equifax\Services\SurepassEquifaxService;
 use App\Modules\Experian\Services\ExperianSettings;
 use App\Modules\Experian\Services\SurepassExperianService;
 use App\Modules\MobileOtp\Contracts\SmsProvider;
-use App\Modules\Wallet\Contracts\PaymentGateway;
-use App\Modules\Wallet\Gateways\UnconfiguredPaymentGateway;
 use App\Support\Analytics\TrackingScripts;
 use App\Support\Contact\OfficeMap;
 use App\Support\Rates\RateBook;
@@ -42,14 +40,6 @@ class AppServiceProvider extends ServiceProvider
         // Per request/job: RateBook memoises the published rates it read, and
         // a long-lived worker must not carry one request's memo into the next.
         $this->app->scoped(RateBook::class);
-
-        // UPI top-ups: the gateway named by CUSTOMER_PAYMENT_GATEWAY, or none —
-        // which switches top-ups off rather than pretending they succeed.
-        $this->app->bind(PaymentGateway::class, function (): PaymentGateway {
-            $gateway = config('customer_portal.payments.gateways.'.config('customer_portal.payments.gateway'));
-
-            return $this->app->make(is_string($gateway) ? $gateway : UnconfiguredPaymentGateway::class);
-        });
 
         $this->app->bind(
             CreditBureauProvider::class,

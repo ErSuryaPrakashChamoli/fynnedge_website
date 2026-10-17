@@ -39,9 +39,6 @@ How customers of **FynnOn by Markedge Technologies** sign in, see their saved cr
 | `POST /my-profile/apply-for-loan/{loanProduct:slug}` | `portal.apply.start` | Resume or start |
 | `GET /my-profile/loan-applications` | `portal.applications` | Drafts, eligibility-ready, applications |
 | `GET /my-profile/documents`, `/documents/{uuid}` | `portal.documents`, `portal.documents.show` | List / download |
-| `GET /my-profile/wallet` | `portal.wallet` | Wallet & Plans |
-| `POST /my-profile/wallet/plans/{half_year\|annual}` | `portal.wallet.plans.buy` | Buy a plan from the wallet (only while billing is on) |
-| `POST /my-profile/wallet/top-up` | `portal.wallet.top-up` | UPI top-up (refused until a gateway is configured) |
 | `GET /my-profile/help` | `portal.support` | Help & Support |
 | `GET /my-profile/settings` | `portal.settings` | Account Settings |
 | `POST /my-profile/logout` | `portal.logout` | Sign out |
@@ -93,8 +90,8 @@ After a check the bureau matched, `Customer::fillBlankProfileDetails()` fills on
 ## 6. Credit reports, reuse and the monthly refresh policy
 
 - The portal lists only **genuine** checks (`provider = surepass`), never demo scores. Each bureau is shown separately; scores are never merged or compared across bureaus. A check answered from a stored score (`raw_response.reused_from`) is a repeat view, not a new report.
-- **Refresh policy:** the existing per-bureau public reuse period — `CibilSettings::publicScoreReuseDays()`, `CrifSettings::reuseDays()`, `EquifaxSettings::scoreReuseDays()`, `ExperianSettings::scoreReuseDays()` (all **30 days** by default, editable on each bureau's Settings page). No new period was introduced. **Approved on 16 Oct 2026** as the portal's monthly refresh policy. With paid refreshes switched on, a refresh after the period is free, included in a plan, or paid from the wallet (§7).
-- **States** (`CustomerCreditReports::refreshEligibility()`): `available`, `too_soon` (next date shown), `in_progress` (a pending check younger than the 60-minute uncertain hold), `unavailable` (the bureau's page is not live).
+- **Regeneration limit (user decision 17 Oct 2026, replaces the 30-day policy approved on 16 Oct):** every check is free; a person gets **one new bureau report every 3 months, at most 4 in any 12 months, per customer and per PAN, across all bureaus** (`CreditReportRegenerationLimit`, §7). The bureau's own reuse period (30 days by default) still applies on top.
+- **States** (`CustomerCreditReports::refreshEligibility()`): `available`, `too_soon` (next date shown — the later of the reuse period and the regeneration limit), `in_progress` (a pending check younger than the 60-minute uncertain hold), `unavailable` (the bureau's page is not live).
 - **Refresh flow:** Refresh → `/my-profile/credit-score/{bureau}/refresh` → OTP to the registered mobile → details prefilled from the last check (editable) → consent box → the same `SubmitCreditScoreCheck` as the public page (reuse window, per-person lock, uncertain hold, `RecordWebsite*Check` for full reports). A refresh adds a row; earlier reports are never overwritten, and a failed or uncertain refresh leaves the last successful report in place. No automatic retries.
 - **Report viewer:** `CreditReportView` reads the bureau request through the existing `CibilReportDocument` / `EquifaxReportDocument` / `ExperianReportDocument` and shows only labelled sections (personal information, masked identity documents, addresses, account summary, accounts with payment history, enquiry summary, enquiries). Raw JSON, provider envelope fields and unlabelled extras are not shown. Each view is logged as `viewed_by_customer` on the bureau request (no staff `user_id`).
 - **PDF:** served only when the bureau request already holds an encrypted copy on the private disk (e.g. CIBIL's inline PDF). A provider's temporary link is never fetched, followed or shown from the portal; buying a PDF stays a staff action.
@@ -102,31 +99,21 @@ After a check the bureau matched, `Customer::fillBlankProfileDetails()` fills on
 
 ---
 
-## 7. Paid refreshes, wallet and plans
+## 7. Free checks and the regeneration limit
 
-User decision (17 Oct 2026). **Built and tested, switched OFF by default** (`CUSTOMER_BILLING_ENABLED=false`): no payment gateway exists yet, so nobody could top up and switching it on would only block returning customers.
+User decision (17 Oct 2026), after reviewing the Surepass service agreement: **every credit-score check is free**. The agreement grants use "exclusively for the Purpose and not for subsequent resale" (§2.1) and forbids reselling or selling access to the Products (§2.1.2, §8.2(c)), so the paid-refresh, wallet and plan feature built on 17 Oct was removed (never deployed). The agreement sets **no** regeneration frequency; the limit below is the business's own rule, which also caps per-transaction bureau costs (Schedule A: ₹70 CIBIL, ₹20 CRIF, ₹15 Experian, ₹15 Equifax per successful 200/422 response, plus taxes).
 
-**Who pays for a new bureau pull** (`App\Modules\Wallet\Services\CreditCheckBilling`), in order:
+**Rule** (`App\Modules\CreditScore\Services\CreditReportRegenerationLimit`, config `customer_portal.regeneration`): one **new** bureau report every **3 months** and at most **4 in any 12 months**, counted **per customer and per PAN, across all bureaus**. A new report is a genuine check the bureau answered (score or "no score yet"), not one answered from a stored score; failed, uncertain and demo checks do not count.
 
-| Case | Charge |
+**What a visitor sees inside the limit** (the credit-score component, public page and portal refresh alike):
+
+| Situation | Result |
 | --- | --- |
-| Billing off, or the bureau's page is not live (demo) | None |
-| The check would be answered from a stored score (inside the 30-day reuse period) or an uncertain check is still on hold | None — no new pull |
-| First check, or 6 months after the last free check — counted **per customer and per PAN** (a second mobile number never earns a second free check for the same PAN) | Free |
-| An active 6-month (₹150) or 1-year (₹250) plan | Included — every bureau, once per 30 days |
-| Otherwise | From the wallet: ₹99 for the customer's first paid refresh, ₹79 for each later one |
+| Same bureau, same PAN and mobile as a recent report | The saved score again (no new pull), with the date the next new report is available |
+| Another bureau, or the same PAN on this account through another number | Refused **before** the bureau is asked or the OTP is spent; shows the last report's bureau and date, the next date, and "View my saved report" |
+| The same PAN on **another** account | Refused with a generic message — no dates or bureau, so a typed PAN reveals nothing |
 
-**GST (18%) is added on top** of every price: ₹99 → ₹116.82, ₹79 → ₹93.22, ₹150 → ₹177, ₹250 → ₹295. Checks made before billing existed (or while it is off) count as the customer's free check.
-
-**Never charged without a result:** under a per-customer lock the price is quoted; if the wallet is short the check stops **before** the bureau is asked or the OTP is spent (the customer can top up and press the button again); otherwise the amount is **held**, the OTP spent, the bureau asked, and the hold **captured** only for a new answer — a failed, uncertain or reused check **releases** it. `credit_score_checks.billing` records free / plan / wallet / reused, with `wallet_transaction_id` for paid ones.
-
-**Wallet** (`App\Modules\Wallet\Services\Wallet`): a closed balance usable only for refreshes and plans (no withdrawal or transfer). Ledger `wallet_transactions` in paise (credits positive, debits negative; statuses held / completed / released; balance = held + completed); every write locks the customer row, so it never goes below zero. Plans in `customer_plans`; a plan bought during another starts when that one ends.
-
-**UPI top-ups:** `wallet_top_ups` + the `PaymentGateway` contract. **No gateway is implemented**, so `UnconfiguredPaymentGateway` is bound and the wallet page says top-ups are not available. To add one: implement `PaymentGateway` (create the provider order, return its checkout URL), register it in `customer_portal.payments.gateways`, set `CUSTOMER_PAYMENT_GATEWAY`, and add a webhook route that verifies the provider's signature and calls `CompleteWalletTopUp` (idempotent; refuses a different amount). Until then staff can credit a wallet with **Adjust wallet** (permission `AdjustWallet:Customer`, no starter role).
-
-**Portal:** *Wallet & Plans* (`/my-profile/wallet`): balance, active/upcoming plan, next free check, prices, plans, top-up, history. My Credit Score and the refresh page show each bureau's cost; the credit-score component shows the price after OTP and a top-up prompt when the wallet is short.
-
-**Admin (Customers):** wallet balance, plan and next free check in the portal section; **Wallet** and **Refresh plans** tabs; **Adjust wallet** action (credit/debit with a reason, never below zero, recorded with the staff user).
+The decision and the check run under a per-person cache lock, so two tabs cannot use one allowance on two bureaus. The portal's My Credit Score / refresh page, the details step after OTP, and the admin Customer page ("Next new credit report") all show the next date.
 
 ---
 
@@ -148,13 +135,8 @@ User decision (17 Oct 2026). **Built and tested, switched OFF by default** (`CUS
 | `2026_10_16_133734_add_portal_account_columns_to_customers_table` | `email` nullable; `verified_mobile` (unique), `mobile_verified_at`, `portal_activated_at`, `portal_disabled_at`, `last_login_at`, `date_of_birth`, `gender`, `pan_encrypted`, `pan_masked`, `pan_hash` (index), `identity_verified_at`, `address_line1`, `address_line2`, `city`, `state`, `pincode` |
 | `2026_10_16_133735_add_customer_id_to_credit_score_checks_table` | `customer_id` FK (nullOnDelete) + index `(customer_id, bureau, completed_at)` |
 
-| `2026_10_16_192538_create_wallet_transactions_table` | Wallet ledger (paise; held / completed / released) |
-| `2026_10_16_192540_create_customer_plans_table` | Refresh plans |
-| `2026_10_16_192541_create_wallet_top_ups_table` | UPI top-ups (gateway order/payment ids) |
-| `2026_10_16_192542_add_billing_to_credit_score_checks_table` | `billing`, `wallet_transaction_id` |
-| `2026_10_16_192544_create_customer_wallet_permission` | Permission `AdjustWallet:Customer` |
 
-All are additive and reversible. Rolling back the first restores `email NOT NULL` only if no customer is missing an email. Existing checks stay unlinked (they were never tied to a verified account).
+Both are additive and reversible. Rolling back the first restores `email NOT NULL` only if no customer is missing an email. Existing checks stay unlinked (they were never tied to a verified account).
 
 ---
 
@@ -185,13 +167,8 @@ Nothing new. Portal reads are synchronous and make no provider calls. Refreshes 
 | `customer_portal.brand` | `CUSTOMER_PORTAL_BRAND` | `FynnOn by Markedge Technologies` |
 | `customer_portal.login_max_attempts` | `CUSTOMER_PORTAL_LOGIN_MAX_ATTEMPTS` | `10` |
 | `customer_portal.login_decay_minutes` | `CUSTOMER_PORTAL_LOGIN_DECAY_MINUTES` | `15` |
-| `customer_portal.billing.enabled` | `CUSTOMER_BILLING_ENABLED` | `false` |
-| `customer_portal.billing.gst_percent` | `CUSTOMER_BILLING_GST_PERCENT` | `18` |
-| `customer_portal.billing.first_refresh_paise` | `CUSTOMER_BILLING_FIRST_REFRESH_PAISE` | `9900` |
-| `customer_portal.billing.refresh_paise` | `CUSTOMER_BILLING_REFRESH_PAISE` | `7900` |
-| `customer_portal.billing.free_check_every_months` | `CUSTOMER_BILLING_FREE_EVERY_MONTHS` | `6` |
-| `customer_portal.billing.plans.half_year` / `.annual` | `CUSTOMER_BILLING_HALF_YEAR_PLAN_PAISE` / `CUSTOMER_BILLING_ANNUAL_PLAN_PAISE` | `15000` / `25000` |
-| `customer_portal.payments.gateway` | `CUSTOMER_PAYMENT_GATEWAY` | none (top-ups off) |
+| `customer_portal.regeneration.every_months` | `CREDIT_REPORT_REGENERATE_EVERY_MONTHS` | `3` |
+| `customer_portal.regeneration.max_per_year` | `CREDIT_REPORT_MAX_PER_YEAR` | `4` |
 
 Also relevant: `SESSION_SECURE_COOKIE=true` in production, `SESSION_LIFETIME` (minutes), and the existing `MOBILE_OTP_*` and bureau settings.
 
@@ -213,7 +190,7 @@ All bureau calls are faked (`fakeSurepassExperian()`, `fakeAreachSms()`, `Http::
 2. `php artisan config:cache && php artisan route:cache && php artisan view:cache`
 3. `npm run build` (new Blade views use existing Tailwind tokens; the build picks up their classes)
 4. Set `SESSION_SECURE_COOKIE=true`; confirm the Areach SMS settings and each bureau's live switch.
-5. The refresh period is the approved 30 days per bureau; changing a bureau's reuse days in its Settings page changes its portal refresh period too.
+5. The regeneration limit is 3 months / 4 a year (`CREDIT_REPORT_REGENERATE_EVERY_MONTHS`, `CREDIT_REPORT_MAX_PER_YEAR`); each bureau's own reuse days (Settings page) still apply on top.
 
 **Rollback:** `php artisan migrate:rollback --step=2` (see §8 for the email column), then deploy the previous release. Portal routes disappear; existing credit-score, journey and admin flows are unaffected by the rollback.
 
@@ -228,5 +205,6 @@ All bureau calls are faked (`fakeSurepassExperian()`, `fakeAreachSms()`, `Http::
 - Customer PDFs are available only where a bureau request already stored one; the current Surepass plans (16 Oct 2026) do not include the PDF endpoints for Experian/Equifax.
 - Applications started before this change are visible in the portal only if their journey phone was OTP-verified with the same number.
 - Several unclaimed customer records sharing one phone are not merged or activated automatically; staff can merge them.
-- **No payment gateway yet:** UPI top-ups are off; paid refreshes are switched off by default. No GST invoice/receipt document is generated (the ledger records taxable value and GST per charge).
-- Before charging customers for bureau reports, confirm it is permitted by your Surepass / credit-bureau agreements; the wallet is designed as a closed-system balance (no withdrawal or transfer).
+- Customers are never charged: the Surepass agreement forbids resale (§2.1, §2.1.2, §8.2(c)).
+- To confirm with Surepass: §2.1.1 describes the API being made available "to its employees and other internal users" and §2.1.1/§2.1.2 forbid sharing access with third parties, including Clients. The public self-service score page lets visitors trigger bureau calls through the website, so its fit with the agreement's Purpose should be confirmed in writing.
+- If two different accounts check the same PAN for the first time at the same instant, both can get a new report (the lock is per person).

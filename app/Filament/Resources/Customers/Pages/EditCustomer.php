@@ -8,14 +8,9 @@ use App\Filament\Resources\Customers\CustomerResource;
 use App\Filament\Resources\EquifaxCreditRequests\EquifaxActions;
 use App\Filament\Resources\ExperianCreditRequests\ExperianActions;
 use App\Modules\Customers\Models\Customer;
-use App\Modules\Wallet\Enums\WalletTransactionType;
-use App\Modules\Wallet\Exceptions\InsufficientWalletBalance;
-use App\Modules\Wallet\Services\Wallet;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Forms\Components\Radio;
-use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
@@ -56,44 +51,6 @@ class EditCustomer extends EditRecord
                     $record->forceFill(['identity_verified_at' => now()])->save();
                     $record->recordEvent('identity_verified', ['source' => 'staff'], Auth::id());
                     Notification::make()->title('Identity marked as verified')->success()->send();
-                }),
-            Action::make('adjustWallet')
-                ->label('Adjust wallet')
-                ->icon(Heroicon::OutlinedBanknotes)
-                ->modalDescription('Credit (a refund, or a payment taken another way) or debit the customer\'s wallet. The reason is shown in the customer\'s wallet history and the change is recorded with your name.')
-                ->schema([
-                    Radio::make('direction')
-                        ->options(['credit' => 'Credit (add money)', 'debit' => 'Debit (take money)'])
-                        ->default('credit')
-                        ->required(),
-                    TextInput::make('amount')
-                        ->label('Amount (₹)')
-                        ->numeric()
-                        ->minValue(1)
-                        ->maxValue(100000)
-                        ->required(),
-                    TextInput::make('reason')
-                        ->label('Reason')
-                        ->required()
-                        ->maxLength(200),
-                ])
-                ->visible(fn (Customer $record): bool => (bool) Auth::user()?->can('adjustWallet', $record))
-                ->action(function (Customer $record, array $data, Action $action): void {
-                    $wallet = app(Wallet::class);
-                    $paise = (int) round((float) $data['amount'] * 100);
-                    $reason = 'Adjustment: '.$data['reason'];
-
-                    try {
-                        $data['direction'] === 'debit'
-                            ? $wallet->staffDebit($record, $paise, $reason, Auth::user())
-                            : $wallet->credit($record, $paise, WalletTransactionType::Adjustment, $reason, Auth::user());
-                    } catch (InsufficientWalletBalance) {
-                        Notification::make()->title('The wallet balance is lower than that debit.')->danger()->send();
-                        $action->halt();
-                    }
-
-                    $record->recordEvent('wallet_adjusted', ['direction' => $data['direction'], 'amount_paise' => $paise], Auth::id());
-                    Notification::make()->title('Wallet updated')->success()->send();
                 }),
             Action::make('disablePortal')
                 ->label('Disable portal sign-in')

@@ -10,15 +10,9 @@
 
         <div>
             @if ($eligibility->isAvailable())
-                @if ($quote->needsTopUp())
-                    <x-ui.alert tone="warn" class="mb-4" data-payment-required>
-                        {{ __('This refresh costs :total including GST and your wallet balance is :balance.', ['total' => \App\Modules\Wallet\Services\Wallet::format($quote->price->totalPaise()), 'balance' => \App\Modules\Wallet\Services\Wallet::format($quote->balancePaise)]) }}
-                        <a href="{{ route('portal.wallet') }}" class="font-medium underline">{{ __('Add money or buy a plan') }}</a>
-                    </x-ui.alert>
-                @endif
                 <livewire:credit-score-check :bureau="$bureau->value" context="portal" />
             @else
-                <x-portal.refresh-status :eligibility="$eligibility" :quote="$quote" />
+                <x-portal.refresh-status :eligibility="$eligibility" />
             @endif
         </div>
     </div>
