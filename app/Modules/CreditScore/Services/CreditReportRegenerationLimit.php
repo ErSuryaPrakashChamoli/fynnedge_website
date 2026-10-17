@@ -55,7 +55,11 @@ class CreditReportRegenerationLimit
             return new RegenerationDecision(RegenerationDecision::ALLOWED);
         }
 
+        // Only a report from the bureau that answers this page now: its saved score
+        // is what live() will show. Another bureau's report never stands in for it.
+        $source = SubmitCreditScoreCheck::sourceBureau($bureau);
         $saved = $reports->first(fn (CreditScoreCheck $report): bool => $report->bureau === $bureau
+            && $report->sourceBureau() === $source
             && $report->pan_number === $pan
             && $report->mobile_number === $mobileNumber);
 

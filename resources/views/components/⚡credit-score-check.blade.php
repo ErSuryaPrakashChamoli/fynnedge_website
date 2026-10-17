@@ -107,6 +107,15 @@ new class extends Component
 
     public bool $consent = false;
 
+    /**
+     * The CIBIL page's score source ("demo", "cibil" or "experian") as the
+     * details step described it to the visitor. If an admin flips CIBIL
+     * Settings before they submit, the check is not run: they see the new
+     * source and submit again, so consent always names the bureau that answers.
+     */
+    #[Locked]
+    public ?string $disclosedSource = null;
+
     public ?int $resultScore = null;
 
     /**
@@ -225,9 +234,10 @@ new class extends Component
 
     /**
      * Real scores (a paid Surepass call per new check) only while the page's
-     * own Settings switch is on (CRIF, Equifax, Experian, CIBIL Settings) and
-     * the server has the token. The CIBIL page has no CIBIL API behind it: its
-     * real scores come from a stand-in bureau (see standInSource()).
+     * own Settings switch is on (CRIF, Equifax, Experian, CIBIL Settings →
+     * "Real CIBIL score enabled") and the server has the token. The CIBIL
+     * page's real scores come from CIBIL, or from Experian while "Fetch
+     * Experian instead of CIBIL" is on (see standInSource()).
      */
     #[Computed]
     public function isLive(): bool
@@ -242,14 +252,18 @@ new class extends Component
 
     /**
      * The bureau whose real score this page shows when it is not the page's
-     * own — Experian on the CIBIL page while no CIBIL API exists. The page then
-     * says so at every step: a visitor is never told an Experian score is
-     * their CIBIL score.
+     * own — Experian on the CIBIL page while CIBIL Settings → "Fetch Experian
+     * instead of CIBIL" is on. The page then says so at every step: a visitor
+     * is never told an Experian score is their CIBIL score. From the details
+     * step on it is what the visitor was told (disclosedSource), so a result
+     * keeps the label of the bureau that answered even if the switch flips.
      */
     #[Computed]
     public function standInSource(): ?string
     {
-        return $this->bureau === BureauName::Cibil->value && $this->isLive && CibilSettings::isStandIn() ? CibilSettings::sourceLabel() : null;
+        $source = $this->disclosedSource ?? $this->currentSource();
+
+        return $source === BureauName::Experian->value ? BureauName::Experian->getLabel() : null;
     }
 
     /** The bureau named on a live result: the stand-in when there is one. */
@@ -276,7 +290,7 @@ new class extends Component
 
     /**
      * Asked only where the live bureau requires it: Equifax, and CIBIL when the
-     * CIBIL bureau itself (not the Experian stand-in) answers the page.
+     * CIBIL bureau itself (not Experian) answers the page.
      */
     #[Computed]
     public function needsGender(): bool
@@ -376,6 +390,7 @@ new class extends Component
 
         $this->verifiedMobileNumber = $challenge->mobile_number;
         $this->step = 'details';
+        $this->disclosedSource = $this->currentSource();
         $this->limitNotice = $this->previewLimit();
 
         if ($this->signedInCustomer?->verified_mobile === $this->verifiedMobileNumber) {
@@ -400,6 +415,14 @@ new class extends Component
     {
         if ($this->step !== 'details' || $this->verifiedMobileNumber === null) {
             $this->restart();
+
+            return;
+        }
+
+        // Before anything is spent: the OTP stays valid for the re-submit.
+        if ($this->disclosedSource !== $this->currentSource()) {
+            $this->disclosedSource = $this->currentSource();
+            $this->addError('consent', __('Where your score comes from has just changed — please check the details above and submit again.'));
 
             return;
         }
@@ -609,12 +632,22 @@ new class extends Component
         }
     }
 
+    /** For the CIBIL page: where a check submitted now would get its score. Null on the other pages. */
+    private function currentSource(): ?string
+    {
+        if ($this->bureau !== BureauName::Cibil->value) {
+            return null;
+        }
+
+        return $this->isLive ? SubmitCreditScoreCheck::sourceBureau(BureauName::Cibil)->value : 'demo';
+    }
+
     public function restart(): void
     {
         $this->reset([
             'step', 'mobileNumber', 'otpCode', 'otpChallengeId', 'verifiedMobileNumber', 'resendAfterSeconds',
             'fullName', 'firstName', 'middleName', 'lastName', 'gender', 'dateOfBirth', 'panNumber', 'consent', 'resultScore', 'resultKind', 'resultError', 'resultInsights',
-            'resultCheckId', 'accountStatus', 'limitNotice', 'limitReached', 'savedScoreNote',
+            'resultCheckId', 'accountStatus', 'limitNotice', 'limitReached', 'savedScoreNote', 'disclosedSource',
         ]);
 
         unset($this->signedInCustomer, $this->lockedToAccount);
@@ -684,7 +717,7 @@ new class extends Component
                     <p class="flex items-center justify-center gap-1.5 text-xs text-ink-faint">
                         <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 text-pass" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4L8 11.6l6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd" /></svg>
                         @if ($this->standInSource)
-                            {{ __(':bureau isn\'t connected yet — you\'ll see your real :source score instead, free', ['bureau' => $this->bureauLabel, 'source' => $this->standInSource]) }}
+                            {{ __('You\'ll see your real :source score here, free — not a :bureau score', ['bureau' => $this->bureauLabel, 'source' => $this->standInSource]) }}
                         @elseif ($this->isLive)
                             {{ __('Your real :bureau score, free — checking your own score does not lower it', ['bureau' => $this->bureauLabel]) }}
                         @else
@@ -922,7 +955,7 @@ new class extends Component
                             </x-ui.alert>
                         @elseif ($this->standInSource)
                             <p class="text-center text-xs text-ink-faint">
-                                {{ __(':bureau isn\'t connected yet, so this is your score from :source, another RBI-licensed credit bureau. Scores can differ a little between bureaus.', ['bureau' => $this->bureauLabel, 'source' => $this->standInSource]) }}
+                                {{ __('This is your score from :source, an RBI-licensed credit bureau — not a :bureau score. Scores can differ a little between bureaus.', ['bureau' => $this->bureauLabel, 'source' => $this->standInSource]) }}
                             </p>
                         @endif
 

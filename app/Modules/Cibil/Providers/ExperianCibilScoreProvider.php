@@ -8,9 +8,9 @@ use App\Modules\CreditScore\Models\CreditScoreCheck;
 use App\Modules\CreditScore\Providers\SurepassExperianScoreProvider;
 
 /**
- * The public CIBIL page's stand-in source, used while the CIBIL bureau itself
- * cannot answer (no SUREPASS_CIBIL_TOKEN yet) or when CIBIL_PUBLIC_SCORE_SOURCE
- * forces "experian": the visitor's real EXPERIAN score, through the Experian
+ * The public CIBIL page's Experian source, used while CIBIL Settings → "Real
+ * CIBIL score enabled" and "Fetch Experian instead of CIBIL" are both on: the
+ * visitor's real EXPERIAN score, through the Experian
  * module's public-score provider (same Surepass call, same rules). Every check
  * it answers is tagged `source_bureau: experian`, so admins and the page always
  * know — and say — that the score is Experian's, never a CIBIL score. The

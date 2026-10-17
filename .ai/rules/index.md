@@ -33,6 +33,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Filament/RelationManagers/FaqsRelationManager.php,app/Models/Page.php,app/Http/Controllers/PageController.php | .ai/rules/controllers.md |
 | app/Modules/CreditBureau/** | .ai/rules/credit-bureau.md |
 | app/Modules/Customers/Services/CustomerCreditReports.php,app/Modules/CreditScore/Actions/SubmitCreditScoreCheck.php,app/Modules/CreditScore/Services/CreditReportRegenerationLimit.php,resources/views/components/⚡credit-score-check.blade.php | .ai/rules/credit-score-actions.md |
+| app/Modules/CreditScore/Actions/SubmitCreditScoreCheck.php,app/Modules/CreditScore/Services/CreditReportRegenerationLimit.php,app/Modules/CreditScore/Models/CreditScoreCheck.php | .ai/rules/credit-score-models.md |
 | app/Modules/CreditScore/Providers/** | .ai/rules/credit-score-providers.md |
 | resources/views/components/⚡credit-score-check.blade.php,app/Modules/CreditScore/**,resources/views/components/site/credit-score-*.blade.php | .ai/rules/credit-score-views-components-site.md |
 | app/Support/Pages/CreditScorePageContent.php,app/Filament/Pages/CreditScorePageSettings.php,resources/views/credit-score/show.blade.php | .ai/rules/credit-score.md |
@@ -85,6 +86,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Models/PromoBar.php,app/Support/PromoBars/**,app/Filament/Resources/PromoBars/**,resources/views/components/site/promo-bar.blade.php | .ai/rules/promo-bars-views-components-site.md |
 | resources/views/components/site/promo-bar.blade.php,resources/js/app.js,app/Models/PromoBar.php,app/Filament/Resources/PromoBars/** | .ai/rules/promo-bars.md |
 | app/Http/Middleware/SecurityHeaders.php,app/Providers/Filament/AdminPanelProvider.php | .ai/rules/providers-filament.md |
+| app/Modules/Cibil/Services/CibilSettings.php,app/Filament/Pages/CibilSettings.php,app/Modules/Cibil/Providers/**,resources/views/components/⚡credit-score-check.blade.php | .ai/rules/providers-views-components.md |
 | app/Filament/Resources/Pages/Schemas/PageForm.php,resources/views/components/site/footer.blade.php,app/Providers/AppServiceProvider.php | .ai/rules/providers.md |
 | database/seeders/data/**,app/Support/Rates/RateAuditImport.php,database/migrations/2026_10_13_123020_import_october_2026_lender_rate_audit.php | .ai/rules/rates-migrations.md |
 | database/seeders/data/**,app/Support/Rates/RateAuditImport.php,app/Support/Rates/RateText.php | .ai/rules/rates.md |

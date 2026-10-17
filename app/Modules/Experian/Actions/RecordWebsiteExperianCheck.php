@@ -6,6 +6,7 @@ use App\Modules\CreditBureau\Enums\ConsentMethod;
 use App\Modules\CreditBureau\Enums\ConsentStatus;
 use App\Modules\CreditBureau\Models\CreditConsent;
 use App\Modules\CreditBureau\Services\PanNumber;
+use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
 use App\Modules\Customers\Models\Customer;
 use App\Modules\Experian\DataTransferObjects\SurepassExperianResult;
@@ -63,7 +64,10 @@ class RecordWebsiteExperianCheck
                     'customer_id' => $customer?->id,
                     'pan_number' => $pan,
                     'date_of_birth' => $check->date_of_birth,
-                    'purpose' => 'Free '.$check->bureau->getLabel().' score check on the website',
+                    // Names Experian, the bureau asked, even when the check came from another page (CIBIL's).
+                    'purpose' => $check->bureau === BureauName::Experian
+                        ? 'Free Experian score check on the website'
+                        : 'Free Experian score check on the website ('.$check->bureau->getLabel().' page)',
                     'method' => ConsentMethod::Otp,
                     'evidence_reference' => 'Website score check '.$check->public_id.' (OTP-verified mobile, consent box ticked)',
                     'terms_version' => config('services.credit_bureau.terms_version', 'v1'),

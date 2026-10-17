@@ -69,6 +69,21 @@ class CreditScoreCheck extends Model
         $query->where('provider', self::LIVE_PROVIDER);
     }
 
+    /**
+     * Checks on $page whose answer came from $source — the same rule as
+     * sourceBureau(): a check without raw_response.source_bureau was answered
+     * by its page's own bureau. Keeps a CIBIL score from ever being reused,
+     * held or counted as an Experian one, and the other way round.
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeAnsweredBy(Builder $query, BureauName $page, BureauName $source): void
+    {
+        $query->where('bureau', $page)->where(fn (Builder $query) => $source === $page
+            ? $query->whereNull('raw_response->source_bureau')->orWhere('raw_response->source_bureau', $source->value)
+            : $query->where('raw_response->source_bureau', $source->value));
+    }
+
     public function isGenuine(): bool
     {
         return $this->provider === self::LIVE_PROVIDER;
@@ -153,8 +168,8 @@ class CreditScoreCheck extends Model
 
     /**
      * The bureau whose answer this check holds — the page's own bureau, except
-     * where a stand-in source answered it (the CIBIL page answered by Experian;
-     * recorded as raw_response.source_bureau).
+     * where another bureau answered it (the CIBIL page with "Fetch Experian
+     * instead of CIBIL" on; recorded as raw_response.source_bureau).
      */
     public function sourceBureau(): ?BureauName
     {

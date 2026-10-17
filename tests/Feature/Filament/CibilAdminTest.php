@@ -299,11 +299,11 @@ it('saves the CIBIL settings independently of the other bureaus, never shows the
     $this->get('/admin/cibil-settings')
         ->assertSee('CIBIL API token is configured on this server')
         ->assertSee('SUREPASS_CIBIL_TOKEN')
-        ->assertSee('Answered by the CIBIL bureau through Surepass')
+        ->assertSee('Visitors now see a labelled demo score; no bureau is called.')
         ->assertDontSee('test-cibil-token');
 
     Livewire::test(CibilSettings::class)
-        ->fillForm(['cibil_enabled' => false, 'cibil_public_score_enabled' => true, 'cibil_score_reuse_days' => 7, 'cibil_report_reuse_days' => 45, 'cibil_consent_validity_days' => 15, 'cibil_retention_days' => 400, 'cibil_alert_email' => 'ops@example.test'])
+        ->fillForm(['cibil_enabled' => false, 'cibil_public_score_enabled' => true, 'cibil_public_score_use_experian' => true, 'cibil_score_reuse_days' => 7, 'cibil_report_reuse_days' => 45, 'cibil_consent_validity_days' => 15, 'cibil_retention_days' => 400, 'cibil_alert_email' => 'ops@example.test'])
         ->call('save')
         ->assertHasNoFormErrors()
         ->callAction('checkAccess')
@@ -311,6 +311,7 @@ it('saves the CIBIL settings independently of the other bureaus, never shows the
 
     expect(CibilSettingsStore::enabled())->toBeFalse()
         ->and(CibilSettingsStore::publicScoreEnabled())->toBeTrue()
+        ->and(CibilSettingsStore::publicScoreUsesExperian())->toBeTrue()
         ->and(CibilSettingsStore::scoreReuseDays())->toBe(7)
         ->and(CibilSettingsStore::reportReuseDays())->toBe(45)
         ->and(CibilSettingsStore::consentValidityDays())->toBe(15)
@@ -320,40 +321,43 @@ it('saves the CIBIL settings independently of the other bureaus, never shows the
     Http::assertNotSent(fn (Request $request) => $request->data() !== []);
 });
 
-it('describes the Free CIBIL Score page without contradicting the token callout', function (?string $token, ?string $forcedSource, string $describes, array $neverSays) {
+it('describes what the Get CIBIL Score page shows without contradicting the token callout', function (bool $realScores, bool $useExperian, ?string $cibilToken, string $describes, array $neverSays) {
+    Setting::set(CibilSettingsStore::PUBLIC_SCORE_ENABLED, $realScores);
+    Setting::set(CibilSettingsStore::PUBLIC_SCORE_USE_EXPERIAN, $useExperian);
     config([
-        'services.surepass.cibil_token' => $token,
+        'services.surepass.cibil_token' => $cibilToken,
         'services.surepass.experian_token' => 'test-experian-token',
-        'services.cibil.public_score_source' => $forcedSource,
     ]);
 
     $this->get('/admin/cibil-settings')->assertSee($describes)->assertDontSee($neverSays);
 })->with([
-    'token set, source automatic' => ['test-cibil-token', null, 'Answered by the CIBIL bureau through Surepass', ['token is not configured', 'token is NOT configured']],
-    'token set, Experian forced' => ['test-cibil-token', 'experian', 'The CIBIL API token is configured, but CIBIL_PUBLIC_SCORE_SOURCE=experian on the server keeps this page on Experian scores', ['token is not configured', 'token is NOT configured', 'Answered by the CIBIL bureau']],
-    'no token, source automatic' => [null, null, 'It switches to the CIBIL bureau by itself once SUREPASS_CIBIL_TOKEN is set on the server.', ['CIBIL API token is configured', 'Answered by the CIBIL bureau']],
-    'no token, Experian forced' => [null, 'experian', 'To use the CIBIL bureau, set SUREPASS_CIBIL_TOKEN and remove CIBIL_PUBLIC_SCORE_SOURCE.', ['CIBIL API token is configured', 'switches to the CIBIL bureau by itself']],
+    'real scores off' => [false, true, 'test-cibil-token', 'Visitors now see a labelled demo score; no bureau is called.', ['Visitors now get their real']],
+    'CIBIL, token set' => [true, false, 'test-cibil-token', 'Visitors now get their real CIBIL score through Surepass CIBIL', ['token is NOT configured', 'token is not configured']],
+    'CIBIL, no token' => [true, false, null, 'The CIBIL token is NOT configured on this server, so visitors still see a labelled demo score until it is set (SUREPASS_CIBIL_TOKEN).', ['CIBIL API token is configured', 'Visitors now get their real']],
+    'Experian, CIBIL token set too' => [true, true, 'test-cibil-token', 'Visitors now get their real Experian score through Surepass Experian', ['Visitors now get their real CIBIL score', 'token is NOT configured']],
 ]);
 
-it('turns the other CIBIL switch off when one is turned on', function () {
+it('leaves the other CIBIL switches alone when one is turned on', function () {
     Livewire::test(CibilSettings::class)
-        ->fillForm(['cibil_enabled' => true, 'cibil_public_score_enabled' => false])
+        ->fillForm(['cibil_enabled' => true, 'cibil_public_score_enabled' => false, 'cibil_public_score_use_experian' => false])
         ->fillForm(['cibil_public_score_enabled' => true])
-        ->assertSchemaStateSet(['cibil_enabled' => false, 'cibil_public_score_enabled' => true])
-        ->fillForm(['cibil_enabled' => true])
-        ->assertSchemaStateSet(['cibil_enabled' => true, 'cibil_public_score_enabled' => false]);
+        ->assertSchemaStateSet(['cibil_enabled' => true, 'cibil_public_score_enabled' => true, 'cibil_public_score_use_experian' => false])
+        ->fillForm(['cibil_public_score_use_experian' => true])
+        ->assertSchemaStateSet(['cibil_enabled' => true, 'cibil_public_score_enabled' => true, 'cibil_public_score_use_experian' => true]);
 });
 
-it('refuses to save the CIBIL settings with both switches on', function () {
+it('saves CIBIL requests and real page scores both switched on', function () {
     Setting::set(CibilSettingsStore::ENABLED, true);
     Setting::set(CibilSettingsStore::PUBLIC_SCORE_ENABLED, true);
 
     Livewire::test(CibilSettings::class)
         ->fillForm(['cibil_score_reuse_days' => 9])
         ->call('save')
-        ->assertHasFormErrors(['cibil_public_score_enabled']);
+        ->assertHasNoFormErrors();
 
-    expect(CibilSettingsStore::scoreReuseDays())->not->toBe(9);
+    expect(CibilSettingsStore::scoreReuseDays())->toBe(9)
+        ->and(CibilSettingsStore::enabled())->toBeTrue()
+        ->and(CibilSettingsStore::publicScoreEnabled())->toBeTrue();
 });
 
 it('lists CIBIL events in the CIBIL audit history', function () {

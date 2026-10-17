@@ -20,9 +20,9 @@ use Illuminate\Support\Facades\Log;
 /**
  * A real CIBIL score for the public "Free CIBIL Score" page, through the CIBIL
  * module's Surepass service — the "cibil" source in CibilSettings::SOURCES,
- * used while CIBIL Settings → "Free CIBIL Score page shows real scores" is on
- * and the page's source is "cibil" (automatic once SUREPASS_CIBIL_TOKEN is
- * set, unless CIBIL_PUBLIC_SCORE_SOURCE forces another).
+ * used while CIBIL Settings → "Real CIBIL score enabled" is on and "Fetch
+ * Experian instead of CIBIL" is off. A failure is the visitor's answer:
+ * Experian is never asked instead.
  *
  * The score comes from credit-report-cibil/fetch-report by default
  * (services.surepass.cibil_public_score_endpoint = "report"): FynnEdge's

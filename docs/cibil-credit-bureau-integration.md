@@ -33,8 +33,8 @@ Before this work, CIBIL had:
 - **One permission:** `View:CibilSettings`.
 
 There was no CIBIL provider, table, API or request screen. All of that is kept and extended:
-- The stand-in stays available. The real CIBIL bureau is the new `cibil` source, and the page **switches to it by itself once `SUREPASS_CIBIL_TOKEN` is set**. Until then it keeps using the Experian stand-in, so the live page never drops to demo scores for want of a token.
-- CIBIL Settings gains the same settings sections as the other bureaus. Its existing switch, "Free CIBIL Score page shows real scores", keeps its setting key.
+- The Experian source stays available. Since 17 Oct 2026 an admin chooses between CIBIL and Experian with a switch (§12); it no longer follows which tokens are set.
+- CIBIL Settings gains the same settings sections as the other bureaus. Its existing switch, now labelled "Real CIBIL score enabled", keeps its setting key.
 
 ## 3. Architecture
 
@@ -246,7 +246,7 @@ The read methods never call Surepass, and opening a page never pulls anything. C
 | CIBIL Credit Reports · Score Requests · PDF Reports | Tabs of the request list |
 | CIBIL Requests | Every attempt. Filters: customer, PAN (matched by hash, never in the URL), status, type, request, channel, employee, date range. Searchable by customer, client id and control number. |
 | CIBIL Failed Requests | Failed tab (badge = awaiting reconciliation) |
-| CIBIL Settings | Request switch, public-page switch and source, reuse periods, consent validity, retention, alert email; token status (never the token); **Check Surepass access** (free) |
+| CIBIL Settings | Request switch, the Get CIBIL Score page's two switches (§12), reuse periods, consent validity, retention, alert email; token status (never the token); **Check Surepass access** (free) |
 | CIBIL Audit History | Every CIBIL event from `audit_logs` (needs `View:AuditLog`) |
 
 The **request page** has two levels:
@@ -263,19 +263,22 @@ The **request page** has two levels:
 | `ViewAny`, `View`, `ViewReport`, `Create`, `DownloadPdf`, plus `View:CibilDashboard` | Yes |
 | `FetchFresh`, `Reconcile`, `ViewRaw`, plus `View:CibilSettings` | No, grant deliberately |
 
-## 12. The public Free CIBIL Score page
+## 12. The public Get CIBIL Score page
 
-**CIBIL Settings → "Free CIBIL Score page shows real scores"** is off by default, which shows a labelled demo score. When it's on, the page is answered by a source:
+Two independent switches under **CIBIL → CIBIL Settings → Get CIBIL Score page** decide it. `CibilSettings` is the only place they are read. Neither switch affects "CIBIL requests enabled" (staff and the LMS API), and that switch does not affect them.
 
-| Source | When | What the visitor sees |
+| Real CIBIL score enabled | Fetch Experian instead of CIBIL | What the visitor gets |
 | --- | --- | --- |
-| `cibil` | Automatically, once `SUREPASS_CIBIL_TOKEN` is set (or forced with `CIBIL_PUBLIC_SCORE_SOURCE=cibil`) | Their genuine **CIBIL** score: "Live score from CIBIL / Your CIBIL score". The page asks for **gender** (CIBIL requires it). Recorded in the CIBIL admin as a `website` request, with consent and the full report. |
-| `experian` (the original stand-in) | Until the CIBIL token is set (or forced with `CIBIL_PUBLIC_SCORE_SOURCE=experian`) | Their real **Experian** score, labelled "Live score from Experian / Your Experian score", with a note that CIBIL isn't connected. Recorded in the Experian admin. |
+| Off (default) | either | A labelled **demo** score. No bureau is called. |
+| On | Off (default) | Their real **CIBIL** score through Surepass CIBIL: "Live score from CIBIL / Your CIBIL score". The page asks for **gender** (CIBIL requires it). Recorded in the CIBIL admin as a `website` request, with consent and the full report. |
+| On | On | Their real **Experian** score through Surepass Experian: "Live score from Experian / Your Experian score", plus "not a CIBIL score". Recorded in the Experian admin, with the consent purpose "Free Experian score check on the website (CIBIL page)". |
 
-With either source:
-- **No repeat charges:** the same PAN and mobile checking again within the reuse period sees the stored score at no cost, and an uncertain answer is held for an hour.
-- **No fake scores:** a failed check never shows a demo score.
-- **No token borrowing:** without `SUREPASS_CIBIL_TOKEN`, the `cibil` source counts as not configured and the page stays a labelled demo. It never borrows another bureau's token.
+With either bureau:
+- **No fallback:** if the chosen bureau fails, the visitor is told so. The other bureau is never asked, and no demo score is shown.
+- **Kept apart:** each check stores the bureau that answered it (`raw_response.source_bureau`, empty = CIBIL). Reuse, the one-hour hold on an uncertain answer, and the "saved score" of the regeneration limit only ever use a check from the bureau now chosen. A CIBIL score is never shown as Experian's, nor the reverse.
+- **No repeat charges:** the same PAN and mobile checking again within that bureau's score reuse period sees the stored score at no cost.
+- **Switch flipped mid-check:** if an admin changes the bureau after a visitor reached the details step, the visitor is asked to submit again before anything is called or the OTP is spent.
+- **No token borrowing:** if the chosen bureau's token is missing, the page shows the labelled demo score and the settings page says which token to set. CIBIL never borrows another bureau's token. Experian uses `SUREPASS_EXPERIAN_TOKEN`, or the shared `SUREPASS_BEARER_TOKEN`.
 
 ## 13. Configuration
 
@@ -284,12 +287,12 @@ With either source:
 | `SUREPASS_CIBIL_TOKEN` | secret, server only, **required**; no fallback |
 | `SUREPASS_CIBIL_BASE_URL` | `https://kyc-api.surepass.app` |
 | `SUREPASS_CIBIL_PUBLIC_SCORE_ENDPOINT` | `report` (`score` once Surepass enables it) |
-| `CIBIL_PUBLIC_SCORE_SOURCE` | blank = automatic (`cibil` once `SUREPASS_CIBIL_TOKEN` is set, else `experian`); or force `cibil` / `experian` |
 | `SUREPASS_TIMEOUT` / `SUREPASS_CONNECT_TIMEOUT` | 60 / 10 seconds (shared) |
 
 **CIBIL Settings** (stored in the shared `settings` table):
 - CIBIL requests enabled: off by default.
-- Public page shows real scores: off by default.
+- Real CIBIL score enabled: off by default.
+- Fetch Experian instead of CIBIL: off (CIBIL) by default. The deploy migration `2026_10_17_105911_store_cibil_public_score_source_switch` turns it on only where the page already showed real Experian scores under the old automatic rule. `CIBIL_PUBLIC_SCORE_SOURCE` is no longer read; remove it from `.env`.
 - Score and report reuse periods: 30 days each.
 - Consent validity: 30 days.
 - Retention: 365 days.
@@ -311,7 +314,7 @@ Then:
 1. Set `SUREPASS_CIBIL_TOKEN` in the server's `.env`, then run `php artisan optimize` again.
 2. Run `php artisan cibil:check-access`. "Token loaded" must say `yes (SUREPASS_CIBIL_TOKEN)`, and fetch-report must show **Allowed**.
 3. Under **CIBIL → CIBIL Settings**, switch on what you need and set the alert email. Nothing is enabled automatically.
-4. The public CIBIL page now shows genuine CIBIL scores by itself (when its switch is on), because the token is set. Leave `CIBIL_PUBLIC_SCORE_SOURCE` blank unless you want to force a source.
+4. For the Get CIBIL Score page, set **Real CIBIL score enabled** and choose **Fetch Experian instead of CIBIL**. `php artisan cibil:check-access` prints both switches and what the page shows.
 5. Make sure the queue worker and the scheduler cron run. Staff and API requests are queued; the public page is not. `cibil:flag-stale` runs every 5 minutes, and `cibil:enforce-retention` runs daily at 02:55.
 
 ## 15. Operations
