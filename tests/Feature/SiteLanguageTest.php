@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Customers\Models\Customer;
 use App\Support\Localization\SiteLocale;
 use Illuminate\Http\Request;
 
@@ -12,6 +13,20 @@ it('renders the language switch in the top strip with English selected by defaul
 
     expect(preg_match('/<a[^>]*data-locale-option="en"[^>]*aria-current="true"/', $response->getContent()))->toBe(1)
         ->and(preg_match('/<a[^>]*data-locale-option="hi"[^>]*aria-current="true"/', $response->getContent()))->toBe(0);
+});
+
+it('puts the Sign in pill in the top-right corner, after the language switch', function () {
+    $response = $this->get('/')->assertOk();
+
+    $response->assertSeeInOrder(['data-language-strip', 'data-locale-option="hi"', 'data-portal-link', 'Sign in', '<header'], false);
+    $response->assertDontSee('Existing Customer?');
+});
+
+it('shows a signed-in customer My Profile in place of Sign in', function () {
+    $this->actingAs(Customer::factory()->portalAccount()->create(), 'customer')
+        ->get('/')
+        ->assertOk()
+        ->assertSeeInOrder(['data-locale-option="hi"', route('portal.dashboard'), 'My Profile', '<header'], false);
 });
 
 it('links each language back to the page the visitor is on', function () {

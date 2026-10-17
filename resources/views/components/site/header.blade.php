@@ -1,28 +1,38 @@
 {{--
-    The language strip sits ABOVE the sticky header, in the page's top-right
-    corner, so it is the first thing a visitor meets and they can choose a
-    language before exploring. It scrolls away with the page instead of
-    sticking, which keeps the header no taller than it was. The 1024–1279px
+    The top strip sits ABOVE the sticky header, so it is the first thing a
+    visitor meets: the language switch, then the customer portal's Sign in
+    pill in the page's top-right corner. It scrolls away with the page instead
+    of sticking, which keeps the header no taller than it was. The 1024–1279px
     header row has no spare width for another control (see .ai/rules/site.md).
-    The mobile menu repeats the switch for a phone visitor who has scrolled
-    down.
+    The mobile menu repeats the language switch for a phone visitor who has
+    scrolled down.
 --}}
 <div class="border-b border-line bg-surface" data-language-strip>
-    <div class="mx-auto flex max-w-7xl items-center justify-end gap-3 px-6 py-1.5 lg:px-8">
-        {{-- The customer portal's way in, kept in this strip because the header row has no spare width. --}}
+    <div class="mx-auto flex max-w-7xl items-center justify-end gap-2 px-6 py-1.5 sm:gap-3 lg:px-8">
+        <span class="hidden items-center gap-1.5 text-xs text-ink-faint sm:inline-flex" aria-hidden="true">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><circle cx="10" cy="10" r="7.25" /><path stroke-linecap="round" d="M2.75 10h14.5M10 2.75c1.9 2 2.9 4.4 2.9 7.25S11.9 15.25 10 17.25C8.1 15.25 7.1 12.85 7.1 10S8.1 4.75 10 2.75Z" /></svg>
+            Language · <span lang="hi">भाषा</span>
+        </span>
+        <x-site.language-switch />
+        <span class="h-4 w-px bg-line-strong" aria-hidden="true"></span>
         @auth('customer')
-            <a href="{{ route('portal.dashboard') }}" class="mr-auto inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:text-accent-strong" data-portal-link>
-                <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5" aria-hidden="true"><path d="M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0H3Z" /></svg>
+            <a href="{{ route('portal.dashboard') }}" class="portal-pill group inline-flex shrink-0 items-center gap-1.5 rounded-full p-[3px] pr-3 text-xs font-semibold leading-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" data-portal-link>
+                <span class="portal-pill-avatar relative flex h-6 w-6 items-center justify-center rounded-full">
+                    <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5" aria-hidden="true"><path d="M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0H3Z" /></svg>
+                    <span class="portal-pill-status absolute -bottom-px -right-px h-2 w-2 rounded-full" aria-hidden="true"></span>
+                </span>
                 {{ __('My Profile') }}
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" class="h-3 w-3 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m8 5 5 5-5 5" /></svg>
             </a>
         @else
-            <a href="{{ route('customer.login') }}" class="mr-auto inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:text-accent-strong" data-portal-link>
-                <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5" aria-hidden="true"><path d="M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0H3Z" /></svg>
-                {{ __('Existing Customer? Sign in') }}
+            <a href="{{ route('customer.login') }}" class="portal-pill group inline-flex shrink-0 items-center gap-1.5 rounded-full p-[3px] pr-3 text-xs font-semibold leading-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" data-portal-link>
+                <span class="portal-pill-avatar flex h-6 w-6 items-center justify-center rounded-full">
+                    <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5" aria-hidden="true"><path d="M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0H3Z" /></svg>
+                </span>
+                {{ __('Sign in') }}
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" class="h-3 w-3 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m8 5 5 5-5 5" /></svg>
             </a>
         @endauth
-        <span class="text-xs text-ink-faint" aria-hidden="true">Language · <span lang="hi">भाषा</span></span>
-        <x-site.language-switch />
     </div>
 </div>
 

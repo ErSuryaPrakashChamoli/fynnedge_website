@@ -639,7 +639,7 @@ new class extends Component
     @endif
 
     <div class="p-6 sm:p-7">
-        <x-ui.stepper :steps="[__('Mobile number'), __('Verify OTP'), __('Your details'), __('Your score')]" :current="$this->stepIndex" />
+        <x-ui.stepper variant="arrows" :steps="[__('Mobile number'), __('Verify OTP'), __('Your details'), __('Your score')]" :current="$this->stepIndex" />
 
         <div class="mt-7">
             @if ($step === 'mobile')
