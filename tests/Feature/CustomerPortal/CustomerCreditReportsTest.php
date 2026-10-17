@@ -7,6 +7,7 @@ use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
 use App\Modules\Customers\DataTransferObjects\RefreshEligibility;
 use App\Modules\Customers\Models\Customer;
+use App\Modules\Customers\Services\CreditReportView;
 use App\Modules\Customers\Services\CustomerCreditReports;
 use App\Modules\Equifax\Services\EquifaxSettings;
 use App\Modules\Experian\Models\ExperianCreditRequest;
@@ -142,6 +143,44 @@ it('never fetches a provider PDF link for a customer', function () {
 
     Http::assertNothingSent();
 });
+
+it('downloads a saved report as a PDF file, offered on the list and the report page, without contacting a bureau', function () {
+    $check = savedExperianReport($this->customer);
+    $download = route('portal.reports.download', $check->public_id);
+
+    $this->actingAs($this->customer, 'customer')->get(route('portal.reports.index'))->assertSee($download);
+    $this->actingAs($this->customer, 'customer')->get(route('portal.reports.show', $check->public_id))->assertSee($download);
+
+    $response = $this->actingAs($this->customer, 'customer')->get($download);
+
+    $response->assertOk()->assertHeader('Content-Type', 'application/pdf');
+    expect($response->headers->get('Content-Disposition'))->toStartWith('attachment; filename="fynnedge-experian-credit-report-')
+        ->and($response->getContent())->toStartWith('%PDF-')
+        ->and(AuditLog::query()->where('action', 'report_pdf_downloaded_by_customer')->sole()->user_id)->toBeNull();
+    Http::assertNothingSent();
+});
+
+it('fills the PDF with the saved report, identifiers masked', function () {
+    $check = savedExperianReport($this->customer);
+
+    $html = view('portal.credit-reports.pdf', ['customer' => $this->customer, 'check' => $check, 'report' => CreditReportView::for($check)])->render();
+
+    expect($html)->toContain('792', 'Excellent', 'Credit accounts', 'Fixture Bank', 'Payment history', 'XXXXXX999Z')
+        ->not->toContain('AAAPZ9999Z')
+        ->not->toContain('FIXTUREACC1234');
+});
+
+it('offers no PDF download for a check the bureau did not answer, or anyone else\'s report', function (Closure $makeCheck) {
+    $check = $makeCheck($this->customer);
+
+    $this->actingAs($this->customer, 'customer')
+        ->get(route('portal.reports.download', $check->public_id))
+        ->assertNotFound();
+})->with([
+    'failed check' => [fn (Customer $customer) => savedExperianReport($customer, ['status' => CreditCheckStatus::Failed, 'score' => null])],
+    'another customer' => [fn () => savedExperianReport(Customer::factory()->portalAccount('9000000002')->create())],
+    'demo check' => [fn (Customer $customer) => CreditScoreCheck::factory()->create(['customer_id' => $customer->id, 'provider' => 'demo'])],
+]);
 
 it('keeps a refresh closed until the regeneration limit allows a new report', function () {
     Setting::set(ExperianSettings::PUBLIC_SCORE_ENABLED, true);

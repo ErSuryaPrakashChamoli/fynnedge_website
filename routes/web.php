@@ -160,6 +160,7 @@ Route::prefix('my-profile')
         Route::get('/credit-reports', [PortalCreditReportController::class, 'index'])->name('reports.index');
         Route::get('/credit-reports/{report}', [PortalCreditReportController::class, 'show'])->whereUuid('report')->name('reports.show');
         Route::get('/credit-reports/{report}/pdf', [PortalCreditReportController::class, 'pdf'])->whereUuid('report')->name('reports.pdf');
+        Route::get('/credit-reports/{report}/download', [PortalCreditReportController::class, 'download'])->whereUuid('report')->name('reports.download');
         Route::get('/apply-for-loan', [PortalLoanApplicationController::class, 'create'])->name('apply');
         Route::post('/apply-for-loan/{loanProduct:slug}', [PortalLoanApplicationController::class, 'store'])->name('apply.start');
         Route::get('/loan-applications', [PortalLoanApplicationController::class, 'index'])->name('applications');

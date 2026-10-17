@@ -168,3 +168,58 @@ it('sends a portal refresh to the registered mobile whatever the browser posts',
 
     expect(MobileOtpChallenge::query()->sole()->mobile_number)->toBe('9000000001');
 });
+
+it('shows a check saved before the portal existed once its owner checks again', function () {
+    portalExperianLive();
+    runPortalExperianCheck();
+    // Before 2026-10-16 credit_score_checks had no customer_id.
+    $original = CreditScoreCheck::query()->sole();
+    $original->forceFill(['customer_id' => null])->save();
+    Auth::guard('customer')->logout();
+    $this->travel(1)->day();
+
+    runPortalExperianCheck()->assertSet('resultScore', 792);
+
+    $customer = Customer::query()->sole();
+    expect($original->fresh()->customer_id)->toBe($customer->id);
+
+    $this->actingAs($customer, 'customer')
+        ->get(route('portal.credit-score'))
+        ->assertOk()
+        ->assertSee('792')
+        ->assertDontSee('No Experian score saved yet');
+
+    $this->actingAs($customer, 'customer')
+        ->get(route('portal.reports.index'))
+        ->assertSee(route('portal.reports.show', $original->public_id));
+});
+
+it('never links a check run with another mobile or another PAN', function () {
+    portalExperianLive();
+    $otherMobile = CreditScoreCheck::factory()->create(['mobile_number' => '9000000002', 'pan_number' => 'AAAPZ9999Z']);
+    $otherPan = CreditScoreCheck::factory()->create(['mobile_number' => '9000000001', 'pan_number' => 'BBBPZ9999Z']);
+
+    runPortalExperianCheck();
+
+    expect($otherMobile->fresh()->customer_id)->toBeNull()
+        ->and($otherPan->fresh()->customer_id)->toBeNull();
+});
+
+it('links existing accounts to their earlier checks when deployed', function () {
+    $customer = Customer::factory()->portalAccount('9000000001')->create();
+    $customer->setPan('AAAPZ9999Z');
+    $customer->save();
+    $own = CreditScoreCheck::factory()->create(['mobile_number' => '9000000001', 'pan_number' => 'AAAPZ9999Z', 'provider' => CreditScoreCheck::LIVE_PROVIDER]);
+    $otherPan = CreditScoreCheck::factory()->create(['mobile_number' => '9000000001', 'pan_number' => 'BBBPZ9999Z', 'provider' => CreditScoreCheck::LIVE_PROVIDER]);
+    $onAnotherAccount = CreditScoreCheck::factory()->create([
+        'customer_id' => Customer::factory()->portalAccount('9000000002')->create()->id,
+        'mobile_number' => '9000000001',
+        'pan_number' => 'AAAPZ9999Z',
+    ]);
+
+    (require database_path('migrations/2026_10_17_081924_link_earlier_credit_score_checks_to_customer_accounts.php'))->up();
+
+    expect($own->fresh()->customer_id)->toBe($customer->id)
+        ->and($otherPan->fresh()->customer_id)->toBeNull()
+        ->and($onAnotherAccount->fresh()->customer_id)->not->toBe($customer->id);
+});

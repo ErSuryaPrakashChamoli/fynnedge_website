@@ -27,7 +27,12 @@
                         <td class="py-2.5 pr-3 font-display text-base font-semibold text-ink">{{ $report->score ?? '—' }}</td>
                         <td class="py-2.5 pr-3 text-ink-muted">{{ ($report->completed_at ?? $report->requested_at)?->translatedFormat('d M Y') }}</td>
                         <td class="py-2.5 pr-3"><x-portal.check-status :check="$report" /></td>
-                        <td class="py-2.5 text-right"><a href="{{ route('portal.reports.show', $report->public_id) }}" class="font-medium text-accent underline">{{ __('View') }}</a></td>
+                        <td class="whitespace-nowrap py-2.5 text-right">
+                            <a href="{{ route('portal.reports.show', $report->public_id) }}" class="font-medium text-accent underline">{{ __('View') }}</a>
+                            @if ($report->status === \App\Modules\CreditBureau\Enums\CreditCheckStatus::Completed)
+                                <a href="{{ route('portal.reports.download', $report->public_id) }}" class="ml-3 font-medium text-accent underline" data-report-download>{{ __('Download PDF') }}</a>
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
