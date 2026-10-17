@@ -16,6 +16,7 @@ use App\Modules\Customers\Models\Customer;
 use App\Modules\Equifax\Services\EquifaxSettings;
 use App\Modules\Experian\Services\ExperianSettings;
 use Illuminate\Contracts\Cache\LockTimeoutException;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -92,6 +93,54 @@ class SubmitCreditScoreCheck
         };
     }
 
+    /**
+     * Whether a live check by this person (bureau, PAN and verified mobile)
+     * would be answered without a new paid pull — a stored score inside the
+     * reuse period, or an uncertain check still inside its hold. The same
+     * rule live() applies, for callers that must know before running it
+     * (customer billing).
+     */
+    public static function wouldAnswerFromStore(BureauName $bureau, string $pan, string $mobileNumber): bool
+    {
+        $previous = fn () => self::previousChecks($bureau, CreditScoreCheck::LIVE_PROVIDER, PanNumber::normalize($pan), $mobileNumber);
+
+        return self::reusable($previous(), self::reuseDays($bureau))->exists()
+            || self::unresolved($previous())->exists();
+    }
+
+    /**
+     * @return Builder<CreditScoreCheck>
+     */
+    private static function previousChecks(BureauName $bureau, string $provider, string $pan, string $mobileNumber): Builder
+    {
+        return CreditScoreCheck::query()
+            ->where('bureau', $bureau)
+            ->where('provider', $provider)
+            ->where('pan_number', $pan)
+            ->where('mobile_number', $mobileNumber);
+    }
+
+    /**
+     * @param  Builder<CreditScoreCheck>  $query
+     * @return Builder<CreditScoreCheck>
+     */
+    private static function reusable(Builder $query, int $reuseDays): Builder
+    {
+        return $query->where('status', CreditCheckStatus::Completed)
+            ->where('completed_at', '>=', now()->subDays($reuseDays))
+            ->whereNull('raw_response->reused_from');
+    }
+
+    /**
+     * @param  Builder<CreditScoreCheck>  $query
+     * @return Builder<CreditScoreCheck>
+     */
+    private static function unresolved(Builder $query): Builder
+    {
+        return $query->where('status', CreditCheckStatus::Pending)
+            ->where('created_at', '>=', now()->subMinutes(self::UNCERTAIN_HOLD_MINUTES));
+    }
+
     /** How long an uncertain live check blocks a new paid one for the same person. */
     public static function uncertainHoldMinutes(): int
     {
@@ -111,18 +160,11 @@ class SubmitCreditScoreCheck
     {
         $pan = PanNumber::normalize($data['pan_number']);
         $data = [...$data, 'pan_number' => $pan];
-        $previous = fn () => CreditScoreCheck::query()
-            ->where('bureau', $bureau)
-            ->where('provider', $provider->name())
-            ->where('pan_number', $pan)
-            ->where('mobile_number', $mobileNumber);
+        $previous = fn () => self::previousChecks($bureau, $provider->name(), $pan, $mobileNumber);
 
         try {
             return Cache::lock($bureau->value.'-public-score:'.PanNumber::hash($pan.'|'.$mobileNumber), 90)->block(10, function () use ($provider, $bureau, $reuseDays, $data, $mobileNumber, $ipAddress, $previous): CreditScoreCheck {
-                $reusable = $previous()
-                    ->where('status', CreditCheckStatus::Completed)
-                    ->where('completed_at', '>=', now()->subDays($reuseDays))
-                    ->whereNull('raw_response->reused_from')
+                $reusable = self::reusable($previous(), $reuseDays)
                     ->latest('completed_at')
                     ->first();
 
@@ -140,9 +182,7 @@ class SubmitCreditScoreCheck
                     ]);
                 }
 
-                $unresolved = $previous()
-                    ->where('status', CreditCheckStatus::Pending)
-                    ->where('created_at', '>=', now()->subMinutes(self::UNCERTAIN_HOLD_MINUTES))
+                $unresolved = self::unresolved($previous())
                     ->latest('id')
                     ->first();
 

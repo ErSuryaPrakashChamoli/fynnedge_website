@@ -13,6 +13,8 @@ use App\Modules\Equifax\Models\EquifaxCreditRequest;
 use App\Modules\Experian\Models\ExperianCreditRequest;
 use App\Modules\Journey\Models\JourneySession;
 use App\Modules\MobileOtp\Services\MobileNumber;
+use App\Modules\Wallet\Models\CustomerPlan;
+use App\Modules\Wallet\Models\WalletTransaction;
 use Database\Factories\CustomerFactory;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -92,6 +94,16 @@ class Customer extends Model implements AuthenticatableContract
     public function creditScoreChecks(): HasMany
     {
         return $this->hasMany(CreditScoreCheck::class);
+    }
+
+    public function walletTransactions(): HasMany
+    {
+        return $this->hasMany(WalletTransaction::class);
+    }
+
+    public function plans(): HasMany
+    {
+        return $this->hasMany(CustomerPlan::class);
     }
 
     public function crifReports(): HasMany

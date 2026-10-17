@@ -42,7 +42,7 @@
                     <p class="mt-3 text-sm text-ink-muted">{{ __('No :bureau score saved yet.', ['bureau' => $eligibility->bureau->getLabel()]) }}</p>
                 @endif
 
-                <x-portal.refresh-status :eligibility="$eligibility" class="mt-4" />
+                <x-portal.refresh-status :eligibility="$eligibility" :quote="$quotes[$eligibility->bureau->value] ?? null" class="mt-4" />
             </x-ui.card>
         @endforeach
     </div>

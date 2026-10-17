@@ -1,5 +1,5 @@
 {{-- One bureau's refresh availability, from RefreshEligibility. --}}
-@props(['eligibility'])
+@props(['eligibility', 'quote' => null])
 
 @php
     $state = $eligibility->state;
@@ -11,6 +11,13 @@
         <p class="mt-0.5 text-ink-muted">
             @if ($state === \App\Modules\Customers\DataTransferObjects\RefreshEligibility::AVAILABLE)
                 {{ $eligibility->latestSuccess ? __('A refresh is available now.') : __('You can check this score now.') }}
+                @if ($quote?->mode === \App\Modules\Wallet\Enums\CheckBilling::Free)
+                    <span class="block text-pass" data-refresh-cost="free">{{ __('Free — this uses your free check.') }}</span>
+                @elseif ($quote?->mode === \App\Modules\Wallet\Enums\CheckBilling::Plan)
+                    <span class="block text-pass" data-refresh-cost="plan">{{ __('Included in your plan.') }}</span>
+                @elseif ($quote?->mode === \App\Modules\Wallet\Enums\CheckBilling::Wallet)
+                    <span class="block" data-refresh-cost="wallet">{{ __('Costs :total including GST, paid from your wallet (balance :balance).', ['total' => \App\Modules\Wallet\Services\Wallet::format($quote->price->totalPaise()), 'balance' => \App\Modules\Wallet\Services\Wallet::format($quote->balancePaise)]) }}</span>
+                @endif
             @elseif ($state === \App\Modules\Customers\DataTransferObjects\RefreshEligibility::TOO_SOON)
                 {{ __('Next refresh available on :date.', ['date' => $eligibility->nextEligibleAt->translatedFormat('d M Y')]) }}
             @elseif ($state === \App\Modules\Customers\DataTransferObjects\RefreshEligibility::IN_PROGRESS)

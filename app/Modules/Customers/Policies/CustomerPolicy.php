@@ -67,6 +67,12 @@ class CustomerPolicy
         return $authUser->can('Replicate:Customer');
     }
 
+    /** Crediting or debiting a customer's wallet by hand (its own permission: it moves money). */
+    public function adjustWallet(AuthUser $authUser, Customer $customer): bool
+    {
+        return $authUser->can('AdjustWallet:Customer');
+    }
+
     public function reorder(AuthUser $authUser): bool
     {
         return $authUser->can('Reorder:Customer');

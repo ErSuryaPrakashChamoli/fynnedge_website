@@ -14,6 +14,7 @@
         ['route' => 'portal.reports.index', 'label' => __('My Credit Reports'), 'active' => 'portal.reports.*', 'icon' => 'M5 2h7l4 4v12H5V2Zm7 0v4h4M8 10h5M8 13h5'],
         ['route' => 'portal.apply', 'label' => __('Apply for a Loan'), 'active' => 'portal.apply*', 'icon' => 'M10 4v12M4 10h12'],
         ['route' => 'portal.applications', 'label' => __('My Loan Applications'), 'active' => 'portal.applications', 'icon' => 'M4 4h12v12H4V4Zm3 4h6M7 11h6'],
+        ['route' => 'portal.wallet', 'label' => __('Wallet & Plans'), 'active' => 'portal.wallet*', 'icon' => 'M3 6h14v10H3V6Zm0 3h14M13 12.5h1.5M5 6l8-3 1 3'],
         ['route' => 'portal.documents', 'label' => __('My Documents'), 'active' => 'portal.documents*', 'icon' => 'M6 2h5l5 5v11H6V2Zm5 0v5h5'],
         ['route' => 'portal.support', 'label' => __('Help & Support'), 'active' => 'portal.support', 'icon' => 'M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm0-5v.01M8 8a2 2 0 1 1 3 1.7c-.6.4-1 .8-1 1.3'],
         ['route' => 'portal.settings', 'label' => __('Account Settings'), 'active' => 'portal.settings', 'icon' => 'M10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm6.5-3-1.6-.6-.4-1 .7-1.5-1.4-1.4-1.5.7-1-.4L10.6 3H9.4l-.6 1.6-1 .4-1.5-.7-1.4 1.4.7 1.5-.4 1L3.5 10v1.2l1.6.6.4 1-.7 1.5 1.4 1.4 1.5-.7 1 .4.6 1.6h1.2l.6-1.6 1-.4 1.5.7 1.4-1.4-.7-1.5.4-1 1.6-.6V10Z'],

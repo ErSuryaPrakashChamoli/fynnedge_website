@@ -10,6 +10,12 @@ use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\CreditScore\Enums\ScoreBand;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
 use App\Modules\CreditScore\Services\CreditScoreAdvice;
+use App\Modules\Wallet\DataTransferObjects\BillingQuote;
+use App\Modules\Wallet\Enums\CheckBilling;
+use App\Modules\Wallet\Exceptions\InsufficientWalletBalance;
+use App\Modules\Wallet\Models\WalletTransaction;
+use App\Modules\Wallet\Services\CreditCheckBilling;
+use App\Modules\Wallet\Services\Wallet;
 use App\Modules\Customers\Actions\LogInCustomer;
 use App\Modules\Customers\Actions\ResolveCustomerAccount;
 use App\Modules\Customers\Models\Customer;
@@ -24,7 +30,9 @@ use App\Modules\MobileOtp\Enums\MobileOtpVerificationResult;
 use App\Modules\MobileOtp\Exceptions\MobileOtpThrottled;
 use App\Modules\MobileOtp\Models\MobileOtpChallenge;
 use App\Modules\MobileOtp\Services\MobileNumber;
+use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -137,6 +145,27 @@ new class extends Component
     /** 'signed_in' once the check's account is open in this browser, 'disabled' when staff switched it off. */
     #[Locked]
     public ?string $accountStatus = null;
+
+    /**
+     * Paid refreshes (CreditCheckBilling): what this check would cost, shown
+     * on the details step once the number is verified…
+     */
+    #[Locked]
+    public ?string $billingNotice = null;
+
+    /**
+     * …the amounts when the wallet cannot cover it (the check does not run and
+     * the verification is not spent, so the customer can top up and submit
+     * again)…
+     *
+     * @var array{price: string, gst: string, total: string, balance: string, free_again: ?string}|null
+     */
+    #[Locked]
+    public ?array $paymentRequired = null;
+
+    /** …and what was charged, on the result. */
+    #[Locked]
+    public ?string $billingSummary = null;
 
     /**
      * Accepts a plain string (from the `:bureau="$bureau->value"` the controller
@@ -350,6 +379,7 @@ new class extends Component
 
         $this->verifiedMobileNumber = $challenge->mobile_number;
         $this->step = 'details';
+        $this->billingNotice = $this->previewBilling();
 
         if ($this->signedInCustomer?->verified_mobile === $this->verifiedMobileNumber) {
             $this->prefillFrom($this->signedInCustomer);
@@ -369,7 +399,7 @@ new class extends Component
         $this->panNumber = strtoupper($value);
     }
 
-    public function submitDetails(SubmitCreditScoreCheck $action, ResolveCustomerAccount $accounts, LogInCustomer $logIn): void
+    public function submitDetails(SubmitCreditScoreCheck $action, ResolveCustomerAccount $accounts, LogInCustomer $logIn, CreditCheckBilling $billing): void
     {
         if ($this->step !== 'details' || $this->verifiedMobileNumber === null) {
             $this->restart();
@@ -398,17 +428,6 @@ new class extends Component
             'consent.accepted' => __('Please provide consent to continue.'),
         ]);
 
-        // The verification is spent on exactly one check — re-submitting, or a
-        // second tab replaying the same component state, has nothing left to spend.
-        $challenge = MobileOtpChallenge::findForVerification($this->otpChallengeId, $this->verifiedMobileNumber, MobileOtpPurpose::CreditScoreCheck);
-
-        if (! $challenge?->consumeFor($this->verifiedMobileNumber, MobileOtpPurpose::CreditScoreCheck)) {
-            $this->restart();
-            $this->addError('mobileNumber', __('Your verification has expired. Please verify your mobile number again.'));
-
-            return;
-        }
-
         $name = $this->takesSplitName
             ? [
                 'full_name' => Str::squish(implode(' ', [$validated['firstName'], $validated['middleName'] ?? '', $validated['lastName']])),
@@ -424,9 +443,37 @@ new class extends Component
             'pan_number' => $validated['panNumber'],
             'gender' => $this->needsGender ? $validated['gender'] : null,
         ];
+        $bureau = BureauName::from($this->bureau);
         $customer = $this->accountFor($this->verifiedMobileNumber, $accounts);
+        $this->paymentRequired = null;
 
-        $check = $action->handle($details, BureauName::from($this->bureau), $this->verifiedMobileNumber, request()->ip(), $customer);
+        if ($customer !== null && CreditCheckBilling::enabled()) {
+            try {
+                // One billed check per customer at a time: two tabs can never
+                // both spend the free check or the same wallet balance.
+                $check = Cache::lock('credit-check-billing:'.$customer->getKey(), 120)
+                    ->block(15, fn (): ?CreditScoreCheck => $this->runBilled($action, $billing, $logIn, $customer, $bureau, $details));
+            } catch (LockTimeoutException) {
+                $this->addError('consent', __('Another credit check for your profile is still running. Please wait a moment and try again.'));
+
+                return;
+            }
+
+            if ($check === null) {
+                return;
+            }
+        } elseif (CreditCheckBilling::enabled() && SubmitCreditScoreCheck::isLive($bureau)) {
+            // A paid pull that cannot be billed to anyone never runs.
+            $this->addError('consent', __('We could not start your check right now. Please try again in a few minutes.'));
+
+            return;
+        } else {
+            if (! $this->spendVerification()) {
+                return;
+            }
+
+            $check = $action->handle($details, $bureau, $this->verifiedMobileNumber, request()->ip(), $customer);
+        }
 
         if ($customer !== null) {
             if ($check->isSuccessful()) {
@@ -449,6 +496,131 @@ new class extends Component
             default => 'failed',
         };
         $this->step = 'result';
+    }
+
+    /**
+     * The verification is spent on exactly one check — re-submitting, or a
+     * second tab replaying the same component state, has nothing left to spend.
+     */
+    private function spendVerification(): bool
+    {
+        $challenge = MobileOtpChallenge::findForVerification($this->otpChallengeId, $this->verifiedMobileNumber, MobileOtpPurpose::CreditScoreCheck);
+
+        if (! $challenge?->consumeFor($this->verifiedMobileNumber, MobileOtpPurpose::CreditScoreCheck)) {
+            $this->restart();
+            $this->addError('mobileNumber', __('Your verification has expired. Please verify your mobile number again.'));
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * A check with billing on: priced, the price held, the verification spent,
+     * the bureau asked, then the hold captured (new answer) or released.
+     * Null when it did not run (wallet short, or verification expired).
+     *
+     * @param  array<string, mixed>  $details
+     */
+    private function runBilled(SubmitCreditScoreCheck $action, CreditCheckBilling $billing, LogInCustomer $logIn, Customer $customer, BureauName $bureau, array $details): ?CreditScoreCheck
+    {
+        $quote = $billing->quote($customer, $bureau, $details['pan_number'], $this->verifiedMobileNumber);
+
+        try {
+            $hold = $quote->needsTopUp() ? throw new InsufficientWalletBalance($quote->balancePaise, $quote->price->totalPaise()) : $billing->reserve($customer, $bureau, $quote);
+        } catch (InsufficientWalletBalance) {
+            $this->askForPayment($quote, $customer, $logIn);
+
+            return null;
+        }
+
+        if (! $this->spendVerification()) {
+            $hold !== null && app(Wallet::class)->release($hold);
+
+            return null;
+        }
+
+        try {
+            $check = $action->handle($details, $bureau, $this->verifiedMobileNumber, request()->ip(), $customer);
+        } catch (\Throwable $exception) {
+            $hold !== null && app(Wallet::class)->release($hold);
+
+            throw $exception;
+        }
+
+        $billing->settle($quote, $hold, $check);
+        $this->billingSummary = $this->billingSummaryFor($quote, $hold, $check);
+
+        return $check;
+    }
+
+    /**
+     * Shows what the refresh costs and opens the customer's profile in this
+     * browser, so "Add money" lands on their own wallet.
+     */
+    private function askForPayment(BillingQuote $quote, Customer $customer, LogInCustomer $logIn): void
+    {
+        $this->paymentRequired = [
+            'price' => Wallet::format($quote->price->taxablePaise),
+            'gst' => Wallet::format($quote->price->gstPaise),
+            'total' => Wallet::format($quote->price->totalPaise()),
+            'balance' => Wallet::format($quote->balancePaise),
+            'free_again' => $quote->freeAgainAt?->translatedFormat('d M Y'),
+        ];
+
+        if (! $this->signedInCustomer?->is($customer)) {
+            $logIn->handle($customer, 'credit_score_check');
+            unset($this->signedInCustomer, $this->lockedToAccount);
+        }
+    }
+
+    private function billingSummaryFor(BillingQuote $quote, ?WalletTransaction $hold, CreditScoreCheck $check): ?string
+    {
+        $check->refresh();
+
+        return match (true) {
+            $check->billing === CheckBilling::Wallet => __(':amount (including GST) was paid from your wallet.', ['amount' => Wallet::format(abs($hold->amount_paise))]),
+            $check->billing === CheckBilling::Free => __('This was your free check. Your next free check is due on :date.', ['date' => $check->completed_at->copy()->addMonths(CreditCheckBilling::freeEveryMonths())->translatedFormat('d M Y')]),
+            $check->billing === CheckBilling::Plan => __('Included in your plan — no charge.'),
+            $check->billing === CheckBilling::Reused => __('No charge — your saved score is still current.'),
+            $hold !== null => __('You were not charged — the bureau did not return a new result.'),
+            default => null,
+        };
+    }
+
+    /**
+     * What a check will cost this number's account, before the details are
+     * submitted. Read-only: an account is looked up, never opened, here.
+     */
+    private function previewBilling(): ?string
+    {
+        $bureau = BureauName::from($this->bureau);
+
+        if (! CreditCheckBilling::enabled() || ! SubmitCreditScoreCheck::isLive($bureau)) {
+            return null;
+        }
+
+        $customer = $this->signedInCustomer?->verified_mobile === $this->verifiedMobileNumber
+            ? $this->signedInCustomer
+            : Customer::query()->where('verified_mobile', $this->verifiedMobileNumber)->first();
+
+        if ($customer === null) {
+            return null;
+        }
+
+        $quote = app(CreditCheckBilling::class)->quote($customer, $bureau);
+
+        return match ($quote->mode) {
+            CheckBilling::Plan => __('This check is included in your plan.'),
+            CheckBilling::Wallet => __('Your free check for this period has been used (free again on :date). Unless your last score is still current, this check costs :total (:price + GST) from your wallet. Wallet balance: :balance.', [
+                'date' => $quote->freeAgainAt?->translatedFormat('d M Y'),
+                'total' => Wallet::format($quote->price->totalPaise()),
+                'price' => Wallet::format($quote->price->taxablePaise),
+                'balance' => Wallet::format($quote->balancePaise),
+            ]),
+            default => null,
+        };
     }
 
     /**
@@ -478,7 +650,7 @@ new class extends Component
         $this->reset([
             'step', 'mobileNumber', 'otpCode', 'otpChallengeId', 'verifiedMobileNumber', 'resendAfterSeconds',
             'fullName', 'firstName', 'middleName', 'lastName', 'gender', 'dateOfBirth', 'panNumber', 'consent', 'resultScore', 'resultKind', 'resultError', 'resultInsights',
-            'resultCheckId', 'accountStatus',
+            'resultCheckId', 'accountStatus', 'billingNotice', 'paymentRequired', 'billingSummary',
         ]);
 
         unset($this->signedInCustomer, $this->lockedToAccount);
@@ -712,6 +884,23 @@ new class extends Component
                         </span>
                     </label>
                     @error('consent') <p class="text-xs text-warn">{{ $message }}</p> @enderror
+                    @if ($paymentRequired)
+                        <div class="flex flex-col gap-3 rounded-xl border border-warn/25 bg-warn-soft p-4 text-sm" role="alert" data-payment-required>
+                            <p class="font-semibold text-warn">{{ __('Add money to your wallet to refresh your score') }}</p>
+                            <p class="text-ink-muted">
+                                @if ($paymentRequired['free_again'])
+                                    {{ __('Your free check for this period has been used — your next free check is on :date.', ['date' => $paymentRequired['free_again']]) }}
+                                @endif
+                                {{ __('This refresh costs :price + GST :gst = :total. Your wallet balance is :balance.', \Illuminate\Support\Arr::only($paymentRequired, ['price', 'gst', 'total', 'balance'])) }}
+                            </p>
+                            <div class="flex flex-col gap-2 sm:flex-row">
+                                <x-ui.button tag="a" href="{{ route('portal.wallet') }}" target="_blank" rel="noopener" size="sm" class="justify-center">{{ __('Add money or buy a plan') }}</x-ui.button>
+                            </div>
+                            <p class="text-xs text-ink-faint">{{ __('Once your wallet is topped up, come back to this tab and press Check my score again — no new code needed.') }}</p>
+                        </div>
+                    @elseif ($billingNotice)
+                        <x-ui.alert data-billing-notice>{{ $billingNotice }}</x-ui.alert>
+                    @endif
                     <x-ui.button wire:click="submitDetails" wire:loading.attr="disabled" class="w-full justify-center">
                         {{ __('Check my score') }}
                     </x-ui.button>
@@ -809,6 +998,10 @@ new class extends Component
                                 </p>
                             @endif
                         </div>
+                    @endif
+
+                    @if ($billingSummary)
+                        <p class="text-center text-sm text-ink-muted" data-billing-summary>{{ $billingSummary }}</p>
                     @endif
 
                     @if ($accountStatus === 'signed_in')

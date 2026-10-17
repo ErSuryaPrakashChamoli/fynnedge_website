@@ -13,6 +13,8 @@ use App\Modules\Equifax\Enums\EquifaxErrorCode;
 use App\Modules\Equifax\Models\EquifaxCreditRequest;
 use App\Modules\Experian\Enums\ExperianErrorCode;
 use App\Modules\Experian\Models\ExperianCreditRequest;
+use App\Modules\Wallet\Enums\CheckBilling;
+use App\Modules\Wallet\Models\WalletTransaction;
 use Database\Factories\CreditScoreCheckFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -43,6 +45,7 @@ class CreditScoreCheck extends Model
         return [
             'bureau' => BureauName::class,
             'status' => CreditCheckStatus::class,
+            'billing' => CheckBilling::class,
             'raw_response' => 'array',
             'report_insights' => 'encrypted:array',
             'date_of_birth' => 'date',
@@ -56,6 +59,12 @@ class CreditScoreCheck extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    /** The wallet charge that paid for this check, when it was a paid refresh. */
+    public function walletTransaction(): BelongsTo
+    {
+        return $this->belongsTo(WalletTransaction::class);
     }
 
     /**
