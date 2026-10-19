@@ -47,6 +47,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Filament/**,database/migrations/** | .ai/rules/filament-migrations.md |
 | app/Support/Pages/AboutPageContent.php,app/Filament/Pages/AboutPageSettings.php,resources/views/about.blade.php | .ai/rules/filament-pages-views.md |
 | app/Support/Media/**,app/Filament/Pages/MediaGovernance.php | .ai/rules/filament-pages.md |
+| app/Filament/Resources/CreditScoreChecks/**,app/Filament/Resources/CibilCreditRequests/**,app/Filament/Pages/CibilDashboard.php,app/Filament/RelationManagers/CreditScoreChecksRelationManager.php | .ai/rules/filament-relation-managers.md |
 | app/Filament/Resources/**/Schemas/*Form.php | .ai/rules/filament-resources-schemas.md |
 | app/Models/Concerns/Publishable.php,app/Filament/Resources/** | .ai/rules/filament-resources.md |
 | app/Filament/Schemas/HtmlBodyEditor.php | .ai/rules/filament-schemas.md |

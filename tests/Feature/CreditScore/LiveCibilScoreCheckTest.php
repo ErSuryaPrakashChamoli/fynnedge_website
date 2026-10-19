@@ -1,7 +1,14 @@
 <?php
 
+use App\Filament\Pages\CibilDashboard;
 use App\Filament\Pages\CibilSettings as CibilSettingsPage;
+use App\Filament\RelationManagers\CreditScoreChecksRelationManager;
+use App\Filament\Resources\CibilCreditRequests\Pages\ListCibilCreditRequests;
 use App\Filament\Resources\CreditScoreChecks\CreditScoreCheckResource;
+use App\Filament\Resources\CreditScoreChecks\Pages\ListCreditScoreChecks;
+use App\Filament\Resources\CreditScoreChecks\Pages\ViewCreditScoreCheck;
+use App\Filament\Resources\Customers\Pages\EditCustomer;
+use App\Filament\Resources\ExperianCreditRequests\ExperianCreditRequestResource;
 use App\Models\Setting;
 use App\Models\User;
 use App\Modules\Cibil\Services\CibilRoles;
@@ -11,11 +18,14 @@ use App\Modules\CreditScore\Enums\BureauName;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
 use App\Modules\Experian\Enums\ExperianErrorCode;
 use App\Modules\Experian\Models\ExperianCreditRequest;
+use App\Modules\Experian\Services\ExperianRoles;
 use App\Modules\Experian\Services\ExperianSettings;
+use Filament\Actions\Testing\TestAction;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
+use Spatie\Permission\Models\Permission;
 
 /**
  * The public CIBIL page with CIBIL Settings → "Fetch Experian instead of
@@ -169,4 +179,57 @@ it('lets only permitted admins switch the CIBIL page, and says where its scores 
     expect(CibilSettings::publicScoreEnabled())->toBeTrue()
         ->and(CibilSettings::publicScoreUsesExperian())->toBeFalse()
         ->and(ExperianSettings::publicScoreEnabled())->toBeFalse();
+});
+
+it('links the CIBIL page\'s Experian report from the score check, the customer and the CIBIL screens', function () {
+    liveCibilScorePage();
+    checkCibilOnPage()->assertSet('resultScore', 792);
+    $this->travel(2)->minutes();
+    checkCibilOnPage()->assertSet('resultScore', 792);
+
+    [$check, $repeatView] = CreditScoreCheck::query()->oldest('id')->get();
+    $reportUrl = ExperianCreditRequestResource::getUrl('view', ['record' => ExperianCreditRequest::query()->sole()]);
+    $this->actingAs(User::factory()->create(['is_admin' => true]));
+
+    Livewire::test(ViewCreditScoreCheck::class, ['record' => $check->getRouteKey()])
+        ->assertActionVisible('viewReport')
+        ->assertActionHasLabel('viewReport', 'View Experian report')
+        ->assertActionHasUrl('viewReport', $reportUrl);
+
+    Livewire::test(ListCreditScoreChecks::class)
+        ->assertActionHasUrl(TestAction::make('viewReport')->table($check), $reportUrl)
+        ->assertActionHasUrl(TestAction::make('viewReport')->table($repeatView), $reportUrl);
+
+    Livewire::test(CreditScoreChecksRelationManager::class, ['ownerRecord' => $check->customer, 'pageClass' => EditCustomer::class])
+        ->assertActionHasUrl(TestAction::make('viewReport')->table($check), $reportUrl);
+
+    Livewire::test(ListCibilCreditRequests::class)
+        ->assertActionHasLabel('experianStandInReports', 'CIBIL page reports from Experian (1)')
+        ->assertActionHasUrl('experianStandInReports', ExperianCreditRequestResource::getUrl('index', ['tab' => 'reports']));
+
+    $this->get(CibilDashboard::getUrl())
+        ->assertOk()
+        ->assertSee('The Free CIBIL Score page is answered by Experian (stand-in bureau).')
+        ->assertSee('1 report from that page so far.');
+});
+
+it('offers no report link for a demo check, nor to staff who may not open Experian requests', function () {
+    CibilRoles::grant();
+    ExperianRoles::grant();
+    liveCibilScorePage();
+    checkCibilOnPage()->assertSet('resultScore', 792);
+    $check = CreditScoreCheck::query()->sole();
+    $demo = CreditScoreCheck::factory()->create(['provider' => 'demo']);
+
+    $this->actingAs(User::factory()->create(['is_admin' => true]));
+    Livewire::test(ViewCreditScoreCheck::class, ['record' => $demo->getRouteKey()])->assertActionHidden('viewReport');
+
+    $staff = tap(User::factory()->create(['is_admin' => true]))->syncRoles([]);
+    $staff->givePermissionTo(collect(['ViewAny:CreditScoreCheck', 'View:CreditScoreCheck', 'ViewAny:CibilCreditRequest', 'View:CibilDashboard'])
+        ->map(fn (string $permission): Permission => Permission::findOrCreate($permission)));
+    $this->actingAs($staff);
+
+    Livewire::test(ViewCreditScoreCheck::class, ['record' => $check->getRouteKey()])->assertActionHidden('viewReport');
+    Livewire::test(ListCibilCreditRequests::class)->assertActionHidden('experianStandInReports');
+    $this->get(CibilDashboard::getUrl())->assertOk()->assertDontSee('Open Experian Credit Reports');
 });

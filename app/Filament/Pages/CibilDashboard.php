@@ -2,6 +2,8 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Resources\CibilCreditRequests\CibilCreditRequestResource;
+use App\Filament\Resources\ExperianCreditRequests\ExperianCreditRequestResource;
 use App\Models\AuditLog;
 use App\Models\User;
 use App\Modules\Cibil\Enums\CibilErrorCode;
@@ -10,6 +12,7 @@ use App\Modules\Cibil\Enums\CibilRequestStatus;
 use App\Modules\Cibil\Enums\CibilRequestType;
 use App\Modules\Cibil\Models\CibilCreditRequest;
 use App\Modules\Cibil\Services\CibilSettings;
+use App\Modules\Experian\Models\ExperianCreditRequest;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
@@ -52,6 +55,25 @@ class CibilDashboard extends Page
             'score_days' => CibilSettings::scoreReuseDays(),
             'report_days' => CibilSettings::reportReuseDays(),
             'consent_days' => CibilSettings::consentValidityDays(),
+        ];
+    }
+
+    /**
+     * The Free CIBIL Score page's Experian stand-in: whether it answers the
+     * page now, how many full reports it produced, and where staff allowed
+     * to see Experian requests find them. Those reports are not CIBIL
+     * requests, so the figures below never include them.
+     *
+     * @return array{active: bool, reports: int, url: ?string}
+     */
+    public function experianStandIn(): array
+    {
+        $canViewExperian = (bool) auth()->user()?->can('viewAny', ExperianCreditRequest::class);
+
+        return [
+            'active' => CibilSettings::publicScoreEnabled() && CibilSettings::isStandIn(),
+            'reports' => CibilCreditRequestResource::experianStandInReportCount(),
+            'url' => $canViewExperian ? ExperianCreditRequestResource::getUrl('index', ['tab' => 'reports']) : null,
         ];
     }
 

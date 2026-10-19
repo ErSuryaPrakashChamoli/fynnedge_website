@@ -2,9 +2,13 @@
 
 namespace App\Filament\Resources\CreditScoreChecks\Tables;
 
+use App\Filament\Resources\CreditScoreChecks\CreditScoreCheckResource;
 use App\Modules\CreditBureau\Enums\CreditCheckStatus;
 use App\Modules\CreditScore\Enums\BureauName;
+use App\Modules\CreditScore\Models\CreditScoreCheck;
+use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -52,6 +56,12 @@ class CreditScoreChecksTable
             ])
             ->recordActions([
                 ViewAction::make(),
+                Action::make('viewReport')
+                    ->label('Report')
+                    ->tooltip(fn (CreditScoreCheck $record): string => 'Full report, kept with the '.$record->sourceBureau()?->getLabel().' requests')
+                    ->icon(Heroicon::OutlinedDocumentChartBar)
+                    ->visible(fn (CreditScoreCheck $record): bool => CreditScoreCheckResource::bureauReportUrl($record) !== null)
+                    ->url(fn (CreditScoreCheck $record): ?string => CreditScoreCheckResource::bureauReportUrl($record)),
             ]);
     }
 }
