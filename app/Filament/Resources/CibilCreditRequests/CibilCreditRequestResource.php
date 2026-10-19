@@ -9,6 +9,8 @@ use App\Filament\Resources\CibilCreditRequests\Schemas\CibilCreditRequestInfolis
 use App\Filament\Resources\CibilCreditRequests\Tables\CibilCreditRequestsTable;
 use App\Modules\Cibil\Enums\CibilRequestStatus;
 use App\Modules\Cibil\Models\CibilCreditRequest;
+use App\Modules\CreditScore\Enums\BureauName;
+use App\Modules\CreditScore\Models\CreditScoreCheck;
 use BackedEnum;
 use Filament\Navigation\NavigationItem;
 use Filament\Resources\Resource;
@@ -109,6 +111,23 @@ class CibilCreditRequestResource extends Resource
                 ->isActiveWhen(fn (): bool => $onTab('failed'))
                 ->url($listUrl.'?tab=failed'),
         ];
+    }
+
+    /**
+     * Full reports the Free CIBIL Score page got from Experian, its stand-in
+     * bureau. They are Experian requests — kept under Experian → Experian
+     * Credit Reports and never relabelled as CIBIL — so the CIBIL screens only
+     * count them and link there. Repeat views answered from a stored score are
+     * not new reports and are left out.
+     */
+    public static function experianStandInReportCount(): int
+    {
+        return CreditScoreCheck::query()
+            ->genuine()
+            ->answeredBy(BureauName::Cibil, BureauName::Experian)
+            ->whereNotNull('raw_response->experian_request')
+            ->whereNull('raw_response->reused_from')
+            ->count();
     }
 
     public static function getRelations(): array

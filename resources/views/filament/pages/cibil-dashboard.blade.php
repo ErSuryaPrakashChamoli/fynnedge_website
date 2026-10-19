@@ -3,7 +3,23 @@
 <x-filament-panels::page>
     @php
         $integration = $this->integration();
+        $experianStandIn = $this->experianStandIn();
     @endphp
+
+    @if ($experianStandIn['active'] || $experianStandIn['reports'] > 0)
+        <div class="rounded-xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-900 dark:border-sky-800 dark:bg-sky-950 dark:text-sky-100">
+            <p class="font-semibold">
+                {{ $experianStandIn['active'] ? 'The Free CIBIL Score page is answered by Experian (stand-in bureau).' : 'The Free CIBIL Score page was answered by Experian (stand-in bureau) before.' }}
+            </p>
+            <p class="mt-1">
+                Its full reports are Experian requests, so they are not counted on this dashboard.
+                {{ trans_choice('{0} No report from that page yet.|{1} 1 report from that page so far.|[2,*] :count reports from that page so far.', $experianStandIn['reports']) }}
+                @if ($experianStandIn['url'])
+                    <a class="font-medium text-primary-600 underline dark:text-primary-400" href="{{ $experianStandIn['url'] }}">Open Experian Credit Reports</a>
+                @endif
+            </p>
+        </div>
+    @endif
 
     @if (! $integration['enabled'] || ! $integration['configured'])
         <div class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">

@@ -2,9 +2,12 @@
 
 namespace App\Filament\RelationManagers;
 
+use App\Filament\Resources\CreditScoreChecks\CreditScoreCheckResource;
 use App\Modules\CreditBureau\Services\PanNumber;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
+use Filament\Actions\Action;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +15,8 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * The "Website score checks" tab on a Customer: the free credit-score checks
  * this customer-portal account ran (the checks it sees in /my-profile), newest
- * first. Read-only; the full report, when kept, is on the bureau's own tab.
+ * first. Read-only; "Report" opens the full report on the bureau's own
+ * request page (an Experian request for the CIBIL page's Experian stand-in).
  */
 class CreditScoreChecksRelationManager extends RelationManager
 {
@@ -46,7 +50,14 @@ class CreditScoreChecksRelationManager extends RelationManager
             ])
             ->defaultSort('id', 'desc')
             ->headerActions([])
-            ->recordActions([])
+            ->recordActions([
+                Action::make('viewReport')
+                    ->label('Report')
+                    ->tooltip(fn (CreditScoreCheck $record): string => 'Full report, kept with the '.$record->sourceBureau()?->getLabel().' requests')
+                    ->icon(Heroicon::OutlinedDocumentChartBar)
+                    ->visible(fn (CreditScoreCheck $record): bool => CreditScoreCheckResource::bureauReportUrl($record) !== null)
+                    ->url(fn (CreditScoreCheck $record): ?string => CreditScoreCheckResource::bureauReportUrl($record)),
+            ])
             ->toolbarActions([]);
     }
 }
