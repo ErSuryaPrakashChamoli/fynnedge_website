@@ -34,6 +34,8 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Modules/CreditBureau/** | .ai/rules/credit-bureau.md |
 | app/Http/Controllers/Portal/CreditReportController.php,resources/views/portal/credit-reports/** | .ai/rules/credit-reports.md |
 | app/Modules/Customers/Services/CustomerCreditReports.php,app/Modules/CreditScore/Actions/SubmitCreditScoreCheck.php,app/Modules/CreditScore/Services/CreditReportRegenerationLimit.php,resources/views/components/⚡credit-score-check.blade.php | .ai/rules/credit-score-actions.md |
+| app/Modules/CreditScore/Services/CreditScoreChecksCsv.php,app/Filament/Resources/CreditScoreChecks/Pages/ListCreditScoreChecks.php | .ai/rules/credit-score-checks-pages.md |
+| app/Filament/Resources/CreditScoreChecks/** | .ai/rules/credit-score-checks.md |
 | app/Modules/CreditScore/Actions/SubmitCreditScoreCheck.php,app/Modules/CreditScore/Services/CreditReportRegenerationLimit.php,app/Modules/CreditScore/Models/CreditScoreCheck.php | .ai/rules/credit-score-models.md |
 | app/Modules/CreditScore/Providers/** | .ai/rules/credit-score-providers.md |
 | resources/views/components/⚡credit-score-check.blade.php,app/Modules/CreditScore/**,resources/views/components/site/credit-score-*.blade.php | .ai/rules/credit-score-views-components-site.md |
@@ -108,6 +110,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | database/seeders/FlexiHybridTermLoanSeeder.php,database/seeders/JourneySeeder.php | .ai/rules/seeders-seeders.md |
 | database/seeders/**, database/seeders/LegalPageSeeder.php | .ai/rules/seeders.md |
 | app/Support/Seo/SearchEngineIndexing.php,config/seo.php,app/Filament/Pages/SeoAnalytics.php | .ai/rules/seo-filament-pages.md |
+| app/Filament/Resources/Customers/**,app/Modules/Customers/Services/CustomersCsv.php,app/Modules/Customers/Services/CustomerLocation.php,app/Filament/Schemas/IndiaDateRangeFilter.php | .ai/rules/services-filament-schemas.md |
 | resources/views/components/site/header.blade.php,resources/views/components/site/language-switch.blade.php,resources/css/app.css | .ai/rules/site-css.md |
 | app/Models/PromoBar.php,app/Filament/Resources/PromoBars/**,app/Filament/Resources/Banners/**,app/Filament/Resources/LenderProducts/**,resources/views/loans/**,resources/views/components/site/faq-*.blade.php,database/seeders/LoanLandingPageSeeder.php | .ai/rules/site-seeders.md |
 | app/Models/MarketingSection.php,app/Models/NavigationLink.php,resources/views/home.blade.php,resources/views/components/site/footer.blade.php,resources/views/components/site/flexi-hybrid-ticker.blade.php | .ai/rules/site-views-components-site.md |
