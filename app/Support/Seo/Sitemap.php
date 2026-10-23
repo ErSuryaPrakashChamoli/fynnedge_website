@@ -53,11 +53,27 @@ class Sitemap
 
     /**
      * CMS pages served by their OWN controllers (AboutController,
-     * CareerController) at a route named after the slug. They 404 unless their
-     * `pages` row is published, so they are listed from that row like every
-     * other page — never as unconditional static entries.
+     * CareerController, FaqController) at the route pageRouteName() gives the
+     * slug. They 404 unless their `pages` row is published, so they are listed
+     * from that row like every other page — never as unconditional static
+     * entries.
      */
-    public const CONTROLLER_PAGE_SLUGS = ['about', 'careers'];
+    public const CONTROLLER_PAGE_SLUGS = ['about', 'careers', 'faqs'];
+
+    /**
+     * Pages whose route is not named after their slug. /faqs was a route long
+     * before it had a `pages` row, and `faqs.index` is stored in
+     * `faqs.placements` (App\Enums\FaqPlacement), so it keeps that name.
+     */
+    private const PAGE_ROUTE_NAMES = ['faqs' => 'faqs.index'];
+
+    /**
+     * The route that serves a CMS page's slug.
+     */
+    public static function pageRouteName(string $slug): string
+    {
+        return self::PAGE_ROUTE_NAMES[$slug] ?? $slug;
+    }
 
     /**
      * Every `pages` slug a public URL depends on — renaming one 404s that URL.
@@ -173,7 +189,6 @@ class Sitemap
             'quick-enquiry.show',
             'partners.index',
             'resources.index',
-            'faqs.index',
             'contact',
         ])->map(fn (string $name): array => ['url' => route($name), 'robots' => null, 'canonical' => null, 'lastmod' => null]);
     }
@@ -264,8 +279,8 @@ class Sitemap
     }
 
     /**
-     * Legal pages plus /about and /careers — every one has a route named after
-     * its slug, and every one 404s unless its row is published.
+     * Legal pages plus /about, /careers and /faqs — every one 404s unless its
+     * row is published.
      *
      * @return Collection<int, SitemapCandidate>
      */
@@ -273,7 +288,7 @@ class Sitemap
     {
         return self::fromRecords(
             Page::query()->published()->whereIn('slug', self::publicPageSlugs())->get(),
-            fn (Page $page): string => route($page->slug),
+            fn (Page $page): string => route(self::pageRouteName($page->slug)),
         );
     }
 

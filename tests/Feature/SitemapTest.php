@@ -216,6 +216,15 @@ it('lists about and careers only while their pages are published and indexable',
     expect(sitemapLocs())->not->toContain(route($slug));
 })->with(['about', 'careers']);
 
+it('lists /faqs only while its page is published', function () {
+    $page = Page::query()->where('slug', 'faqs')->sole();
+
+    expect(sitemapLocs())->toContain(route('faqs.index'));
+
+    $page->update(['status' => PublishStatus::Draft]);
+    expect(sitemapLocs())->not->toContain(route('faqs.index'));
+});
+
 it('drops a deleted about page from the sitemap', function () {
     Page::factory()->published()->create(['slug' => 'about'])->delete();
 

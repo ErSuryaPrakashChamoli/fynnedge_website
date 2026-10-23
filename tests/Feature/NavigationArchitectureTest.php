@@ -31,6 +31,17 @@ function footerHtml(): string
     return Str::of(test()->get('/')->assertOk()->getContent())->after('<footer')->before('</footer>')->toString();
 }
 
+/**
+ * A published `pages` row for every slug a public URL depends on. The `faqs`
+ * row already exists — a migration creates it — so it is kept, not duplicated.
+ */
+function publishEveryPublicPage(): void
+{
+    foreach (Sitemap::publicPageSlugs() as $slug) {
+        Page::query()->firstOrCreate(['slug' => $slug], Page::factory()->published()->raw(['slug' => $slug]));
+    }
+}
+
 it('keeps the header loan mega-menu code-driven and unaffected by NavigationLink records', function () {
     $product = LoanProduct::factory()->published()->create(['category' => LoanCategory::PersonalLoan]);
     NavigationLink::factory()->create(['label' => 'Some Quick Link', 'route_name' => 'contact']);
@@ -60,9 +71,7 @@ it('keeps the header credit-score bureau links intact', function () {
 });
 
 it('keeps the footer Company and Legal columns hardcoded and present while their pages are live', function () {
-    foreach (Sitemap::publicPageSlugs() as $slug) {
-        Page::factory()->published()->create(['slug' => $slug]);
-    }
+    publishEveryPublicPage();
 
     $this->get('/')
         ->assertOk()
@@ -84,9 +93,7 @@ it('excludes an unpublished loan category from the mega-menu, same as before thi
 });
 
 it('hides a Company or Legal footer link whose page would 404', function () {
-    foreach (Sitemap::publicPageSlugs() as $slug) {
-        Page::factory()->published()->create(['slug' => $slug]);
-    }
+    publishEveryPublicPage();
 
     Page::where('slug', 'terms')->update(['status' => PublishStatus::Draft]);
     Page::where('slug', 'disclaimer')->update(['expires_at' => now()->subMinute()]);
@@ -114,9 +121,7 @@ it('drops the Legal heading when none of its pages are live, but keeps Contact',
 });
 
 it('loads every footer page link state in a single query', function () {
-    foreach (Sitemap::publicPageSlugs() as $slug) {
-        Page::factory()->published()->create(['slug' => $slug]);
-    }
+    publishEveryPublicPage();
 
     DB::enableQueryLog();
     $this->get('/')->assertOk();

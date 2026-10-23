@@ -3,6 +3,7 @@
 use App\Enums\PublishStatus;
 use App\Models\Faq;
 use App\Models\LoanProduct;
+use App\Models\Page;
 
 it('shows the FAQs nav link in the header', function () {
     $this->get('/')->assertOk()->assertSee(route('faqs.index'), false);
@@ -37,4 +38,33 @@ it('shows a friendly message when there are no FAQs yet', function () {
     Faq::query()->delete();
 
     $this->get('/faqs')->assertOk()->assertSee('being added');
+});
+
+it('takes its heading, intro and SEO from the faqs page under Content → Pages', function () {
+    $page = Page::query()->where('slug', 'faqs')->sole();
+    $page->update(['title' => 'Loan questions, answered', 'excerpt' => 'Short answers first.', 'body' => '<p>Still stuck? Call us.</p>']);
+    $page->seoMeta()->create(['title' => 'FAQs about loans', 'description' => 'Every loan question in one place.', 'robots' => 'noindex, follow']);
+
+    $this->get('/faqs')
+        ->assertOk()
+        ->assertSee('Loan questions, answered')
+        ->assertSee('Short answers first.')
+        ->assertSee('<p>Still stuck? Call us.</p>', false)
+        ->assertSee('<title>FAQs about loans', false)
+        ->assertSee('content="Every loan question in one place."', false)
+        ->assertSee('content="noindex, follow"', false);
+});
+
+it('shows FAQs added on the faqs page itself after the general ones', function () {
+    Faq::factory()->create(['question' => 'General question?', 'sort_order' => 5]);
+    Page::query()->where('slug', 'faqs')->sole()->faqs()->create([
+        'question' => 'Question added on the page?',
+        'answer' => 'Answer.',
+        'sort_order' => 0,
+        'status' => PublishStatus::Published,
+    ]);
+
+    $this->get('/faqs')
+        ->assertOk()
+        ->assertSeeInOrder(['General question?', 'Question added on the page?']);
 });

@@ -45,6 +45,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | resources/views/**,app/Http/Controllers/**,app/Support/**,app/Enums/**,lang/** | .ai/rules/enums.md |
 | app/Modules/Equifax/** | .ai/rules/equifax.md |
 | app/Modules/Experian/** | .ai/rules/experian.md |
+| app/Http/Controllers/FaqController.php,app/Support/Seo/Sitemap.php,resources/views/faqs/**,tests/** | .ai/rules/faqs.md |
 | app/Filament/Imports/** | .ai/rules/filament-imports.md |
 | app/Filament/**,database/migrations/** | .ai/rules/filament-migrations.md |
 | app/Support/Pages/AboutPageContent.php,app/Filament/Pages/AboutPageSettings.php,resources/views/about.blade.php | .ai/rules/filament-pages-views.md |

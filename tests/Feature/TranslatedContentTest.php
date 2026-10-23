@@ -36,10 +36,10 @@ it('casts a Hindi json column like its English one', function () {
 });
 
 it('keeps English for a query that did not select the Hindi column', function () {
-    Page::factory()->create(['title' => 'Privacy Policy', 'title_hi' => 'गोपनीयता नीति']);
+    $page = Page::factory()->create(['title' => 'Privacy Policy', 'title_hi' => 'गोपनीयता नीति']);
     app()->setLocale('hi');
 
-    expect(Page::query()->select(['id', 'title'])->first()->title)->toBe('Privacy Policy');
+    expect(Page::query()->select(['id', 'title'])->find($page->id)->title)->toBe('Privacy Policy');
 });
 
 it('backfills Hindi only where the English still matches and no Hindi exists', function () {

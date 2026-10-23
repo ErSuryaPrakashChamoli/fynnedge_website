@@ -1,13 +1,19 @@
-<x-layouts.app :title="__('FAQs')" :description="__('Answers to common questions about how FynnEdge works, eligibility checks, and applying for a loan.')" handles-faqs>
+<x-layouts.app :title="$page->seoTitle()" :description="$page->seoDescription()" :canonical="$page->seoCanonicalUrl()" :og-image="$page->seoOgImageUrl()" :social="$page->seoSocial()" :robots="$page->seoRobots()" :structured-data="$page->seoStructuredData()" :page-type="$page->seoPageType()" :schema-template="$page->seoSchemaTemplate()" handles-faqs>
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="[__('FAQs') => null]" />
 
         <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            {{ __('Frequently asked questions') }}
+            {{ $page->title }}
         </h1>
-        <p data-reveal="up" class="mt-3 text-lg text-ink-muted">
-            {!! __("Answers to common questions about how FynnEdge works. Have a question about a specific loan product? Check that product's page, or <a href=\":url\" class=\"text-accent underline underline-offset-2\">get in touch</a>.", ['url' => e(route('contact'))]) !!}
-        </p>
+        @if ($page->excerpt)
+            <p data-reveal="up" class="mt-3 text-lg text-ink-muted text-justify hyphens-auto">{{ $page->excerpt }}</p>
+        @endif
+
+        @if ($page->body)
+            <div data-reveal="fade" class="rich-text mt-4 max-w-none text-ink-muted text-justify hyphens-auto">
+                {!! $page->body !!}
+            </div>
+        @endif
 
         @if ($faqs->isEmpty())
             <x-ui.alert tone="accent" class="mt-10">

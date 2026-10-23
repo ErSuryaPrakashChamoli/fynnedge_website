@@ -54,3 +54,18 @@ it('hides the preview action for a page slug with no matching public route', fun
     Livewire::test(EditPage::class, ['record' => $page->getRouteKey()])
         ->assertActionHidden('preview');
 });
+
+it('lets an admin preview a draft FAQs page via a signed URL', function () {
+    Page::query()->where('slug', 'faqs')->sole()->update(['title' => 'FAQs Draft', 'status' => PublishStatus::Draft]);
+
+    $this->get('/faqs')->assertNotFound();
+
+    $this->get(URL::temporarySignedRoute('faqs.index', now()->addMinutes(30)))->assertOk()->assertSee('FAQs Draft');
+});
+
+it('shows the preview action for the FAQs page, whose route is not named after its slug', function () {
+    $this->actingAs(User::factory()->create(['is_admin' => true]));
+
+    Livewire::test(EditPage::class, ['record' => Page::query()->where('slug', 'faqs')->sole()->getRouteKey()])
+        ->assertActionVisible('preview');
+});
