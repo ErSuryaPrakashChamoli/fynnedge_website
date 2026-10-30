@@ -19,6 +19,12 @@
 
         With no banner published the left column simply spans the full width —
         an empty promotional slot must never render as an empty grey box.
+
+        Nothing in this section carries data-reveal. The reveal hides its
+        element (opacity: 0) until app.js runs, and that script waits for
+        livewire.js. The first banner image (or the heading, when no banner is
+        published) is the page's Largest Contentful Paint. Hiding it kept LCP
+        about 2s behind the image being ready, even on a fast connection.
     --}}
 
 
@@ -38,15 +44,15 @@
                 {{-- Left 40% — static, never animated. --}}
                 <div class="flex min-w-0 flex-col justify-center">
                     @if ($hero['eyebrow'])
-                        <p data-reveal="up" class="inline-flex max-w-full self-start items-center gap-2 rounded-full border border-line bg-surface/80 px-3 py-1 font-mono text-xs font-semibold uppercase tracking-[0.14em] text-accent shadow-sm backdrop-blur">
+                        <p class="inline-flex max-w-full self-start items-center gap-2 rounded-full border border-line bg-surface/80 px-3 py-1 font-mono text-xs font-semibold uppercase tracking-[0.14em] text-accent shadow-sm backdrop-blur">
                             {{ $hero['eyebrow'] }}
                         </p>
                     @endif
-                    <h1 data-reveal="up delay-1" class="mt-4 text-balance font-display text-3xl font-semibold leading-[1.03] tracking-tight text-ink sm:text-4xl lg:text-[2.5rem] xl:text-5xl">
+                    <h1 class="mt-4 text-balance font-display text-3xl font-semibold leading-[1.03] tracking-tight text-ink sm:text-4xl lg:text-[2.5rem] xl:text-5xl">
                         {{ $hero['heading'] }}
                         <span class="text-accent">{{ $hero['headingAccent'] }}</span>
                     </h1>
-                    <p data-reveal="up delay-2" class="mt-4 max-w-xl text-sm text-ink-muted lg:text-base">
+                    <p class="mt-4 max-w-xl text-sm text-ink-muted lg:text-base">
                         {{ $hero['subheading'] }}
                     </p>
 
@@ -54,7 +60,7 @@
                          column's own width (size="fit" reads the @container),
                          because the 40% hero column is too narrow for three
                          large buttons side by side. --}}
-                    <div data-reveal="up delay-2" class="@container mt-6">
+                    <div class="@container mt-6">
                         {{-- Quick Enquiry leads and is the one filled button. On a
                              phone-width column it takes the whole first row and
                              the other two share the second; from @md up all three
@@ -75,7 +81,7 @@
 
                 {{-- Right 60% — admin-managed sliding promotional banners. --}}
                 @if ($banners->isNotEmpty())
-                    <div data-reveal="zoom delay-3">
+                    <div>
                         <x-site.banner-carousel :banners="$banners" />
                     </div>
                 @endif

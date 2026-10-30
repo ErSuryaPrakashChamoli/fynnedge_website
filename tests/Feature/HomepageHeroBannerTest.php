@@ -7,6 +7,8 @@ use App\Models\Article;
 use App\Models\Banner;
 use App\Models\Lender;
 use App\Models\LoanProduct;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * The hero is a hardcoded-height 40/60 banner whose whole point is fitting in
@@ -86,6 +88,55 @@ it('keeps the Flexi Hybrid ticker above the banner', function () {
     $html = $this->get('/')->assertOk()->getContent();
 
     expect(strpos($html, 'Our Specialty'))->toBeLessThan(strpos($html, 'lg:grid-cols-[2fr_3fr]'));
+});
+
+/*
+ * The first banner image is the homepage's Largest Contentful Paint (the
+ * heading is, with no banner). data-reveal holds an element at opacity 0
+ * until app.js runs, which waits for livewire.js, so a revealed hero kept LCP
+ * about 2s behind the image being ready.
+ */
+it('paints the hero copy and banner without the scroll reveal that hides them until scripts run', function () {
+    Banner::factory()->create(['status' => PublishStatus::Published, 'published_at' => now()->subMinute()]);
+
+    $html = $this->get('/')->getContent();
+    $hero = substr($html, strpos($html, 'lg:grid-cols-[2fr_3fr]'), strpos($html, 'id="hero-banner"') - strpos($html, 'lg:grid-cols-[2fr_3fr]'));
+
+    expect($hero)->toContain('<h1')
+        ->not->toContain('data-reveal');
+});
+
+it('fetches only the first slide\'s image with the page, at high priority', function () {
+    Banner::factory()->count(3)->sequence(
+        ['image_path' => 'banners/first.jpg', 'sort_order' => 1],
+        ['image_path' => 'banners/second.jpg', 'sort_order' => 2],
+        ['image_path' => 'banners/third.jpg', 'sort_order' => 3],
+    )->create(['status' => PublishStatus::Published, 'published_at' => now()->subMinute()]);
+
+    $html = $this->get('/')->getContent();
+
+    expect($html)->toMatch('#src="/storage/banners/first\.jpg"\s+alt="[^"]*"\s+fetchpriority="high"#')
+        ->toMatch('#src="/storage/banners/second\.jpg"\s+alt="[^"]*"\s+loading="lazy"#')
+        ->toMatch('#src="/storage/banners/third\.jpg"\s+alt="[^"]*"\s+loading="lazy"#')
+        ->and(substr_count($html, 'fetchpriority="high"'))->toBe(1);
+});
+
+it('offers a banner\'s WebP copies, sized to the banner box, once they exist', function () {
+    Storage::fake('public');
+    Storage::disk('public')->putFileAs('banners', UploadedFile::fake()->image('promo.jpg', 1440, 1000), 'promo.jpg');
+    Banner::factory()->create(['status' => PublishStatus::Published, 'published_at' => now()->subMinute(), 'image_path' => 'banners/promo.jpg']);
+
+    $this->get('/')
+        ->assertSee('<source type="image/webp" srcset="/storage/responsive/banners/promo-480.webp 480w, /storage/responsive/banners/promo-768.webp 768w, /storage/responsive/banners/promo-1080.webp 1080w, /storage/responsive/banners/promo-1440.webp 1440w" sizes="(min-width: 1280px) 706px, (min-width: 1024px) calc(60vw - 63px), calc(100vw - 48px)">', false)
+        ->assertSee('src="/storage/banners/promo.jpg"', false);
+});
+
+it('serves only the original upload for a banner whose WebP copies do not exist', function () {
+    Banner::factory()->create(['status' => PublishStatus::Published, 'published_at' => now()->subMinute(), 'image_path' => 'banners/missing-copies.jpg']);
+
+    $this->get('/')
+        ->assertSee('src="/storage/banners/missing-copies.jpg"', false)
+        ->assertDontSee('type="image/webp"', false);
 });
 
 it('fills the stats row with four figures derived from real records when no achievement is published', function () {

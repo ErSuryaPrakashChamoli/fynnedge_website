@@ -11,7 +11,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | routes/external.php,config/auth.php,app/Support/ApiClients/**,app/Models/ApiClient.php,app/Filament/Resources/ApiClients/** | .ai/rules/api-clients.md |
 | app/Filament/**/FileUpload*,config/filesystems.php, app/Filament/** | .ai/rules/app-filament.md |
 | app/Http/Controllers/** | .ai/rules/app-http-controllers.md |
-| app/Models/Article.php | .ai/rules/app-models.md |
+| app/Models/Article.php, app/Models/Setting.php | .ai/rules/app-models.md |
 | app/Providers/Filament/AdminPanelProvider.php | .ai/rules/app-providers-filament.md |
 | app/** | .ai/rules/app.md |
 | app/Support/Loans/LoanMegaMenu.php,app/Support/Calculators/CalculatorCatalog.php,app/Models/NavigationLink.php | .ai/rules/calculators-models.md |
@@ -27,6 +27,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Filament/RelationManagers/**,app/Filament/Concerns/** | .ai/rules/concerns.md |
 | config/filesystems.php,app/Filament/**/*Form.php,docker/entrypoint.sh | .ai/rules/config-filament.md |
 | config/database.php,.env*, config/cache.php,config/queue.php,config/session.php,.env*, config/{cache,queue,session}.php | .ai/rules/config.md |
+| app/Support/Media/ResponsiveImage.php,app/Models/Banner.php,app/Console/Commands/GenerateResponsiveImages.php | .ai/rules/console-commands.md |
 | app/Models/ContactEnquiry.php,app/Modules/Enquiries/**,app/Http/Controllers/QuickEnquiryController.php,app/Http/Controllers/LoanEnquiryController.php,app/Support/Enquiries/**,app/Filament/Resources/ContactEnquiries/**,resources/views/components/site/loan-enquiry*.blade.php | .ai/rules/contact-enquiries.md |
 | app/Support/Contact/** | .ai/rules/contact.md |
 | app/Http/Controllers/QuickEnquiryController.php,resources/views/components/site/quick-enquiry.blade.php | .ai/rules/controllers-views-components-site.md |
@@ -94,6 +95,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Http/Middleware/SecurityHeaders.php,app/Providers/Filament/AdminPanelProvider.php | .ai/rules/providers-filament.md |
 | app/Modules/Cibil/Services/CibilSettings.php,app/Filament/Pages/CibilSettings.php,app/Modules/Cibil/Providers/**,resources/views/components/⚡credit-score-check.blade.php | .ai/rules/providers-views-components.md |
 | app/Filament/Resources/Pages/Schemas/PageForm.php,resources/views/components/site/footer.blade.php,app/Providers/AppServiceProvider.php | .ai/rules/providers.md |
+| public/.htaccess | .ai/rules/public.md |
 | database/seeders/data/**,app/Support/Rates/RateAuditImport.php,database/migrations/2026_10_13_123020_import_october_2026_lender_rate_audit.php | .ai/rules/rates-migrations.md |
 | database/seeders/data/**,app/Support/Rates/RateAuditImport.php,app/Support/Rates/RateText.php | .ai/rules/rates.md |
 | app/Models/Redirect.php,app/Http/Middleware/HandleRedirects.php,app/Filament/Resources/Redirects/** | .ai/rules/redirects.md |
@@ -135,5 +137,6 @@ Before planning or editing, find the row whose globs match the file's path and r
 | resources/views/about.blade.php,app/Http/Controllers/AboutController.php | .ai/rules/views-http-controllers.md |
 | resources/views/components/site/lender-comparison-table.blade.php,resources/views/loans/** | .ai/rules/views-loans.md |
 | app/Filament/Resources/Articles/**,app/Models/Article.php,resources/views/resources/** | .ai/rules/views-resources.md |
+| resources/views/home.blade.php,resources/views/components/site/banner-carousel.blade.php | .ai/rules/views-views-components-site.md |
 | app/Support/Enquiries/PartnerLenders.php,app/Support/Enquiries/QuickEnquiryPageContent.php,app/Http/Controllers/PartnerLenderController.php,app/Http/Controllers/QuickEnquiryPageController.php,resources/views/partners.blade.php,resources/views/quick-enquiry.blade.php | .ai/rules/views-views.md |
 | resources/css/**,resources/views/** | .ai/rules/views.md |

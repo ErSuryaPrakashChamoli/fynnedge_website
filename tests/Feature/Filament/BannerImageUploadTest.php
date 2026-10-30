@@ -43,6 +43,22 @@ it('stores the uploaded image on the public disk, where the model and table read
     expect($banner->imageUrl())->toContain('/storage/'.$banner->image_path);
 });
 
+it('makes the homepage srcset copies of an image uploaded from the admin', function () {
+    Livewire::test(CreateBanner::class)
+        ->fillForm([
+            'image_path' => UploadedFile::fake()->image('promo.jpg', 1440, 1000),
+            'heading' => 'Marketing',
+            'status' => PublishStatus::Draft->value,
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $banner = Banner::query()->sole();
+
+    expect($banner->imageSrcset())->toContain('-480.webp 480w')
+        ->toContain('-1440.webp 1440w');
+});
+
 it('saves a banner without a heading, since the image can carry its own text', function () {
     Livewire::test(CreateBanner::class)
         ->fillForm([

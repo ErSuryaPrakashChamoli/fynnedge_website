@@ -37,6 +37,11 @@
         // loop between; a single banner never moves.
         $slides = $banners->count() > 1 ? $banners->concat([$banners->first()]) : $banners;
         $cloneIndex = $banners->count();
+
+        // The box's rendered width, mirroring home.blade.php's layout: the full
+        // container less px-6 below lg; from lg the 3fr share of the container
+        // less lg:px-8 and the 40px gap, capped by max-w-7xl from 1280px.
+        $imageSizes = '(min-width: 1280px) 706px, (min-width: 1024px) calc(60vw - 63px), calc(100vw - 48px)';
     @endphp
 
     {{--
@@ -73,6 +78,29 @@
             */
             init() {
                 this.arm();
+
+                /*
+                    The first slide's image is the homepage's Largest
+                    Contentful Paint, so it is the only one fetched with the
+                    page; every other slide is loading=lazy and cannot
+                    compete with it for bandwidth. Once the page has loaded,
+                    and again on every move, the images one step either side
+                    are fetched ahead so a slide never slides in blank.
+                */
+                if (document.readyState === 'complete') {
+                    this.preloadNeighbours();
+                } else {
+                    window.addEventListener('load', () => this.preloadNeighbours(), { once: true });
+                }
+
+                this.$watch('current', () => this.preloadNeighbours());
+            },
+            preloadNeighbours() {
+                const previous = this.current === 0 ? this.total - 1 : this.current - 1;
+
+                [this.current, this.current + 1, previous].forEach((index) => {
+                    this.$refs.track.children[index]?.querySelector('img[loading=lazy]')?.setAttribute('loading', 'eager');
+                });
             },
             destroy() {
                 clearInterval(this.timer);
@@ -165,6 +193,7 @@
         class="group relative h-[200px] w-full overflow-hidden rounded-3xl border border-line md:h-[300px] lg:h-[330px] xl:h-[350px]"
     >
         <div
+            x-ref="track"
             class="flex h-full flex-row-reverse transition-transform duration-700 ease-out motion-reduce:transition-none"
             :style="`transform: translateX(${current * 100}%)${animating ? '' : '; transition: none'}`"
             @transitionend="settle($event)"
@@ -183,13 +212,20 @@
                         default => 'items-start text-left',
                     };
                     $contentStyle = $banner->contentStyle();
+                    $srcset = $banner->imageSrcset();
                 @endphp
                 <div class="relative h-full w-full shrink-0 basis-full" @if ($isClone) aria-hidden="true" @endif>
-                    <img
-                        src="{{ $banner->imageUrl() }}"
-                        alt="{{ $isClone ? '' : ($banner->image_alt ?: $banner->heading) }}"
-                        class="h-full w-full object-cover"
-                    >
+                    <picture class="block h-full w-full">
+                        @if ($srcset)
+                            <source type="image/webp" srcset="{{ $srcset }}" sizes="{{ $imageSizes }}">
+                        @endif
+                        <img
+                            src="{{ $banner->imageUrl() }}"
+                            alt="{{ $isClone ? '' : ($banner->image_alt ?: $banner->heading) }}"
+                            @if ($index === 0) fetchpriority="high" @else loading="lazy" @endif
+                            class="h-full w-full object-cover"
+                        >
+                    </picture>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
                     {{--
                         With more than one banner the arrows (vertically centred

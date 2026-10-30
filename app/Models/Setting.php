@@ -12,6 +12,14 @@ use Illuminate\Support\Facades\Cache;
 #[Fillable(['key', 'value'])]
 class Setting extends Model
 {
+    /**
+     * Cached in place of a key that has no row. The cache cannot store null
+     * (it reads back as a miss), so caching the row's null value meant every
+     * unset key was queried, and written back to the cache table, on every
+     * request: 91 queries and 91 writes per homepage view.
+     */
+    private const NOT_STORED = '__setting_not_stored__';
+
     protected function casts(): array
     {
         return [
@@ -19,9 +27,16 @@ class Setting extends Model
         ];
     }
 
+    /**
+     * Memoized for the request, since one page reads many keys more than once.
+     * $default is applied after the cache, never stored in it, so two callers
+     * with different defaults each get their own.
+     */
     public static function get(string $key, mixed $default = null): mixed
     {
-        return Cache::rememberForever("setting:{$key}", fn () => static::query()->where('key', $key)->value('value') ?? $default);
+        $value = Cache::memo()->rememberForever("setting:{$key}", fn () => static::query()->where('key', $key)->value('value') ?? self::NOT_STORED);
+
+        return $value === self::NOT_STORED ? $default : ($value ?? $default);
     }
 
     /**
@@ -47,6 +62,6 @@ class Setting extends Model
         AutoTranslation::settingSaving($key);
 
         static::query()->updateOrCreate(['key' => $key], ['value' => $value]);
-        Cache::forget("setting:{$key}");
+        Cache::memo()->forget("setting:{$key}");
     }
 }
