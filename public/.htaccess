@@ -22,10 +22,11 @@
     RewriteCond %{REQUEST_FILENAME} -f
     RewriteRule ^storage/.+\.(avif|gif|ico|jpe?g|png|svg|webp)$ - [NC,E=CACHE_MEDIA:1]
 
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
+    # Trailing slashes are NOT stripped here any more: App\Http\Middleware\
+    # HandleRedirects does it, so an old "/page/" reaches its redirect row in one
+    # hop (it took two, /page/ -> /page -> destination) and a deleted "/page/"
+    # gets its 404 directly instead of a redirect to one. Do not add the stock
+    # Laravel "Redirect Trailing Slashes" rule back.
 
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d

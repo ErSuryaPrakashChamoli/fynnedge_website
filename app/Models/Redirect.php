@@ -59,6 +59,55 @@ class Redirect extends Model
     }
 
     /**
+     * Where a request path finally lands, following rows whose destination is
+     * itself the source of another active row, so a visitor (and Googlebot) is
+     * sent there in ONE hop instead of walking a chain. Rows pile up exactly
+     * this way: /a → /b is added, then later /b → /c, and /a is forgotten.
+     *
+     * The result is permanent only when every hop is: one temporary row in
+     * the chain makes the whole trip temporary. Null when no row matches, or
+     * when the rows lead back to a path already visited (a loop), so the
+     * caller serves the page instead of bouncing the browser.
+     *
+     * @return array{destination: string, status_code: int}|null
+     */
+    public static function resolve(string $path): ?array
+    {
+        $map = self::activeMap();
+        $current = self::normalizePath($path);
+        $hop = $map[$current] ?? null;
+
+        if (! $hop) {
+            return null;
+        }
+
+        $statusCode = $hop['status_code'];
+        $visited = [$current => true];
+
+        // A full URL (another site, or this one by absolute URL) ends the walk.
+        while (str_starts_with($hop['destination'], '/')) {
+            $next = self::normalizePath($hop['destination']);
+
+            if (isset($visited[$next])) {
+                return null;
+            }
+
+            if (! isset($map[$next])) {
+                break;
+            }
+
+            $visited[$next] = true;
+            $hop = $map[$next];
+
+            if ($hop['status_code'] !== 301) {
+                $statusCode = $hop['status_code'];
+            }
+        }
+
+        return ['destination' => $hop['destination'], 'status_code' => $statusCode];
+    }
+
+    /**
      * @return array<string, array{destination: string, status_code: int}>
      */
     public static function activeMap(): array

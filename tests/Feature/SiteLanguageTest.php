@@ -11,8 +11,8 @@ it('renders the language switch in the top strip with English selected by defaul
     $response->assertSee('<meta property="og:locale" content="en_IN">', false);
     $response->assertSeeInOrder(['data-language-strip', 'data-locale-option="en"', 'data-locale-option="hi"', '<header'], false);
 
-    expect(preg_match('/<a[^>]*data-locale-option="en"[^>]*aria-current="true"/', $response->getContent()))->toBe(1)
-        ->and(preg_match('/<a[^>]*data-locale-option="hi"[^>]*aria-current="true"/', $response->getContent()))->toBe(0);
+    expect(preg_match('/<button[^>]*data-locale-option="en"[^>]*aria-current="true"/', $response->getContent()))->toBe(1)
+        ->and(preg_match('/<button[^>]*data-locale-option="hi"[^>]*aria-current="true"/', $response->getContent()))->toBe(0);
 });
 
 it('puts the Sign in pill in the top-right corner, after the language switch', function () {
@@ -29,10 +29,30 @@ it('shows a signed-in customer My Profile in place of Sign in', function () {
         ->assertSeeInOrder(['data-locale-option="hi"', route('portal.dashboard'), 'My Profile', '<header'], false);
 });
 
-it('links each language back to the page the visitor is on', function () {
+it('posts each language back to the page the visitor is on', function () {
     $this->get('/?utm_source=x')
-        ->assertOk()
-        ->assertSee(e(route('locale.switch', ['locale' => 'hi', 'return' => '/?utm_source=x'])), false);
+        ->assertSeeInOrder([
+            '<form method="POST" action="'.route('locale.switch', ['locale' => 'hi']).'"',
+            '<input type="hidden" name="return" value="/?utm_source=x">',
+            'data-locale-option="hi"',
+        ], false);
+});
+
+it('never renders the switch as a link, so crawlers find no /language/ URL to crawl', function () {
+    $content = $this->get('/loans?type=m')->getContent();
+
+    expect($content)->toContain('data-locale-option="hi"')
+        ->not->toMatch('#<a\b[^>]*href="[^"]*/language/#');
+});
+
+it('switches language from the posted form and returns to the same page', function () {
+    $this->post('/language/hi', ['return' => '/about?utm_source=x'])
+        ->assertRedirect('/about?utm_source=x')
+        ->assertPlainCookie(SiteLocale::COOKIE, 'hi');
+});
+
+it('sends an off-site posted return path to the home page instead', function () {
+    $this->post('/language/hi', ['return' => '//evil.example/phish'])->assertRedirect('/');
 });
 
 it('remembers the chosen language in a plain cookie and returns to the same page', function () {
@@ -46,7 +66,7 @@ it('renders public pages in Hindi once Hindi is chosen', function () {
 
     $response->assertSee('<html lang="hi"', false);
     $response->assertSee('<meta property="og:locale" content="hi_IN">', false);
-    expect(preg_match('/<a[^>]*data-locale-option="hi"[^>]*aria-current="true"/', $response->getContent()))->toBe(1);
+    expect(preg_match('/<button[^>]*data-locale-option="hi"[^>]*aria-current="true"/', $response->getContent()))->toBe(1);
 });
 
 it('falls back to English for an unknown language in the cookie', function () {
@@ -90,10 +110,10 @@ it('ignores the language choice for Livewire updates sent from an admin page', f
     'public calculator' => ['calculators/emi-calculator', true],
 ]);
 
-it('keeps crawlers off the language switch links', function () {
-    $this->get('/robots.txt')
-        ->assertOk()
-        ->assertSee('Disallow: /language/', false);
+it('keeps Googlebot off the language switch in the robots.txt group it obeys', function () {
+    $robots = $this->get('/robots.txt')->assertOk()->getContent();
+
+    expect(robotsRulesFor('Googlebot', $robots))->toContain('Disallow: /language/');
 });
 
 it('shows the not-found page in Hindi for a URL that matches no route', function () {

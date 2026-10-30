@@ -70,6 +70,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Support/Seo/**,app/Filament/Pages/Settings.php,resources/views/loans/** | .ai/rules/loans.md |
 | app/Models/**,app/Modules/**/Models/*.php,app/Models/Setting.php,app/Support/Localization/**,app/Filament/** | .ai/rules/localization-filament.md |
 | database/seeders/**,app/Support/Localization/**,app/Models/Setting.php | .ai/rules/localization-models.md |
+| public/.htaccess,app/Http/Middleware/HandleRedirects.php,app/Models/Redirect.php | .ai/rules/middleware-models.md |
 | app/Http/Middleware/SecurityHeaders.php | .ai/rules/middleware.md |
 | app/Models/**,app/Modules/**/Models/*.php,database/migrations/**,app/Filament/** | .ai/rules/migrations-filament.md |
 | database/migrations/** | .ai/rules/migrations.md |
@@ -114,8 +115,10 @@ Before planning or editing, find the row whose globs match the file's path and r
 | database/seeders/FlexiHybridTermLoanSeeder.php,database/seeders/JourneySeeder.php | .ai/rules/seeders-seeders.md |
 | database/seeders/**, database/seeders/LegalPageSeeder.php | .ai/rules/seeders.md |
 | app/Support/Seo/SearchEngineIndexing.php,config/seo.php,app/Filament/Pages/SeoAnalytics.php | .ai/rules/seo-filament-pages.md |
+| resources/views/robots.blade.php,app/Support/Seo/CrawlerPolicy.php,app/Http/Controllers/RobotsController.php | .ai/rules/seo-http-controllers.md |
 | app/Filament/Resources/Customers/**,app/Modules/Customers/Services/CustomersCsv.php,app/Modules/Customers/Services/CustomerLocation.php,app/Filament/Schemas/IndiaDateRangeFilter.php | .ai/rules/services-filament-schemas.md |
 | resources/views/components/site/header.blade.php,resources/views/components/site/language-switch.blade.php,resources/css/app.css | .ai/rules/site-css.md |
+| resources/views/components/site/language-switch.blade.php,routes/web.php,app/Http/Controllers/LocaleController.php | .ai/rules/site-http-controllers.md |
 | app/Models/PromoBar.php,app/Filament/Resources/PromoBars/**,app/Filament/Resources/Banners/**,app/Filament/Resources/LenderProducts/**,resources/views/loans/**,resources/views/components/site/faq-*.blade.php,database/seeders/LoanLandingPageSeeder.php | .ai/rules/site-seeders.md |
 | app/Models/MarketingSection.php,app/Models/NavigationLink.php,resources/views/home.blade.php,resources/views/components/site/footer.blade.php,resources/views/components/site/flexi-hybrid-ticker.blade.php | .ai/rules/site-views-components-site.md |
 | app/Http/Controllers/QuickEnquiryPageController.php,app/Modules/Enquiries/Concerns/ValidatesLoanEnquiries.php,resources/views/components/site/loan-enquiry-form.blade.php,resources/views/quick-enquiry.blade.php | .ai/rules/site-views.md |

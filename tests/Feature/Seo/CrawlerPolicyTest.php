@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Setting;
+use App\Modules\CreditScore\Enums\BureauName;
+use App\Support\Pages\CreditScoreIndexing;
 use App\Support\Seo\CrawlerPolicy;
 
 function robotsTxt(): string
@@ -29,7 +31,7 @@ it('disallows only the AI crawlers when an admin opts out, leaving search engine
     }
 
     foreach (CrawlerPolicy::SEARCH_CRAWLERS as $crawler) {
-        expect($robots)->toMatch('/User-agent: '.preg_quote($crawler, '/').'\s*\nAllow: \//');
+        expect(robotsRulesFor($crawler, $robots))->toContain('Allow: /')->not->toContain('Disallow: /');
     }
 
     // The catch-all group and the sitemap are untouched by an AI opt-out.
@@ -42,6 +44,30 @@ it('always disallows the private and transactional routes', function () {
     foreach (CrawlerPolicy::disallowedPaths() as $path) {
         expect($robots)->toContain("Disallow: {$path}");
     }
+});
+
+it('applies the private paths in the group each crawler obeys, not only under the catch-all', function (string $crawler) {
+    $rules = robotsRulesFor($crawler, robotsTxt());
+
+    expect($rules)->toContain('Allow: /');
+
+    foreach (CrawlerPolicy::disallowedPaths() as $path) {
+        expect($rules)->toContain("Disallow: {$path}");
+    }
+})->with([
+    'Googlebot' => 'Googlebot',
+    'Bingbot' => 'Bingbot',
+    'an AI crawler with a crawl delay' => 'GPTBot',
+    'an AI crawler without one' => 'ClaudeBot',
+    'a crawler the file never names' => 'SomeOtherBot',
+]);
+
+it('lets an opted-in credit score page through for Googlebot while the rest stay disallowed', function () {
+    CreditScoreIndexing::setIndexable(BureauName::Crif, true);
+
+    expect(robotsRulesFor('Googlebot', robotsTxt()))
+        ->toContain('Disallow: /credit-score/')
+        ->toContain('Allow: /credit-score/crif');
 });
 
 it('appends admin-authored directives but drops lines that are not valid robots.txt', function () {

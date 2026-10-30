@@ -1,9 +1,28 @@
 <?php
 
+use App\Console\Commands\SeoAuditCommand;
 use App\Filament\Resources\Redirects\Pages\CreateRedirect;
 use App\Models\Redirect;
 use App\Models\User;
+use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Http\Request;
+use Illuminate\Testing\TestResponse;
 use Livewire\Livewire;
+
+/**
+ * GETs a path exactly as written. The test client sends every URL through
+ * url(), which drops a trailing slash and collapses a leading "//" — the very
+ * variants under test — so this hands the request to the HTTP kernel itself.
+ */
+function getExactPath(string $path): TestResponse
+{
+    $kernel = app(Kernel::class);
+    $request = Request::create(config('app.url').$path);
+    $response = $kernel->handle($request);
+    $kernel->terminate($request, $response);
+
+    return TestResponse::fromBaseResponse($response, $request);
+}
 
 it('sends a 301 to the destination for an active redirect', function () {
     Redirect::factory()->create(['source_path' => '/old-loan-page', 'destination' => '/loans']);
@@ -148,5 +167,78 @@ it('normalises the stored path so matching never depends on how it was typed', f
         ->call('create')
         ->assertHasNoFormErrors();
 
-    expect(Redirect::query()->value('source_path'))->toBe('/old-page');
+    // Not "the first row": the legacy-URL migration ships rows into every database.
+    $this->assertDatabaseHas('redirects', ['source_path' => '/old-page', 'destination' => '/loans']);
+});
+
+it('sends a chain of rows straight to the last destination in one hop', function () {
+    Redirect::factory()->create(['source_path' => '/first-name', 'destination' => '/second-name']);
+    Redirect::factory()->create(['source_path' => '/second-name', 'destination' => '/loans']);
+
+    $this->get('/first-name')->assertStatus(301)->assertRedirect(url('/loans'));
+});
+
+it('makes a chained redirect temporary when any hop in it is temporary', function () {
+    Redirect::factory()->create(['source_path' => '/first-name', 'destination' => '/second-name']);
+    Redirect::factory()->temporary()->create(['source_path' => '/second-name', 'destination' => '/loans']);
+
+    $this->get('/first-name')->assertStatus(302)->assertRedirect(url('/loans'));
+});
+
+it('serves the page instead of looping when two rows point at each other', function () {
+    // Bypasses the form, which rejects this pair, as the runtime guard for rows that got there some other way.
+    Redirect::query()->create(['source_path' => '/loans', 'destination' => '/old-loans', 'status_code' => 301, 'is_active' => true]);
+    Redirect::query()->create(['source_path' => '/old-loans', 'destination' => '/loans', 'status_code' => 301, 'is_active' => true]);
+
+    $this->get('/loans')->assertOk();
+});
+
+it('reaches a row from its trailing-slash URL in one hop, not via the slashless URL', function () {
+    Redirect::factory()->create(['source_path' => '/business-loan-3', 'destination' => '/loans/business-loan']);
+
+    getExactPath('/business-loan-3/')->assertStatus(301)->assertRedirect(url('/loans/business-loan'));
+});
+
+it('drops the trailing slash from a live page with one 301 and keeps the query string', function () {
+    getExactPath('/loans/?utm_source=email')->assertStatus(301)->assertRedirect(url('/loans').'?utm_source=email');
+});
+
+it('collapses doubled slashes into the live page they name', function () {
+    getExactPath('//loans')->assertStatus(301)->assertRedirect(url('/loans'));
+});
+
+it('answers a slash variant of an unknown URL with its 404 rather than a redirect to one', function (string $path) {
+    getExactPath($path)->assertNotFound();
+})->with([
+    'deleted WordPress page' => '/loan-central/',
+    'WordPress REST API' => '/wp-json/elementskit/v1/',
+]);
+
+it('never turns a doubled leading slash into an off-site redirect', function () {
+    getExactPath('//evil.example/')->assertNotFound();
+});
+
+it('does not count the seo:audit command\'s own requests as traffic', function () {
+    $redirect = Redirect::factory()->create(['source_path' => '/old-page', 'destination' => '/loans']);
+
+    $this->withHeader('User-Agent', SeoAuditCommand::USER_AGENT)->get('/old-page')->assertRedirect(url('/loans'));
+
+    expect($redirect->refresh()->hits)->toBe(0);
+});
+
+it('redirects the legacy WordPress URLs that have a clear equivalent page in one hop', function (string $legacyUrl, string $destination) {
+    getExactPath($legacyUrl)->assertStatus(301)->assertRedirect(url($destination));
+})->with([
+    'credit card page' => ['/credit-card/', '/loans/credit-card'],
+    'fixed vs floating article' => ['/fixed-versus-floating-interest-rates-on-personal-loans-which-one-is-superior/', '/resources/fixed-vs-floating-interest-rates'],
+]);
+
+it('leaves an admin\'s own row for a legacy URL alone when the legacy-URL migration runs', function () {
+    Redirect::query()->where('source_path', '/credit-card')->sole()->update(['destination' => '/loans', 'is_active' => false]);
+
+    (require database_path('migrations/2026_10_30_072910_add_legacy_wordpress_redirects.php'))->up();
+
+    expect(Redirect::query()->where('source_path', '/credit-card')->sole())
+        ->destination->toBe('/loans')
+        ->is_active->toBeFalse();
 });

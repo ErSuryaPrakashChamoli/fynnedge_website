@@ -5,41 +5,58 @@
 User-agent: *
 Disallow: /
 @else
+@php
+    /*
+     * A crawler obeys ONLY the one group that names it most specifically and
+     * ignores every other group, "*" included (RFC 9309, and Google's own
+     * robots.txt rules). So the private paths are repeated in every group that
+     * allows crawling. Listed once under "*" alone, they bound nobody with a
+     * group of its own: Googlebot and Bingbot read "Allow: /" and crawled
+     * /language/, /admin and the application funnel freely.
+     */
+    $sharedRules = [
+        ...array_map(fn (string $path): string => "Disallow: {$path}", $disallowedPaths),
+        ...array_map(fn (string $path): string => "Allow: {$path}", $allowedPaths),
+    ];
+@endphp
 # {!! $siteName !!}
 # Public marketing content is open to search engines.
-# Authenticated, transactional and system routes are not.
+# Authenticated, transactional and system routes are not: the admin panel,
+# authentication, the per-visitor application funnel, the language switch,
+# storage internals, the health probe and signed draft previews.
+@if ($allowedPaths)
+# The credit score pages opted in to search (Admin → Website Settings →
+# Credit Score Page) are allowed by the longer, more specific Allow lines.
+@endif
+#
+# A crawler reads only the group that names it, so every group repeats
+# the same private paths.
 
 # --- Answer engines / AI search ---
 @foreach ($aiCrawlers as $crawler => $crawlDelay)
 User-agent: {{ $crawler }}
-{{ $aiCrawlersAllowed ? 'Allow: /' : 'Disallow: /' }}
-@if ($aiCrawlersAllowed && $crawlDelay)
+@if ($aiCrawlersAllowed)
+Allow: /
+@if ($crawlDelay)
 Crawl-delay: {{ $crawlDelay }}
 @endif
+@foreach ($sharedRules as $rule)
+{!! $rule !!}
+@endforeach
+@else
+Disallow: /
+@endif
 
 @endforeach
-# --- Search engines ---
+# --- Search engines, and everything else ---
 @foreach ($searchCrawlers as $crawler)
 User-agent: {{ $crawler }}
-Allow: /
-
 @endforeach
-# --- Everything else ---
 User-agent: *
 Allow: /
-
-# Admin panel, authentication, the per-visitor application funnel,
-# storage internals, the health probe and signed draft previews.
-@foreach ($disallowedPaths as $path)
-Disallow: {!! $path !!}
+@foreach ($sharedRules as $rule)
+{!! $rule !!}
 @endforeach
-@if ($allowedPaths)
-
-# Credit score pages opted in to search (Admin → Website Settings → Credit Score Page).
-@foreach ($allowedPaths as $path)
-Allow: {!! $path !!}
-@endforeach
-@endif
 @if ($extraDirectives)
 
 # --- Added in Admin → Website Settings → SEO & Tracking ---

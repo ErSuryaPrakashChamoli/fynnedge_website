@@ -67,6 +67,12 @@ return Application::configure(basePath: dirname(__DIR__))
         // against SiteLocale::SUPPORTED on every read, so it needs no encryption.
         $middleware->encryptCookies(except: [CookieConsent::COOKIE, SiteLocale::COOKIE]);
 
+        // The language switch posts a form (so crawlers never find a URL for it),
+        // but it must never answer a page left open past its session with a 419.
+        // Exempting it is safe: all it can do is set that "en"/"hi" cookie, and
+        // its return path is same-site only (SiteLocale::safeReturnPath()).
+        $middleware->preventRequestForgery(except: ['language/*']);
+
         // Every request a visitor makes runs in their chosen language: pages,
         // the Livewire updates of public components, the public JSON API the
         // forms call, and the 404 for a URL (or route-bound slug) that matches

@@ -71,6 +71,40 @@ expect()->extend('toBeOne', function () {
 */
 
 /**
+ * The Allow/Disallow lines a crawler actually obeys in a robots.txt: those of
+ * every group that names it, or of the "*" groups when none does. A crawler
+ * ignores every other group (RFC 9309), so finding a line somewhere in the
+ * file proves nothing about Googlebot — that is how `Disallow: /language/`
+ * once sat under "*" while Googlebot read its own "Allow: /" and crawled on.
+ *
+ * @return array<int, string> e.g. "Disallow: /admin", in file order
+ */
+function robotsRulesFor(string $crawler, string $robots): array
+{
+    $groups = [];
+    $readingAgents = false;
+
+    foreach (preg_split('/\R/', $robots) as $line) {
+        if (preg_match('/^\s*user-agent\s*:\s*(\S+)/i', $line, $agent)) {
+            if (! $readingAgents) {
+                $groups[] = ['agents' => [], 'rules' => []];
+            }
+
+            $groups[array_key_last($groups)]['agents'][] = strtolower($agent[1]);
+            $readingAgents = true;
+        } elseif ($groups !== [] && preg_match('/^\s*((?:dis)?allow)\s*:\s*(\S*)/i', $line, $rule)) {
+            $groups[array_key_last($groups)]['rules'][] = ucfirst(strtolower($rule[1])).': '.$rule[2];
+            $readingAgents = false;
+        }
+    }
+
+    $naming = fn (string $agent): array => array_filter($groups, fn (array $group): bool => in_array($agent, $group['agents'], true));
+    $obeyed = $naming(strtolower($crawler)) ?: $naming('*');
+
+    return array_merge([], ...array_column($obeyed, 'rules'));
+}
+
+/**
  * The EMI calculator reads its limits from a published LoanProduct row —
  * there's no hardcoded fallback (that would be exactly the "same limits
  * duplicated in multiple places" the calculator is meant to avoid). Since

@@ -38,10 +38,14 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', HomeController::class)->name('home');
 
 /*
- * The header's English/Hindi switch. A GET link so it works without JavaScript
- * and never meets an expired CSRF token; it only sets a preference cookie.
+ * The header's English/Hindi switch: an action that sets a preference cookie,
+ * never a page. The switch posts to it (x-site.language-switch) so crawlers
+ * never discover a /language/... URL for every page on the site; it is exempt
+ * from CSRF in bootstrap/app.php so it never meets an expired token. GET still
+ * answers, for the URLs Google already knows and any page cached with the old
+ * links, and robots.txt keeps crawlers off it (CrawlerPolicy).
  */
-Route::get('/language/{locale}', LocaleController::class)
+Route::match(['get', 'post'], '/language/{locale}', LocaleController::class)
     ->whereIn('locale', array_keys(SiteLocale::SUPPORTED))
     ->name('locale.switch');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');

@@ -117,6 +117,31 @@ it('never exposes admin, funnel or non-routed CMS pages', function () {
     expect(collect($locs)->filter(fn (string $loc): bool => $loc === route('about')))->toHaveCount(1);
 });
 
+it('lists only URLs that answer 200 at that exact address with a canonical pointing back at it', function () {
+    // Every loan calculator 404s without a published product carrying its limits, as production has.
+    foreach (LoanCategory::cases() as $category) {
+        if ($category !== LoanCategory::CreditCard) {
+            seedCalculatorProduct($category);
+        }
+    }
+
+    Page::factory()->published()->create(['slug' => 'about']);
+    $product = LoanProduct::factory()->published()->create(['slug' => 'sitemap-product']);
+    LoanLandingPage::factory()->for($product, 'loanProduct')->create(['slug' => 'sitemap-landing', 'status' => PublishStatus::Published, 'published_at' => now()]);
+    Article::factory()->published()->create(['slug' => 'sitemap-article']);
+
+    $locs = sitemapLocs();
+
+    expect($locs)->toContain(route('loans.landing-pages.show', ['loanProduct' => $product, 'landingPage' => 'sitemap-landing']));
+
+    foreach ($locs as $loc) {
+        $response = $this->get($loc);
+
+        expect($response->status())->toBe(200, "{$loc} answered {$response->status()}");
+        expect($response->getContent())->toContain('<link rel="canonical" href="'.$loc.'">');
+    }
+});
+
 it('emits no duplicate URLs', function () {
     $locs = sitemapLocs();
 

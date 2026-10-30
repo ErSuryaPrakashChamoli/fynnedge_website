@@ -6,7 +6,7 @@ use App\Models\Setting;
 use App\Modules\CreditScore\Enums\BureauName;
 use App\Support\Pages\CreditScoreIndexing;
 
-//stage1
+// stage1
 /**
  * The crawler policy /robots.txt is generated from.
  *
@@ -90,6 +90,10 @@ class CrawlerPolicy
             '/my-profile', '/existing-customer',
             // The header's language switch: a redirect back to the page, not content.
             '/language/',
+            // Each loan's Apply button: a GET that opens a new journey session and
+            // redirects into it, so every crawl would write a row. `$` anchors it,
+            // so a landing page whose slug merely starts with "apply" stays open.
+            '/loans/*/apply$',
             '/storage/private', '/up',
             '/*?signature=', '/*&signature=',
         ];
