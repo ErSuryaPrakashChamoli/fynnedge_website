@@ -75,6 +75,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Models/**,app/Modules/**/Models/*.php,database/migrations/**,app/Filament/** | .ai/rules/migrations-filament.md |
 | database/migrations/** | .ai/rules/migrations.md |
 | app/Modules/MobileOtp/** | .ai/rules/mobile-otp.md |
+| app/Support/ContentCache/**,app/Enums/ContentCacheSection.php,app/Models/Concerns/InvalidatesContentCache.php | .ai/rules/models-concerns.md |
 | app/Support/Seo/Sitemap.php,app/Models/PageSeo.php,app/Filament/Schemas/SeoFormSection.php | .ai/rules/models-filament-schemas.md |
 | app/Models/**,app/Filament/** | .ai/rules/models-filament.md |
 | app/Support/Loans/LoanMegaMenu.php,resources/views/components/site/header.blade.php,app/Models/LoanLandingPage.php,database/seeders/LoanLocationPageSeeder.php | .ai/rules/models-seeders.md |

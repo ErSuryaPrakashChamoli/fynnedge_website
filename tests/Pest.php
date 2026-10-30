@@ -24,8 +24,10 @@ use App\Modules\Experian\DataTransferObjects\ExperianCheckRequest;
 use App\Modules\Experian\Enums\ExperianProduct;
 use App\Modules\Experian\Services\ExperianSettings;
 use App\Modules\MobileOtp\Models\MobileOtpChallenge;
+use Illuminate\Contracts\Cache\Store as CacheStore;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -407,4 +409,72 @@ function cibilRequestFor(Customer $customer, array $overrides = []): CibilCheckR
         'consent' => CreditConsentInput::recordedByEmployee(ConsentMethod::RecordedCall, 'CALL-REF-CB1', now()->subHour(), true),
         ...$overrides,
     ]);
+}
+
+/**
+ * Points the content cache at a store whose every call fails the way an
+ * unreachable Redis does, so a test can prove pages still serve current
+ * content from the database.
+ */
+function unreachableCacheStore(): void
+{
+    Cache::extend('unreachable', fn () => Cache::repository(new class implements CacheStore
+    {
+        public function get($key)
+        {
+            throw new RuntimeException('Connection refused');
+        }
+
+        public function many(array $keys)
+        {
+            throw new RuntimeException('Connection refused');
+        }
+
+        public function put($key, $value, $seconds)
+        {
+            throw new RuntimeException('Connection refused');
+        }
+
+        public function putMany(array $values, $seconds)
+        {
+            throw new RuntimeException('Connection refused');
+        }
+
+        public function increment($key, $value = 1)
+        {
+            throw new RuntimeException('Connection refused');
+        }
+
+        public function decrement($key, $value = 1)
+        {
+            throw new RuntimeException('Connection refused');
+        }
+
+        public function forever($key, $value)
+        {
+            throw new RuntimeException('Connection refused');
+        }
+
+        public function touch($key, $seconds)
+        {
+            throw new RuntimeException('Connection refused');
+        }
+
+        public function forget($key)
+        {
+            throw new RuntimeException('Connection refused');
+        }
+
+        public function flush()
+        {
+            throw new RuntimeException('Connection refused');
+        }
+
+        public function getPrefix()
+        {
+            return '';
+        }
+    }));
+
+    config(['cache.stores.unreachable' => ['driver' => 'unreachable'], 'content_cache.store' => 'unreachable']);
 }

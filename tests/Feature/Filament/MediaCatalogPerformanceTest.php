@@ -28,6 +28,9 @@ it('does not issue one query per SeoMeta record when building the catalog', func
     // The first build also reads the unset Setting-based image fields, which
     // are then cached, so both measurements are taken from a warm cache.
     app(MediaCatalog::class)->all();
+    // Each build as its own request, so both start from the same per-request
+    // state (the content cache re-reads its versions after the seeding below).
+    app()->forgetScopedInstances();
     DB::enableQueryLog();
     app(MediaCatalog::class)->all();
     $queryCountAtTwo = count(DB::getQueryLog());
@@ -36,6 +39,7 @@ it('does not issue one query per SeoMeta record when building the catalog', func
 
     $seedSeoMetaRows(10);
 
+    app()->forgetScopedInstances();
     DB::enableQueryLog();
     app(MediaCatalog::class)->all();
     $queryCountAtTwelve = count(DB::getQueryLog());

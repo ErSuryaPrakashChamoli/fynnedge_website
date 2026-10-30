@@ -1,12 +1,16 @@
 <?php
 
+use App\Enums\LandingPageGroup;
+use App\Enums\LoanCategory;
 use App\Jobs\TranslateContentToHindi;
 use App\Jobs\TranslateSettingToHindi;
 use App\Models\Lender;
+use App\Models\LoanLandingPage;
 use App\Models\LoanProduct;
 use App\Models\Page;
 use App\Models\Setting;
 use App\Support\Localization\MachineTranslator;
+use App\Support\Localization\SiteLocale;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Defer\DeferredCallbackCollection;
 use Illuminate\Support\Facades\Http;
@@ -155,6 +159,22 @@ describe('saving content', function () {
         $job->handle(app(MachineTranslator::class));
 
         expect($page->fresh()->updated_at->toDateString())->toBe('2026-10-15');
+    });
+});
+
+describe('cached public content', function () {
+    it('shows a landing page title translated in the background in the Hindi mega menu', function () {
+        Queue::fake();
+        $product = LoanProduct::factory()->published()->create(['slug' => 'personal-loan', 'category' => LoanCategory::PersonalLoan]);
+        LoanLandingPage::factory()->published()->for($product, 'loanProduct')->create(['group' => LandingPageGroup::ByAmount, 'title' => '5 Lakh Personal Loan', 'title_hi' => null]);
+        $job = Queue::pushed(TranslateContentToHindi::class, fn (TranslateContentToHindi $job): bool => $job->modelClass === LoanLandingPage::class)->first();
+        $this->withUnencryptedCookie(SiteLocale::COOKIE, 'hi')->get('/')->assertSee('5 Lakh Personal Loan');
+        fakeGoogleTranslate();
+
+        $job->handle(app(MachineTranslator::class));
+        app()->forgetScopedInstances();
+
+        $this->withUnencryptedCookie(SiteLocale::COOKIE, 'hi')->get('/')->assertSee('हिं 5 Lakh Personal Loan');
     });
 });
 

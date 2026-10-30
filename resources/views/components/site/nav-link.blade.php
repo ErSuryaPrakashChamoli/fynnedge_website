@@ -5,6 +5,14 @@
         $isActive = request()->routeIs($route)
             && collect($parameters)->every(function ($value, $key) {
                 $routeValue = request()->route($key);
+
+                // A route-bound model has never matched a slug here. It used to be
+                // cast to a string to find that out, which serialised it and its
+                // loaded relations to JSON: ~28ms per link on every loan page.
+                if ($routeValue instanceof \Illuminate\Database\Eloquent\Model) {
+                    return false;
+                }
+
                 $routeValue = $routeValue instanceof \BackedEnum ? $routeValue->value : $routeValue;
 
                 return (string) $routeValue === (string) $value;

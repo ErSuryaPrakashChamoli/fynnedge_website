@@ -1,13 +1,17 @@
 <?php
 
+use App\Enums\LandingPageGroup;
+use App\Enums\LoanCategory;
 use App\Models\LenderProduct;
+use App\Models\LoanLandingPage;
 use App\Models\LoanProduct;
 use App\Models\Page;
 use App\Models\Setting;
 use App\Models\VideoTestimonial;
+use App\Support\ContentCache\ContentCache;
 use App\Support\Localization\ContentTranslations;
 use App\Support\Localization\Phrasebook;
-use Illuminate\Support\Facades\Cache;
+use App\Support\Localization\SiteLocale;
 use Illuminate\Support\Facades\File;
 
 it('serves the Hindi column while the site runs in Hindi', function () {
@@ -57,7 +61,7 @@ it('backfills Hindi only where the English still matches and no Hindi exists', f
         ['field' => 'features', 'en' => ['Quick approval', 'No collateral'], 'hi' => ['त्वरित मंज़ूरी', 'कोई गिरवी नहीं']],
     ]));
 
-    $rateBookVersion = Cache::get('rate-book:version');
+    $rateBookVersion = ContentCache::versionReport()['rates']['version'];
 
     try {
         $written = ContentTranslations::apply('hi', $directory);
@@ -65,7 +69,7 @@ it('backfills Hindi only where the English still matches and no Hindi exists', f
         File::deleteDirectory($directory);
     }
 
-    expect(Cache::get('rate-book:version'))->not->toBe($rateBookVersion, 'cached rate rows carry Hindi texts, so a backfill must invalidate them');
+    expect(ContentCache::versionReport()['rates']['version'])->not->toBe($rateBookVersion, 'cached rate rows carry Hindi texts, so a backfill must invalidate them');
 
     expect($written)->toBe(['loan_products' => 1, 'pages' => 1])
         ->and($matching->fresh()->title_hi)->toBe('गोपनीयता नीति')
@@ -139,4 +143,24 @@ it('describes a lender offer fee and eligibility in the visitor language', funct
 
     expect($offer->processingFeeDisplay())->toBe('2.00% तक + जीएसटी')
         ->and($offer->eligibilitySummaryPoints())->toBe(['उम्र 21–60 साल', 'न्यूनतम आय ₹25,000/माह']);
+});
+
+it('shows backfilled Hindi landing page titles in the Hindi mega menu on the next page view', function () {
+    $product = LoanProduct::factory()->published()->create(['slug' => 'personal-loan', 'category' => LoanCategory::PersonalLoan]);
+    LoanLandingPage::factory()->published()->for($product, 'loanProduct')->create(['group' => LandingPageGroup::ByAmount, 'title' => '5 Lakh Personal Loan', 'title_hi' => null]);
+    $this->withUnencryptedCookie(SiteLocale::COOKIE, 'hi')->get('/')->assertSee('5 Lakh Personal Loan');
+    $directory = storage_path('framework/testing/translations-'.uniqid());
+    File::ensureDirectoryExists($directory);
+    File::put("{$directory}/loan_landing_pages.json", json_encode([
+        ['field' => 'title', 'en' => '5 Lakh Personal Loan', 'hi' => '5 लाख का पर्सनल लोन'],
+    ]));
+
+    try {
+        ContentTranslations::apply('hi', $directory);
+    } finally {
+        File::deleteDirectory($directory);
+    }
+    app()->forgetScopedInstances();
+
+    $this->withUnencryptedCookie(SiteLocale::COOKIE, 'hi')->get('/')->assertSee('5 लाख का पर्सनल लोन');
 });

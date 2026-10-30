@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use App\Enums\ContentCacheSection;
+use App\Models\Concerns\InvalidatesContentCache;
 use App\Models\Concerns\Seoable;
+use App\Support\ContentCache\ContentCache;
 use App\Support\UrlPath;
 use Database\Factories\PageSeoFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * Admin-managed SEO for ONE public URL, applied by
@@ -31,9 +33,7 @@ use Illuminate\Support\Facades\Cache;
 class PageSeo extends Model
 {
     /** @use HasFactory<PageSeoFactory> */
-    use HasFactory, Seoable;
-
-    public const CACHE_KEY = 'page-seo:active';
+    use HasFactory, InvalidatesContentCache, Seoable;
 
     protected function casts(): array
     {
@@ -42,15 +42,13 @@ class PageSeo extends Model
         ];
     }
 
-    protected static function booted(): void
-    {
-        static::saved(fn () => self::forgetCache());
-        static::deleted(fn () => self::forgetCache());
-    }
-
+    /**
+     * For writes that skip model events. Saving or deleting a row already
+     * invalidates the map (InvalidatesContentCache).
+     */
     public static function forgetCache(): void
     {
-        Cache::forget(self::CACHE_KEY);
+        ContentCache::invalidate(ContentCacheSection::PageSeo);
     }
 
     /**
@@ -64,7 +62,7 @@ class PageSeo extends Model
      */
     public static function activeMap(): array
     {
-        return Cache::rememberForever(self::CACHE_KEY, fn (): array => self::query()
+        return ContentCache::remember('page-seo:active', [ContentCacheSection::PageSeo], fn (): array => self::query()
             ->where('is_active', true)
             ->get(['id', 'url_path'])
             ->mapWithKeys(fn (self $pageSeo): array => [

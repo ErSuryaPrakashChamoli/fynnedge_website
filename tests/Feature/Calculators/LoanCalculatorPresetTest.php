@@ -3,6 +3,7 @@
 use App\Enums\LoanCategory;
 use App\Models\LoanProduct;
 use App\Support\Calculators\LoanCalculatorPreset;
+use Illuminate\Support\Facades\DB;
 
 it('reads a preset from the published LoanProduct row for every EMI-style loan category', function (LoanCategory $category) {
     seedCalculatorProduct($category);
@@ -88,4 +89,32 @@ it('exposes the exact limits stored on the LoanProduct row, not different number
     expect($preset['max_years'])->toBe(7);
     expect($preset['max_rate'])->toBe(30.0);
     expect($preset['rate_note'])->toBe('10.49% – 24%+');
+});
+
+it('reads the products behind every calculator once, then serves later requests from the cache', function () {
+    seedCalculatorProduct(LoanCategory::PersonalLoan);
+    seedCalculatorProduct(LoanCategory::HomeLoan);
+    $productQueries = function (): int {
+        DB::flushQueryLog();
+        LoanCalculatorPreset::supportedCategories();
+        app()->forgetScopedInstances();
+
+        return collect(DB::getQueryLog())->filter(fn (array $entry): bool => str_contains($entry['query'], 'from "loan_products"'))->count();
+    };
+    app()->forgetScopedInstances();
+    DB::enableQueryLog();
+
+    // Cold: the rows, plus the next scheduled publish/expiry that bounds how
+    // long they are cached. Warm: nothing. (It was one query per category.)
+    expect([$productQueries(), $productQueries()])->toBe([2, 0]);
+});
+
+it('uses a product\'s new calculator limits on the next request after an edit', function () {
+    $product = seedCalculatorProduct(LoanCategory::PersonalLoan);
+    LoanCalculatorPreset::for(LoanCategory::PersonalLoan);
+
+    $product->update(['max_amount' => 2_500_000]);
+    app()->forgetScopedInstances();
+
+    expect(LoanCalculatorPreset::for(LoanCategory::PersonalLoan)['max_amount'])->toBe(2_500_000.0);
 });

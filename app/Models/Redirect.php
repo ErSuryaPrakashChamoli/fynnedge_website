@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Enums\ContentCacheSection;
+use App\Models\Concerns\InvalidatesContentCache;
+use App\Support\ContentCache\ContentCache;
 use App\Support\UrlPath;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * One admin-managed URL redirect.
@@ -19,14 +21,13 @@ use Illuminate\Support\Facades\Cache;
  *
  * The whole active set is cached as one array (see lookup()) rather than
  * queried per request: it is small, read on every single public request, and
- * the cache is dropped on any write through the saved/deleted hooks.
+ * any saved or deleted row invalidates it (InvalidatesContentCache). The hit
+ * counter is written with the query builder so a hit never invalidates it.
  */
 #[Fillable(['source_path', 'destination', 'status_code', 'is_active'])]
 class Redirect extends Model
 {
-    use HasFactory;
-
-    public const CACHE_KEY = 'redirects:active';
+    use HasFactory, InvalidatesContentCache;
 
     protected function casts(): array
     {
@@ -37,15 +38,12 @@ class Redirect extends Model
         ];
     }
 
-    protected static function booted(): void
-    {
-        static::saved(fn () => self::forgetCache());
-        static::deleted(fn () => self::forgetCache());
-    }
-
+    /**
+     * For writes that skip model events, e.g. a migration's query delete.
+     */
     public static function forgetCache(): void
     {
-        Cache::forget(self::CACHE_KEY);
+        ContentCache::invalidate(ContentCacheSection::Redirects);
     }
 
     /**
@@ -112,7 +110,7 @@ class Redirect extends Model
      */
     public static function activeMap(): array
     {
-        return Cache::rememberForever(self::CACHE_KEY, fn (): array => self::query()
+        return ContentCache::remember('redirects:active', [ContentCacheSection::Redirects], fn (): array => self::query()
             ->where('is_active', true)
             ->get()
             ->mapWithKeys(fn (self $redirect): array => [

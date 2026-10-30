@@ -2,6 +2,7 @@
 
 namespace App\Support\Localization;
 
+use App\Support\ContentCache\ContentCache;
 use App\Support\Rates\RateBook;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -74,8 +75,13 @@ final class ContentTranslations
             }
         }
 
-        // These writes skip the model hooks that normally clear RateBook's
-        // cached rate rows, and those rows carry the Hindi rate texts.
+        // These writes skip the model hooks that normally invalidate the cached
+        // copies of this text (the mega menu's Hindi labels, RateBook's rows).
+        foreach (array_keys(array_filter($written)) as $table) {
+            ContentCache::invalidateTable($table);
+        }
+
+        // RateBook additionally forgets this process's memo of its rows.
         if (array_sum($written) > 0) {
             RateBook::flush();
         }

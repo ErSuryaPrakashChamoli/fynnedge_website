@@ -6,6 +6,7 @@ use App\Models\Lender;
 use App\Models\LenderProduct;
 use App\Models\LenderProductRate;
 use App\Models\LoanProduct;
+use App\Support\ContentCache\ContentCache;
 use App\Support\Localization\AutoTranslation;
 use App\Support\Localization\MachineTranslator;
 use App\Support\Rates\RateBook;
@@ -80,8 +81,11 @@ class TranslateContentToHindi implements ShouldQueue
         $model->timestamps = false;
         AutoTranslation::paused(fn () => $model->saveQuietly());
 
-        // saveQuietly() also skips the hooks that clear RateBook's cached rate
-        // rows, which carry these models' Hindi texts.
+        // saveQuietly() also skips the hooks that invalidate the cached copies
+        // of this text: the mega menu's Hindi labels, RateBook's rate rows.
+        ContentCache::invalidateTable($model->getTable());
+
+        // RateBook additionally forgets this process's memo of its rows.
         if ($model instanceof LenderProductRate || $model instanceof LenderProduct || $model instanceof Lender || $model instanceof LoanProduct) {
             RateBook::flush();
         }

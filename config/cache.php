@@ -97,12 +97,12 @@ return [
             'driver' => 'octane',
         ],
 
+        // Production with Redis: CACHE_STORE=failover and
+        // CACHE_FAILOVER_STORES=redis,database, so locks, rate limits and
+        // cached content carry on in the database table while Redis is down.
         'failover' => [
             'driver' => 'failover',
-            'stores' => [
-                'database',
-                'array',
-            ],
+            'stores' => explode(',', (string) env('CACHE_FAILOVER_STORES', 'database,array')),
         ],
 
     ],

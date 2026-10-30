@@ -2,9 +2,13 @@
 
 namespace App\Support\Loans;
 
+use App\Enums\ContentCacheSection;
 use App\Enums\LandingPageGroup;
 use App\Enums\LoanCategory;
+use App\Models\LoanLandingPage;
 use App\Models\LoanProduct;
+use App\Support\ContentCache\ContentCache;
+use App\Support\Localization\SiteLocale;
 
 /**
  * Single source of truth for the header "Loans" mega menu — mirrors
@@ -44,6 +48,22 @@ class LoanMegaMenu
      * }>
      */
     public static function categories(): array
+    {
+        // Rendered into the header of every page, and building it (~400
+        // landing pages, labels in the visitor's language) cost ~65ms a page.
+        // Route names and parameters, not URLs, so it holds no host.
+        return ContentCache::remember(
+            'loan-mega-menu:'.SiteLocale::current(),
+            [ContentCacheSection::LoanCatalog],
+            fn (): array => self::build(),
+            scheduled: [LoanProduct::class, LoanLandingPage::class],
+        );
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private static function build(): array
     {
         $products = LoanProduct::query()
             ->published()

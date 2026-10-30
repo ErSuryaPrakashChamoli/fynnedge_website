@@ -2,6 +2,7 @@
 
 namespace App\Support\Rates;
 
+use App\Enums\ContentCacheSection;
 use App\Enums\LenderStatus;
 use App\Enums\LoanCategory;
 use App\Enums\RateSourceType;
@@ -12,18 +13,18 @@ use App\Enums\RateVerificationStatus;
 use App\Enums\RepaymentMethod;
 use App\Models\LenderProductRate;
 use App\Models\LoanProduct;
+use App\Support\ContentCache\ContentCache;
 use App\Support\Localization\SiteLocale;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 /**
  * The single source of every interest rate shown on the public site.
  *
- * Reads published, verified LenderProductRate rows once per request (from a
- * cache invalidated whenever a rate, offer, lender or product is saved) and
+ * Reads published, verified LenderProductRate rows once per request (from the
+ * content cache's Rates section, invalidated whenever a rate, offer, lender or
+ * product is saved) and
  * applies the date rules at READ time, against the current clock: effective_from /
  * effective_until in Indian calendar days, the promotion window to the
  * second. Because the cached data holds dates rather than decisions, an
@@ -41,7 +42,7 @@ final class RateBook
      * v4 added the Hindi (`{column}_hi`) values to each cached row, so a copy
      * cached before them is never read.
      */
-    private const CACHE_KEY = 'rate-book:published-rates:v4';
+    private const CACHE_NAME = 'rate-book:published-rates:v4';
 
     /**
      * Visitor-facing rate text with a translated sibling column (see
@@ -51,16 +52,20 @@ final class RateBook
     private const TRANSLATED_COLUMNS = ['variant', 'borrower_segment', 'promo_label', 'eligibility_notes', 'disclaimer'];
 
     /**
-     * A token that changes after every committed change to rates, offers,
-     * lenders or products. The cached rows carry the token they were read
-     * under and are only used while it is still current.
-     */
-    private const VERSION_KEY = 'rate-book:version';
-
-    /**
      * @var list<array<string, mixed>>|null
      */
     private ?array $rows = null;
+
+    /**
+     * live() as last built, for the second and language it was built in, and
+     * the same quotes grouped by lender offer once quotesFor() asks. The
+     * comparison table calls quotesFor() once per lender offer: rebuilding
+     * every quote each time cost ~6ms a call, and filtering all of them for
+     * each offer another ~1.4ms (~300ms together on a 39-lender page).
+     *
+     * @var array{at: string, quotes: Collection<int, RateQuote>, byOffer: array<int, list<RateQuote>>|null}|null
+     */
+    private ?array $live = null;
 
     public static function instance(): self
     {
@@ -72,20 +77,17 @@ final class RateBook
      * model whose change can alter what the site shows (rates, offers,
      * lenders, products).
      *
-     * The new version token is written only AFTER the surrounding transaction
-     * commits. Clearing inside the transaction let a page view that ran in that
-     * moment cache the pre-publish rows again, and that stale copy then stayed
-     * until the next change. Now such a copy is tagged with the old token and
-     * is ignored by the next reader.
+     * The Rates section's version moves only AFTER the surrounding transaction
+     * commits (ContentCache::invalidate()). Clearing inside the transaction let
+     * a page view that ran in that moment cache the pre-publish rows again, and
+     * that stale copy then stayed until the next change. Now such a copy is
+     * stored under the old version and is ignored by the next reader.
      */
     public static function flush(): void
     {
         self::forgetMemo();
-
-        DB::afterCommit(function (): void {
-            Cache::forever(self::VERSION_KEY, (string) Str::uuid());
-            self::forgetMemo();
-        });
+        ContentCache::invalidate(ContentCacheSection::Rates);
+        DB::afterCommit(fn () => self::forgetMemo());
     }
 
     /**
@@ -104,6 +106,7 @@ final class RateBook
     {
         if (app()->resolved(self::class)) {
             self::instance()->rows = null;
+            self::instance()->live = null;
         }
     }
 
@@ -117,11 +120,23 @@ final class RateBook
      */
     public static function quotesFor(int $lenderProductId): array
     {
-        return self::instance()->live()
-            ->where('lenderProductId', $lenderProductId)
-            ->sort(fn (RateQuote $a, RateQuote $b) => [$a->isForAllBorrowers() ? 0 : 1, $a->isOfficial() ? 0 : 1, $a->startingRate(), $b->featured, $b->displayPriority]
-                <=> [$b->isForAllBorrowers() ? 0 : 1, $b->isOfficial() ? 0 : 1, $b->startingRate(), $a->featured, $a->displayPriority])
-            ->values()
+        return self::instance()->quotesByOffer()[$lenderProductId] ?? [];
+    }
+
+    /**
+     * @return array<int, list<RateQuote>>
+     */
+    private function quotesByOffer(): array
+    {
+        $this->live();
+
+        return $this->live['byOffer'] ??= $this->live['quotes']
+            ->groupBy('lenderProductId')
+            ->map(fn (Collection $quotes): array => $quotes
+                ->sort(fn (RateQuote $a, RateQuote $b) => [$a->isForAllBorrowers() ? 0 : 1, $a->isOfficial() ? 0 : 1, $a->startingRate(), $b->featured, $b->displayPriority]
+                    <=> [$b->isForAllBorrowers() ? 0 : 1, $b->isOfficial() ? 0 : 1, $b->startingRate(), $a->featured, $a->displayPriority])
+                ->values()
+                ->all())
             ->all();
     }
 
@@ -203,15 +218,25 @@ final class RateBook
      */
     public function live(): Collection
     {
-        $today = CarbonImmutable::now(self::TIMEZONE)->toDateString();
         $now = CarbonImmutable::now();
+        $at = $now->getTimestamp().'|'.SiteLocale::current();
 
-        return collect($this->rows())
+        if ($this->live !== null && $this->live['at'] === $at) {
+            return $this->live['quotes'];
+        }
+
+        $today = $now->setTimezone(self::TIMEZONE)->toDateString();
+
+        $quotes = collect($this->rows())
             ->filter(fn (array $row) => $row['offer_active'] && $row['lender_active']
                 && ($row['effective_from'] === null || $row['effective_from'] <= $today)
                 && ($row['effective_until'] === null || $row['effective_until'] >= $today))
             ->map(fn (array $row) => $this->quote($row, $now))
             ->values();
+
+        $this->live = ['at' => $at, 'quotes' => $quotes, 'byOffer' => null];
+
+        return $quotes;
     }
 
     private function unitFor(int $loanProductId): ?RateUnit
@@ -287,25 +312,11 @@ final class RateBook
      */
     private function rows(): array
     {
-        if ($this->rows !== null) {
-            return $this->rows;
-        }
-
-        $version = Cache::get(self::VERSION_KEY);
-        $cached = Cache::get(self::CACHE_KEY);
-
-        if (is_array($cached) && ($cached['version'] ?? null) === $version && is_array($cached['rows'] ?? null)) {
-            return $this->rows = $cached['rows'];
-        }
-
-        $rows = $this->loadRows();
-
-        // Tagged with the version read BEFORE the query: if a change commits
-        // while this request is reading, the token moves on and these rows are
-        // refreshed by the next reader instead of being trusted.
-        Cache::forever(self::CACHE_KEY, ['version' => $version, 'rows' => $rows]);
-
-        return $this->rows = $rows;
+        // Stored under the version read BEFORE the query: if a change commits
+        // while this request is reading, the version moves on and these rows
+        // are refreshed by the next reader instead of being trusted. No
+        // schedule to expire on: the date rules are applied at read time.
+        return $this->rows ??= ContentCache::remember(self::CACHE_NAME, [ContentCacheSection::Rates], fn (): array => $this->loadRows());
     }
 
     /**

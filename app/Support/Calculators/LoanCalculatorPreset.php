@@ -2,9 +2,11 @@
 
 namespace App\Support\Calculators;
 
+use App\Enums\ContentCacheSection;
 use App\Enums\LoanCategory;
 use App\Enums\RateUnit;
 use App\Models\LoanProduct;
+use App\Support\ContentCache\ContentCache;
 use App\Support\Rates\RateBook;
 
 /**
@@ -110,11 +112,36 @@ class LoanCalculatorPreset
 
     private static function product(LoanCategory $category): ?LoanProduct
     {
-        return LoanProduct::query()
-            ->published()
-            ->where('category', $category)
-            ->orderBy('id')
-            ->first();
+        $attributes = self::publishedProductRows()[$category->value] ?? null;
+
+        return $attributes === null ? null : (new LoanProduct)->newFromBuilder($attributes);
+    }
+
+    /**
+     * Each category's first published product (lowest id) as raw rows, from
+     * one cached query. supportedCategories() checks every category, and one
+     * query per category ran ~15 times on each loan page and calculator.
+     * Rows rather than models, which the cache cannot hold; product()
+     * hydrates a fresh model from them each call.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    private static function publishedProductRows(): array
+    {
+        return ContentCache::remember(
+            'calculator-products',
+            [ContentCacheSection::LoanCatalog],
+            fn (): array => LoanProduct::query()
+                ->published()
+                ->orderBy('id')
+                ->toBase()
+                ->get()
+                ->map(fn (object $row): array => (array) $row)
+                ->unique('category')
+                ->keyBy('category')
+                ->all(),
+            scheduled: [LoanProduct::class],
+        );
     }
 
     private static function clamp(float $value, float $min, float $max): float

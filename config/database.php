@@ -160,6 +160,10 @@ return [
             'password' => env('REDIS_PASSWORD'),
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_DB', '0'),
+            // Seconds; 0 waits as long as the OS does. Set both in production
+            // so a hung Redis costs a page a fraction of a second, not a hang.
+            'timeout' => env('REDIS_TIMEOUT', 0.0),
+            'read_timeout' => env('REDIS_READ_TIMEOUT', 0.0),
             'max_retries' => env('REDIS_MAX_RETRIES', 3),
             'backoff_algorithm' => env('REDIS_BACKOFF_ALGORITHM', 'decorrelated_jitter'),
             'backoff_base' => env('REDIS_BACKOFF_BASE', 100),
@@ -173,6 +177,8 @@ return [
             'password' => env('REDIS_PASSWORD'),
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_CACHE_DB', '1'),
+            'timeout' => env('REDIS_TIMEOUT', 0.0),
+            'read_timeout' => env('REDIS_READ_TIMEOUT', 0.0),
             'max_retries' => env('REDIS_MAX_RETRIES', 3),
             'backoff_algorithm' => env('REDIS_BACKOFF_ALGORITHM', 'decorrelated_jitter'),
             'backoff_base' => env('REDIS_BACKOFF_BASE', 100),

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Enums\ContentCacheSection;
 use App\Enums\LoanCategory;
 use App\Models\LoanProduct;
 use App\Models\NavigationLink;
@@ -20,6 +21,7 @@ use App\Modules\MobileOtp\Contracts\SmsProvider;
 use App\Support\Analytics\TrackingScripts;
 use App\Support\ApiClients\AuthenticateApiClient;
 use App\Support\Contact\OfficeMap;
+use App\Support\ContentCache\ContentCache;
 use App\Support\Rates\RateBook;
 use App\Support\Seo\Sitemap;
 use App\Support\Theme\SiteThemeStyles;
@@ -42,6 +44,10 @@ class AppServiceProvider extends ServiceProvider
         // Per request/job: RateBook memoises the published rates it read, and
         // a long-lived worker must not carry one request's memo into the next.
         $this->app->scoped(RateBook::class);
+
+        // Per request/job too: the content cache memoises the section versions
+        // and values it read, and its pending invalidations.
+        $this->app->scoped(ContentCache::class);
 
         $this->app->bind(
             CreditBureauProvider::class,
@@ -93,11 +99,14 @@ class AppServiceProvider extends ServiceProvider
 
         // Gold Loan, Two Wheeler, Term, Tractor and Mudra loans are excluded here to keep
         // this list short — they stay listed everywhere else (home, /loans, header mega-menu).
+        // Cached as rows (the header and the footer each ran this query on
+        // every page) and hydrated into models for the views.
         View::composer(
             ['components.site.header', 'components.site.footer'],
-            fn ($view) => $view->with(
-                'loanProducts',
-                LoanProduct::query()->published()->orderedForDisplay()
+            fn ($view) => $view->with('loanProducts', LoanProduct::hydrate(ContentCache::remember(
+                'navigation-loan-products',
+                [ContentCacheSection::LoanCatalog],
+                fn (): array => LoanProduct::query()->published()->orderedForDisplay()
                     ->whereNotIn('category', [
                         LoanCategory::GoldLoan,
                         LoanCategory::TwoWheelerLoan,
@@ -105,8 +114,12 @@ class AppServiceProvider extends ServiceProvider
                         LoanCategory::TractorLoan,
                         LoanCategory::MudraLoan,
                     ])
-                    ->get(),
-            ),
+                    ->toBase()
+                    ->get()
+                    ->map(fn (object $row): array => (array) $row)
+                    ->all(),
+                scheduled: [LoanProduct::class],
+            ))),
         );
 
         // Shared across header, footer and the base layout (browser tab title) so the

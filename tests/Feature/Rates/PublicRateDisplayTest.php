@@ -11,7 +11,7 @@ use App\Models\LoanProduct;
 use App\Models\User;
 use App\Support\Rates\RateBook;
 use App\Support\Rates\RateWorkflow;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;
 
 function displayProduct(LoanCategory $category = LoanCategory::PersonalLoan, string $slug = 'rate-display-test'): LoanProduct
@@ -204,13 +204,18 @@ it('never lets a fee note carry an interest rate or an aggregator citation onto 
 it('ignores a stale copy of the rates that a page view cached while a publish was committing', function () {
     $product = displayProduct();
     publishRate(displayOffer($product, 'Earlier Bank'), 10.4);
+    $newerOffer = displayOffer($product, 'Newer Bank');
+    // The page view's rate query has run (it read only the earlier rate) when
+    // the publish commits; the page then caches what it read.
+    $published = false;
+    DB::listen(function (QueryExecuted $query) use (&$published, $newerOffer): void {
+        if (! $published && str_contains($query->sql, 'join "lender_products"')) {
+            $published = true;
+            DB::transaction(fn () => publishRate($newerOffer, 9.6));
+        }
+    });
     RateBook::headlineFor($product);
-    // The cached payload as a page view read it before the next publish committed.
-    $staleCopy = Cache::get('rate-book:published-rates:v2');
-
-    DB::transaction(fn () => publishRate(displayOffer($product, 'Newer Bank'), 9.6));
-    Cache::forever('rate-book:published-rates:v2', $staleCopy);
-    app()->forgetInstance(RateBook::class);
+    app()->forgetScopedInstances();
 
     expect(RateBook::headlineFor($product)->startingLabel())->toBe('9.60%');
 });

@@ -7,6 +7,7 @@ use App\Enums\PublishStatus;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
 use App\Models\Concerns\HasTranslations;
+use App\Models\Concerns\InvalidatesContentCache;
 use App\Models\Concerns\Publishable;
 use App\Models\Concerns\Seoable;
 use Database\Factories\LoanLandingPageFactory;
@@ -20,7 +21,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class LoanLandingPage extends Model
 {
     /** @use HasFactory<LoanLandingPageFactory> */
-    use Auditable, HasFactory, HasPublicId, HasTranslations, Publishable, Seoable, SoftDeletes;
+    use Auditable, HasFactory, HasPublicId, HasTranslations, InvalidatesContentCache, Publishable, Seoable, SoftDeletes;
 
     protected function casts(): array
     {
