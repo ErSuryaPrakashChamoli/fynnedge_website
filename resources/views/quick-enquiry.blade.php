@@ -35,7 +35,7 @@
         </div>
 
         <div class="relative mx-auto grid max-w-7xl gap-10 px-6 pb-8 pt-4 lg:grid-cols-[minmax(0,1fr)_28rem] lg:items-start lg:gap-14 lg:px-8 lg:pb-12 lg:pt-6">
-            <div id="enquiry-form" data-reveal="zoom" class="scroll-mt-24 lg:sticky lg:top-6 lg:order-last">
+            <div id="enquiry-form" class="scroll-mt-24 lg:sticky lg:top-6 lg:order-last">
                 @if ($loanProducts->isEmpty())
                     <x-ui.alert tone="accent" :title="__('Online enquiries are paused')">
                         {!! __('We aren\'t taking online enquiries right now. <a href=":url" class="font-medium underline">Contact us</a> and we\'ll help you directly.', ['url' => e(route('contact'))]) !!}
@@ -55,17 +55,17 @@
             <div>
                 <x-ui.badge tone="accent">{{ $content['badge'] }}</x-ui.badge>
 
-                <h1 data-reveal="up" class="mt-3 text-balance font-display text-3xl font-semibold leading-[1.1] tracking-tight text-ink sm:text-4xl lg:text-[2.75rem]">
+                <h1 class="mt-3 text-balance font-display text-3xl font-semibold leading-[1.1] tracking-tight text-ink sm:text-4xl lg:text-[2.75rem]">
                     {{ $content['heading'] }}
                     <span class="text-accent">{{ $content['heading_accent'] }}</span>
                 </h1>
 
-                <p data-reveal="up delay-1" class="mt-4 max-w-xl text-base text-ink-muted">
+                <p class="mt-4 max-w-xl text-base text-ink-muted">
                     {{ $content['description'] }}
                 </p>
 
                 @if ($content['assurances'])
-                    <ul data-reveal="up delay-1" class="mt-6 flex flex-wrap gap-x-6 gap-y-2.5">
+                    <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-2.5">
                         @foreach ($content['assurances'] as $assurance)
                             <li class="flex items-center gap-2 text-sm text-ink">
                                 <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-pass-soft text-pass" aria-hidden="true">
@@ -80,7 +80,7 @@
                 @endif
 
                 @if ($content['steps'])
-                    <ol data-reveal="up delay-2" class="mt-8 grid gap-3 {{ $stepColumns[count($content['steps'])] ?? $stepColumns[4] }}">
+                    <ol class="mt-8 grid gap-3 {{ $stepColumns[count($content['steps'])] ?? $stepColumns[4] }}">
                         @foreach ($content['steps'] as $step)
                             <li class="relative rounded-xl border border-line bg-surface p-4 shadow-sm">
                                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-accent-soft font-mono text-xs font-semibold text-accent" aria-hidden="true">
@@ -96,7 +96,7 @@
                 @endif
 
                 @if ($visibleLenders->isNotEmpty())
-                    <div data-reveal="up delay-2" class="mt-8">
+                    <div class="mt-8">
                         <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink-faint">
                             {{ $content['lenders_label'] }}
                         </p>

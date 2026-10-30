@@ -10,7 +10,7 @@
         <x-ui.breadcrumbs :trail="[__('Credit Score') => null, $bureau->getLabel() => null]" />
 
         <div class="mt-6 grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:items-start">
-            <div data-reveal="up">
+            <div>
                 <x-ui.badge tone="accent">{{ $content['badge'] }}</x-ui.badge>
 
                 <h1 class="mt-4 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
@@ -55,7 +55,7 @@
                 @endif
             </div>
 
-            <div data-reveal="right" class="lg:sticky lg:top-24">
+            <div class="lg:sticky lg:top-24">
                 <livewire:credit-score-check :bureau="$bureau->value" />
             </div>
         </div>

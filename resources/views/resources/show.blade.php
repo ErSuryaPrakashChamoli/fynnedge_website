@@ -3,11 +3,11 @@
         <x-ui.breadcrumbs :trail="[__('Resources') => route('resources.index'), $article->title => null]" />
 
         <p class="mt-5 font-mono text-xs text-ink-faint">{{ $article->publishedOn()->translatedFormat('d M Y') }}</p>
-        <h1 data-reveal="up" class="mt-3 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <h1 class="mt-3 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             {{ $article->title }}
         </h1>
         @if ($article->excerpt)
-            <p data-reveal="up" class="mt-3 text-lg text-ink-muted text-justify hyphens-auto">{{ $article->excerpt }}</p>
+            <p class="mt-3 text-lg text-ink-muted text-justify hyphens-auto">{{ $article->excerpt }}</p>
         @endif
 
         @if ($article->imageUrl())
@@ -19,7 +19,7 @@
         @endif
 
         @if ($article->body)
-            <div data-reveal="fade" class="rich-text mt-10 max-w-none text-ink-muted text-justify hyphens-auto">
+            <div class="rich-text mt-10 max-w-none text-ink-muted text-justify hyphens-auto">
                 {!! $article->body !!}
             </div>
         @endif

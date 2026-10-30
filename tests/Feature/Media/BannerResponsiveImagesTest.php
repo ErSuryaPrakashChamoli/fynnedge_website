@@ -63,7 +63,7 @@ it('backfills the copies of banner images uploaded before copies were made', fun
 
     Artisan::call('media:responsive-images');
 
-    expect(Artisan::output())->toContain('Checked 1 banner image(s), wrote 3 WebP copies.');
+    expect(Artisan::output())->toContain('Checked 1 image(s), wrote 3 WebP copies.');
     Storage::disk('public')->assertExists([
         'responsive/banners/promo-480.webp',
         'responsive/banners/promo-768.webp',

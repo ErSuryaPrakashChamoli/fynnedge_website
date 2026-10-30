@@ -12,7 +12,8 @@ use Throwable;
  * Banners are uploaded at 1440px or wider, up to 5MB and often as PNG, but a
  * phone shows that box about 360px wide. Serving the upload made the
  * homepage's first banner (the page's Largest Contentful Paint) a 600KB–2MB
- * download where a 768px WebP is about 40KB.
+ * download where a 768px WebP is about 40KB. The About page's founder photo
+ * (a 280px box that showed a 1.8MB PNG) is served from the same copies.
  *
  * The copies sit under responsive/ on the upload's own disk, named after the
  * upload, so they need no column. Media Governance scans only the registered

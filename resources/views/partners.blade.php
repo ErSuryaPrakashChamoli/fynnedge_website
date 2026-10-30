@@ -22,14 +22,14 @@
         <div class="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-14">
             <x-ui.breadcrumbs :trail="[$content['lenders_label'] => null]" />
 
-            <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+            <h1 class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
                 {{ $content['lenders_label'] }}
             </h1>
-            <p data-reveal="up" class="mt-3 text-lg text-ink-muted text-justify hyphens-auto">
+            <p class="mt-3 text-lg text-ink-muted text-justify hyphens-auto">
                 {{ $content['partners_description'] }}
             </p>
 
-            <div data-reveal="up delay-1" class="mt-6 flex flex-wrap items-center gap-3">
+            <div class="mt-6 flex flex-wrap items-center gap-3">
                 <x-ui.button tag="a" href="{{ route('quick-enquiry.show') }}">{{ $content['home_button_label'] }}</x-ui.button>
                 <x-ui.button tag="a" variant="secondary" href="{{ route('eligibility.index') }}">{{ __('Check Your Eligibility') }}</x-ui.button>
             </div>

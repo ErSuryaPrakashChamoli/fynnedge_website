@@ -2,15 +2,15 @@
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="[__('FAQs') => null]" />
 
-        <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <h1 class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             {{ $page->title }}
         </h1>
         @if ($page->excerpt)
-            <p data-reveal="up" class="mt-3 text-lg text-ink-muted text-justify hyphens-auto">{{ $page->excerpt }}</p>
+            <p class="mt-3 text-lg text-ink-muted text-justify hyphens-auto">{{ $page->excerpt }}</p>
         @endif
 
         @if ($page->body)
-            <div data-reveal="fade" class="rich-text mt-4 max-w-none text-ink-muted text-justify hyphens-auto">
+            <div class="rich-text mt-4 max-w-none text-ink-muted text-justify hyphens-auto">
                 {!! $page->body !!}
             </div>
         @endif

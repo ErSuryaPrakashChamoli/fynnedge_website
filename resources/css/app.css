@@ -460,6 +460,12 @@ footer {
  * Guarded by `prefers-reduced-motion` so those users never see the hidden
  * state at all (JS never adds `reveal-visible` for them, so the element must
  * not depend on JS to become visible).
+ *
+ * Never put a reveal on what a page shows on arrival: its heading, intro,
+ * body or main form/calculator. The element stays hidden until app.js runs,
+ * after livewire.js has loaded, and the page's Largest Contentful Paint waits
+ * with it. That was 1.3–2s of delay on every page (measured 2026-10-30).
+ * Pinned by PageFirstScreenTest.
  */
 /*
  * The `right` reveal variant below translates by +96px, and a positive

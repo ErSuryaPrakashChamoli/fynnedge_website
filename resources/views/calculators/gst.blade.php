@@ -2,14 +2,14 @@
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="[__('Calculators') => route('calculators.index'), __('GST Calculator') => null]" />
 
-        <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <h1 class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             {{ $content['heading'] }}
         </h1>
-        <p data-reveal="up" class="mt-3 text-ink-muted text-justify hyphens-auto">
+        <p class="mt-3 text-ink-muted text-justify hyphens-auto">
             {{ $content['description'] }}
         </p>
 
-        <div data-reveal="zoom" class="mt-10">
+        <div class="mt-10">
             <livewire:gst-calculator />
         </div>
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CompanyPhoto;
 use App\Models\Page;
 use App\Models\Setting;
+use App\Support\Media\ResponsiveImage;
 use App\Support\Pages\AboutPageContent;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -34,6 +35,7 @@ class AboutController extends Controller
             'companyPhotos' => CompanyPhoto::query()->published()->orderBy('sort_order')->get(),
             'founderName' => Setting::localized('founder_name'),
             'founderPhotoUrl' => $founderPhotoPath ? Storage::disk('public')->url($founderPhotoPath) : null,
+            'founderPhotoSrcset' => ResponsiveImage::srcset($founderPhotoPath),
         ]);
     }
 }

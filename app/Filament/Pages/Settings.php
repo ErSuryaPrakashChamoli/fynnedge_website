@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\Setting;
 use App\Support\Contact\OfficeMap;
+use App\Support\Media\ResponsiveImage;
 use App\Support\Theme\SiteThemeStyles;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -476,14 +477,37 @@ class Settings extends Page
                 ]);
         }
 
+        $previousFounderPhoto = Setting::get('founder_photo');
+
         foreach ($state as $key => $value) {
             Setting::set($key, $value);
         }
+
+        $this->refreshFounderPhotoCopies($previousFounderPhoto, $state['founder_photo'] ?? null);
 
         Notification::make()
             ->title('Settings saved')
             ->success()
             ->send();
+    }
+
+    /**
+     * The About page serves the founder photo from its WebP copies: the
+     * 280px box showed a 1.8MB PNG upload, which competed with the page's
+     * text for the first seconds of a phone's connection. A new photo gets
+     * its copies here, and a replaced or removed one loses them.
+     */
+    private function refreshFounderPhotoCopies(?string $previous, ?string $current): void
+    {
+        if ($previous === $current) {
+            return;
+        }
+
+        ResponsiveImage::delete($previous);
+
+        if ($current) {
+            ResponsiveImage::generate($current);
+        }
     }
 
     protected function getHeaderActions(): array

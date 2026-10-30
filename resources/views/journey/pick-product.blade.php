@@ -2,10 +2,10 @@
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="[__('Check Your Eligibility') => null]" />
 
-        <h1 data-reveal="up" class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <h1 class="mt-5 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             {{ __('What are you looking to finance?') }}
         </h1>
-        <p data-reveal="up" class="mt-3 text-ink-muted text-justify hyphens-auto">
+        <p class="mt-3 text-ink-muted text-justify hyphens-auto">
             {{ __('Pick a product to start — it takes a few minutes to tell us about yourself.') }}
         </p>
 

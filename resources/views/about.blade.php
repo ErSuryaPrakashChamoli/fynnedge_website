@@ -2,15 +2,15 @@
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="[$page->title => null]" />
 
-        <h1 data-reveal="up" class="mt-5 max-w-2xl text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <h1 class="mt-5 max-w-2xl text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             {{ $page->title }}
         </h1>
         @if ($page->excerpt)
-            <p data-reveal="up" class="mt-3 text-lg text-ink-muted text-justify hyphens-auto">{{ $page->excerpt }}</p>
+            <p class="mt-3 text-lg text-ink-muted text-justify hyphens-auto">{{ $page->excerpt }}</p>
         @endif
 
         @if ($page->body)
-            <div data-reveal="fade" class="rich-text mt-10 max-w-none text-ink-muted text-justify hyphens-auto">
+            <div class="rich-text mt-10 max-w-none text-ink-muted text-justify hyphens-auto">
                 {!! $page->body !!}
             </div>
         @endif
@@ -47,11 +47,16 @@
             </div>
 
             @if ($founderPhotoUrl)
-                <img
-                    src="{{ $founderPhotoUrl }}"
-                    alt="{{ $founderName ?? $content['founder_role'] }}"
-                    class="mx-auto aspect-[4/5] w-full max-w-[280px] rounded-2xl border border-line object-cover"
-                >
+                <picture class="block">
+                    @if ($founderPhotoSrcset)
+                        <source type="image/webp" srcset="{{ $founderPhotoSrcset }}" sizes="280px">
+                    @endif
+                    <img
+                        src="{{ $founderPhotoUrl }}"
+                        alt="{{ $founderName ?? $content['founder_role'] }}"
+                        class="mx-auto aspect-[4/5] w-full max-w-[280px] rounded-2xl border border-line object-cover"
+                    >
+                </picture>
             @else
                 <div class="mx-auto flex aspect-[4/5] w-full max-w-[280px] flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-line-strong bg-surface-2 text-center">
                     <span class="flex h-20 w-20 items-center justify-center rounded-full bg-accent-soft text-accent" aria-hidden="true">
