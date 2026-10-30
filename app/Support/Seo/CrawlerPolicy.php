@@ -33,22 +33,40 @@ class CrawlerPolicy
      * @var array<string, int|null> user agent => crawl delay in seconds
      */
     public const AI_CRAWLERS = [
+        // Answer engines and the fetchers that act for a user who asked about a page.
         'OAI-SearchBot' => null,
-        'GPTBot' => 1,
+        'ChatGPT-User' => null,
+        'Claude-SearchBot' => null,
+        'Claude-User' => null,
         'PerplexityBot' => 1,
-        'Google-Extended' => null,
-        'Anthropic-AI' => null,
+        'Perplexity-User' => null,
+        // Model training.
+        'GPTBot' => 1,
         'ClaudeBot' => null,
+        'Anthropic-AI' => null,
+        'Google-Extended' => null,
         'Applebot-Extended' => null,
     ];
 
     /**
      * Ordinary search crawlers, always allowed while sitewide indexing is on —
      * blocking these is what the indexing switch is for, not this policy.
+     * Applebot is Apple's search crawler (Siri, Spotlight, Safari suggestions);
+     * its training opt-out is the separate Applebot-Extended token above.
      *
      * @var array<int, string>
      */
-    public const SEARCH_CRAWLERS = ['Googlebot', 'Bingbot'];
+    public const SEARCH_CRAWLERS = ['Googlebot', 'Bingbot', 'Applebot'];
+
+    /**
+     * Bulk crawlers kept off the whole site whatever the AI setting says: they
+     * collect pages for third-party datasets and bring no search or answer
+     * traffic back. Carried over from the hand-written robots.txt production
+     * served until October 2026.
+     *
+     * @var array<int, string>
+     */
+    public const BLOCKED_CRAWLERS = ['Bytespider', 'CCBot'];
 
     public static function aiCrawlersAllowed(): bool
     {

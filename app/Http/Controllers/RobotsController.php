@@ -36,6 +36,7 @@ class RobotsController extends Controller
                 'aiCrawlers' => CrawlerPolicy::AI_CRAWLERS,
                 'aiCrawlersAllowed' => CrawlerPolicy::aiCrawlersAllowed(),
                 'searchCrawlers' => CrawlerPolicy::SEARCH_CRAWLERS,
+                'blockedCrawlers' => CrawlerPolicy::BLOCKED_CRAWLERS,
                 'disallowedPaths' => CrawlerPolicy::disallowedPaths(),
                 'allowedPaths' => CrawlerPolicy::allowedPaths(),
                 'extraDirectives' => CrawlerPolicy::extraDirectives(),

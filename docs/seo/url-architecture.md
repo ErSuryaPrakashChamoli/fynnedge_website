@@ -91,15 +91,15 @@ These cannot be done from the repository. Back up anything before changing it.
 1. **Remove the static robots.txt on the server.** Production serves a
    hand-written file that Apache returns before Laravel runs. It is most likely
    `public/robots.txt` in the deployed app; it could also be an Apache `Alias`
-   or a hosting-panel file. It has no
-   `/language/` rule and no `Sitemap:` line, and its private-path rules sit
-   under `*` while Googlebot and Bingbot have their own `Allow: /` groups.
-   Back it up (`cp public/robots.txt ~/robots.txt.bak-$(date +%F)`), compare
-   it with the generated output (`curl -s https://fynnedge.com/robots.txt`
-   after removal, or render it locally), and re-add any bots you want treated
-   specially in Admin → Website Settings → SEO & Tracking → extra directives.
-   The static file also mentions `/llms.txt`. That file is separate and is not
-   affected.
+   or a hosting-panel file. It has no `/language/` rule, and its private-path
+   rules sit under `*` while Googlebot, Bingbot and every AI bot have their own
+   `Allow: /` groups, so none of them obey those rules. Every bot choice in
+   that file is carried over into `CrawlerPolicy`: the extra AI fetchers,
+   Applebot, and the Bytespider/CCBot blocks. Removing it loses nothing.
+   Back it up (`cp public/robots.txt ~/robots.txt.bak-$(date +%F)`), remove it,
+   then check `curl -s https://fynnedge.com/robots.txt`. `/llms.txt` and
+   `/llms-full.txt` are separate static files: keep them. Nothing disallows
+   them, so they need no `Allow` line.
 2. **Cloudflare: one redirect rule for all of `www`.** Today only the bare
    `https://www.fynnedge.com/` redirects. `http://www…` answers **522** and
    every other `https://www…` path answers **403** from the origin. In

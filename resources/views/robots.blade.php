@@ -48,6 +48,12 @@ Disallow: /
 @endif
 
 @endforeach
+# --- Bulk dataset crawlers: kept off the whole site ---
+@foreach ($blockedCrawlers as $crawler)
+User-agent: {{ $crawler }}
+Disallow: /
+
+@endforeach
 # --- Search engines, and everything else ---
 @foreach ($searchCrawlers as $crawler)
 User-agent: {{ $crawler }}

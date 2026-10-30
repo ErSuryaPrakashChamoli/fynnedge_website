@@ -15,11 +15,15 @@ it('allows AI and answer-engine crawlers by default', function () {
 
     foreach (array_keys(CrawlerPolicy::AI_CRAWLERS) as $crawler) {
         expect($robots)->toContain("User-agent: {$crawler}");
+        expect(robotsRulesFor($crawler, $robots))->toContain('Allow: /')->not->toContain('Disallow: /');
     }
-
-    expect($robots)->not->toContain('Disallow: /'."\n".'User-agent');
-    expect(substr_count($robots, 'Disallow: /'."\n"))->toBe(0);
 });
+
+it('keeps the bulk dataset crawlers off the whole site even while AI crawlers are allowed', function (string $crawler) {
+    Setting::set('robots_ai_crawlers_allowed', true);
+
+    expect(robotsRulesFor($crawler, robotsTxt()))->toBe(['Disallow: /']);
+})->with(['Bytespider', 'CCBot']);
 
 it('disallows only the AI crawlers when an admin opts out, leaving search engines alone', function () {
     Setting::set('robots_ai_crawlers_allowed', false);
@@ -57,7 +61,9 @@ it('applies the private paths in the group each crawler obeys, not only under th
 })->with([
     'Googlebot' => 'Googlebot',
     'Bingbot' => 'Bingbot',
+    'Applebot' => 'Applebot',
     'an AI crawler with a crawl delay' => 'GPTBot',
+    'a fetcher acting for an AI user' => 'ChatGPT-User',
     'an AI crawler without one' => 'ClaudeBot',
     'a crawler the file never names' => 'SomeOtherBot',
 ]);
