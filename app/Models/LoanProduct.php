@@ -6,6 +6,7 @@ use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasResponsiveImage;
 use App\Models\Concerns\HasTranslations;
 use App\Models\Concerns\InvalidatesContentCache;
 use App\Models\Concerns\Publishable;
@@ -49,7 +50,7 @@ use Illuminate\Support\Facades\Storage;
 class LoanProduct extends Model
 {
     /** @use HasFactory<LoanProductFactory> */
-    use Auditable, HasFactory, HasPublicId, HasTranslations, InvalidatesContentCache, Publishable, Seoable, SoftDeletes;
+    use Auditable, HasFactory, HasPublicId, HasResponsiveImage, HasTranslations, InvalidatesContentCache, Publishable, Seoable, SoftDeletes;
 
     /**
      * RateBook caches each rate with its product's slug and category (the

@@ -22,6 +22,7 @@ use App\Support\Analytics\TrackingScripts;
 use App\Support\ApiClients\AuthenticateApiClient;
 use App\Support\Contact\OfficeMap;
 use App\Support\ContentCache\ContentCache;
+use App\Support\Media\ResponsiveImage;
 use App\Support\Rates\RateBook;
 use App\Support\Seo\Sitemap;
 use App\Support\Theme\SiteThemeStyles;
@@ -32,6 +33,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\ViewErrorBag;
 use InvalidArgumentException;
 
 class AppServiceProvider extends ServiceProvider
@@ -122,6 +124,16 @@ class AppServiceProvider extends ServiceProvider
             ))),
         );
 
+        // The `web` group's ShareErrorsFromSession shares $errors with every view, and
+        // the footer's newsletter form reads it. A missing page (no route, so no web
+        // group) or a Gone rule's 410 still renders this layout, so give it an empty
+        // bag. A request that went through the web group keeps its real one.
+        View::composer('components.layouts.app', function (): void {
+            if (! View::shared('errors')) {
+                View::share('errors', new ViewErrorBag);
+            }
+        });
+
         // Shared across header, footer and the base layout (browser tab title) so the
         // name/logo/tagline/favicon an admin sets on the Settings page stays in sync
         // everywhere it appears, instead of three independently hard-coded copies.
@@ -133,6 +145,9 @@ class AppServiceProvider extends ServiceProvider
                 'name' => Setting::get('site_name', 'FynnEdge'),
                 'tagline' => Setting::localized('site_tagline', 'Simplifying Loan, Amplifying Trust'),
                 'logoUrl' => static::settingFileUrl('site_logo') ?? asset('fynnedge-icon.png'),
+                // The small WebP copies of an uploaded logo (null for an SVG or before
+                // they exist), so the 36px header logo isn't the full upload.
+                'logoSrcset' => ResponsiveImage::srcset(Setting::get('site_logo'), widths: ResponsiveImage::LOGO_WIDTHS),
                 'faviconUrl' => static::settingFileUrl('site_favicon') ?? asset('favicon.ico'),
                 'faviconIsCustom' => (bool) Setting::get('site_favicon'),
                 'defaultOgImageUrl' => static::settingFileUrl('seo_default_og_image'),

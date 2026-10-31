@@ -4,14 +4,12 @@ namespace App\Http\Middleware;
 
 use App\Console\Commands\SeoAuditCommand;
 use App\Models\Redirect;
+use App\Support\UrlPath;
 use Closure;
 use Filament\Facades\Filament;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Applies the admin-managed redirects table to public GET requests, and sends
@@ -38,6 +36,10 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * redirect". Here the redirect row is matched first, whatever the slashes, and
  * a slash variant is only redirected when its clean path is a real route; any
  * other URL gets its 404 straight away.
+ *
+ * A Gone row (status 410) answers 410 itself, through the normal error page:
+ * the old URL's content was removed for good and has no equivalent page, so
+ * there is nowhere to redirect to.
  */
 class HandleRedirects
 {
@@ -53,6 +55,18 @@ class HandleRedirects
         $path = $request->getPathInfo();
 
         if (! $request->is(self::panelPath(), self::panelPath().'/*') && ($redirect = Redirect::resolve($path))) {
+            if ($redirect['status_code'] === Redirect::GONE) {
+                if ($request->userAgent() !== SeoAuditCommand::USER_AGENT) {
+                    self::recordHit($path);
+                }
+
+                // This runs before SetSiteLocale (global, appended), so the
+                // error page would otherwise always render in English.
+                SetSiteLocale::apply($request);
+
+                abort(Response::HTTP_GONE);
+            }
+
             $destination = self::resolveDestination($redirect['destination'], $request);
 
             /*
@@ -76,7 +90,7 @@ class HandleRedirects
 
         $canonicalPath = self::canonicalPath($path);
 
-        if ($canonicalPath !== $path && self::isRoutable($canonicalPath)) {
+        if ($canonicalPath !== $path && UrlPath::isRoutable($canonicalPath)) {
             return redirect()->away(self::resolveDestination($canonicalPath, $request), 301);
         }
 
@@ -93,23 +107,6 @@ class HandleRedirects
         $collapsed = (string) preg_replace('#/{2,}#', '/', $path);
 
         return $collapsed === '/' ? '/' : rtrim($collapsed, '/');
-    }
-
-    /**
-     * Whether a GET for this path reaches a route. Matched against a fresh
-     * request, so the real one is never bound to a route here. A route whose
-     * model binding then finds no record still counts — that URL takes one
-     * hop to its 404, the same as before the slash moved out of .htaccess.
-     */
-    private static function isRoutable(string $path): bool
-    {
-        try {
-            Route::getRoutes()->match(Request::create($path));
-
-            return true;
-        } catch (NotFoundHttpException|MethodNotAllowedHttpException) {
-            return false;
-        }
     }
 
     /**
@@ -131,7 +128,7 @@ class HandleRedirects
      * back to the configured default if the panel cannot be resolved this early
      * in the request — this middleware runs before routing.
      */
-    private static function panelPath(): string
+    public static function panelPath(): string
     {
         try {
             return trim(Filament::getPanel('admin')->getPath(), '/') ?: 'admin';

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\NotFoundUrl;
 use App\Modules\Newsletter\Jobs\SendNewsletterCampaign;
 use App\Modules\Newsletter\Models\NewsletterCampaign;
 use Illuminate\Foundation\Inspiring;
@@ -66,3 +67,10 @@ Schedule::command('experian:enforce-retention')->dailyAt('02:50')->withoutOverla
  */
 Schedule::command('cibil:flag-stale')->everyFiveMinutes()->withoutOverlapping();
 Schedule::command('cibil:enforce-retention')->dailyAt('02:55')->withoutOverlapping();
+
+/*
+ * Missing pages (Admin → Missing pages (404)): drops paths nobody has asked
+ * for within config('seo.not_found.retention_days'), so the list holds what
+ * is still being requested and the table stays small.
+ */
+Schedule::command('model:prune', ['--model' => [NotFoundUrl::class]])->dailyAt('03:10')->withoutOverlapping();

@@ -35,15 +35,20 @@ it('invalidates only the sections named, and logs who did it', function () {
 });
 
 it('rejects an unknown section without invalidating anything', function () {
+    // Not 0: data migrations that ship redirect rows have already moved the Redirects version.
+    $versionsBefore = collect(ContentCache::versionReport())->sum('version');
+
     $this->artisan('content-cache:refresh', ['sections' => ['everything']])->assertFailed();
 
-    expect(collect(ContentCache::versionReport())->sum('version'))->toBe(0);
+    expect(collect(ContentCache::versionReport())->sum('version'))->toBe($versionsBefore);
 });
 
 it('refuses to run without a section or --all', function () {
+    $versionsBefore = collect(ContentCache::versionReport())->sum('version');
+
     $this->artisan('content-cache:refresh')->assertFailed();
 
-    expect(collect(ContentCache::versionReport())->sum('version'))->toBe(0);
+    expect(collect(ContentCache::versionReport())->sum('version'))->toBe($versionsBefore);
 });
 
 it('warms the mega menu so the next page view runs no landing page query', function () {

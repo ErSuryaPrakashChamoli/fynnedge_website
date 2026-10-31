@@ -82,10 +82,14 @@
                 /*
                     The first slide's image is the homepage's Largest
                     Contentful Paint, so it is the only one fetched with the
-                    page; every other slide is loading=lazy and cannot
-                    compete with it for bandwidth. Once the page has loaded,
-                    and again on every move, the images one step either side
-                    are fetched ahead so a slide never slides in blank.
+                    page. loading=lazy alone did not hold the others back:
+                    Chrome applies its lazy-load margin inside the carousel's
+                    own overflow box, so slides two and three (1.5MB of JPEG)
+                    downloaded alongside the LCP image (Lighthouse,
+                    2026-10-31). They are therefore also display:none
+                    (`hidden`) until here. Once the page has loaded, and again
+                    on every move, the images one step either side are shown
+                    and fetched ahead so a slide never slides in blank.
                 */
                 if (document.readyState === 'complete') {
                     this.preloadNeighbours();
@@ -99,7 +103,10 @@
                 const previous = this.current === 0 ? this.total - 1 : this.current - 1;
 
                 [this.current, this.current + 1, previous].forEach((index) => {
-                    this.$refs.track.children[index]?.querySelector('img[loading=lazy]')?.setAttribute('loading', 'eager');
+                    const image = this.$refs.track.children[index]?.querySelector('img[loading=lazy]');
+
+                    image?.classList.remove('hidden');
+                    image?.setAttribute('loading', 'eager');
                 });
             },
             destroy() {
@@ -213,6 +220,10 @@
                     };
                     $contentStyle = $banner->contentStyle();
                     $srcset = $banner->imageSrcset();
+                    // Admins label the button "More info" or "Apply now", which says
+                    // nothing out of context (a screen reader's links list, Lighthouse's
+                    // link-text audit). The slide's own description is read after it.
+                    $ctaContext = $banner->image_alt ?: ($banner->heading ? \App\Support\Rates\RateText::render($banner->heading) : null);
                 @endphp
                 <div class="relative h-full w-full shrink-0 basis-full" @if ($isClone) aria-hidden="true" @endif>
                     <picture class="block h-full w-full">
@@ -223,7 +234,7 @@
                             src="{{ $banner->imageUrl() }}"
                             alt="{{ $isClone ? '' : ($banner->image_alt ?: $banner->heading) }}"
                             @if ($index === 0) fetchpriority="high" @else loading="lazy" @endif
-                            class="h-full w-full object-cover"
+                            @class(['h-full w-full object-cover', 'hidden' => $index !== 0])
                         >
                     </picture>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
@@ -268,7 +279,7 @@
                                 class="banner-cta mt-3 sm:mt-4"
                                 :tabindex="$isClone ? '-1' : null"
                             >
-                                {{ $banner->cta_label }}
+                                {{ $banner->cta_label }}@if ($ctaContext && $ctaContext !== $banner->cta_label)<span class="sr-only">, {{ $ctaContext }}</span>@endif
                             </x-ui.button>
                         @endif
                     </div>
@@ -302,16 +313,28 @@
                 <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m7.5 15 5-5-5-5" /></svg>
             </button>
 
-            <div class="absolute inset-x-0 bottom-3 flex items-center justify-center gap-1.5">
+            {{--
+                Each dot is a 24px-square button around the small pill it shows:
+                a 6px-tall button failed the 24px minimum touch target
+                (WCAG 2.5.8, Lighthouse target-size). The row sits 4px from the
+                bottom so the pills stay where they were, inside the slide
+                text's 40px bottom inset.
+            --}}
+            <div class="absolute inset-x-0 bottom-1 flex items-center justify-center gap-1.5">
                 @foreach ($banners as $index => $banner)
                     <button
                         type="button"
                         @click="go({{ $index }})"
-                        :class="(current % total) === {{ $index }} ? 'w-6 bg-white' : 'w-1.5 bg-white/50 hover:bg-white/80'"
                         :aria-current="(current % total) === {{ $index }} ? 'true' : 'false'"
-                        class="h-1.5 rounded-full transition-all"
+                        class="group/dot flex h-6 min-w-6 items-center justify-center"
                         aria-label="{{ __('Go to banner :number', ['number' => $index + 1]) }}"
-                    ></button>
+                    >
+                        <span
+                            :class="(current % total) === {{ $index }} ? 'w-6 bg-white' : 'w-1.5 bg-white/50 group-hover/dot:bg-white/80'"
+                            class="h-1.5 rounded-full transition-all"
+                            aria-hidden="true"
+                        ></span>
+                    </button>
                 @endforeach
             </div>
 

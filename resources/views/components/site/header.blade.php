@@ -67,7 +67,12 @@
     >
         <a href="{{ route('home') }}" class="flex flex-col text-ink">
             <span class="flex items-center gap-2 font-display text-xl font-semibold tracking-tight">
-                <img src="{{ $siteBranding['logoUrl'] }}" alt="" class="h-9 w-9" width="36" height="36">
+                <picture>
+                    @if ($siteBranding['logoSrcset'])
+                        <source type="image/webp" srcset="{{ $siteBranding['logoSrcset'] }}" sizes="36px">
+                    @endif
+                    <img src="{{ $siteBranding['logoUrl'] }}" alt="" class="h-9 w-9" width="36" height="36">
+                </picture>
                 <span class="flex items-baseline gap-2">
                     {{ $siteBranding['name'] }}
                     <span class="hidden font-mono text-[0.62rem] font-medium uppercase tracking-[0.14em] text-ink-faint sm:inline">Advisory</span>

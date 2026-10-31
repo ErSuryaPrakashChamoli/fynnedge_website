@@ -1599,3 +1599,22 @@ if (window.Livewire) {
 } else {
     document.addEventListener('livewire:init', translateLivewirePrompts, { once: true });
 }
+
+/**
+ * Livewire injects livewire.js (and the Alpine inside it) only into a page that
+ * rendered a Livewire component; see the layout. That script is a classic one
+ * at the end of <body>, so it has always run by the time this deferred module
+ * does, and `window.Livewire` tells the two kinds of page apart. A page
+ * without it — the homepage, articles, contact — still needs Alpine for the
+ * header menus, the banner carousel and the forms, so it gets a standalone
+ * Alpine here, started once every alpine:init listener above is registered.
+ * Never on a Livewire page: two Alpine instances break wire:model morphing
+ * (see the top of this file). The public pages use no Alpine plugin outside
+ * Livewire components, so Alpine's core is all this needs.
+ */
+if (!window.Livewire) {
+    import('alpinejs').then(({ default: Alpine }) => {
+        window.Alpine = Alpine;
+        Alpine.start();
+    });
+}

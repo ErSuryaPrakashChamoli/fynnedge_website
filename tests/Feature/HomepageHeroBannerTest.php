@@ -115,10 +115,47 @@ it('fetches only the first slide\'s image with the page, at high priority', func
 
     $html = $this->get('/')->getContent();
 
-    expect($html)->toMatch('#src="/storage/banners/first\.jpg"\s+alt="[^"]*"\s+fetchpriority="high"#')
+    expect($html)->toMatch('#src="/storage/banners/first\.jpg"\s+alt="[^"]*"\s+fetchpriority="high"\s+class="h-full w-full object-cover"#')
         ->toMatch('#src="/storage/banners/second\.jpg"\s+alt="[^"]*"\s+loading="lazy"#')
         ->toMatch('#src="/storage/banners/third\.jpg"\s+alt="[^"]*"\s+loading="lazy"#')
         ->and(substr_count($html, 'fetchpriority="high"'))->toBe(1);
+});
+
+/*
+ * loading=lazy alone let Chrome fetch the next slides with the page: its
+ * lazy-load margin applies inside the carousel's overflow box. Only a
+ * display:none image is held back until the carousel shows it after load.
+ */
+it('keeps every slide but the first out of the page load until the carousel shows it', function () {
+    Banner::factory()->count(2)->sequence(
+        ['image_path' => 'banners/first.jpg', 'sort_order' => 1],
+        ['image_path' => 'banners/second.jpg', 'sort_order' => 2],
+    )->create(['status' => PublishStatus::Published, 'published_at' => now()->subMinute()]);
+
+    $html = $this->get('/')->getContent();
+
+    expect($html)->toMatch('#src="/storage/banners/second\.jpg"\s+alt="[^"]*"\s+loading="lazy"\s+class="h-full w-full object-cover hidden"#')
+        ->toContain("image?.classList.remove('hidden');");
+});
+
+it('gives every slide dot a touch target of at least 24px', function () {
+    Banner::factory()->count(3)->create(['status' => PublishStatus::Published, 'published_at' => now()->subMinute()]);
+
+    $html = $this->get('/')->getContent();
+
+    expect(substr_count($html, 'class="group/dot flex h-6 min-w-6 items-center justify-center"'))->toBe(3);
+});
+
+it('tells a screen reader what a banner\'s button is about, beyond its own label', function () {
+    Banner::factory()->create([
+        'status' => PublishStatus::Published,
+        'published_at' => now()->subMinute(),
+        'image_alt' => 'Diwali personal loan offer',
+        'cta_label' => 'More info',
+        'cta_url' => '/loans',
+    ]);
+
+    $this->get('/')->assertSee('More info<span class="sr-only">, Diwali personal loan offer</span>', false);
 });
 
 it('offers a banner\'s WebP copies, sized to the banner box, once they exist', function () {

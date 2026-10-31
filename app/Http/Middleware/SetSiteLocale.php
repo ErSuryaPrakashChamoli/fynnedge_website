@@ -18,10 +18,19 @@ class SetSiteLocale
      */
     public function handle(Request $request, Closure $next): Response
     {
+        self::apply($request);
+
+        return $next($request);
+    }
+
+    /**
+     * For a response built before this middleware runs, such as the 410 page
+     * HandleRedirects answers for a Gone row.
+     */
+    public static function apply(Request $request): void
+    {
         if (SiteLocale::appliesTo($request)) {
             app()->setLocale(SiteLocale::fromRequest($request));
         }
-
-        return $next($request);
     }
 }

@@ -12,6 +12,8 @@ beforeEach(function () {
 });
 
 it('lists redirects', function () {
+    // The rows the legacy-URL migrations ship would push these off the first page.
+    Redirect::query()->delete();
     $redirects = Redirect::factory()->count(2)->create();
 
     Livewire::test(ListRedirects::class)

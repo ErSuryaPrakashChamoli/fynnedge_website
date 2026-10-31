@@ -17,6 +17,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Callout;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -233,18 +234,23 @@ class SeoAnalytics extends Page
     }
 
     /**
-     * @return array<int, Section>
+     * @return array<int, Callout|Section>
      */
     private static function analyticsTab(): array
     {
         return [
+            Callout::make('A tracking tag is loading twice')
+                ->description(fn (): string => 'The custom scripts on the Advanced tab also load '.implode(', ', TrackingScripts::duplicates()).', which the fields on this tab already add to every page. A super admin should remove that snippet from the Advanced tab: every extra copy counts each pageview again and makes visitors download and run the script twice.')
+                ->status('warning')
+                ->visible(fn (): bool => TrackingScripts::duplicates() !== []),
+
             Section::make('Google')
                 ->description('Injected into every public page automatically once enabled — never paste these snippets into the Advanced tab as well.')
                 ->columns(2)
                 ->components([
                     Toggle::make('google_analytics_enabled')
                         ->label('Google Analytics enabled')
-                        ->helperText('Enable GA4 tracking and enter your Measurement ID.')
+                        ->helperText('Enable GA4 tracking and enter your Measurement ID. Leave this off if your Tag Manager container already has a Google tag for the same ID: loading GA4 both ways counts every pageview twice.')
                         ->live(),
                     TextInput::make('google_analytics_measurement_id')
                         ->label('GA4 Measurement ID')

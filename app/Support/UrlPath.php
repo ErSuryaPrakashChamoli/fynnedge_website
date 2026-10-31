@@ -2,6 +2,11 @@
 
 namespace App\Support;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
 /**
  * The single normalisation rule shared by every feature that matches an
  * admin-typed URL against an incoming request path (redirects, per-page SEO).
@@ -30,5 +35,23 @@ class UrlPath
         $path = '/'.trim($path, '/');
 
         return strtolower($path);
+    }
+
+    /**
+     * Whether a GET for this path reaches a route. Matched against a fresh
+     * request, so the real one is never bound to a route here. A route whose
+     * model binding then finds no record still counts: this answers "is this
+     * a URL shape the site serves", not "does this exact page exist", which
+     * only a real request can tell (seo:audit makes those).
+     */
+    public static function isRoutable(string $path): bool
+    {
+        try {
+            Route::getRoutes()->match(Request::create($path));
+
+            return true;
+        } catch (NotFoundHttpException|MethodNotAllowedHttpException) {
+            return false;
+        }
     }
 }

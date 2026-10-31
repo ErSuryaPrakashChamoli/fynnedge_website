@@ -7,6 +7,7 @@ use App\Models\LoanLandingPage;
 use App\Models\LoanProduct;
 use App\Models\Page;
 use App\Models\PageSeo;
+use App\Models\Redirect;
 use App\Models\SeoMeta;
 use App\Modules\CreditScore\Enums\BureauName;
 use App\Support\Calculators\CalculatorCatalog;
@@ -27,14 +28,16 @@ use Illuminate\Support\Collection;
  * page head), signed draft previews and the health probe. The credit score
  * pages are funnel pages too and stay out unless an admin opts one in.
  *
- * Two rules apply to every entry, applied centrally in resolve() rather than
- * per source:
+ * Three rules apply to every entry, applied centrally in resolve() rather
+ * than per source:
  *   - a URL whose effective robots value is `noindex` is EXCLUDED. Listing a
  *     URL that then tells the crawler not to index it is a self-contradiction,
  *     and it is the single most common way a sitemap and a page's meta drift
  *     apart.
  *   - a URL with a canonical is listed AT that canonical, since that is the URL
  *     it is asking to have indexed.
+ *   - a URL with an active rule in Redirects is EXCLUDED: it answers a
+ *     redirect or 410, never the page.
  *
  * "Effective" follows the layout's own precedence exactly: an active Page SEO
  * row for the URL (Content → Page SEOs) wins field by field, and a blank field
@@ -117,6 +120,7 @@ class Sitemap
     private static function resolve(Collection $candidates): Collection
     {
         $pageSeoIds = PageSeo::activeMap();
+        $redirectSources = Redirect::activeMap();
 
         $overrides = $pageSeoIds === []
             ? collect()
@@ -134,6 +138,10 @@ class Sitemap
                 ];
             })
             ->reject(fn (array $entry): bool => str_contains(strtolower((string) $entry['robots']), 'noindex'))
+            // A URL with an active rule in Redirects (a 301/302, or 410 Gone) never
+            // answers 200, however published its record is: listing it would send
+            // crawlers to a redirect or an error (HandleRedirects runs first).
+            ->reject(fn (array $entry): bool => isset($redirectSources[Redirect::normalizePath($entry['loc'])]))
             ->map(fn (array $entry): array => ['loc' => $entry['loc'], 'lastmod' => $entry['lastmod']])
             ->unique('loc')
             ->values();

@@ -10,12 +10,23 @@
             <p class="mt-3 text-lg text-ink-muted text-justify hyphens-auto">{{ $article->excerpt }}</p>
         @endif
 
+        {{-- Near the top of the article, so it can be the page's Largest Contentful Paint: never lazy. --}}
         @if ($article->imageUrl())
-            <img
-                src="{{ $article->imageUrl() }}"
-                alt="{{ $article->image_alt ?? '' }}"
-                class="mt-8 max-h-[28rem] w-full rounded-2xl object-cover"
-            >
+            @php
+                $imageSrcset = $article->imageSrcset();
+                $imageSize = $article->imageDimensions();
+            @endphp
+            <picture class="block">
+                @if ($imageSrcset)
+                    <source type="image/webp" srcset="{{ $imageSrcset }}" sizes="(min-width: 1280px) 1216px, (min-width: 1024px) calc(100vw - 64px), calc(100vw - 48px)">
+                @endif
+                <img
+                    src="{{ $article->imageUrl() }}"
+                    alt="{{ $article->image_alt ?? '' }}"
+                    @if ($imageSize) width="{{ $imageSize[0] }}" height="{{ $imageSize[1] }}" @endif
+                    class="mt-8 max-h-[28rem] w-full rounded-2xl object-cover"
+                >
+            </picture>
         @endif
 
         @if ($article->body)

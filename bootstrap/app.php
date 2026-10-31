@@ -3,10 +3,12 @@
 use App\Http\Middleware\EnsureCustomerPortalAccess;
 use App\Http\Middleware\ForceJsonResponse;
 use App\Http\Middleware\HandleRedirects;
+use App\Http\Middleware\RecordNotFoundRequests;
 use App\Http\Middleware\SearchEngineIndexingHeader;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetSiteLocale;
 use App\Support\Localization\SiteLocale;
+use App\Support\NotFound\NotFoundRequests;
 use App\Support\Privacy\CookieConsent;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Foundation\Application;
@@ -15,6 +17,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -60,6 +63,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // renamed page can keep serving its old URL.
         $middleware->prepend(HandleRedirects::class);
 
+        // Outermost, so it reads the final status of every request: counts each
+        // genuine 404 in Admin → Missing pages. Global for the same reason as
+        // HandleRedirects: an unmatched URL never reaches the `web` group.
+        $middleware->prepend(RecordNotFoundRequests::class);
+
         // The consent banner writes this cookie from JavaScript — the only place the
         // visitor's answer exists — so Laravel must not expect it to be encrypted.
         // It holds only the accepted category names, never personal data.
@@ -90,6 +98,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        // A scanner probe or a stale asset URL gets Laravel's bare 404, not the
+        // branded page (errors/404.blade.php), which builds the whole site
+        // header and footer. Every other missing page gets the branded one.
+        $exceptions->render(function (NotFoundHttpException $e, Request $request) {
+            if (! $request->is('api/*') && ! $request->expectsJson() && NotFoundRequests::isNoise($request)) {
+                return response()->view('errors.bare-404', status: Response::HTTP_NOT_FOUND);
+            }
+        });
 
         // A response built by the exception handler (e.g. the redirect an
         // AuthenticationException becomes) never passes back through the

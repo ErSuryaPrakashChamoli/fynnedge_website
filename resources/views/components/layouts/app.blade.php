@@ -183,7 +183,14 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     {!! $siteThemeStyles !!}
-    @livewireStyles
+    {{--
+        No @livewireStyles / @livewireScripts: Livewire injects both itself
+        (config livewire.inject_assets), and only into a page that rendered a
+        Livewire component — a calculator, a loan page, credit score, sign-in.
+        Everywhere else livewire.js (254 KB minified) was downloaded and parsed
+        only for the Alpine bundled in it; app.js starts a standalone Alpine
+        (54 KB) on those pages instead. See resources/js/app.js.
+    --}}
 </head>
 <body class="flex min-h-screen flex-col bg-bg font-sans text-ink antialiased">
     {{-- Google Tag Manager's <noscript> has to be the first thing inside <body>. --}}
@@ -229,8 +236,6 @@
 
     {{-- Only rendered while the banner is switched on and this visitor has not answered it. --}}
     <x-site.cookie-consent />
-
-    @livewireScripts
 
     {!! $trackingBodyEnd !!}
 </body>

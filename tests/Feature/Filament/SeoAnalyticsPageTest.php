@@ -91,6 +91,30 @@ it('lets a super admin save custom tracking scripts', function () {
         ->and(Setting::get('custom_body_end_scripts'))->toContain('window.clarity=1;');
 });
 
+/*
+ * Production carried Google's and Meta's own snippets in the custom head
+ * scripts as well as in the fields, so both tags loaded twice. Their snippets
+ * have no guard against a second copy, unlike the ones the fields render.
+ */
+it('warns that a tag loads twice when its own snippet is also pasted into the custom scripts', function () {
+    Setting::set('google_tag_manager_enabled', true);
+    Setting::set('google_tag_manager_container_id', 'GTM-ABC1234');
+    Setting::set('meta_pixel_id', '2062877844599564');
+    Setting::set('custom_head_scripts', "<script>(function(w,d,s,l,i){})(window,document,'script','dataLayer','GTM-ABC1234');</script>\n<script>fbq('init', '2062877844599564');</script>");
+
+    Livewire::test(SeoAnalytics::class)
+        ->assertSee('A tracking tag is loading twice')
+        ->assertSee('Google Tag Manager (GTM-ABC1234), Meta Pixel (2062877844599564)');
+});
+
+it('does not warn about a custom script that loads only tags without a field', function () {
+    Setting::set('google_tag_manager_enabled', true);
+    Setting::set('google_tag_manager_container_id', 'GTM-ABC1234');
+    Setting::set('custom_head_scripts', '<script src="https://analytics.ahrefs.com/analytics.js" data-key="GTM-ABC12345" async></script>');
+
+    Livewire::test(SeoAnalytics::class)->assertDontSee('A tracking tag is loading twice');
+});
+
 it('rejects PHP tags and a stray closing body tag in a custom script', function () {
     Livewire::test(SeoAnalytics::class)
         ->fillForm([

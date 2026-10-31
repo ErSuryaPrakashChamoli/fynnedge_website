@@ -34,4 +34,12 @@ class RedirectFactory extends Factory
     {
         return $this->state(['is_active' => false]);
     }
+
+    /**
+     * A 410 Gone rule: the old URL's content was removed and nothing replaces it.
+     */
+    public function gone(): static
+    {
+        return $this->state(['status_code' => Redirect::GONE, 'destination' => null]);
+    }
 }

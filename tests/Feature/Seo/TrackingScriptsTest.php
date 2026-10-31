@@ -127,6 +127,23 @@ it('allows the origins the enabled tags need in the content security policy', fu
         ->toMatch('/connect-src[^;]*https:\/\/\*\.google-analytics\.com/');
 });
 
+/*
+ * Production's console showed GA4 hits refused by connect-src on every page:
+ * *.analytics.google.com never matches the bare host, and the Google signals
+ * hits go to www.google.com and stats.g.doubleclick.net.
+ */
+it('lets GA4 send its hits to every host it uses', function () {
+    Setting::set('google_analytics_enabled', true);
+    Setting::set('google_analytics_measurement_id', 'G-ABCD123456');
+
+    $csp = $this->get('/')->assertOk()->headers->get('Content-Security-Policy');
+
+    expect($csp)
+        ->toMatch('#connect-src[^;]* https://analytics\.google\.com[ ;]#')
+        ->toMatch('#connect-src[^;]* https://www\.google\.com[ ;]#')
+        ->toMatch('#connect-src[^;]* https://stats\.g\.doubleclick\.net[ ;]#');
+});
+
 it('leaves the content security policy untouched while every tag is disabled', function () {
     $csp = $this->get('/')->assertOk()->headers->get('Content-Security-Policy');
 

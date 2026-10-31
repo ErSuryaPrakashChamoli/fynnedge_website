@@ -3,7 +3,12 @@
         <div @class(['grid grid-cols-2 gap-x-10 gap-y-8' => true, 'sm:grid-cols-5' => ($navigationLinks ?? collect())->isNotEmpty(), 'sm:grid-cols-4' => ($navigationLinks ?? collect())->isEmpty()])>
             <div class="col-span-2 sm:col-span-1">
                 <div class="flex items-center gap-2">
-                    <img src="{{ $siteBranding['logoUrl'] }}" alt="" class="h-8 w-8" width="32" height="32">
+                    <picture>
+                        @if ($siteBranding['logoSrcset'])
+                            <source type="image/webp" srcset="{{ $siteBranding['logoSrcset'] }}" sizes="32px">
+                        @endif
+                        <img src="{{ $siteBranding['logoUrl'] }}" alt="" class="h-8 w-8" width="32" height="32">
+                    </picture>
                     <p class="font-display text-lg font-semibold text-ink">{{ $siteBranding['name'] }}</p>
                 </div>
                 <p class="mt-2 font-display text-sm italic text-accent">{{ $siteBranding['tagline'] }}</p>

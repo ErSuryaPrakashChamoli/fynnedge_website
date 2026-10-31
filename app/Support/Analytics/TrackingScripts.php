@@ -13,8 +13,11 @@ use App\Support\Privacy\CookieConsent;
  * strings: `x-layouts.app` is the single render site (fed by the View::composer
  * in AppServiceProvider), which is what makes "a tag can never appear twice on
  * a page" true by construction rather than by convention. Each generated
- * snippet additionally guards itself with a `window` flag, so even a second
- * copy pasted into the custom scripts cannot boot the same container twice.
+ * snippet additionally guards itself with a `window` flag, but that only stops
+ * a second copy of the snippet generated here. A provider's own snippet pasted
+ * into the custom scripts has no such guard and loads the tag a second time
+ * (production carried GTM and the Meta Pixel twice that way, found
+ * 2026-10-31), so duplicates() reports it to the admin instead.
  *
  * Three rules hold for every tag added here:
  *
@@ -188,6 +191,16 @@ class TrackingScripts
             $sources['connect'][] = 'https://www.googletagmanager.com';
             $sources['connect'][] = 'https://*.google-analytics.com';
             $sources['connect'][] = 'https://*.analytics.google.com';
+            /*
+             * Where GA4 also sends its hits, all refused on production until
+             * 2026-10-31 (browser console, every page): a wildcard host never
+             * matches the bare domain, so *.analytics.google.com does not
+             * cover analytics.google.com; www.google.com and
+             * stats.g.doubleclick.net receive the Google signals hits.
+             */
+            $sources['connect'][] = 'https://analytics.google.com';
+            $sources['connect'][] = 'https://www.google.com';
+            $sources['connect'][] = 'https://stats.g.doubleclick.net';
         }
 
         if (self::googleTagManagerContainerId()) {
@@ -239,16 +252,59 @@ class TrackingScripts
     }
 
     /**
-     * @return list<string>
+     * The tags enabled in a dedicated field whose ID also appears in the custom
+     * scripts: the provider's own snippet pasted into the Advanced tab as well.
+     * Each loads that tag a second time, so every pageview is counted twice
+     * and the script is downloaded and run twice. Shown as a warning on the
+     * SEO & Tracking page; nothing is removed automatically, because the
+     * custom markup is the super admin's own.
+     *
+     * @return list<string> e.g. "Google Tag Manager (GTM-ABC1234)"
      */
-    private static function customScriptOrigins(): array
+    public static function duplicates(): array
     {
-        $markup = self::join([
+        $markup = self::customMarkup();
+
+        if ($markup === '') {
+            return [];
+        }
+
+        $tags = [
+            'Google Tag Manager' => self::googleTagManagerContainerId(),
+            'Google Analytics' => self::googleAnalyticsMeasurementId(),
+            'Google Ads' => self::googleAdsConversionId(),
+            'Microsoft Clarity' => self::clarityProjectId(),
+            'Meta Pixel' => self::metaPixelId(),
+            'LinkedIn Insight Tag' => self::linkedInPartnerId(),
+        ];
+
+        $duplicates = [];
+
+        foreach ($tags as $name => $id) {
+            if ($id && preg_match('/(?<![A-Za-z0-9])'.preg_quote($id, '/').'(?![A-Za-z0-9])/i', $markup)) {
+                $duplicates[] = "{$name} ({$id})";
+            }
+        }
+
+        return $duplicates;
+    }
+
+    private static function customMarkup(): string
+    {
+        return self::join([
             self::customScripts('custom_head_scripts'),
             self::customScripts('custom_body_start_scripts'),
             self::customScripts('custom_body_end_scripts'),
             self::customJavaScript(),
         ]);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private static function customScriptOrigins(): array
+    {
+        $markup = self::customMarkup();
 
         if ($markup === '') {
             return [];

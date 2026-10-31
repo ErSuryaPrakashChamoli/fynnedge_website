@@ -25,6 +25,8 @@ it('shows recent admin activity from the existing audit log to a permitted admin
 });
 
 it('filters activity by action', function () {
+    // The migrations that ship redirect rows leave "created" entries in every database.
+    AuditLog::query()->delete();
     $admin = User::factory()->create(['is_admin' => true]);
     $this->actingAs($admin);
 

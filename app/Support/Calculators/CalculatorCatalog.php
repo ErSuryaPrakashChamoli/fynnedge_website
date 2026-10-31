@@ -30,6 +30,7 @@ class CalculatorCatalog
                 ['label' => __('Business Loan EMI Calculator'), 'route' => 'calculators.emi', 'params' => ['category' => 'business-loan']],
                 ['label' => __('Gold Loan EMI Calculator'), 'route' => 'calculators.emi', 'params' => ['category' => 'gold-loan']],
                 ['label' => __('Two Wheeler Loan EMI Calculator'), 'route' => 'calculators.emi', 'params' => ['category' => 'two-wheeler-loan']],
+                ['label' => __('Car Loan EMI Calculator'), 'route' => 'calculators.emi', 'params' => ['category' => 'car-loan']],
                 ['label' => __('Loan Against Property EMI Calculator'), 'route' => 'calculators.emi', 'params' => ['category' => 'loan-against-property']],
                 ['label' => __('Term Loan EMI Calculator'), 'route' => 'calculators.emi', 'params' => ['category' => 'term-loan']],
                 ['label' => __('Tractor Loan EMI Calculator'), 'route' => 'calculators.emi', 'params' => ['category' => 'tractor-loan']],

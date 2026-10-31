@@ -2,17 +2,25 @@
 
 namespace App\Filament\Resources\Redirects\Tables;
 
+use App\Models\Redirect;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 class RedirectsTable
 {
+    private const TYPES = [
+        Redirect::PERMANENT => '301 Permanent',
+        Redirect::TEMPORARY => '302 Temporary',
+        Redirect::GONE => '410 Gone',
+    ];
+
     public static function configure(Table $table): Table
     {
         return $table
@@ -25,12 +33,17 @@ class RedirectsTable
                 TextColumn::make('destination')
                     ->label('Goes to')
                     ->searchable()
+                    ->placeholder('Nowhere (410 Gone)')
                     ->wrap(),
                 TextColumn::make('status_code')
                     ->label('Type')
                     ->badge()
-                    ->formatStateUsing(fn (int $state): string => $state === 301 ? '301 Permanent' : '302 Temporary')
-                    ->color(fn (int $state): string => $state === 301 ? 'success' : 'warning'),
+                    ->formatStateUsing(fn (int $state): string => self::TYPES[$state] ?? (string) $state)
+                    ->color(fn (int $state): string => match ($state) {
+                        Redirect::PERMANENT => 'success',
+                        Redirect::GONE => 'gray',
+                        default => 'warning',
+                    }),
                 IconColumn::make('is_active')
                     ->label('Active')
                     ->boolean(),
@@ -44,20 +57,19 @@ class RedirectsTable
                     ->placeholder('Never')
                     ->sortable()
                     ->toggleable(),
+                TextColumn::make('notes')
+                    ->label('Notes')
+                    ->limit(60)
+                    ->tooltip(fn (Redirect $record): ?string => $record->notes)
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('source_path')
             ->filters([
                 TernaryFilter::make('is_active')->label('Active'),
-                TernaryFilter::make('status_code')
+                SelectFilter::make('status_code')
                     ->label('Type')
-                    ->placeholder('All')
-                    ->trueLabel('301 Permanent')
-                    ->falseLabel('302 Temporary')
-                    ->queries(
-                        true: fn ($query) => $query->where('status_code', 301),
-                        false: fn ($query) => $query->where('status_code', 302),
-                        blank: fn ($query) => $query,
-                    ),
+                    ->options(self::TYPES),
             ])
             ->recordActions([
                 EditAction::make(),

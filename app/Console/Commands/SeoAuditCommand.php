@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Redirect;
+use App\Support\Seo\CrawlerPolicy;
 use Illuminate\Console\Command;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
@@ -16,10 +17,13 @@ use Illuminate\Support\Facades\Http;
  * or in the Apache vhost, a redirect row added in the admin.
  *
  * Read-only: it requests only the robots.txt, the sitemap, the pages the
- * sitemap lists, the source of each active redirect row and a few hostname
- * variants. Links found on pages are checked against the redirect table, never
- * requested, so it cannot open journey sessions through Apply links. Its own
- * requests are not counted in the redirects' hit counters (HandleRedirects).
+ * sitemap lists, the source of each active redirect row, a few hostname
+ * variants and, once each, the internal links on those pages that are not
+ * sitemap pages themselves (at most --link-limit of them). A link robots.txt
+ * keeps crawlers off (an Apply button, the language switch) is never
+ * requested, so it cannot open journey sessions. Its own requests are not
+ * counted in the redirects' hit counters (HandleRedirects) or in Missing pages
+ * (RecordNotFoundRequests).
  *
  * Exits non-zero when anything is wrong, so it can gate a deploy checklist.
  */
@@ -29,7 +33,8 @@ class SeoAuditCommand extends Command
 
     protected $signature = 'seo:audit
                             {--base-url= : The site to audit, e.g. https://fynnedge.com (default: APP_URL)}
-                            {--limit=0 : Request at most this many sitemap pages (0 requests them all)}';
+                            {--limit=0 : Request at most this many sitemap pages (0 requests them all)}
+                            {--link-limit=100 : Request at most this many internal links that are not sitemap pages (0 skips them)}';
 
     protected $description = 'Check a running site for what Search Console reports: robots.txt groups, sitemap URLs that redirect or fail, canonicals, crawlable action links, redirect chains and hostname variants';
 
@@ -48,6 +53,15 @@ class SeoAuditCommand extends Command
      */
     private array $linkProblems = [];
 
+    /**
+     * Internal links found on pages that are neither sitemap pages nor
+     * redirect rows, with the first page each turned up on. Requested once
+     * each after the pages, to find links that lead to a 404.
+     *
+     * @var array<string, string>
+     */
+    private array $unverifiedLinks = [];
+
     private const LINK_EXAMPLES = 5;
 
     public function handle(): int
@@ -65,6 +79,7 @@ class SeoAuditCommand extends Command
         $this->checkRobots($base);
         $locs = $this->checkSitemap($base);
         $this->checkSitemapPages($base, $locs);
+        $this->checkUnverifiedLinks();
         $this->checkRedirects($base);
         $this->checkHostVariants($base, $locs);
 
@@ -204,17 +219,50 @@ class SeoAuditCommand extends Command
                 $this->findings[] = ['sitemap page', $loc, 'is in the sitemap but says noindex'];
             }
 
-            foreach (self::linkProblemsOn($html, $base) as $link => $problem) {
-                $this->linkProblems[$problem][$link] ??= $loc;
+            foreach (self::linkProblemsOn($html, $loc, $base) as $link => $problem) {
+                if ($problem === null) {
+                    $this->unverifiedLinks[$link] ??= $loc;
+                } else {
+                    $this->linkProblems[$problem][$link] ??= $loc;
+                }
             }
         });
+
+        // A link to a sitemap page is checked by requesting that page above.
+        foreach ($locs as $loc) {
+            unset($this->unverifiedLinks[$loc]);
+        }
 
         $this->newLine();
     }
 
     /**
+     * Internal links that are not sitemap pages: each must answer 200. Bounded
+     * by --link-limit, and every link robots.txt disallows (an action, not a
+     * page) was already left out by linkProblemsOn().
+     */
+    private function checkUnverifiedLinks(): void
+    {
+        $limit = max(0, (int) $this->option('link-limit'));
+        $links = array_slice($this->unverifiedLinks, 0, $limit, true);
+
+        foreach ($links as $link => $page) {
+            $response = $this->fetch($link);
+
+            if ($response?->redirect()) {
+                $this->linkProblems['links to a URL that redirects ('.$response->status().'); link to its destination instead'][$link] ??= $page;
+            } elseif (! $response?->ok()) {
+                $this->linkProblems['links to a page that '.self::describe($response)][$link] ??= $page;
+            }
+        }
+
+        $this->components->twoColumnDetail('Other internal links checked', count($links).' of '.count($this->unverifiedLinks));
+    }
+
+    /**
      * Every active row must answer in one hop with its final destination, and
-     * that destination must be a page, not another redirect or an error.
+     * that destination must be a page, not another redirect or an error. A
+     * Gone row must answer 410.
      */
     private function checkRedirects(string $base): void
     {
@@ -226,6 +274,16 @@ class SeoAuditCommand extends Command
 
             if ($expected === null) {
                 $this->findings[] = ['redirect', $url, 'its rows form a loop, so the site serves the page and redirects nowhere'];
+
+                continue;
+            }
+
+            if ($expected['status_code'] === Redirect::GONE) {
+                $response = $this->fetch($url);
+
+                if ($response?->status() !== Redirect::GONE) {
+                    $this->findings[] = ['gone', $url, 'has a Gone rule, so it should answer 410, but '.self::describe($response)];
+                }
 
                 continue;
             }
@@ -414,44 +472,109 @@ class SeoAuditCommand extends Command
     }
 
     /**
-     * Links on a page that make crawlers walk through a redirect or onto an
-     * action URL. Only this site's own hosts are considered.
+     * Every link on a page to one of this site's own hosts, resolved against
+     * the page (an href of "instant personal loan" is a relative link, and a
+     * broken one). Each maps to the problem it has, or to null when it looks
+     * fine and still has to be requested to know it works. A link robots.txt
+     * disallows is an action, not a page, and is left out unless it has a
+     * problem of its own.
      *
-     * @return array<string, string> absolute link => problem
+     * @return array<string, string|null> absolute link => problem
      */
-    private static function linkProblemsOn(string $html, string $base): array
+    private static function linkProblemsOn(string $html, string $pageUrl, string $base): array
     {
         $host = strtolower((string) parse_url($base, PHP_URL_HOST));
         $redirectSources = Redirect::activeMap();
         $problems = [];
 
-        preg_match_all('/<a\b[^>]*?\bhref=["\']([^"\']+)["\']/i', $html, $matches);
+        preg_match_all('/<a\b[^>]*?\bhref=["\']([^"\']*)["\']/i', $html, $matches);
 
         foreach (array_unique($matches[1]) as $href) {
-            $href = html_entity_decode($href, ENT_QUOTES | ENT_HTML5);
-            $url = str_starts_with($href, '/') && ! str_starts_with($href, '//') ? $base.$href : $href;
-            $parts = parse_url($url);
+            $href = trim(html_entity_decode($href, ENT_QUOTES | ENT_HTML5));
+            $url = self::absoluteLink($href, $pageUrl);
+
+            if ($url === null) {
+                continue;
+            }
+
+            $parts = parse_url(str_replace(' ', '%20', $url));
 
             if (! is_array($parts) || ! in_array(strtolower($parts['host'] ?? ''), [$host, "www.{$host}"], true)) {
                 continue;
             }
 
             $path = $parts['path'] ?? '/';
-            $link = explode('#', $url)[0];
+            $link = explode('#', str_replace(' ', '%20', $url))[0];
+
+            $redirect = $redirectSources[Redirect::normalizePath($path)] ?? null;
 
             $problem = match (true) {
                 strtolower($parts['host']) !== $host || ($parts['scheme'] ?? '') !== parse_url($base, PHP_URL_SCHEME) => "links to a non-canonical host, not {$base}",
                 str_starts_with($path, '/language/') => 'is a crawlable language-switch link; the switch must stay a POST form',
+                str_contains($href, ' ') => 'has spaces in its href; the link text was probably typed in place of the URL',
                 $path !== '/' && (str_ends_with($path, '/') || str_contains($path, '//')) => 'links to a slash variant, which redirects',
-                isset($redirectSources[Redirect::normalizePath($path)]) => 'links through a redirect row; link to its destination instead',
+                $redirect !== null && $redirect['status_code'] === Redirect::GONE => 'links to a page marked Gone (410); remove the link or point it at a live page',
+                $redirect !== null => 'links through a redirect row; link to its destination instead',
                 default => null,
             };
 
-            if ($problem !== null) {
-                $problems[$link] = $problem;
+            // An action URL with nothing else wrong is never requested.
+            if ($problem === null && self::isDisallowed($path.(isset($parts['query']) ? '?'.$parts['query'] : ''))) {
+                continue;
             }
+
+            $problems[$link] = $problem;
         }
 
         return $problems;
+    }
+
+    /**
+     * An href as an absolute URL, or null for one that is not a page link
+     * (a fragment, mailto:, tel:, javascript:).
+     */
+    private static function absoluteLink(string $href, string $pageUrl): ?string
+    {
+        if ($href === '' || str_starts_with($href, '#') || preg_match('/^[a-z][a-z0-9+.-]*:/i', $href) && ! preg_match('#^https?://#i', $href)) {
+            return null;
+        }
+
+        if (preg_match('#^https?://#i', $href)) {
+            return $href;
+        }
+
+        $origin = parse_url($pageUrl, PHP_URL_SCHEME).'://'.parse_url($pageUrl, PHP_URL_HOST).(($port = parse_url($pageUrl, PHP_URL_PORT)) ? ":{$port}" : '');
+
+        if (str_starts_with($href, '//')) {
+            return parse_url($pageUrl, PHP_URL_SCHEME).':'.$href;
+        }
+
+        if (str_starts_with($href, '/')) {
+            return $origin.$href;
+        }
+
+        // Relative to the page's directory, as a browser resolves it.
+        $directory = preg_replace('#/[^/]*$#', '/', (string) (parse_url($pageUrl, PHP_URL_PATH) ?: '/'));
+
+        return $origin.$directory.$href;
+    }
+
+    /**
+     * Whether robots.txt keeps crawlers off this path (CrawlerPolicy), read
+     * the way RFC 9309 matches: `*` is any run of characters, a trailing `$`
+     * anchors the end, and anything else matches as a prefix.
+     */
+    private static function isDisallowed(string $pathAndQuery): bool
+    {
+        foreach (CrawlerPolicy::disallowedPaths() as $rule) {
+            $anchored = str_ends_with($rule, '$');
+            $pattern = '#^'.str_replace('\\*', '.*', preg_quote(rtrim($rule, '$'), '#')).($anchored ? '$' : '').'#';
+
+            if (preg_match($pattern, $pathAndQuery) === 1) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -478,12 +478,14 @@ class Settings extends Page
         }
 
         $previousFounderPhoto = Setting::get('founder_photo');
+        $previousLogo = Setting::get('site_logo');
 
         foreach ($state as $key => $value) {
             Setting::set($key, $value);
         }
 
-        $this->refreshFounderPhotoCopies($previousFounderPhoto, $state['founder_photo'] ?? null);
+        $this->refreshImageCopies($previousFounderPhoto, $state['founder_photo'] ?? null);
+        $this->refreshImageCopies($previousLogo, $state['site_logo'] ?? null, ResponsiveImage::LOGO_WIDTHS);
 
         Notification::make()
             ->title('Settings saved')
@@ -492,21 +494,25 @@ class Settings extends Page
     }
 
     /**
-     * The About page serves the founder photo from its WebP copies: the
-     * 280px box showed a 1.8MB PNG upload, which competed with the page's
-     * text for the first seconds of a phone's connection. A new photo gets
-     * its copies here, and a replaced or removed one loses them.
+     * The About page serves the founder photo, and every page the logo, from
+     * their WebP copies: the founder's 280px box showed a 1.8MB PNG upload and
+     * the 36px logo a 3000px one, both competing with the page's text for the
+     * first seconds of a phone's connection. A new image gets its copies
+     * here, and a replaced or removed one loses them. An SVG logo has none and
+     * is served as it is.
+     *
+     * @param  list<int>  $widths
      */
-    private function refreshFounderPhotoCopies(?string $previous, ?string $current): void
+    private function refreshImageCopies(?string $previous, ?string $current, array $widths = ResponsiveImage::WIDTHS): void
     {
         if ($previous === $current) {
             return;
         }
 
-        ResponsiveImage::delete($previous);
+        ResponsiveImage::delete($previous, widths: $widths);
 
         if ($current) {
-            ResponsiveImage::generate($current);
+            ResponsiveImage::generate($current, widths: $widths);
         }
     }
 

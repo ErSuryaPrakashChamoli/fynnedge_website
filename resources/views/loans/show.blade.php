@@ -37,12 +37,30 @@
         </x-site.loan-enquiry>
 
     <article class="mx-auto max-w-7xl px-6 pb-14 lg:px-8">
+        {{--
+            Below the enquiry form, so never the page's Largest Contentful Paint
+            (the heading's text is), yet the full upload (774KB on Personal Loan)
+            used to download alongside it. Lazy, WebP once its copies exist, and
+            sized from the upload so its box is reserved before it arrives.
+        --}}
         @if ($loanProduct->imageUrl())
-            <img
-                src="{{ $loanProduct->imageUrl() }}"
-                alt="{{ $loanProduct->image_alt ?? '' }}"
-                class="mt-12 max-h-80 w-full rounded-2xl object-cover"
-            >
+            @php
+                $imageSrcset = $loanProduct->imageSrcset();
+                $imageSize = $loanProduct->imageDimensions();
+            @endphp
+            <picture class="block">
+                @if ($imageSrcset)
+                    <source type="image/webp" srcset="{{ $imageSrcset }}" sizes="(min-width: 1280px) 1216px, (min-width: 1024px) calc(100vw - 64px), calc(100vw - 48px)">
+                @endif
+                <img
+                    src="{{ $loanProduct->imageUrl() }}"
+                    alt="{{ $loanProduct->image_alt ?? '' }}"
+                    @if ($imageSize) width="{{ $imageSize[0] }}" height="{{ $imageSize[1] }}" @endif
+                    loading="lazy"
+                    decoding="async"
+                    class="mt-12 max-h-80 w-full rounded-2xl object-cover"
+                >
+            </picture>
         @endif
 
         @if (! empty($loanProduct->benefits))

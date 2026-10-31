@@ -34,6 +34,15 @@ final class ResponsiveImage
      */
     public const WIDTHS = [480, 768, 1080, 1440];
 
+    /**
+     * The widths for the site logo, which the header shows in a 36px box and
+     * the footer in a 32px one: 1x to 3x screens. The logo upload was a
+     * 3000px, 111KB PNG on every page (Lighthouse, 2026-10-31).
+     *
+     * @var list<int>
+     */
+    public const LOGO_WIDTHS = [64, 128];
+
     public const QUALITY = 80;
 
     public const DIRECTORY = 'responsive';
@@ -48,12 +57,16 @@ final class ResponsiveImage
      * $force is set, and returns how many were written. An unreadable or
      * missing upload writes nothing and never throws, because this runs
      * inside the admin's save.
+     *
+     * @param  list<int>  $widths
      */
-    public static function generate(string $path, string $disk = 'public', bool $force = false): int
+    public static function generate(string $path, string $disk = 'public', bool $force = false, array $widths = self::WIDTHS): int
     {
         $storage = Storage::disk($disk);
 
-        if (! self::isSupported() || ! $storage->exists($path)) {
+        // An SVG (the logo field accepts one) stays vector: it gets no copies,
+        // and GD could only fail to read it, reported as if the upload were broken.
+        if (! self::isSupported() || strtolower(pathinfo($path, PATHINFO_EXTENSION)) === 'svg' || ! $storage->exists($path)) {
             return 0;
         }
 
@@ -76,7 +89,7 @@ final class ResponsiveImage
         $sourceWidth = imagesx($source);
         $written = 0;
 
-        foreach (self::widthsFor($sourceWidth) as $width) {
+        foreach (self::widthsFor($sourceWidth, $widths) as $width) {
             $variantPath = self::variantPath($path, $width);
 
             if (! $force && $storage->exists($variantPath)) {
@@ -100,8 +113,10 @@ final class ResponsiveImage
     /**
      * The srcset for the copies of $path that exist, or null when there are
      * none, so the caller falls back to the upload alone.
+     *
+     * @param  list<int>  $widths
      */
-    public static function srcset(?string $path, string $disk = 'public'): ?string
+    public static function srcset(?string $path, string $disk = 'public', array $widths = self::WIDTHS): ?string
     {
         if (blank($path)) {
             return null;
@@ -109,20 +124,47 @@ final class ResponsiveImage
 
         $storage = Storage::disk($disk);
 
-        $candidates = collect(self::WIDTHS)
+        $candidates = collect($widths)
             ->filter(fn (int $width): bool => $storage->exists(self::variantPath($path, $width)))
             ->map(fn (int $width): string => $storage->url(self::variantPath($path, $width))." {$width}w");
 
         return $candidates->isEmpty() ? null : $candidates->implode(', ');
     }
 
-    public static function delete(?string $path, string $disk = 'public'): void
+    /**
+     * The upload's width and height in pixels, for an <img>'s width and height
+     * attributes, so the browser reserves its box before the file arrives.
+     * Null when the file is missing or is not an image getimagesize()
+     * recognises. It reads only the file's header, so it is cheap per request.
+     *
+     * @return array{0: int, 1: int}|null
+     */
+    public static function dimensions(?string $path, string $disk = 'public'): ?array
+    {
+        if (blank($path)) {
+            return null;
+        }
+
+        try {
+            $file = Storage::disk($disk)->path($path);
+            $size = is_file($file) ? getimagesize($file) : false;
+        } catch (Throwable) {
+            return null;
+        }
+
+        return $size && $size[0] > 0 && $size[1] > 0 ? [$size[0], $size[1]] : null;
+    }
+
+    /**
+     * @param  list<int>  $widths
+     */
+    public static function delete(?string $path, string $disk = 'public', array $widths = self::WIDTHS): void
     {
         if (blank($path)) {
             return;
         }
 
-        Storage::disk($disk)->delete(array_map(fn (int $width): string => self::variantPath($path, $width), self::WIDTHS));
+        Storage::disk($disk)->delete(array_map(fn (int $width): string => self::variantPath($path, $width), $widths));
     }
 
     public static function variantPath(string $path, int $width): string
@@ -134,21 +176,22 @@ final class ResponsiveImage
     }
 
     /**
+     * @param  list<int>  $widths
      * @return list<int>
      */
-    private static function widthsFor(int $sourceWidth): array
+    private static function widthsFor(int $sourceWidth, array $widths): array
     {
-        $widths = [];
+        $generated = [];
 
-        foreach (self::WIDTHS as $width) {
-            $widths[] = $width;
+        foreach ($widths as $width) {
+            $generated[] = $width;
 
             if ($width >= $sourceWidth) {
                 break;
             }
         }
 
-        return $widths;
+        return $generated;
     }
 
     /**

@@ -136,6 +136,52 @@ it('flags a redirect row the live site does not send in one hop to a working pag
     'landing on a missing page' => [['', 301, ['Location' => 'https://site.test/rates']], ['', 404], 'destination https://site.test/rates answers 404'],
 ]);
 
+it('checks that a Gone rule answers 410', function (int $status, int $expectedExitCode) {
+    fakeAuditedSite(['https://site.test/retired-article' => ['', $status]]);
+    Redirect::factory()->gone()->create(['source_path' => '/retired-article']);
+
+    $exitCode = auditSite();
+
+    expect($exitCode)->toBe($expectedExitCode);
+    if ($expectedExitCode === 1) {
+        expect(Artisan::output())->toContain('has a Gone rule, so it should answer 410, but answers 404');
+    }
+})->with([
+    'answering 410' => [410, 0],
+    'still answering 404' => [404, 1],
+]);
+
+it('requests each other internal link once and passes when it answers 200', function () {
+    fakeAuditedSite([
+        'https://site.test/about' => ['<html><head><link rel="canonical" href="https://site.test/about"></head><body><a href="/careers">Careers</a></body></html>'],
+        'https://site.test/careers' => ['<html></html>'],
+    ]);
+
+    $exitCode = auditSite();
+
+    expect($exitCode)->toBe(0);
+    Http::assertSent(fn ($request): bool => $request->url() === 'https://site.test/careers');
+});
+
+it('flags an internal link that leads nowhere useful', function (string $href, array $overrides, array $goneRules, string $problem) {
+    fakeAuditedSite([
+        'https://site.test/about' => ['<html><head><link rel="canonical" href="https://site.test/about"></head><body><a href="'.$href.'">link</a></body></html>'],
+        ...$overrides,
+    ]);
+    foreach ($goneRules as $path) {
+        Redirect::factory()->gone()->create(['source_path' => $path]);
+    }
+
+    $exitCode = auditSite();
+
+    expect($exitCode)->toBe(1)
+        ->and(Artisan::output())->toContain($problem);
+})->with([
+    'a page that answers 404' => ['/old-guide', ['https://site.test/old-guide' => ['', 404]], [], 'links to a page that answers 404'],
+    'link text typed in place of the URL' => ['instant personal loan', [], [], 'has spaces in its href'],
+    'a page marked Gone' => ['/retired-article', ['https://site.test/retired-article' => ['', 410]], ['/retired-article'], 'links to a page marked Gone (410)'],
+]);
+
 it('refuses a base URL that is not an http(s) address', function () {
     Http::preventStrayRequests();
 

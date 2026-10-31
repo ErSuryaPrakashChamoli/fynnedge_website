@@ -13,6 +13,7 @@ beforeEach(function () {
         LoanCategory::BusinessLoan,
         LoanCategory::GoldLoan,
         LoanCategory::TwoWheelerLoan,
+        LoanCategory::CarLoan,
         LoanCategory::LoanAgainstProperty,
         LoanCategory::TermLoan,
         LoanCategory::TractorLoan,

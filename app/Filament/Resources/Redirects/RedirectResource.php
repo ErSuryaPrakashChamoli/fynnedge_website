@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Redirects;
 
+use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\Redirects\Pages\CreateRedirect;
 use App\Filament\Resources\Redirects\Pages\EditRedirect;
 use App\Filament\Resources\Redirects\Pages\ListRedirects;
@@ -46,7 +47,7 @@ class RedirectResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            AuditLogsRelationManager::class,
         ];
     }
 

@@ -2,9 +2,11 @@
 
 How fynnedge.com decides which URL a page lives at, where each rule is
 implemented, and what to check before and after a deploy. Written after the
-October 2026 Search Console "Page with redirect" report. The full per-URL
-mapping for that report is in
-[gsc-page-with-redirect-audit-2026-10.csv](gsc-page-with-redirect-audit-2026-10.csv).
+October 2026 Search Console "Page with redirect" report and extended after
+its "Not found (404)" report. The per-URL mappings are in
+[gsc-page-with-redirect-audit-2026-10.csv](gsc-page-with-redirect-audit-2026-10.csv)
+and [gsc-not-found-audit-2026-10.csv](gsc-not-found-audit-2026-10.csv); the
+404 work is written up in [not-found-404-report-2026-10.md](not-found-404-report-2026-10.md).
 
 The canonical form of every URL is `https://fynnedge.com/<path>`:
 HTTPS, no `www`, no trailing slash (except `/`), no doubled slashes.
@@ -19,8 +21,10 @@ one layer, so no two layers rewrite the same thing.
 | Cloudflare (www only) | `www.fynnedge.com/*` → 301 `https://fynnedge.com/*` | Cloudflare dashboard → Rules → Redirect Rules (**see "Production changes"**) |
 | Apache vhost (apex) | `http://fynnedge.com/*` → 301 `https://fynnedge.com/*` | Server vhost config (already correct, not in git) |
 | `public/.htaccess` | Serve existing files; everything else → `index.php` | Repo. Must **not** strip trailing slashes (see below) |
-| `HandleRedirects` (global middleware) | Admin redirect rows, then slash normalisation | `app/Http/Middleware/HandleRedirects.php` |
+| `RecordNotFoundRequests` (global middleware, outermost) | Counts every genuine 404 in Admin → Missing pages (404) | `app/Http/Middleware/RecordNotFoundRequests.php` |
+| `HandleRedirects` (global middleware) | Admin redirect rows (301/302/410), then slash normalisation | `app/Http/Middleware/HandleRedirects.php` |
 | Routes | Pages; `/language/{locale}` action | `routes/web.php` |
+| Error pages | Branded 404 and 410; bare 404 for probes and assets | `resources/views/errors/`, `bootstrap/app.php` |
 
 ### Redirect rows (Admin → Redirects)
 
@@ -28,7 +32,14 @@ one layer, so no two layers rewrite the same thing.
   for a permanent move and 302 only for something temporary.
 - Do **not** point an old URL at the homepage or a listing page just to make
   a report go quiet. Google treats that as a soft 404. If nothing equivalent
-  exists, let the URL 404.
+  exists, let the URL 404, or add a **410 Gone** row when the content was
+  removed for good (see below).
+- The form refuses a destination that is itself an old URL with a row
+  (point at its final page instead), one marked Gone, a path no route
+  answers, and any URL that is not http(s). It cannot know whether a
+  `/loans/<slug>` record exists; `seo:audit` checks that on the live site.
+- Write the reason in **Notes** (which report, what the old page was). Every
+  change is kept in the row's **History** tab.
 - Matching ignores case, trailing slash and query string, and the visitor's
   query string is carried across.
 - Chains are flattened at request time: if `/a → /b` and later `/b → /c`, a
@@ -42,6 +53,45 @@ one layer, so no two layers rewrite the same thing.
   Such a migration must skip any source that already has a row, because an
   admin's row always wins. See
   `database/migrations/2026_10_30_072910_add_legacy_wordpress_redirects.php`.
+
+### Gone (410) rows
+
+A row of type **410 Gone** has no destination. Use it for an old URL whose
+content was deliberately removed and has no equivalent page: a retired
+article, or a URL WordPress generated (`/comments/feed/`, `/2026/03/03/`).
+It answers 410 with the branded "This page has been removed" page, in one
+response whatever the slashes, and Google drops a 410 sooner than a 404. A
+redirect chain that ends at a Gone row answers 410 itself. If the content is
+republished later, change the row to a 301 to the new page.
+
+Leave a URL as a plain 404 (no row) when nothing replaces it but the business
+may want the URL back, e.g. a service not offered yet.
+
+### Missing pages (404) monitoring
+
+`RecordNotFoundRequests` counts each genuine 404 per normalised path in
+`not_found_urls`, shown in **Admin → Website Settings → Missing pages (404)**
+and printed by `php artisan seo:not-found`:
+
+- **One row per path, not per request.** It stores counters, first/last seen,
+  and the last referrer as `scheme://host/path`. It stores no IP, user agent,
+  query string or cookie. A search crawler is counted, not identified.
+- **Noise is left out** (`App\Support\NotFound\NotFoundRequests`): scanner
+  probes (`/wp-login.php`, `/.env`, `*.php`), missing asset files (`.css`,
+  `.js`, images, fonts), the admin panel, Livewire, `/.well-known/`, and URLs
+  that carry a token (`/newsletter/…`, `/journey/…`). Those get Laravel's bare
+  404 rather than the branded page, so a scanner costs no database work.
+  Legacy WordPress *content* URLs are not noise: they are what this list is for.
+- **Bounded.** Paths not requested for `SEO_NOT_FOUND_RETENTION_DAYS` (90)
+  are pruned daily at 03:10 (`model:prune`, needs the scheduler). Once
+  `SEO_NOT_FOUND_MAX_PATHS` (5000) paths are stored, new ones are not added.
+  Paths already stored keep counting.
+- **"From this site" > 0** means a link on this site leads there. Fix the link
+  at its source, then add a rule for the old URL if it was ever public.
+  `seo:not-found` exits non-zero while such a path was seen in the last
+  `--days` (7). Run it from cron with `MAILTO` set to get an email alert.
+- The writes happen after the response is sent (`defer()`), so a 404 is no
+  slower. `seo:audit`'s own requests are not counted.
 
 ### Trailing and doubled slashes
 
@@ -119,7 +169,9 @@ These cannot be done from the repository. Back up anything before changing it.
 
 - [ ] `php artisan test --compact` passes. At minimum run
       `tests/Feature/RedirectsTest.php`, `SiteLanguageTest.php`,
-      `SitemapTest.php`, `Seo/CrawlerPolicyTest.php` and `SeoAuditCommandTest.php`.
+      `SitemapTest.php`, `Seo/CrawlerPolicyTest.php`, `SeoAuditCommandTest.php`,
+      `NotFoundPageTest.php`, `RecordNotFoundRequestsTest.php`,
+      `SeoNotFoundReportCommandTest.php` and `Filament/NotFoundUrlResourceTest.php`.
 - [ ] `vendor/bin/pint --dirty --format agent` is clean.
 - [ ] No `<a href>` to `/language/` anywhere (`grep -rn "locale.switch" resources/views`).
 - [ ] `public/.htaccess` has no trailing-slash rewrite.
@@ -130,8 +182,10 @@ These cannot be done from the repository. Back up anything before changing it.
 ## Deploy
 
 1. Pull the release and run `composer install --no-dev` and `npm run build` as usual.
-2. `php artisan migrate --force` adds the two legacy redirect rows and skips
-   any source that already has a row.
+2. `php artisan migrate --force` adds the two legacy redirect rows (2026-10-30),
+   lets a row be Gone and carry notes, adds the October 2026 404 report's 17
+   redirect and 9 Gone rows, and creates `not_found_urls`. It skips any source
+   that already has a row.
 3. `php artisan optimize:clear` (or your usual cache step) so the redirect map
    and views are fresh.
 4. Apply the production changes above (robots.txt, Cloudflare) if they are not already done.
@@ -155,6 +209,10 @@ curl -sI https://fynnedge.com/credit-card/     | grep -i -E '^(HTTP|location)'  
 curl -sI https://fynnedge.com/loan-central/    | head -1                          # 404, no redirect
 curl -sI http://www.fynnedge.com/loans         | grep -i -E '^(HTTP|location)'   # 301 -> https://fynnedge.com/loans
 curl -s  https://fynnedge.com/ | grep -c 'href="[^"]*/language/'                  # 0
+curl -sI https://fynnedge.com/personal-loan/   | grep -i -E '^(HTTP|location)'   # 301 -> /loans/personal-loans
+curl -sI https://fynnedge.com/comments/feed/   | head -1                          # 410
+curl -sI https://fynnedge.com/mutual-fund/     | head -1                          # 404 (branded page)
+php artisan seo:not-found                                                         # what is still 404ing
 ```
 
 Then switch the language in a browser (desktop strip and mobile menu) on a
@@ -165,8 +223,12 @@ other language. Also run a loan enquiry and an eligibility journey.
 
 - Code: redeploy the previous release. If the old `.htaccess` comes back, its
   trailing-slash rule returns too. That is harmless, just the old behaviour.
-- Migration: `php artisan migrate:rollback --step=1` removes only the two
-  legacy rows, and only if they are unchanged. Or switch them off in Admin → Redirects.
+- Migrations: `php artisan migrate:rollback --step=3` undoes the October 2026
+  404 work: it drops `not_found_urls`, removes the report's rows that are still
+  as shipped, and removes every Gone row before making `destination` required
+  again. Rows an admin edited are kept, except Gone rows, which cannot exist
+  without the 410 support. `--step=4` also removes the two 2026-10-30 legacy
+  rows. Or switch rows off in Admin → Redirects.
 - robots.txt: restore the backed-up static file.
 - Cloudflare: disable the new rule and re-enable the old one.
 
@@ -188,6 +250,10 @@ Search Console needs an authorised owner. Nothing in this repo talks to it.
    validation will keep listing them. What this work removes is the
    **source** of new ones (crawlable language links), the two-hop chains,
    and the redirects into 404s.
-4. Expect weeks, not days. Google recrawls old URLs slowly, and known
+4. **Page indexing → Not found (404) → Validate fix** once
+   `seo:audit` passes. The report's 19 redirected URLs then show as "Page with
+   redirect", which is correct and permanent. The 9 Gone URLs and the 4 left
+   as 404 drop out as Google recrawls them.
+5. Expect weeks, not days. Google recrawls old URLs slowly, and known
    `/language/` URLs drop out gradually once nothing links to them. A
    technically correct site does not guarantee any URL gets indexed.

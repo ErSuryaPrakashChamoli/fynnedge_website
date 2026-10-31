@@ -120,7 +120,7 @@ it('shows the not-found page in Hindi for a URL that matches no route', function
     $this->withUnencryptedCookie(SiteLocale::COOKIE, 'hi')
         ->get('/no-such-page-anywhere')
         ->assertNotFound()
-        ->assertSee('<html lang="hi">', false)
+        ->assertSee('<html lang="hi"', false)
         ->assertSee(__('Not Found', locale: 'hi'))
         ->assertDontSee('Not Found');
 });

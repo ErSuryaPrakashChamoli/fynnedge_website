@@ -1,7 +1,14 @@
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
+/*
+ * Deliberately no @source for storage/framework/views (the Laravel skeleton's
+ * default). Tailwind already reads every template in resources/ and app/;
+ * scanning the compiled views only added the classes of whatever happened to
+ * be compiled when the build ran — Filament's admin, the framework's error
+ * and health pages — so the same commit built 116 KB or 131 KB of CSS
+ * (production's was 131 KB, 2026-10-31). No public page uses those classes.
+ */
 
 @theme {
     /*
@@ -30,7 +37,13 @@
     --color-surface-2: #eef1f6;
     --color-ink: #101828;
     --color-ink-muted: #4c5a70;
-    --color-ink-faint: #838fa1;
+    /*
+     * Helper text, eyebrows and stat labels. #838fa1 measured 2.9–3.3:1 on the
+     * light surfaces (Lighthouse color-contrast, 2026-10-31); this is the same
+     * blue-grey at AA: 5.65:1 on surface, 4.99:1 on surface-2, 4.59:1 on
+     * accent-soft, and still a step lighter than ink-muted (6.99:1).
+     */
+    --color-ink-faint: #5c687a;
     --color-accent: #163a63;
     --color-accent-strong: #0d2340;
     --color-accent-soft: #e1e8f4;
@@ -107,7 +120,7 @@
         --color-surface-2: #161c26;
         --color-ink: #eef1f6;
         --color-ink-muted: #9aa6ba;
-        --color-ink-faint: #6c7789;
+        --color-ink-faint: #8a93a3;
         --color-accent: #86aee0;
         --color-accent-strong: #b7d3f2;
         --color-accent-soft: #1c2c40;
@@ -134,7 +147,7 @@
     --color-surface-2: #161c26;
     --color-ink: #eef1f6;
     --color-ink-muted: #9aa6ba;
-    --color-ink-faint: #6c7789;
+    --color-ink-faint: #8a93a3;
     --color-accent: #86aee0;
     --color-accent-strong: #b7d3f2;
     --color-accent-soft: #1c2c40;
@@ -435,6 +448,20 @@ footer {
  */
 [x-cloak] {
     display: none !important;
+}
+
+/*
+ * The browser paints a long page (a loan page is ~850KB of HTML) before all of
+ * it has arrived. While the painted part still fits the window there is no
+ * scrollbar; once the rest streams in, a classic 15px scrollbar appears and
+ * every centred max-w-7xl row jumps 7.5px left. Lighthouse measured that as a
+ * 0.09 layout shift on desktop loan and calculator pages (2026-10-31).
+ * Reserving the gutter from the first paint removes the jump, and also the one
+ * the mobile menu's page lock (overflow-hidden on <html>) would cause.
+ * Overlay scrollbars (phones, macOS) have no gutter, so nothing changes there.
+ */
+html {
+    scrollbar-gutter: stable;
 }
 
 /*

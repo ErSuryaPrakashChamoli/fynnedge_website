@@ -7,6 +7,7 @@ use App\Models\LoanLandingPage;
 use App\Models\LoanProduct;
 use App\Models\Page;
 use App\Models\PageSeo;
+use App\Models\Redirect;
 
 /**
  * SimpleXMLElement is not a normal iterable for collect() — collect() reads it
@@ -141,6 +142,16 @@ it('lists only URLs that answer 200 at that exact address with a canonical point
         expect($response->getContent())->toContain('<link rel="canonical" href="'.$loc.'">');
     }
 });
+
+it('leaves out a published page that a redirect or Gone rule covers', function (array $rule) {
+    $article = Article::factory()->published()->create(['slug' => 'moved-article']);
+    Redirect::factory()->create(['source_path' => '/resources/moved-article', ...$rule]);
+
+    expect(sitemapLocs())->not->toContain(route('resources.show', $article));
+})->with([
+    'a redirect' => [['destination' => '/resources']],
+    'a Gone rule' => [['destination' => null, 'status_code' => Redirect::GONE]],
+]);
 
 it('emits no duplicate URLs', function () {
     $locs = sitemapLocs();

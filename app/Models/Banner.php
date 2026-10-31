@@ -7,9 +7,9 @@ use App\Enums\BannerVerticalAlignment;
 use App\Enums\PublishStatus;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasResponsiveImage;
 use App\Models\Concerns\HasTranslations;
 use App\Models\Concerns\Publishable;
-use App\Support\Media\ResponsiveImage;
 use App\Support\Theme\SiteThemeStyles;
 use Database\Factories\BannerFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Storage;
 class Banner extends Model
 {
     /** @use HasFactory<BannerFactory> */
-    use Auditable, HasFactory, HasPublicId, HasTranslations, Publishable;
+    use Auditable, HasFactory, HasPublicId, HasResponsiveImage, HasTranslations, Publishable;
 
     /**
      * Upper bound for each side's spacing, as a percentage of the banner's
@@ -42,48 +42,9 @@ class Banner extends Model
         ];
     }
 
-    /**
-     * Keeps the WebP copies the carousel's srcset serves in step with the
-     * image: made for a new upload, removed with the image they were cut
-     * from unless another banner still shows that file (a replicated
-     * banner shares its image_path).
-     */
-    protected static function booted(): void
-    {
-        static::saved(function (Banner $banner): void {
-            if (! $banner->wasRecentlyCreated && ! $banner->wasChanged('image_path')) {
-                return;
-            }
-
-            self::forgetResponsiveImage($banner->getPrevious()['image_path'] ?? null);
-
-            if ($banner->image_path) {
-                ResponsiveImage::generate($banner->image_path);
-            }
-        });
-
-        static::deleted(fn (Banner $banner) => self::forgetResponsiveImage($banner->image_path));
-    }
-
     public function imageUrl(): ?string
     {
         return $this->image_path ? Storage::disk('public')->url($this->image_path) : null;
-    }
-
-    /**
-     * The WebP srcset for this banner's image, or null until its copies
-     * exist (see ResponsiveImage), in which case only imageUrl() is served.
-     */
-    public function imageSrcset(): ?string
-    {
-        return ResponsiveImage::srcset($this->image_path);
-    }
-
-    private static function forgetResponsiveImage(?string $path): void
-    {
-        if ($path && ! static::query()->where('image_path', $path)->exists()) {
-            ResponsiveImage::delete($path);
-        }
     }
 
     /**

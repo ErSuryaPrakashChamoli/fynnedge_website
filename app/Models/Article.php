@@ -6,6 +6,7 @@ use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasResponsiveImage;
 use App\Models\Concerns\HasTranslations;
 use App\Models\Concerns\Publishable;
 use App\Models\Concerns\Seoable;
@@ -22,7 +23,7 @@ use Illuminate\Support\Facades\Storage;
 class Article extends Model
 {
     /** @use HasFactory<ArticleFactory> */
-    use Auditable, HasFactory, HasPublicId, HasTranslations, Publishable, Seoable, SoftDeletes;
+    use Auditable, HasFactory, HasPublicId, HasResponsiveImage, HasTranslations, Publishable, Seoable, SoftDeletes;
 
     protected function casts(): array
     {

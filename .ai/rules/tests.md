@@ -16,3 +16,6 @@ expectsOutputToContain() is matched against each individual OutputStyle::doWrite
 
 ## The test client cannot send a trailing slash or a leading //
 $this->get()/call() pass every URI through url() and trim('/'), so '/page/' arrives as '/page' and '//x' as '/x'. A slash test written with $this->get() passes trivially. Use getExactPath() (tests/Feature/RedirectsTest.php), which hands Request::create() straight to the HTTP kernel. Also: the legacy-redirects migration ships rows (/credit-card, …) into every test DB, so never assume `redirects` starts empty (Redirect::first() is not your row).
+
+## Livewire error assertions split expected messages on ':'
+assertHasFormErrors(['field' => ['message']]) treats "a:b" as a rule with parameters, so a message containing "https://" or "(410):" never matches. Assert such messages with the closure form: assertHasFormErrors(['field' => fn (array $failedRules, array $messages): bool => in_array($message, $messages, true)]). Also: Pest array datasets are built before the app boots, so config()/route()/url() cannot appear in them — pass a path and build the URL inside the test.

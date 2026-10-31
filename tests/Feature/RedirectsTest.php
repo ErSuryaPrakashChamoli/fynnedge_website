@@ -2,8 +2,11 @@
 
 use App\Console\Commands\SeoAuditCommand;
 use App\Filament\Resources\Redirects\Pages\CreateRedirect;
+use App\Filament\Resources\Redirects\Pages\EditRedirect;
+use App\Models\AuditLog;
 use App\Models\Redirect;
 use App\Models\User;
+use App\Support\UrlPath;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 use Illuminate\Testing\TestResponse;
@@ -241,4 +244,154 @@ it('leaves an admin\'s own row for a legacy URL alone when the legacy-URL migrat
     expect(Redirect::query()->where('source_path', '/credit-card')->sole())
         ->destination->toBe('/loans')
         ->is_active->toBeFalse();
+});
+
+it('answers 410 for a Gone row from its trailing-slash URL and counts the hit', function () {
+    $gone = Redirect::factory()->gone()->create(['source_path' => '/retired-article']);
+
+    getExactPath('/retired-article/')->assertGone()->assertSee('This page has been removed');
+
+    expect($gone->refresh()->hits)->toBe(1);
+});
+
+it('answers 410 straight away when a redirect chain ends at a Gone row', function () {
+    Redirect::factory()->create(['source_path' => '/old-name', 'destination' => '/retired-article']);
+    Redirect::factory()->gone()->create(['source_path' => '/retired-article']);
+
+    $this->get('/old-name')->assertGone();
+});
+
+it('saves a Gone rule with no destination and keeps its note', function () {
+    $this->actingAs(User::factory()->create(['is_admin' => true]));
+
+    Livewire::test(CreateRedirect::class)
+        ->fillForm(['source_path' => '/retired-article/', 'status_code' => Redirect::GONE, 'is_active' => true, 'notes' => 'Old WordPress post'])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $this->assertDatabaseHas('redirects', ['source_path' => '/retired-article', 'destination' => null, 'status_code' => 410, 'notes' => 'Old WordPress post']);
+});
+
+it('drops the destination when a redirect is turned into a Gone rule', function () {
+    $redirect = Redirect::factory()->create(['source_path' => '/retired-article', 'destination' => '/loans']);
+    $this->actingAs(User::factory()->create(['is_admin' => true]));
+
+    Livewire::test(EditRedirect::class, ['record' => $redirect->getRouteKey()])
+        ->fillForm(['status_code' => Redirect::GONE])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($redirect->refresh())
+        ->status_code->toBe(410)
+        ->destination->toBeNull();
+});
+
+it('rejects a destination that cannot take a visitor to a live page in one hop', function (?array $existingRow, string $destination, string $message) {
+    if ($existingRow) {
+        Redirect::factory()->create($existingRow);
+    }
+    $this->actingAs(User::factory()->create(['is_admin' => true]));
+
+    Livewire::test(CreateRedirect::class)
+        ->fillForm(['source_path' => '/old-page', 'destination' => $destination, 'status_code' => Redirect::PERMANENT, 'is_active' => true])
+        ->call('create')
+        // A closure, not [$message]: Livewire reads "a:b" in an expected message as a rule with parameters.
+        ->assertHasFormErrors(['destination' => fn (array $failedRules, array $messages): bool => in_array($message, $messages, true)]);
+
+    $this->assertDatabaseMissing('redirects', ['source_path' => '/old-page']);
+})->with([
+    'another old URL, which would make a chain' => [
+        ['source_path' => '/second-name', 'destination' => '/loans'],
+        '/second-name',
+        'That path already redirects to /loans. Enter that destination instead, so visitors take one hop.',
+    ],
+    'a path marked Gone' => [
+        ['source_path' => '/retired-article', 'destination' => null, 'status_code' => Redirect::GONE],
+        '/retired-article',
+        'That path is itself marked Gone (410). Choose a page that exists, or make this row Gone too.',
+    ],
+    'a path no route answers' => [null, '/loan/personal-loan', 'No page on this site answers that path. Check it for typos.'],
+    'a URL that is not http(s)' => [null, 'javascript://example.com/%0Aalert(1)', 'Enter a path starting with / or a complete URL including https://.'],
+]);
+
+it('records who changed a redirect and what changed, without the hit counter', function () {
+    $admin = User::factory()->create(['is_admin' => true]);
+    $redirect = Redirect::factory()->create(['source_path' => '/old-page', 'destination' => '/loans']);
+    $this->actingAs($admin);
+
+    Livewire::test(EditRedirect::class, ['record' => $redirect->getRouteKey()])
+        ->fillForm(['destination' => '/about'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    $entry = AuditLog::query()->where('auditable_type', $redirect->getMorphClass())->where('auditable_id', $redirect->id)->where('action', 'updated')->sole();
+    expect($entry)
+        ->user_id->toBe($admin->id)
+        ->changes->toBe(['destination' => ['old' => '/loans', 'new' => '/about']]);
+});
+
+it('prefills the old path from the Missing pages list', function () {
+    $this->actingAs(User::factory()->create(['is_admin' => true]));
+
+    $this->get(CreateRedirect::getUrl(['source_path' => '/old-page']))->assertOk();
+    Livewire::withQueryParams(['source_path' => '/old-page'])
+        ->test(CreateRedirect::class)
+        ->assertSchemaStateSet(['source_path' => '/old-page']);
+});
+
+it('sends each old WordPress URL from the October 2026 404 report to its equivalent page in one 301', function (string $legacyUrl, string $destination) {
+    $response = getExactPath($legacyUrl);
+
+    $response->assertMovedPermanently()->assertRedirect(url($destination));
+    expect(UrlPath::isRoutable($destination))->toBeTrue();
+})->with([
+    'personal loan page' => ['/personal-loan/', '/loans/personal-loans'],
+    'personal loan page without a slash' => ['/personal-loan', '/loans/personal-loans'],
+    'home loan page' => ['/home-loan/', '/loans/home-loan'],
+    'home loan page without a slash' => ['/home-loan', '/loans/home-loan'],
+    'business loan page' => ['/business-loan/', '/loans/business-loan'],
+    'overdraft page' => ['/overdraft-facilities/', '/loans/flexi-hybrid-term-loan'],
+    'contact page' => ['/contact-us/', '/contact'],
+    'careers page' => ['/career/', '/careers'],
+    'team page' => ['/team/', '/about'],
+    'photo gallery' => ['/gallery/', '/about'],
+    'personal loan calculator' => ['/personal-loan-calculator/', '/calculators/emi/personal-loan'],
+    'duplicate personal loan calculator' => ['/personal-loan-calculator-2/', '/calculators/emi/personal-loan'],
+    'duplicate car loan calculator' => ['/car-loan-calculator-2/', '/calculators/emi/car-loan'],
+    'CIBIL score page' => ['/cibil-score/', '/credit-score/cibil'],
+    'holiday article' => ['/tips-for-using-a-personal-loan-for-your-dream-holiday/', '/loans/personal-loans/personal-loan-for-travel'],
+    'combining loans article' => ['/how-to-combine-multiple-loans-and-reduce-your-emi-burden-in-india-in-2026/', '/loans/personal-loans/personal-loan-for-debt-consolidation'],
+    'self-employed article' => ['/are-self-employed-people-eligible-for-a-personal-loan-without-an-itr/', '/loans/personal-loans/personal-loan-for-self-employed'],
+    'best personal loan article' => ['/best-personal-loan-in-india-2026-a-definitive-ranking-of-top-banks-and-nbfcs/', '/loans/personal-loans'],
+    'startup business loan article' => ['/unsecured-business-loans-for-startups-a-2026-guide-to-capital-without-collateral/', '/loans/business-loan'],
+]);
+
+it('answers 410 for each retired page from the October 2026 404 report', function (string $legacyUrl) {
+    getExactPath($legacyUrl)->assertGone();
+})->with([
+    '/the-home-loan-advantage/',
+    '/taking-out-a-personal-loan-on-probation-is-it-even-an-option/',
+    '/the-personal-loan-master-guide/',
+    '/the-msme-growth-manual/',
+    '/the-credit-score-recovery-roadmap/',
+    '/how-loan-prepayment-can-save-you-lakhs-in-interest-in-india-in-2026/',
+    '/how-to-manage-your-emis-smartly-in-2026-and-stay-financially-stress-free/',
+    '/comments/feed/',
+    '/2026/03/03/',
+]);
+
+it('keeps answering 404 for the October 2026 report URLs that have no equivalent', function (string $legacyUrl) {
+    getExactPath($legacyUrl)->assertNotFound();
+})->with(['/mutual-fund/', '/debit-card/', '/review/', '/lander']);
+
+it('leaves an admin\'s own row alone when the October 2026 migration runs, and when it is rolled back', function () {
+    $migration = require database_path('migrations/2026_10_31_084215_add_october_2026_not_found_legacy_urls.php');
+    Redirect::query()->where('source_path', '/team')->sole()->update(['destination' => '/careers']);
+
+    $migration->up();
+    $migration->down();
+
+    expect(Redirect::query()->where('source_path', '/team')->sole())->destination->toBe('/careers')
+        ->and(Redirect::query()->where('source_path', '/career')->exists())->toBeFalse()
+        ->and(Redirect::query()->where('source_path', '/comments/feed')->exists())->toBeFalse();
 });
