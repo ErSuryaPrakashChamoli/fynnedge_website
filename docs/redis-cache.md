@@ -52,7 +52,8 @@ ContentCache::invalidateTable('loan_landing_pages');    // for writes that skip 
 | Entry | Built from | Section(s) | Also expires | Read by |
 | --- | --- | --- | --- | --- |
 | `settings` (every row, ~2 KB) | `settings` | settings | TTL | `Setting::get()`: branding, contact, theme, tracking, SEO defaults |
-| `loan-mega-menu:{en,hi}` | `loan_products`, `loan_landing_pages` | loan-catalog | next product or landing page publish/expiry | header mega menu |
+| `loan-mega-menu:{en,hi}` | `loan_products`, `loan_landing_pages` | loan-catalog | next product or landing page publish/expiry | header mega menu (data), mobile menu |
+| `loan-mega-menu-panel:{en,hi}:{site address}` (rendered HTML, ~190 KB) | the entry above | loan-catalog | same as above | header desktop Loans panel (`components/site/partials/loan-mega-menu-panel.blade.php`) |
 | `navigation-loan-products` | `loan_products` | loan-catalog | next product publish/expiry | footer "Loans" column |
 | `calculator-products` (~75 KB) | `loan_products` | loan-catalog | next product publish/expiry | `LoanCalculatorPreset` (calculators, loan pages) |
 | `rate-book:published-rates:v4` (~617 rows) | `lender_product_rates`, `lender_products`, `lenders`, `loan_products` | rates | TTL; date rules applied at read | `RateBook`: every rate on the site |
@@ -92,7 +93,8 @@ Pinned by `tests/Feature/ContentCache/*`.
 ## 4. What is deliberately not cached
 
 - **Full HTML pages.** Every public page carries the visitor's own CSRF token (forms, `data-csrf` for Livewire), sets session and `XSRF-TOKEN` cookies, and its header differs for a signed-in customer ("My Profile") and by language. A shared page cache would hand one visitor's token and header to the next. Responses keep Laravel's `Cache-Control: no-cache, private`, so no proxy or browser stores them. **No route is page-cached.** The data caching above recovered most of the time a page cache would have saved, without that risk.
-- **Anything personal or transactional:** customer portal, journeys, applications, OTPs, credit-score checks, bureau responses, form submissions. None of it touches `ContentCache`. The cache only ever holds rows from the content tables in §3.
+  The one rendered fragment that *is* cached, the header's desktop Loans panel, contains nothing that varies by visitor: no active link, no token, nothing signed-in. It is keyed by language and by site address, because its links are absolute URLs. Keep it that way (`.ai/rules/support-loans.md`).
+- **Anything personal or transactional:** customer portal, journeys, applications, OTPs, credit-score checks, bureau responses, form submissions. None of it touches `ContentCache`. The cache only ever holds what is built from the content tables in §3.
 - **Per-page placement lists** (promo bar, FAQs, social and video testimonials, footer pages and links). Each is one ~0.5 ms indexed query on a small table, which costs about the same as a cache round trip.
 - **The sitemap.** It takes ~100 ms to build, but only crawlers fetch it, a few times a day. Because it is uncached it is always exactly current, so a URL change appears in it immediately.
 - **The EMI calculator's amortization schedule.** It is computed from the visitor's own inputs.
@@ -107,7 +109,7 @@ There is no CDN or reverse proxy in front of the site (Apache serves the apex di
 | --- | --- |
 | `php artisan content-cache:status` | Store health (a write/read probe), every section's version and when it last changed, and on Redis: memory used/limit, eviction policy, hit rate, evicted keys, clients. Exits non-zero if the store is failing. Never prints a cached value or a credential. |
 | `php artisan content-cache:refresh rates` (or `--all`) | Bumps the named sections. For changes made with raw SQL only. Granular, logged with the OS user, and never a flush. |
-| `php artisan content-cache:warm` | Builds settings, rates, redirects, SEO overrides and the mega menu in both languages, in-process. No HTTP request, so no session, form, OTP, bureau call or database write is triggered. Run it after a deploy or a Redis restart. |
+| `php artisan content-cache:warm` | Builds settings, rates, redirects, SEO overrides and the mega menu (data and rendered panel) in both languages, in-process. The panel is built for `APP_URL`, so `APP_URL` must be the address visitors use (`https://fynnedge.com`). No HTTP request, so no session, form, OTP, bureau call or database write is triggered. Run it after a deploy or a Redis restart. |
 | `php artisan rates:status --refresh` | As before; now bumps the `rates` section. |
 
 **Do not run `php artisan cache:clear`** to "refresh the site": edits already refresh themselves, and a flush would also drop locks and rate-limit counters. With the Redis ACL in §6 it is refused anyway.
@@ -230,7 +232,7 @@ Behaviour preserved on purpose: the header and footer markup is unchanged. One l
 
 - **Loan page lender comparison table:** ~100 ms of Blade markup for 39 lenders, since the rate lookups are now ~2 ms.
 - **EMI calculator (Livewire):** ~130 ms rendering the month-by-month schedule from the visitor's inputs.
-- **Header markup:** ~265 KB of HTML (the mega menu's ~400 links, mostly indentation) on every page. It compresses well on the wire, but the phone still parses it. Caching the rendered desktop panel per language, or loading it on first hover, would save further render time and HTML weight; that is a separate change.
+- **Header markup:** the desktop Loans panel is still ~190 KB of HTML and ~450 links on every page, though only ~7 KB gzipped. Its render is now cached. Shrinking it further means loading the panel on first hover, which would take those internal links out of the HTML crawlers read first. That is an SEO decision, so it is not done.
 
 ---
 
@@ -258,3 +260,18 @@ How to read it:
 - With `CACHE_STORE=database`, the remaining 5–11 cache-store calls are SQL queries. With Redis they become sub-millisecond Redis reads. That is Stage 2's gain on top of these figures, not yet measured because Redis is not installed here.
 - A cold request rebuilds and stores everything at once, so on a few pages it costs about as much as a warm request did before. It happens once per edit per language.
 - Correctness after an edit is covered by the automated tests (`tests/Feature/ContentCache/*` and the translation tests), not by these timings.
+
+### Follow-up: caching the rendered desktop mega menu panel
+
+Measured the same way against the previous commit (`78c785e`, which already had everything above), on a quieter machine (load average ~3.5). Each figure is the median of 12 requests:
+
+| Page | Before | After (warm) | After (cold) | HTML before → after |
+| --- | ---: | ---: | ---: | ---: |
+| `/` | 133 ms | **111 ms** | 249 ms | 552 → 518 KB |
+| `/about` | 89 ms | **79 ms** | 202 ms | 378 → 343 KB |
+| `/loans` | 93 ms | **76 ms** | 202 ms | 376 → 340 KB |
+| `/loans/personal-loan` | 205 ms | **191 ms** | 402 ms | 893 → 858 KB |
+| `/calculators/emi/personal-loan` | 137 ms | **129 ms** | 274 ms | 485 → 449 KB |
+| `/resources/how-emis-work` | 101 ms | **94 ms** | 246 ms | 366 → 330 KB |
+
+Query counts are unchanged. The ~35 KB HTML saving comes from the extracted partial carrying 24 fewer spaces of indentation per line; the markup is otherwise identical. The quieter machine is why these absolute times are lower than the first table's.

@@ -61,6 +61,23 @@ class LoanMegaMenu
     }
 
     /**
+     * The header's desktop mega menu panel, rendered. Its ~450 links are
+     * identical for every visitor of a language (no active link, no token,
+     * nothing signed-in), and rendering them was most of the header's cost on
+     * every page. Keyed by the site address too, because route() writes
+     * absolute URLs from the request's own scheme and host.
+     */
+    public static function panelHtml(): string
+    {
+        return ContentCache::remember(
+            'loan-mega-menu-panel:'.SiteLocale::current().':'.sha1(url('/')),
+            [ContentCacheSection::LoanCatalog],
+            fn (): string => view('components.site.partials.loan-mega-menu-panel', ['loanCategories' => self::categories()])->render(),
+            scheduled: [LoanProduct::class, LoanLandingPage::class],
+        );
+    }
+
+    /**
      * @return array<int, array<string, mixed>>
      */
     private static function build(): array

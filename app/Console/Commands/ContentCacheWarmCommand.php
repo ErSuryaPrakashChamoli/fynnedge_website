@@ -44,7 +44,9 @@ class ContentCacheWarmCommand extends Command
 
         foreach (array_keys(SiteLocale::SUPPORTED) as $supported) {
             App::setLocale($supported);
-            $this->components->task("Loan mega menu ({$supported})", fn () => is_array(LoanMegaMenu::categories()));
+            // The rendered panel is keyed by site address; from the console
+            // that is APP_URL, so it matches visitors when APP_URL is right.
+            $this->components->task("Loan mega menu ({$supported})", fn () => is_array(LoanMegaMenu::categories()) && LoanMegaMenu::panelHtml() !== '');
         }
 
         App::setLocale($locale);

@@ -132,6 +132,15 @@ it('keeps the mega menu unchanged while an edit is still uncommitted', function 
     nextPageView()->assertSee('5 Lakh Personal Loan')->assertDontSee('Never saved');
 });
 
+it('writes the mega menu links with the site address each visitor used', function () {
+    menuProductWithPage();
+    $this->get('http://fynnedge.test/')->assertSee('http://fynnedge.test/loans/personal-loan/5-lakh-personal-loan');
+
+    nextPageView('http://www.fynnedge.test/')
+        ->assertSee('http://www.fynnedge.test/loans/personal-loan/5-lakh-personal-loan')
+        ->assertDontSee('http://fynnedge.test/loans/personal-loan/5-lakh-personal-loan');
+});
+
 it('lists a newly published loan product in the footer on the next page view', function () {
     LoanProduct::factory()->published()->create(['name' => 'Personal Loan', 'slug' => 'personal-loan', 'category' => LoanCategory::PersonalLoan]);
     $this->get('/')->assertSee('/loans/personal-loan');

@@ -126,6 +126,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | resources/views/components/site/nav-link.blade.php, resources/views/components/site/banner-carousel.blade.php, resources/views/components/site/header.blade.php, resources/views/components/site/testimonials.blade.php, resources/views/components/site/social-videos.blade.php | .ai/rules/site.md |
 | app/Models/SocialVideo.php,app/Support/SocialVideos/**,app/Filament/Resources/SocialVideos/**,resources/views/components/site/social-videos.blade.php | .ai/rules/social-videos-views-components-site.md |
 | app/Support/Rates/**,app/Models/LenderProductRate.php,app/Models/LenderProduct.php,app/Models/LoanProduct.php,resources/views/components/site/lender-comparison-table.blade.php,resources/views/components/site/loan-enquiry*.blade.php,app/Support/Calculators/LoanCalculatorPreset.php | .ai/rules/support-calculators.md |
+| resources/views/components/site/partials/loan-mega-menu-panel.blade.php,resources/views/components/site/header.blade.php,app/Support/Loans/LoanMegaMenu.php | .ai/rules/support-loans.md |
 | app/Support/Rates/** | .ai/rules/support-rates.md |
 | app/Filament/Resources/**/Tables/*.php | .ai/rules/tables.md |
 | tests/** | .ai/rules/tests.md |
