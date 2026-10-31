@@ -49,7 +49,12 @@
     --color-accent-soft: #e1e8f4;
     --color-pass: #1f7a4d;
     --color-pass-soft: #e1f2e7;
-    --color-warn: #b3791f;
+    /*
+     * Warning text, mostly small print on loan pages. #b3791f measured
+     * 3.2–3.7:1 (Lighthouse, 2026-10-31); this darker amber is AA: 5.4:1 on
+     * surface, 5.08:1 on bg, 4.6:1 on warn-soft.
+     */
+    --color-warn: #8f6119;
     --color-warn-soft: #f7ecd4;
     --color-line: #e2e5ec;
     --color-line-strong: #c7cdd9;

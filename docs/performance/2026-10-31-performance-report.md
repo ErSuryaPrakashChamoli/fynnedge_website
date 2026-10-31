@@ -5,10 +5,11 @@ code changes made for them, and what production still needs. Raw medians are in
 [lighthouse-2026-10-31-production-baseline.tsv](lighthouse-2026-10-31-production-baseline.tsv)
 and [lighthouse-2026-10-31-local-before-after.tsv](lighthouse-2026-10-31-local-before-after.tsv).
 
-Status: **local changes tested; deployment awaiting approval.** Nothing has been
-committed, pushed or deployed, and nothing on the live site has changed. No
-production access was available from this work (no SSH host is configured), so
-every production step below is for the server administrator.
+Status: **local changes tested; deployment awaiting approval.** The code is
+committed on `feature/oct_29_lcp_issue` (`d0ee76f`, `7579995` and the commit
+adding this report) and has not been deployed: nothing on the live site has
+changed. No production access was available from this work (no SSH host is
+configured), so every production step below is for the server administrator.
 
 ## A. Executive summary
 
@@ -47,8 +48,9 @@ Highest-impact fixes made in the code:
   as banners already had, plus image dimensions and lazy loading below the fold.
 - GA4's blocked endpoints added to the CSP, narrowly.
 - The admin now warns when a tag's own snippet duplicates a Settings field.
-- Accessibility: faint-text contrast to WCAG AA, 24 px carousel dot targets,
-  descriptive banner link text. Desktop layout shift from the scrollbar fixed.
+- Accessibility: faint and warning text to WCAG AA contrast, 24 px carousel
+  dot targets, descriptive banner link text (every measured page now scores
+  99–100 locally). Desktop layout shift from the scrollbar fixed.
 
 **Remaining risks:** the duplicate tags and `APP_DEBUG` are fixed only by the
 production steps in section F; until then the live scores barely move. The
@@ -110,7 +112,70 @@ the same pages were measured on this machine against the same database and
 uploads, once with the code as it was (a copy of the working tree before these
 changes, on :8092) and once with the changes (:8091), runs interleaved.
 
-LOCAL_RESULTS_PLACEHOLDER
+Median of 3 runs each, same Lighthouse settings as above. The "before" copy ran
+its own PHP classes, views and assets (its `app.js` is byte-identical to the
+one production serves). Both had the WebP copies that `media:responsive-images`
+makes after a deploy. Full medians:
+[lighthouse-2026-10-31-local-before.tsv](lighthouse-2026-10-31-local-before.tsv),
+[lighthouse-2026-10-31-local-after.tsv](lighthouse-2026-10-31-local-after.tsv).
+
+Read the **differences**, not the absolute values. Locally the PHP development
+server sends HTML and CSS uncompressed (520–1,050 KB of HTML instead of
+production's 47–57 KB gzipped), which makes every local mobile FCP/LCP 3–7 s.
+No third-party tag is configured on this machine either, so these figures
+show the first-party changes alone. A test suite and another project's tests
+shared the CPU during part of the runs; total blocking time tracked the
+machine's CPU benchmark from run to run, so small TBT differences are noise.
+
+| Page | Mobile perf | Mobile LCP | Mobile TBT | Desktop perf | Desktop LCP | Desktop CLS | JS | Accessibility |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Home | 68 → **72** | 4.80 → **4.58 s** | 216 → **134 ms** | 93 → **96** | 1.24 → **0.93 s** | 0.021 → 0.014 | 271 → **76 KB** | 92 → **99** |
+| Article | 75 → **83** | 4.84 → **3.31 s** | 115 → 194 ms¹ | 98 → **100** | 0.70 → 0.66 s | 0.091 → **0.014** | 707 → **512 KB**² | 97 → **100** |
+| Contact | 83 → 83 | 3.31 → 3.31 s | 211 → 190 ms | 99 → **100** | 0.93 → **0.65 s** | 0.019 → 0.014 | 707 → **512 KB**² | 97 → **100** |
+| EMI calculator | 77 → 74¹ | 4.06 → 4.07 s | 144 → 224 ms¹ | 98 → 99 | 1.06 → **0.82 s** | 0.025 → 0.020 | 271 → 272 KB | 97 → **100** |
+| Personal loan | 48 → 49 | 6.45 → 6.46 s | 566 → 527 ms | 95 → 95 | 1.18 → 1.18 s | 0.029 → **0.014** | 271 → 272 KB | 97 → **100**³ |
+| Home loan | 44 → 40¹ | 7.36 → 7.35 s | 631 → 870 ms¹ | 90 → 90 | 1.65 → 1.65 s | 0.029 → **0.014** | 271 → 272 KB | 97 → **100**³ |
+| Business loan | 51 → 55 | 5.86 → 5.86 s | 569 → 451 ms | 93 → 95 | 1.34 → 1.34 s | 0.015 → 0.014 | 271 → 272 KB | 97 → **100**³ |
+
+¹ Within run-to-run spread. For example, home loan TBT ranged 490–852 ms before and
+408–899 ms after; the calculator's worst "after" run coincided with the lowest CPU
+benchmark of the session. The loan and calculator pages render Livewire components,
+so their scripts are unchanged by this work, and no difference beyond noise was
+expected or measured there.
+² Includes the Google Maps embed in the page, which this work does not touch;
+the 195 KB drop is `livewire.js`.
+³ Measured after the warning-colour fix (single accessibility-only run); the
+3-run medians in the table were taken just before it, at 97.
+
+Other measured effects:
+
+- **Homepage on desktop downloads 755 KB fewer image bytes** (980 → 225 KB):
+  slides 2 and 3 now load after the page instead of with it.
+- **Main-thread work on non-Livewire pages fell** (contact: script boot
+  835 → 406 ms; homepage desktop: 4.5 → 3.8 s of main-thread time).
+- **Desktop CLS** dropped to 0.014 everywhere; the remaining 0.014 is a small
+  shift of the header's primary nav that predates this work.
+- **SEO:** the `link-text` failure is gone. The local score (69) is lower only
+  because this machine serves `noindex`; on production, where `link-text` was
+  the homepage's only SEO failure, it should become 100.
+- **Best Practices** is 100 locally on every page, because no third-party tags
+  run here. On production it is held at 74–75 by the tags (section F.4).
+
+### Comparison with the targets
+
+| Metric | Production before | Expected after deploy + F.1 | Target |
+| --- | ---: | --- | ---: |
+| Mobile performance | 48–71 | higher, mainly from the duplicate tags and image bytes; not measurable until deployed | 85+ |
+| Desktop performance | 80–96 | 90+ on most pages (local: 95–100) | 95+ |
+| Accessibility | 94–97 | 99–100 (measured locally) | 95+ |
+| Best Practices | 74–75 | limited by third-party cookies and the Meta gateway errors | 95+ |
+| SEO | 92–100 | 100 (homepage's only failure fixed) | 95+ |
+| Mobile LCP | 1.8–8.2 s | lower, mostly from WebP images, TTFB and fewer tags | ≤ 2.5 s |
+| CLS | 0–0.091 | ≤ 0.02 | ≤ 0.1 |
+| INP | not available (no field data) | not available | ≤ 200 ms |
+
+These are expectations, not results. The real after-figures need the deploy
+and a re-run of the same production measurement.
 
 ## C. Files changed
 
@@ -130,7 +195,8 @@ LOCAL_RESULTS_PLACEHOLDER
 | `resources/views/resources/show.blade.php`, `components/site/article-card.blade.php` | Article cover and cards: `<picture>` + WebP, width/height on the cover |
 | `app/Support/Analytics/TrackingScripts.php` | GA4 hosts in `connect-src`; `duplicates()` |
 | `app/Filament/Pages/SeoAnalytics.php` | Warning callout for duplicated tags; GA4 helper text |
-| `resources/css/app.css` | `ink-faint` at AA contrast; `scrollbar-gutter: stable`; no `@source` for compiled views |
+| `resources/css/app.css` | `ink-faint` and `warn` at AA contrast; `scrollbar-gutter: stable`; no `@source` for compiled views |
+| `tests/TestCase.php` | Resets Livewire's static per-request state before each test |
 | `tests/…` | See section D |
 | `.ai/rules/*` | The decisions above, recorded for the next change |
 
@@ -140,7 +206,25 @@ caching was not added (`docs/redis-cache.md` §4); no dependency changed.
 
 ## D. Tests
 
-TESTS_PLACEHOLDER
+| Command | Result |
+| --- | --- |
+| `php artisan test --compact` (complete suite, after the fix below) | **2,789 passed, 0 failed** (12,059 assertions, 11.5 min) |
+| First complete run | 2,786 passed, **3 failed**: the new `PageScriptsTest` "no livewire.js" cases, which passed alone. Cause: Livewire keeps "a component rendered" in a static that only `Livewire::test()` resets, so a page requested after a calculator page got `livewire.js` in the test process. PHP-FPM starts every request clean, so production was never affected. Fixed in `tests/TestCase.php` (`Livewire::flushState()` before each test) |
+| The affected tests on the committed code **without** the 404/410 work (isolated copy) | 143 passed |
+| `vendor/bin/pint` on every changed PHP file | passed |
+| `npm run build` | passed; `app.css` 116 KB (20 KB gzipped), `app.js` 25 KB, Alpine chunk 53 KB (19 KB gzipped) |
+| Headless Chromium check of `/`, `/contact`, an article, a calculator and a loan page | Standalone Alpine on the first three, Livewire's Alpine on the others, every component initialised, no console errors; mobile menu, mega menu and carousel work; a calculator slider still updates the EMI through Livewire |
+
+New tests: `PageScriptsTest`, `Media/LoanProductResponsiveImagesTest`,
+`Media/ArticleResponsiveImagesTest`, `Media/SiteLogoResponsiveImagesTest`,
+`Theme/SiteStylesheetTest` (computes the WCAG contrast of the colour tokens).
+Extended: `HomepageHeroBannerTest`, `Seo/TrackingScriptsTest`,
+`Filament/SeoAnalyticsPageTest`.
+
+Redirects, sitemap and 404 behaviour were not changed by this work; their
+existing tests (`RedirectsTest`, `SitemapTest`, `NotFoundPageTest`) pass in the
+complete run. Security headers: the CSP gained exactly three hosts in
+`connect-src`; nothing was loosened elsewhere.
 
 ## E. Production status
 

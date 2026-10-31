@@ -50,6 +50,21 @@ it('keeps faint text at AA contrast on every surface it sits on', function (stri
     'dark' => [":root[data-theme='dark'] {"],
 ]);
 
+/*
+ * text-warn is the loan pages' small print. Lighthouse failed it at 3.2–3.7:1
+ * on white and on its own warn-soft badge (2026-10-31).
+ */
+it('keeps warning text at AA contrast on the surfaces and the badge it sits on', function (string $theme) {
+    $colors = themeColors($theme);
+
+    foreach (['bg', 'surface', 'warn-soft'] as $surface) {
+        expect(contrastRatio($colors['warn'], $colors[$surface]))->toBeGreaterThanOrEqual(4.5);
+    }
+})->with([
+    'light' => ['@theme {'],
+    'dark' => [":root[data-theme='dark'] {"],
+]);
+
 it('keeps faint text lighter than muted text, so the two still read as different tiers', function () {
     $colors = themeColors('@theme {');
 
