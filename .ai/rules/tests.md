@@ -19,3 +19,6 @@ $this->get()/call() pass every URI through url() and trim('/'), so '/page/' arri
 
 ## Livewire error assertions split expected messages on ':'
 assertHasFormErrors(['field' => ['message']]) treats "a:b" as a rule with parameters, so a message containing "https://" or "(410):" never matches. Assert such messages with the closure form: assertHasFormErrors(['field' => fn (array $failedRules, array $messages): bool => in_array($message, $messages, true)]). Also: Pest array datasets are built before the app boots, so config()/route()/url() cannot appear in them — pass a path and build the URL inside the test.
+
+## TestCase flushes Livewire's static state before every test
+Livewire tracks per-request facts in statics (e.g. SupportAutoInjectedAssets::$hasRenderedAComponentThisRequest, which decides whether livewire.js is injected). Only Livewire::test() flushes them; plain $this->get() did not, so in the full suite a page requested after a calculator page got livewire.js injected (PageScriptsTest passed alone, failed in the suite, 2026-10-31). tests/TestCase.php::setUp() now calls Livewire::flushState(). Keep it: production (PHP-FPM) starts every request with fresh statics, and tests must too.
