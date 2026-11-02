@@ -4,6 +4,7 @@ namespace App\Support\Media;
 
 use GdImage;
 use Illuminate\Support\Facades\Storage;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -54,9 +55,9 @@ final class ResponsiveImage
 
     /**
      * Writes every missing copy of the upload at $path, or every copy when
-     * $force is set, and returns how many were written. An unreadable or
-     * missing upload writes nothing and never throws, because this runs
-     * inside the admin's save.
+     * $force is set, and returns how many were written. It never throws,
+     * because this runs inside the admin's save: a missing upload writes
+     * nothing, and an unreadable one, or one GD fails to scale, is reported.
      *
      * @param  list<int>  $widths
      */
@@ -83,28 +84,35 @@ final class ResponsiveImage
             return 0;
         }
 
-        $source = self::upright($source, $contents);
-        imagepalettetotruecolor($source);
-
-        $sourceWidth = imagesx($source);
         $written = 0;
 
-        foreach (self::widthsFor($sourceWidth, $widths) as $width) {
-            $variantPath = self::variantPath($path, $width);
+        // GD can still fail on an image it has read: imagescale() returned
+        // false for a banner upload on production (2026-11-02), and the
+        // TypeError that followed broke the banner's save. Any failure from
+        // here on is reported, and the copies already written are kept.
+        try {
+            $source = self::upright($source, $contents);
+            imagepalettetotruecolor($source);
 
-            if (! $force && $storage->exists($variantPath)) {
-                continue;
+            $sourceWidth = imagesx($source);
+
+            foreach (self::widthsFor($sourceWidth, $widths) as $width) {
+                $variantPath = self::variantPath($path, $width);
+
+                if (! $force && $storage->exists($variantPath)) {
+                    continue;
+                }
+
+                $resized = self::resize($source, min($width, $sourceWidth));
+
+                ob_start();
+                imagewebp($resized, null, self::QUALITY);
+                $storage->put($variantPath, (string) ob_get_clean());
+
+                $written++;
             }
-
-            $resized = imagescale($source, min($width, $sourceWidth), -1, IMG_BICUBIC);
-            imagealphablending($resized, false);
-            imagesavealpha($resized, true);
-
-            ob_start();
-            imagewebp($resized, null, self::QUALITY);
-            $storage->put($variantPath, (string) ob_get_clean());
-
-            $written++;
+        } catch (Throwable $exception) {
+            report($exception);
         }
 
         return $written;
@@ -192,6 +200,33 @@ final class ResponsiveImage
         }
 
         return $generated;
+    }
+
+    /**
+     * $source scaled to $width at its own aspect ratio, keeping transparency.
+     * The height is worked out here, at least 1px, because imagescale()'s own
+     * (-1) rounds a very wide, short image down to 0 and throws. When
+     * imagescale() returns false, imagecopyresampled() gets a turn before
+     * the copy is given up.
+     */
+    private static function resize(GdImage $source, int $width): GdImage
+    {
+        $height = max(1, intdiv(imagesy($source) * $width, imagesx($source)));
+        $resized = imagescale($source, $width, $height, IMG_BICUBIC);
+
+        if ($resized === false) {
+            $resized = imagecreatetruecolor($width, $height);
+            imagealphablending($resized, false);
+
+            if (! imagecopyresampled($resized, $source, 0, 0, 0, 0, $width, $height, imagesx($source), imagesy($source))) {
+                throw new RuntimeException("GD could not scale the image to {$width}px wide.");
+            }
+        }
+
+        imagealphablending($resized, false);
+        imagesavealpha($resized, true);
+
+        return $resized;
     }
 
     /**

@@ -80,6 +80,29 @@ it('writes nothing, and reports the failure, for an upload that is not a readabl
     Exceptions::assertReported(ErrorException::class);
 });
 
+it('scales a very wide, short image to at least 1px tall instead of failing', function () {
+    Storage::fake('public');
+    Storage::disk('public')->putFileAs('banners', UploadedFile::fake()->image('strip.png', 2000, 1), 'strip.png');
+
+    $written = ResponsiveImage::generate('banners/strip.png');
+
+    expect($written)->toBe(4);
+    expect(storedImageSize('responsive/banners/strip-480.webp'))->toBe([480, 1, 'image/webp']);
+});
+
+it('reports a copy GD fails to scale instead of throwing into the admin\'s save', function () {
+    Exceptions::fake();
+    Storage::fake('public');
+    Storage::disk('public')->putFileAs('banners', UploadedFile::fake()->image('promo.png', 1000, 500), 'promo.png');
+
+    // GD refuses a 0px width, standing in for the scale that failed on production.
+    $written = ResponsiveImage::generate('banners/promo.png', widths: [0]);
+
+    expect($written)->toBe(0);
+    expect(Storage::disk('public')->allFiles('responsive'))->toBeEmpty();
+    Exceptions::assertReported(ValueError::class);
+});
+
 it('lists only the copies that exist in the srcset, narrowest first', function () {
     Storage::fake('public');
     Storage::disk('public')->putFileAs('banners', UploadedFile::fake()->image('promo.jpg', 900, 600), 'promo.jpg');

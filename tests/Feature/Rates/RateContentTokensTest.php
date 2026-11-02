@@ -82,10 +82,20 @@ it('refuses a typed rate in promo bar copy and points to the token', function ()
         ])
         ->call('create')
         ->assertHasFormErrors(['headline'])
-        ->assertSee('Use [rate:loan-slug] (e.g. [rate:personal-loan]) so the figure always matches the published, verified rate.');
+        ->assertSee('Use [rate:loan-slug] (e.g. [rate:personal-loan]) so the figure always matches the published, verified rate.')
+        ->assertSee('For a personal loan, write: Get up to *₹50 Lakhs* *[rate:personal-loan]* — then change the rate itself under Catalog → Interest Rates.');
 
     expect(PromoBar::query()->count())->toBe(0);
 });
+
+it('rewrites a typed rate claim as the rate token, leaving fees alone', function (string $text, ?string $tokenised) {
+    expect(RateText::tokenised($text))->toBe($tokenised);
+})->with([
+    'highlighted figure' => ['Get up to *₹50 Lakhs* starting at *9.9%* p.a.', 'Get up to *₹50 Lakhs* *[rate:personal-loan]*'],
+    'Hindi, highlighted' => ['*₹50 लाख* तक पाएं, *9.99%* प्रति वर्ष से शुरू', '*₹50 लाख* तक पाएं, *[rate:personal-loan]*'],
+    'noun kept, fee kept' => ['Interest rates from 9.99% p.a. and fees from 1%', 'Interest rates [rate:personal-loan] and fees from 1%'],
+    'phrasing it cannot rewrite' => ['ब्याज दर: 8.5% (फ्लोटिंग)', null],
+]);
 
 it('resolves a [rate] token by loan type when the product has its own slug', function () {
     $product = LoanProduct::factory()->published()->create(['category' => LoanCategory::PersonalLoan, 'slug' => 'personal-loans', 'name' => 'Personal Loans']);

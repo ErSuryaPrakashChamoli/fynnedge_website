@@ -6,7 +6,9 @@ use App\Models\Achievement;
 use App\Models\Article;
 use App\Models\Banner;
 use App\Models\Lender;
+use App\Models\LenderProduct;
 use App\Models\LoanProduct;
+use App\Support\Localization\SiteLocale;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -156,6 +158,31 @@ it('tells a screen reader what a banner\'s button is about, beyond its own label
     ]);
 
     $this->get('/')->assertSee('More info<span class="sr-only">, Diwali personal loan offer</span>', false);
+});
+
+it('shows a Hindi visitor the banner\'s Hindi heading, with its rate token resolved in the image alt too', function () {
+    $product = LoanProduct::factory()->published()->create(['slug' => 'personal-loan', 'category' => LoanCategory::PersonalLoan]);
+    publishRate(LenderProduct::factory()->for($product, 'loanProduct')->create(), 10.25);
+    Banner::factory()->create([
+        'status' => PublishStatus::Published,
+        'published_at' => now()->subMinute(),
+        'image_alt' => null,
+        'heading' => 'Festive personal loans [rate:personal-loan]',
+        'heading_hi' => 'त्योहारी पर्सनल लोन [rate:personal-loan]',
+        'cta_label' => 'Apply now',
+        'cta_label_hi' => 'आवेदन करें',
+        'cta_url' => '/loans',
+    ]);
+
+    $html = $this->withUnencryptedCookie(SiteLocale::COOKIE, 'hi')
+        ->get('/')
+        ->assertSee('alt="त्योहारी पर्सनल लोन 10.25% प्रति वर्ष से शुरू"', false)
+        ->assertSee('आवेदन करें<span class="sr-only">, त्योहारी पर्सनल लोन 10.25% प्रति वर्ष से शुरू</span>', false)
+        ->assertDontSee('[rate:personal-loan]')
+        ->assertDontSee('Festive personal loans')
+        ->getContent();
+
+    expect($html)->toMatch('/<h3 class="banner-heading[^"]*">\s*त्योहारी पर्सनल लोन 10\.25% प्रति वर्ष से शुरू\s*<\/h3>/u');
 });
 
 it('offers a banner\'s WebP copies, sized to the banner box, once they exist', function () {

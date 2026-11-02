@@ -174,7 +174,8 @@ class PromoBarForm
                             ->options(PublishStatus::class)
                             ->default(PublishStatus::Draft)
                             ->required()
-                            ->live(),
+                            ->live()
+                            ->helperText('Published switches the bar on, Draft switches it off. The Active switch in the promo bar list does the same.'),
                         DateTimePicker::make('published_at')
                             ->label('Start showing from')
                             ->helperText('Leave blank to publish immediately once status is Published.')

@@ -46,6 +46,16 @@ final class RateText
         .'|ब्याज(?:\s+दर(?:ें)?)?|दर(?:ें)?|सालाना|वार्षिक)\s*(?:of|at|from|is|:|का|की|के|है)?\s*\*?\s*(?<![\d.])\d{1,2}(?:\.\d{1,2})?\s?%/iu';
 
     /**
+     * A typed rate with the words around it that the token's own phrase
+     * replaces: a lead-in ("starting at", "from", "@"), the unit ("p.a.",
+     * "प्रति वर्ष") and "onwards" / "से शुरू". Stars hugging the figure are
+     * captured so the token keeps the highlight. Nouns such as "interest" stay.
+     */
+    private const TYPED_RATE_PHRASE = '/(?:\b(?:starting\s+(?:at|from)|from|at)\s+|@\s*)?(\*?)(?<![\d.])\d{1,2}(?:\.\d{1,2})?\s?%(\*?)'
+        .'(?:\s*(?:p\.?\s?a\b\.?|p\.?\s?m\b\.?|per\s+(?:annum|month|year)|प्रति\s*(?:वर्ष|साल|माह|महीना)|सालाना|वार्षिक))?'
+        .'(?:\s*(?:onwards|से\s+शुरू|से(?!\S)))?/iu';
+
+    /**
      * Comparison and aggregator sites — never a source, and never something
      * the public copy should cite.
      */
@@ -117,7 +127,26 @@ final class RateText
     }
 
     /**
-     * A Filament field rule: refuses copy that types a rate as a number.
+     * $text with each typed rate claim swapped for a [rate:$key] token, e.g.
+     * "Get up to *₹50 Lakhs* starting at *9.99%* p.a." becomes "Get up to
+     * *₹50 Lakhs* *[rate:personal-loan]*". Null when a claim is phrased in a
+     * way this cannot rewrite, so the copy is never half converted. A
+     * percentage that is not a rate claim (a fee) is left alone.
+     */
+    public static function tokenised(string $text, string $key = 'personal-loan'): ?string
+    {
+        $tokenised = (string) preg_replace_callback(
+            self::TYPED_RATE_PHRASE,
+            fn (array $match): string => self::literalClaims($match[0]) === [] ? $match[0] : "{$match[1]}[rate:{$key}]{$match[2]}",
+            $text,
+        );
+
+        return self::literalClaims($tokenised) === [] ? $tokenised : null;
+    }
+
+    /**
+     * A Filament field rule: refuses copy that types a rate as a number, and
+     * shows the line rewritten with the token where it can.
      */
     public static function rule(): \Closure
     {
@@ -126,7 +155,10 @@ final class RateText
 
             foreach ($values as $item) {
                 if (is_string($item) && ($claims = self::literalClaims($item)) !== []) {
-                    $fail('Don\'t type a rate as a number ("'.$claims[0].'"). Use [rate:loan-slug] (e.g. [rate:personal-loan]) so the figure always matches the published, verified rate.');
+                    $suggestion = self::tokenised($item);
+
+                    $fail('Don\'t type a rate as a number ("'.$claims[0].'"). Use [rate:loan-slug] (e.g. [rate:personal-loan]) so the figure always matches the published, verified rate.'
+                        .($suggestion === null ? '' : ' For a personal loan, write: '.$suggestion.' — then change the rate itself under Catalog → Interest Rates.'));
 
                     return;
                 }

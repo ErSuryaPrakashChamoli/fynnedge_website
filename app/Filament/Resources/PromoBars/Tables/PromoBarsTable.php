@@ -14,10 +14,12 @@ use Filament\Actions\ReplicateAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class PromoBarsTable
 {
@@ -45,12 +47,19 @@ class PromoBarsTable
                     ->badge()
                     ->color(fn (PromoBarDevice $state): string => $state === PromoBarDevice::All ? 'gray' : 'info')
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('status')
-                    ->badge()
-                    ->color(fn (PublishStatus $state) => match ($state) {
-                        PublishStatus::Published => 'success',
-                        PublishStatus::Draft => 'gray',
-                    }),
+                // Switches the bar on (Published) or off (Draft) from the list.
+                // Not toggleable, so it always renders (see tables.md). Saved
+                // without the form's validation, like a history restore; the
+                // policy is checked because toggle columns skip it.
+                ToggleColumn::make('active')
+                    ->label('Active')
+                    ->getStateUsing(fn (PromoBar $record): bool => $record->status === PublishStatus::Published)
+                    ->updateStateUsing(function (PromoBar $record, mixed $state): bool {
+                        $record->update(['status' => $state ? PublishStatus::Published : PublishStatus::Draft]);
+
+                        return (bool) $state;
+                    })
+                    ->disabled(fn (PromoBar $record): bool => ! Auth::user()?->can('update', $record)),
                 TextColumn::make('expires_at')
                     ->label('Ends')
                     ->dateTime()

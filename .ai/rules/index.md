@@ -74,6 +74,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Support/Seo/**,app/Filament/Pages/Settings.php,resources/views/loans/** | .ai/rules/loans.md |
 | app/Models/**,app/Modules/**/Models/*.php,app/Models/Setting.php,app/Support/Localization/**,app/Filament/** | .ai/rules/localization-filament.md |
 | database/seeders/**,app/Support/Localization/**,app/Models/Setting.php | .ai/rules/localization-models.md |
+| app/Support/Media/ResponsiveImage.php | .ai/rules/media.md |
 | public/.htaccess,app/Http/Middleware/HandleRedirects.php,app/Models/Redirect.php | .ai/rules/middleware-models.md |
 | app/Http/Middleware/SecurityHeaders.php | .ai/rules/middleware.md |
 | app/Models/**,app/Modules/**/Models/*.php,database/migrations/**,app/Filament/** | .ai/rules/migrations-filament.md |
@@ -97,6 +98,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Filament/Pages/**, app/Filament/Pages/CibilSettings.php | .ai/rules/pages.md |
 | app/Modules/Customers/**,app/Http/Controllers/Portal/**,resources/views/portal/**,resources/views/components/⚡customer-login.blade.php | .ai/rules/portal-views-components.md |
 | app/Models/Concerns/Auditable.php,app/Http/Middleware/EnsureCustomerPortalAccess.php,app/Http/Controllers/Portal/** | .ai/rules/portal.md |
+| app/Filament/Resources/PromoBars/**,app/Support/Rates/RateText.php | .ai/rules/promo-bars-support-rates.md |
 | app/Models/PromoBar.php,app/Support/PromoBars/**,app/Filament/Resources/PromoBars/**,resources/views/components/site/promo-bar.blade.php | .ai/rules/promo-bars-views-components-site.md |
 | resources/views/components/site/promo-bar.blade.php,resources/js/app.js,app/Models/PromoBar.php,app/Filament/Resources/PromoBars/** | .ai/rules/promo-bars.md |
 | app/Http/Middleware/SecurityHeaders.php,app/Providers/Filament/AdminPanelProvider.php | .ai/rules/providers-filament.md |

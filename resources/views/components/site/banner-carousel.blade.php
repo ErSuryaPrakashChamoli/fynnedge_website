@@ -220,10 +220,13 @@
                     };
                     $contentStyle = $banner->contentStyle();
                     $srcset = $banner->imageSrcset();
+                    // In the visitor's language (HasTranslations), with any [rate:…] token
+                    // resolved: the image's alt and the button's context read it too.
+                    $heading = $banner->heading ? \App\Support\Rates\RateText::render($banner->heading) : null;
                     // Admins label the button "More info" or "Apply now", which says
                     // nothing out of context (a screen reader's links list, Lighthouse's
                     // link-text audit). The slide's own description is read after it.
-                    $ctaContext = $banner->image_alt ?: ($banner->heading ? \App\Support\Rates\RateText::render($banner->heading) : null);
+                    $ctaContext = $banner->image_alt ?: $heading;
                 @endphp
                 <div class="relative h-full w-full shrink-0 basis-full" @if ($isClone) aria-hidden="true" @endif>
                     <picture class="block h-full w-full">
@@ -232,7 +235,7 @@
                         @endif
                         <img
                             src="{{ $banner->imageUrl() }}"
-                            alt="{{ $isClone ? '' : ($banner->image_alt ?: $banner->heading) }}"
+                            alt="{{ $isClone ? '' : $ctaContext }}"
                             @if ($index === 0) fetchpriority="high" @else loading="lazy" @endif
                             @class(['h-full w-full object-cover', 'hidden' => $index !== 0])
                         >
@@ -259,9 +262,9 @@
                         ])
                         @if ($contentStyle !== '') style="{{ $contentStyle }}" @endif
                     >
-                        @if ($banner->heading)
+                        @if ($heading)
                             <h3 class="banner-heading line-clamp-2 max-w-2xl font-display text-xl font-semibold text-white sm:line-clamp-none sm:text-3xl">
-                                {{ \App\Support\Rates\RateText::render($banner->heading) }}
+                                {{ $heading }}
                             </h3>
                         @endif
                         @if ($banner->subtitle)
