@@ -9,7 +9,6 @@ use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\PromoBar;
 use App\Support\Faqs\FaqPlacements;
 use App\Support\PromoBars\PromoBars;
-use App\Support\Rates\RateText;
 use Closure;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -43,18 +42,19 @@ class PromoBarForm
                             ->maxLength(255)
                             ->helperText('Only admins see this, e.g. "Diwali personal loan offer".')
                             ->columnSpanFull(),
+                        // Typed rates are allowed here, unlike banners and loan
+                        // pages: the owner chose to type promo rates by hand
+                        // (2026-11-02), so RateText::rule() is not applied.
                         TextInput::make('headline')
                             ->required()
                             ->maxLength(90)
-                            ->rule(fn () => RateText::rule())
-                            ->helperText('Wrap words in *asterisks* to highlight them. For a rate, write [rate:loan-slug] instead of a number, e.g. Get up to *₹50 Lakhs* *[rate:personal-loan]* — it always shows the current published, verified rate.')
+                            ->helperText('Wrap words in *asterisks* to highlight them. You can type a rate yourself (e.g. starting from *8.69%*), but then you must change it here whenever rates change. Or write [rate:personal-loan] and it always shows the current published, verified rate from Interest Rates.')
                             ->columnSpanFull(),
                         TagsInput::make('rotating_messages')
                             ->label('Rotating messages')
                             ->placeholder('Type a message and press Enter')
                             ->nestedRecursiveRules(['max:90'])
-                            ->rule(fn () => RateText::rule())
-                            ->helperText('Optional. Extra lines that take turns with the headline every few seconds (paused while the visitor hovers). *Asterisks* highlight here too, and rates use [rate:loan-slug].')
+                            ->helperText('Optional. Extra lines that take turns with the headline every few seconds (paused while the visitor hovers). *Asterisks* highlight here too, and a rate can be typed or written as [rate:loan-slug].')
                             ->columnSpanFull(),
                         TextInput::make('eyebrow')
                             ->label('Badge')
@@ -189,14 +189,12 @@ class PromoBarForm
                     TextInput::make('headline_hi')
                         ->label('Headline (Hindi)')
                         ->maxLength(135)
-                        ->rule(fn () => RateText::rule())
-                        ->helperText('*Asterisks* highlight words and rates use [rate:loan-slug], as in the English headline.')
+                        ->helperText('*Asterisks* highlight words. Type the rate as in the English headline (and keep the two the same), or use [rate:loan-slug].')
                         ->columnSpanFull(),
                     TagsInput::make('rotating_messages_hi')
                         ->label('Rotating messages (Hindi)')
                         ->placeholder('Type a message and press Enter')
                         ->nestedRecursiveRules(['max:90'])
-                        ->rule(fn () => RateText::rule())
                         ->columnSpanFull(),
                     TextInput::make('eyebrow_hi')
                         ->label('Badge (Hindi)')

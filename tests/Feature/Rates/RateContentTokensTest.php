@@ -2,7 +2,9 @@
 
 use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
+use App\Filament\Resources\Banners\Pages\CreateBanner;
 use App\Filament\Resources\PromoBars\Pages\CreatePromoBar;
+use App\Models\Banner;
 use App\Models\Faq;
 use App\Models\LenderProduct;
 use App\Models\LoanLandingPage;
@@ -11,6 +13,8 @@ use App\Models\PromoBar;
 use App\Models\User;
 use App\Support\PromoBars\PromoBars;
 use App\Support\Rates\RateText;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
 function tokenProduct(): LoanProduct
@@ -68,24 +72,42 @@ it('gives the FAQ accordion and its FAQPage schema the same resolved rate', func
     expect(substr_count($html, 'Rates start from 10.25% p.a., depending on your profile.'))->toBe(2);
 });
 
-it('refuses a typed rate in promo bar copy and points to the token', function () {
+it('saves a rate typed by hand in promo bar copy, which the owner chose to allow there', function () {
     $this->actingAs(User::factory()->create(['is_admin' => true]));
 
     Livewire::test(CreatePromoBar::class)
         ->fillForm([
             'name' => 'Typed rate',
-            'headline' => 'Get up to *₹50 Lakhs* starting at *9.99%* p.a.',
+            'headline' => 'Get Personal loan up to *₹70 Lakhs* starting from *8.69%*',
+            'rotating_messages' => ['Personal loans @ 8.69% p.a.'],
+            'headline_hi' => '*₹70 लाख* तक का पर्सनल लोन, *8.69%* प्रति वर्ष से शुरू',
             'cta_label' => 'Apply now',
             'cta_url' => '/eligibility',
             'placements' => [PromoBars::EVERY_PAGE],
             'status' => PublishStatus::Published->value,
         ])
         ->call('create')
-        ->assertHasFormErrors(['headline'])
+        ->assertHasNoFormErrors();
+
+    expect(PromoBar::query()->sole()->headline)->toBe('Get Personal loan up to *₹70 Lakhs* starting from *8.69%*');
+});
+
+it('refuses a typed rate in banner copy and shows the line rewritten with the token', function () {
+    Storage::fake('public');
+    $this->actingAs(User::factory()->create(['is_admin' => true]));
+
+    Livewire::test(CreateBanner::class)
+        ->fillForm([
+            'image_path' => UploadedFile::fake()->image('promo.jpg'),
+            'heading' => 'Get up to *₹50 Lakhs* starting at *9.99%* p.a.',
+            'status' => PublishStatus::Draft->value,
+        ])
+        ->call('create')
+        ->assertHasFormErrors(['heading'])
         ->assertSee('Use [rate:loan-slug] (e.g. [rate:personal-loan]) so the figure always matches the published, verified rate.')
         ->assertSee('For a personal loan, write: Get up to *₹50 Lakhs* *[rate:personal-loan]* — then change the rate itself under Catalog → Interest Rates.');
 
-    expect(PromoBar::query()->count())->toBe(0);
+    expect(Banner::query()->count())->toBe(0);
 });
 
 it('rewrites a typed rate claim as the rate token, leaving fees alone', function (string $text, ?string $tokenised) {
