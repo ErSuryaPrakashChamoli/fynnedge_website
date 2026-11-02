@@ -21,11 +21,14 @@
             :description="$landingPage->excerpt ?: $loanProduct->summary"
         >
             <x-slot:breadcrumbs>
-                <x-ui.breadcrumbs :trail="[
-                    __('Loans') => route('loans.index'),
-                    $loanProduct->name => route('loans.show', $loanProduct),
-                    $landingPage->title => null,
-                ]" />
+                <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+                    <x-ui.breadcrumbs :trail="[
+                        __('Loans') => route('loans.index'),
+                        $loanProduct->name => route('loans.show', $loanProduct),
+                        $landingPage->title => null,
+                    ]" />
+                    <x-site.updated-at :at="$landingPage->updated_at" />
+                </div>
             </x-slot:breadcrumbs>
 
             <x-ui.button tag="a" :href="route('loans.apply', $loanProduct)">

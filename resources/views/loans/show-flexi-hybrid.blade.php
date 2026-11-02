@@ -21,7 +21,10 @@
 
         {{-- This page keeps its own bespoke hero, which now carries the enquiry
              form in its right column — so there is no separate enquiry band here. --}}
-        <x-ui.breadcrumbs :trail="[__('Loans') => route('loans.index'), $loanProduct->name => null]" />
+        <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+            <x-ui.breadcrumbs :trail="[__('Loans') => route('loans.index'), $loanProduct->name => null]" />
+            <x-site.updated-at :at="$loanProduct->updated_at" />
+        </div>
 
         @if ($loanProduct->summary || $loanProduct->body)
             <div class="mt-8" data-reveal="fade">

@@ -94,6 +94,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Enums/FaqPlacement.php,app/Support/Faqs/**,app/Filament/Resources/PageFaqs/**,resources/views/components/site/page-faqs.blade.php | .ai/rules/page-faqs-views-components-site.md |
 | app/Models/PageSeo.php,app/Support/Seo/PageSeoOverrides.php,app/Filament/Resources/PageSeos/**,resources/views/components/layouts/app.blade.php | .ai/rules/page-seos-views-components-layouts.md |
 | app/Support/Media/ResponsiveImage.php,app/Filament/Pages/Settings.php,app/Http/Controllers/AboutController.php | .ai/rules/pages-http-controllers.md |
+| resources/views/components/site/updated-at.blade.php,resources/views/loans/**,resources/views/pages/show.blade.php,resources/views/resources/show.blade.php | .ai/rules/pages-views-resources.md |
 | app/Support/Enquiries/QuickEnquiryPageContent.php,app/Filament/Pages/QuickEnquiryPageSettings.php,resources/views/quick-enquiry.blade.php | .ai/rules/pages-views.md |
 | app/Filament/Pages/**, app/Filament/Pages/CibilSettings.php | .ai/rules/pages.md |
 | app/Modules/Customers/**,app/Http/Controllers/Portal/**,resources/views/portal/**,resources/views/components/⚡customer-login.blade.php | .ai/rules/portal-views-components.md |

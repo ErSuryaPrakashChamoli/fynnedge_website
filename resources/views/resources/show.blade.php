@@ -1,6 +1,9 @@
 <x-layouts.app :title="$article->seoTitle()" :description="$article->seoDescription()" :canonical="$article->seoCanonicalUrl()" :og-image="$article->seoOgImageUrl() ?? $article->imageUrl()" :social="$article->seoSocial()" :robots="$article->seoRobots()" :structured-data="$article->seoStructuredData()" :page-type="$article->seoPageType()" :schema-template="$article->seoSchemaTemplate()" og-type="article">
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
-        <x-ui.breadcrumbs :trail="[__('Resources') => route('resources.index'), $article->title => null]" />
+        <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+            <x-ui.breadcrumbs :trail="[__('Resources') => route('resources.index'), $article->title => null]" />
+            <x-site.updated-at :at="$article->updated_at" />
+        </div>
 
         <p class="mt-5 font-mono text-xs text-ink-faint">{{ $article->publishedOn()->translatedFormat('d M Y') }}</p>
         <h1 class="mt-3 text-balance font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">

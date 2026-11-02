@@ -25,7 +25,10 @@
 
         <x-site.loan-enquiry :loan-product="$loanProduct" :eyebrow="$loanProduct->marketing_headline">
             <x-slot:breadcrumbs>
-                <x-ui.breadcrumbs :trail="[__('Loans') => route('loans.index'), $loanProduct->name => null]" />
+                <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+                    <x-ui.breadcrumbs :trail="[__('Loans') => route('loans.index'), $loanProduct->name => null]" />
+                    <x-site.updated-at :at="$loanProduct->updated_at" />
+                </div>
             </x-slot:breadcrumbs>
 
             <x-ui.button tag="a" :href="route('loans.apply', $loanProduct)">
