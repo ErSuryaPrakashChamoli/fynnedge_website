@@ -21,14 +21,11 @@
             :description="$landingPage->excerpt ?: $loanProduct->summary"
         >
             <x-slot:breadcrumbs>
-                <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-                    <x-ui.breadcrumbs :trail="[
-                        __('Loans') => route('loans.index'),
-                        $loanProduct->name => route('loans.show', $loanProduct),
-                        $landingPage->title => null,
-                    ]" />
-                    <x-site.updated-at :at="$landingPage->updated_at" />
-                </div>
+                <x-ui.breadcrumbs :trail="[
+                    __('Loans') => route('loans.index'),
+                    $loanProduct->name => route('loans.show', $loanProduct),
+                    $landingPage->title => null,
+                ]" />
             </x-slot:breadcrumbs>
 
             <x-ui.button tag="a" :href="route('loans.apply', $loanProduct)">
@@ -93,6 +90,9 @@
 
         <x-site.faq-accordion :faqs="$faqs" data-ai-context="Frequently Asked Questions" />
         <x-site.faq-json-ld :faqs="$faqs" />
+
+        {{-- Last in the page's own content, under the FAQs: when this content last changed. --}}
+        <x-site.updated-at :at="$landingPage->updated_at" class="mt-12" />
     </article>
     </div>
 </x-layouts.app>
