@@ -8,6 +8,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Models/Achievement.php,app/Filament/Resources/Achievements/**,resources/views/home.blade.php | .ai/rules/achievements-views.md |
 | app/Modules/Customers/Services/**,app/Http/Controllers/Portal/**,resources/views/components/⚡credit-score-check.blade.php,app/Modules/CreditScore/Actions/SubmitCreditScoreCheck.php | .ai/rules/actions.md |
 | app/Support/Privacy/**,app/Support/Analytics/**,resources/views/components/site/cookie-consent.blade.php | .ai/rules/analytics-views-components-site.md |
+| app/Support/Analytics/** | .ai/rules/analytics.md |
 | routes/external.php,config/auth.php,app/Support/ApiClients/**,app/Models/ApiClient.php,app/Filament/Resources/ApiClients/** | .ai/rules/api-clients.md |
 | app/Filament/**/FileUpload*,config/filesystems.php, app/Filament/** | .ai/rules/app-filament.md |
 | app/Http/Controllers/** | .ai/rules/app-http-controllers.md |
@@ -129,6 +130,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Filament/Resources/Customers/**,app/Modules/Customers/Services/CustomersCsv.php,app/Modules/Customers/Services/CustomerLocation.php,app/Filament/Schemas/IndiaDateRangeFilter.php | .ai/rules/services-filament-schemas.md |
 | resources/views/components/site/header.blade.php,resources/views/components/site/language-switch.blade.php,resources/css/app.css | .ai/rules/site-css.md |
 | resources/views/components/site/language-switch.blade.php,routes/web.php,app/Http/Controllers/LocaleController.php | .ai/rules/site-http-controllers.md |
+| resources/views/components/site/location-map.blade.php,resources/js/app.js | .ai/rules/site-js.md |
 | app/Models/PromoBar.php,app/Filament/Resources/PromoBars/**,app/Filament/Resources/Banners/**,app/Filament/Resources/LenderProducts/**,resources/views/loans/**,resources/views/components/site/faq-*.blade.php,database/seeders/LoanLandingPageSeeder.php | .ai/rules/site-seeders.md |
 | app/Models/MarketingSection.php,app/Models/NavigationLink.php,resources/views/home.blade.php,resources/views/components/site/footer.blade.php,resources/views/components/site/flexi-hybrid-ticker.blade.php | .ai/rules/site-views-components-site.md |
 | app/Http/Controllers/QuickEnquiryPageController.php,app/Modules/Enquiries/Concerns/ValidatesLoanEnquiries.php,resources/views/components/site/loan-enquiry-form.blade.php,resources/views/quick-enquiry.blade.php | .ai/rules/site-views.md |
@@ -141,6 +143,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | tests/** | .ai/rules/tests.md |
 | resources/css/**,resources/views/**,app/Support/Theme/**,app/Filament/Pages/Settings.php | .ai/rules/theme-filament-pages.md |
 | app/Models/Banner.php,resources/views/components/site/banner-carousel.blade.php,app/Support/Theme/SiteThemeStyles.php | .ai/rules/theme.md |
+| app/Models/Concerns/HasResponsiveImage.php,app/Models/Lender.php,resources/views/components/ui/lender-logo.blade.php,app/Console/Commands/GenerateResponsiveImages.php | .ai/rules/ui-console-commands.md |
 | resources/views/components/ui/stepper.blade.php,resources/views/components/⚡credit-score-check.blade.php | .ai/rules/ui-views-components.md |
 | app/Support/Options/**,resources/views/components/ui/searchable-select.blade.php | .ai/rules/ui.md |
 | app/Modules/Customers/Actions/MatchCustomerForBureauRequest.php,app/Http/Requests/Api/V1/StoreExternalCibilCheckRequest.php,app/Http/Controllers/Api/V1/CibilController.php | .ai/rules/v1.md |

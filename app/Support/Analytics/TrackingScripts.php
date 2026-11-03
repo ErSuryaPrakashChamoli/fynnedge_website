@@ -34,6 +34,11 @@ use App\Support\Privacy\CookieConsent;
  * The custom_* script bodies are the deliberate exception to rule 1: they are
  * raw HTML written by a super admin and are echoed unescaped (escaping them
  * would make every tracking tag inert). See App\Filament\Pages\SeoAnalytics.
+ *
+ * Every generated tag sets up its queue (dataLayer, gtag(), fbq()...) at once
+ * but downloads its script only through tagLoader(): on the visitor's first
+ * scroll, tap, key or pointer move, or 4s after the page has loaded. Events
+ * pushed before then wait in the queue. The custom_* markup is not deferred.
  */
 class TrackingScripts
 {
@@ -127,14 +132,19 @@ class TrackingScripts
      */
     public static function head(): string
     {
-        return self::join([
-            self::verificationMetas(),
-            self::customStyles(),
+        $tags = self::join([
             self::analyticsAllowed() ? self::tagManagerHead() : '',
             self::analyticsAllowed() ? self::googleAnalytics() : '',
             self::analyticsAllowed() ? self::clarity() : '',
             self::marketingAllowed() ? self::metaPixel() : '',
             self::marketingAllowed() ? self::linkedInInsight() : '',
+        ]);
+
+        return self::join([
+            self::verificationMetas(),
+            self::customStyles(),
+            $tags === '' ? '' : self::tagLoader(),
+            $tags,
             self::marketingAllowed() ? self::customScripts('custom_head_scripts') : '',
         ]);
     }
@@ -353,6 +363,41 @@ class TrackingScripts
         ));
     }
 
+    /**
+     * Defines window.fynnedgeLoadTag(load), which holds `load` (a tag's script
+     * download) until the visitor first scrolls the page, taps, presses a key
+     * or moves the pointer, or 4s after the page has loaded. GTM, GA4 and the
+     * Meta Pixel blocked a phone's main thread for 1.0–2.2s on every page and
+     * downloaded ~570KB ahead of the first image (Lighthouse mobile,
+     * 2026-11-03). The business accepted the cost: a visitor who leaves within
+     * those 4s without touching the page is not counted.
+     *
+     * Scroll is heard on window only, without capture: an element's scroll
+     * does not bubble there, so the social videos row scrolling itself never
+     * counts as the visitor's.
+     */
+    private static function tagLoader(): string
+    {
+        return <<<'HTML'
+        <script>
+            (function (w) {
+                if (w.fynnedgeLoadTag) { return; }
+                var queue = [], released = false,
+                    events = ['scroll', 'pointerdown', 'pointermove', 'keydown', 'touchstart'];
+                function release() {
+                    if (released) { return; }
+                    released = true;
+                    events.forEach(function (e) { w.removeEventListener(e, release); });
+                    while (queue.length) { queue.shift()(); }
+                }
+                w.fynnedgeLoadTag = function (load) { released ? load() : queue.push(load); };
+                events.forEach(function (e) { w.addEventListener(e, release, { passive: true }); });
+                w.addEventListener('load', function () { setTimeout(release, 4000); });
+            })(window);
+        </script>
+        HTML;
+    }
+
     private static function googleAnalytics(): string
     {
         $id = self::googleAnalyticsMeasurementId();
@@ -378,10 +423,12 @@ class TrackingScripts
             (function (w, d, id) {
                 if (w.fynnedgeGtagLoaded) { return; }
                 w.fynnedgeGtagLoaded = true;
-                var s = d.createElement('script');
-                s.async = true;
-                s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
-                d.head.appendChild(s);
+                w.fynnedgeLoadTag(function () {
+                    var s = d.createElement('script');
+                    s.async = true;
+                    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
+                    d.head.appendChild(s);
+                });
                 w.dataLayer = w.dataLayer || [];
                 w.gtag = function () { w.dataLayer.push(arguments); };
                 w.gtag('js', new Date());
@@ -406,12 +453,14 @@ class TrackingScripts
                 w.fynnedgeGtmLoaded = true;
                 w[l] = w[l] || [];
                 w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-                var f = d.getElementsByTagName(s)[0],
-                    j = d.createElement(s),
-                    dl = l != 'dataLayer' ? '&l=' + l : '';
-                j.async = true;
-                j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-                f.parentNode.insertBefore(j, f);
+                w.fynnedgeLoadTag(function () {
+                    var f = d.getElementsByTagName(s)[0],
+                        j = d.createElement(s),
+                        dl = l != 'dataLayer' ? '&l=' + l : '';
+                    j.async = true;
+                    j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+                    f.parentNode.insertBefore(j, f);
+                });
             })(window, document, 'script', 'dataLayer', '{$id}');
         </script>
         HTML;
@@ -443,11 +492,13 @@ class TrackingScripts
                 if (c.fynnedgeClarityLoaded) { return; }
                 c.fynnedgeClarityLoaded = true;
                 c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); };
-                var t = l.createElement(r);
-                t.async = 1;
-                t.src = 'https://www.clarity.ms/tag/' + i;
-                var y = l.getElementsByTagName(r)[0];
-                y.parentNode.insertBefore(t, y);
+                c.fynnedgeLoadTag(function () {
+                    var t = l.createElement(r);
+                    t.async = 1;
+                    t.src = 'https://www.clarity.ms/tag/' + i;
+                    var y = l.getElementsByTagName(r)[0];
+                    y.parentNode.insertBefore(t, y);
+                });
             })(window, document, 'clarity', 'script', '{$id}');
         </script>
         HTML;
@@ -474,11 +525,13 @@ class TrackingScripts
                 n.loaded = true;
                 n.version = '2.0';
                 n.queue = [];
-                var t = b.createElement(e);
-                t.async = true;
-                t.src = v;
-                var s = b.getElementsByTagName(e)[0];
-                s.parentNode.insertBefore(t, s);
+                f.fynnedgeLoadTag(function () {
+                    var t = b.createElement(e);
+                    t.async = true;
+                    t.src = v;
+                    var s = b.getElementsByTagName(e)[0];
+                    s.parentNode.insertBefore(t, s);
+                });
                 f.fbq('init', '{$id}');
                 f.fbq('track', 'PageView');
             })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
@@ -513,10 +566,12 @@ class TrackingScripts
                 w.fynnedgeLinkedInLoaded = true;
                 w._linkedin_data_partner_ids = w._linkedin_data_partner_ids || [];
                 w._linkedin_data_partner_ids.push('{$id}');
-                var s = d.createElement('script');
-                s.async = true;
-                s.src = 'https://snap.licdn.com/li.lms-analytics/insight.min.js';
-                d.getElementsByTagName('script')[0].parentNode.appendChild(s);
+                w.fynnedgeLoadTag(function () {
+                    var s = d.createElement('script');
+                    s.async = true;
+                    s.src = 'https://snap.licdn.com/li.lms-analytics/insight.min.js';
+                    d.getElementsByTagName('script')[0].parentNode.appendChild(s);
+                });
             })(window, document);
         </script>
         HTML;

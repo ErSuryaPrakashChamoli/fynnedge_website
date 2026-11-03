@@ -44,6 +44,16 @@ final class ResponsiveImage
      */
     public const LOGO_WIDTHS = [64, 128];
 
+    /**
+     * The widths for lender logos: a 32–44px disc on loan pages and up to
+     * 152px wide in the homepage marquee, at 1x to 3x. Loan pages served the
+     * uploads, PNGs of up to 80KB each: 491KB of logos on /loans/home-loan
+     * (Lighthouse mobile, 2026-11-03).
+     *
+     * @var list<int>
+     */
+    public const LENDER_LOGO_WIDTHS = [128, 320];
+
     public const QUALITY = 80;
 
     public const DIRECTORY = 'responsive';

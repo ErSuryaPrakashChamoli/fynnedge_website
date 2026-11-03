@@ -6,9 +6,11 @@ use App\Enums\LenderStatus;
 use App\Enums\LenderType;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasPublicId;
+use App\Models\Concerns\HasResponsiveImage;
 use App\Models\Concerns\HasTranslations;
 use App\Modules\Eligibility\Models\EmployerCategory;
 use App\Modules\Eligibility\Models\EmployerRating;
+use App\Support\Media\ResponsiveImage;
 use App\Support\Rates\RateBook;
 use Database\Factories\LenderFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -22,7 +24,7 @@ use Illuminate\Support\Facades\Storage;
 class Lender extends Model
 {
     /** @use HasFactory<LenderFactory> */
-    use Auditable, HasFactory, HasPublicId, HasTranslations, SoftDeletes;
+    use Auditable, HasFactory, HasPublicId, HasResponsiveImage, HasTranslations, SoftDeletes;
 
     /**
      * A lender's status (and soft delete) decides whether its rates may show,
@@ -47,6 +49,22 @@ class Lender extends Model
     public function logoUrl(): ?string
     {
         return $this->logo_path ? Storage::disk('public')->url($this->logo_path) : null;
+    }
+
+    /**
+     * The logo is this model's responsive image: imageSrcset() lists its WebP copies.
+     */
+    public function responsiveImageColumn(): string
+    {
+        return 'logo_path';
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function responsiveImageWidths(): array
+    {
+        return ResponsiveImage::LENDER_LOGO_WIDTHS;
     }
 
     public function lenderProducts(): HasMany

@@ -106,7 +106,12 @@
                                 @foreach ($lenders as $lender)
                                     <div class="flex h-14 w-36 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-line bg-white px-3 py-2 sm:h-16 sm:w-44" title="{{ $lender->name }}">
                                         @if ($lender->logoUrl())
-                                            <img src="{{ $lender->logoUrl() }}" alt="{{ $lender->name }}" loading="lazy" class="h-full w-full object-contain">
+                                            <picture class="contents">
+                                                @if ($logoSrcset = $lender->imageSrcset())
+                                                    <source type="image/webp" srcset="{{ $logoSrcset }}" sizes="(min-width: 640px) 152px, 120px">
+                                                @endif
+                                                <img src="{{ $lender->logoUrl() }}" alt="{{ $lender->name }}" loading="lazy" class="h-full w-full object-contain">
+                                            </picture>
                                         @else
                                             <span class="line-clamp-2 text-center font-display text-sm font-semibold leading-tight text-ink-muted">{{ $lender->name }}</span>
                                         @endif
@@ -258,6 +263,13 @@
                 sync with each other — the score rises exactly as the needle rises, and
                 falls exactly as it falls. Using two independent CSS/JS animations for
                 these (one for rotation, one for a number tween) would not guarantee that.
+
+                The loop runs only while the card is on screen, and writes the needle and
+                the number straight to the DOM rather than through Alpine state. Running
+                for the whole visit through x-text/:style, it kept a phone's main thread
+                busy on every frame even with the card scrolled out of sight: ~1.9s of
+                the homepage's main-thread work in Lighthouse mobile (2026-11-03).
+                Until it runs (reduced motion, or not yet scrolled to) the gauge shows 760.
             --}}
             <x-ui.card
                 x-data="{
@@ -265,8 +277,6 @@
                     max: 900,
                     angleMin: -80,
                     angleMax: 80,
-                    angle: -80,
-                    score: 300,
                     frame: null,
                     tick(timestamp) {
                         // A sawtooth, not a back-and-forth oscillation: score
@@ -279,19 +289,19 @@
                         const cyclePosition = timestamp % period;
                         const linearProgress = Math.min(cyclePosition / riseDuration, 1);
                         const progress = 1 - ((1 - linearProgress) ** 2);
-                        this.angle = this.angleMin + (progress * (this.angleMax - this.angleMin));
-                        this.score = Math.round(this.min + (progress * (this.max - this.min)));
+                        this.$refs.needle.style.transform = `rotate(${this.angleMin + (progress * (this.angleMax - this.angleMin))}deg)`;
+                        this.$refs.score.textContent = Math.round(this.min + (progress * (this.max - this.min)));
                         this.frame = requestAnimationFrame((t) => this.tick(t));
                     },
                     start() {
                         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                            this.angle = 20;
-                            this.score = 760;
-
                             return;
                         }
 
-                        this.frame = requestAnimationFrame((t) => this.tick(t));
+                        new IntersectionObserver(([entry]) => {
+                            cancelAnimationFrame(this.frame);
+                            this.frame = entry.isIntersecting ? requestAnimationFrame((t) => this.tick(t)) : null;
+                        }).observe(this.$el);
                     },
                 }"
                 x-init="start()"
@@ -313,14 +323,14 @@
                     <text x="20" y="118" text-anchor="middle" class="font-mono" style="fill: var(--color-ink-faint); font-size: 9px;">300</text>
                     <text x="180" y="118" text-anchor="middle" class="font-mono" style="fill: var(--color-ink-faint); font-size: 9px;">900</text>
 
-                    <g :style="`transform: rotate(${angle}deg); transform-box: view-box; transform-origin: 100px 100px;`">
+                    <g x-ref="needle" style="transform: rotate(20deg); transform-box: view-box; transform-origin: 100px 100px;">
                         <polygon points="96,100 100,26 104,100" style="fill: var(--color-ink)" />
                         <polygon points="97,100 100,110 103,100" style="fill: var(--color-ink-faint)" />
                     </g>
                     <circle cx="100" cy="100" r="8.5" style="fill: var(--color-accent)" />
                     <circle cx="100" cy="100" r="3.5" style="fill: var(--color-surface)" />
                 </svg>
-                <p class="-mt-1 font-display text-3xl font-semibold text-ink" x-text="score">760</p>
+                <p class="-mt-1 font-display text-3xl font-semibold text-ink" x-ref="score">760</p>
                 <p class="mt-1 font-mono text-[0.65rem] uppercase tracking-wider text-ink-faint">{{ __('Score — check yours free') }}</p>
                 <p class="mt-3 whitespace-nowrap font-display text-[0.72rem] font-semibold tracking-tight text-accent">{{ __('Know Your Credit. Unlock Your Possibilities.') }}</p>
             </x-ui.card>

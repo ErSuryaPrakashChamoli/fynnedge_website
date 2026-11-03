@@ -9,10 +9,16 @@
     The admin-set Google Maps embed (Settings → Contact channels), used by the
     contact page and the footer's office map card. Size and frame it from the
     call site: the iframe fills whatever height the wrapper is given.
+
+    The embed is ~460KB over 16 requests, so app.js (initDeferredFrames) copies
+    data-src into src only once the map is within 300px of the screen.
+    loading="lazy" alone did not hold it back: Chrome starts a lazy iframe
+    1,250–2,500px early, so on a phone the footer map loaded with every short
+    page (Lighthouse mobile, articles and /contact, 2026-11-03).
 --}}
 <div {{ $attributes->class('relative overflow-hidden') }}>
     <iframe
-        src="{{ $src }}"
+        data-src="{{ $src }}"
         class="block h-full w-full"
         style="border: 0"
         allowfullscreen

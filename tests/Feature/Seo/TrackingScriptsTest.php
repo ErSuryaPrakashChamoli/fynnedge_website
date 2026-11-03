@@ -151,3 +151,46 @@ it('leaves the content security policy untouched while every tag is disabled', f
         ->toContain("script-src 'self' 'unsafe-eval' 'unsafe-inline';")
         ->not->toContain('googletagmanager');
 });
+
+/*
+ * The tags blocked a phone's main thread for 1.0–2.2s on every page, so each
+ * one sets up its queue at once but downloads its script only once the visitor
+ * first interacts, or 4s after the page has loaded (TrackingScripts::tagLoader()).
+ */
+it('holds back each tag\'s script download until the visitor interacts or 4s after load', function (string $key, string $value, string $script) {
+    Setting::set('google_analytics_enabled', true);
+    Setting::set('google_tag_manager_enabled', true);
+    Setting::set($key, $value);
+
+    $html = trackedHomepageHtml();
+
+    expect(substr_count($html, 'w.fynnedgeLoadTag = function'))->toBe(1)
+        ->and($html)->toContain("events = ['scroll', 'pointerdown', 'pointermove', 'keydown', 'touchstart']")
+        ->and($html)->toContain('setTimeout(release, 4000)')
+        ->and($html)->toMatch('#fynnedgeLoadTag\(function \(\) \{[^}]*'.preg_quote($script, '#').'#')
+        ->and(strpos($html, 'w.fynnedgeLoadTag = function'))->toBeLessThan(strpos($html, $script));
+})->with([
+    'Google Tag Manager' => ['google_tag_manager_container_id', 'GTM-ABC1234', 'googletagmanager.com/gtm.js'],
+    'Google Analytics' => ['google_analytics_measurement_id', 'G-ABCD123456', 'googletagmanager.com/gtag/js'],
+    'Microsoft Clarity' => ['microsoft_clarity_project_id', 'abcd12345', 'clarity.ms/tag/'],
+    // The pixel's snippet passes fbevents.js in as `v`.
+    'Meta Pixel' => ['meta_pixel_id', '123456789012345', 't.src = v;'],
+    'LinkedIn Insight Tag' => ['linkedin_partner_id', '1234567', 'insight.min.js'],
+]);
+
+it('queues the Meta Pixel page view at once, ahead of its deferred script', function () {
+    Setting::set('meta_pixel_id', '123456789012345');
+
+    $html = trackedHomepageHtml();
+
+    expect($html)->toMatch("#f\.fynnedgeLoadTag\(function \(\) \{[^}]*\}\);\s*f\.fbq\('init', '123456789012345'\);\s*f\.fbq\('track', 'PageView'\);#");
+});
+
+it('renders no tag loader when only admin-pasted custom scripts are configured, which load as written', function () {
+    Setting::set('custom_head_scripts', '<script src="https://analytics.ahrefs.com/analytics.js" async></script>');
+
+    $html = trackedHomepageHtml();
+
+    expect($html)->toContain('<script src="https://analytics.ahrefs.com/analytics.js" async></script>')
+        ->not->toContain('fynnedgeLoadTag');
+});

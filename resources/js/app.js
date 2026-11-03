@@ -416,6 +416,37 @@ if (document.readyState === 'loading') {
 }
 
 /**
+ * Gives an iframe its `data-src` once it is within 300px of the screen. Used
+ * by the office map (x-site.location-map): Chrome's own loading="lazy" starts
+ * an iframe 1,250–2,500px early, which on a phone meant the ~460KB Google
+ * Maps embed in the footer loaded with every short page.
+ */
+function initDeferredFrames() {
+    const frames = document.querySelectorAll('iframe[data-src]');
+
+    if (frames.length === 0) {
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                observer.unobserve(entry.target);
+                entry.target.src = entry.target.dataset.src;
+            }
+        });
+    }, { rootMargin: '300px 0px' });
+
+    frames.forEach((frame) => observer.observe(frame));
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDeferredFrames);
+} else {
+    initDeferredFrames();
+}
+
+/**
  * Resend countdown shared by every OTP form (Quick Enquiry, the journey's phone
  * step and the credit-score check). Spread into a component, so it is plain
  * properties and methods only — a getter would be evaluated once by the spread

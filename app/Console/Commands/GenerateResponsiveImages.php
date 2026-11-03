@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Article;
 use App\Models\Banner;
+use App\Models\Lender;
 use App\Models\LoanProduct;
 use App\Models\Setting;
 use App\Support\Media\ResponsiveImage;
@@ -11,9 +12,10 @@ use Illuminate\Console\Command;
 
 /**
  * Makes the WebP copies the site serves in a srcset, for every banner, loan
- * product and article image, the About page's founder photo and the site
- * logo. An image saved from the admin gets its copies on save; this catches
- * up the images uploaded before that existed, and any whose copies were lost.
+ * product and article image, the About page's founder photo, the site logo
+ * and every lender logo. An image saved from the admin gets its copies on
+ * save; this catches up the images uploaded before that existed, and any
+ * whose copies were lost.
  * Copies that already exist are left alone unless --force is passed. Safe to
  * run at any time.
  */
@@ -22,7 +24,7 @@ class GenerateResponsiveImages extends Command
     protected $signature = 'media:responsive-images
                             {--force : Rewrite copies that already exist}';
 
-    protected $description = 'Generate the responsive WebP copies of every banner, loan product and article image, the founder photo and the logo';
+    protected $description = 'Generate the responsive WebP copies of every banner, loan product and article image, the founder photo, the logo and the lender logos';
 
     public function handle(): int
     {
@@ -52,6 +54,9 @@ class GenerateResponsiveImages extends Command
             ->each(fn (?string $path) => $generate($path, ResponsiveImage::WIDTHS));
 
         $generate(Setting::get('site_logo'), ResponsiveImage::LOGO_WIDTHS);
+
+        Lender::query()->whereNotNull('logo_path')->distinct()->pluck('logo_path')
+            ->each(fn (string $path) => $generate($path, ResponsiveImage::LENDER_LOGO_WIDTHS));
 
         $this->info("Checked {$images} image(s), wrote {$written} WebP cop".($written === 1 ? 'y' : 'ies').'.');
 

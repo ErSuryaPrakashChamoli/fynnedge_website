@@ -7,12 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Keeps the WebP copies of a model's `image_path` upload (see ResponsiveImage)
- * in step with it: made for a new upload, and removed with the image they were
- * cut from unless another row of the same table still shows that file (a
- * replicated record shares its image_path). A soft-deleted row keeps its
- * copies, because restoring it shows the image again; they go with a force
- * delete.
+ * Keeps the WebP copies of a model's upload (see ResponsiveImage) in step with
+ * it: made for a new upload, and removed with the image they were cut from
+ * unless another row of the same table still shows that file (a replicated
+ * record shares its path). A soft-deleted row keeps its copies, because
+ * restoring it shows the image again; they go with a force delete.
+ *
+ * The upload is `image_path` at ResponsiveImage::WIDTHS unless the model
+ * overrides responsiveImageColumn() / responsiveImageWidths() (Lender: its
+ * logo, at the logo widths).
  *
  * `media:responsive-images` backfills the copies of images uploaded before a
  * model used this, so add any new model here to that command too.
@@ -22,14 +25,16 @@ trait HasResponsiveImage
     public static function bootHasResponsiveImage(): void
     {
         static::saved(function (Model $model): void {
-            if (! $model->wasRecentlyCreated && ! $model->wasChanged('image_path')) {
+            $column = $model->responsiveImageColumn();
+
+            if (! $model->wasRecentlyCreated && ! $model->wasChanged($column)) {
                 return;
             }
 
-            $model->forgetResponsiveImage($model->getPrevious()['image_path'] ?? null);
+            $model->forgetResponsiveImage($model->getPrevious()[$column] ?? null);
 
-            if ($model->image_path) {
-                ResponsiveImage::generate($model->image_path);
+            if ($model->{$column}) {
+                ResponsiveImage::generate($model->{$column}, widths: $model->responsiveImageWidths());
             }
         });
 
@@ -38,8 +43,24 @@ trait HasResponsiveImage
                 return;
             }
 
-            $model->forgetResponsiveImage($model->image_path);
+            $model->forgetResponsiveImage($model->{$model->responsiveImageColumn()});
         });
+    }
+
+    /**
+     * The column holding the upload the copies are cut from.
+     */
+    public function responsiveImageColumn(): string
+    {
+        return 'image_path';
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function responsiveImageWidths(): array
+    {
+        return ResponsiveImage::WIDTHS;
     }
 
     /**
@@ -48,7 +69,7 @@ trait HasResponsiveImage
      */
     public function imageSrcset(): ?string
     {
-        return ResponsiveImage::srcset($this->image_path);
+        return ResponsiveImage::srcset($this->{$this->responsiveImageColumn()}, widths: $this->responsiveImageWidths());
     }
 
     /**
@@ -56,13 +77,13 @@ trait HasResponsiveImage
      */
     public function imageDimensions(): ?array
     {
-        return ResponsiveImage::dimensions($this->image_path);
+        return ResponsiveImage::dimensions($this->{$this->responsiveImageColumn()});
     }
 
     private function forgetResponsiveImage(?string $path): void
     {
-        if ($path && ! static::query()->withoutGlobalScopes()->where('image_path', $path)->exists()) {
-            ResponsiveImage::delete($path);
+        if ($path && ! static::query()->withoutGlobalScopes()->where($this->responsiveImageColumn(), $path)->exists()) {
+            ResponsiveImage::delete($path, widths: $this->responsiveImageWidths());
         }
     }
 }
