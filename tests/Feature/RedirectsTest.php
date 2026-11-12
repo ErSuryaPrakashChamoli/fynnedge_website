@@ -366,6 +366,10 @@ it('sends each old WordPress URL from the October 2026 404 report to its equival
     'startup business loan article' => ['/unsecured-business-loans-for-startups-a-2026-guide-to-capital-without-collateral/', '/loans/business-loan'],
 ]);
 
+it('sends the old /about-us page to /about in one 301, with or without a trailing slash', function (string $legacyUrl) {
+    getExactPath($legacyUrl)->assertMovedPermanently()->assertRedirect(url('/about'));
+})->with(['/about-us', '/about-us/', '/About-Us/']);
+
 it('answers 410 for each retired page from the October 2026 404 report', function (string $legacyUrl) {
     getExactPath($legacyUrl)->assertGone();
 })->with([

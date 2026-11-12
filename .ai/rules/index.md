@@ -63,6 +63,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Filament/Forms/Components/CoverFramePicker.php,app/Filament/Resources/SocialVideos/**,resources/views/filament/forms/components/cover-frame-picker.blade.php | .ai/rules/forms-components.md |
 | .env*,config/app.php | .ai/rules/general.md |
 | app/Modules/Newsletter/**,app/Mail/Newsletter/**,app/Http/Controllers/NewsletterController.php | .ai/rules/http-controllers.md |
+| routes/web.php,app/Http/Middleware/HandleRedirects.php,app/Models/Redirect.php | .ai/rules/http-middleware-models.md |
 | app/Support/Analytics/**,app/Filament/Pages/SeoAnalytics.php,app/Http/Middleware/SecurityHeaders.php | .ai/rules/http-middleware.md |
 | config/queue.php,app/Filament/Imports/** | .ai/rules/imports.md |
 | app/Http/Controllers/JourneyController.php,app/Modules/Journey/** | .ai/rules/journey.md |
