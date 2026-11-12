@@ -144,3 +144,16 @@ it('saves every toolbar format, reopens it in the visual editor and shows it on 
         $page->assertSee($markup, false);
     }
 });
+
+it('accepts an edit typed inside a table cell, which the browser sends as a deeply nested change', function () {
+    $this->product->update(['body' => '<table><tbody><tr><td rowspan="1" colspan="1"><p>Bank A</p></td></tr></tbody></table>']);
+
+    // data.body.content.0 (table) → row → cell → paragraph → text: 13 levels.
+    Livewire::test(EditLoanProductContent::class, ['record' => $this->product->getRouteKey()])
+        ->assertSchemaStateSet(['body_html_mode' => false])
+        ->set('data.body.content.0.content.0.content.0.content.0.content.0.text', 'Bank B')
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($this->product->refresh()->body)->toContain('<p>Bank B</p></td>');
+});

@@ -282,7 +282,11 @@ return [
 
     'payload' => [
         'max_size' => 1024 * 1024,   // 1MB - maximum request payload size in bytes
-        'max_nesting_depth' => 10,   // Maximum depth of dot-notation property paths
+        // Filament's rich editor syncs its TipTap document as nested data: a
+        // word typed in a table cell is 13 levels deep, a link inside a nested
+        // list far more. At 10, editing those failed with
+        // MaxNestingDepthExceededException (2026-11-12). 32 is Filament's advice.
+        'max_nesting_depth' => 32,   // Maximum depth of dot-notation property paths
         'max_calls' => 50,           // Maximum method calls per request
         'max_components' => 200,     // Maximum components per batch request
     ],

@@ -3,6 +3,7 @@ paths:
   - 'config/database.php,.env*'
   - 'config/cache.php,config/queue.php,config/session.php,.env*'
   - 'config/{cache,queue,session}.php'
+  - config/livewire.php
 ---
 
 # Config
@@ -17,3 +18,6 @@ Decided 2026-10-30 (docs/redis-cache.md). Production Redis is a single cache ins
 All three already default to the `database` driver and switch to Redis purely via `.env` (CACHE_STORE=redis, QUEUE_CONNECTION=redis, SESSION_DRIVER=redis) — the `redis` client config in config/database.php is already wired. This environment doesn't have Redis installed, so it's never been activated, but no code change is needed to turn it on later. Don't add a Redis-specific code path or hardcode `env('...', 'redis')` — the existing `env('...', 'database')` defaults are correct and intentional.
 
 Verified (2026-08-28, Phase 12): `php artisan config:cache`, `route:cache`, and `view:cache` all build cleanly with no uncacheable closures. N+1 review of public controllers and Filament tables found no gaps — dot-notation Filament table columns auto-eager-load; public controllers already eager-load explicitly (see LoanProductController::show, JourneyController::show, ApplicationController::show). Added composite `(status, created_at)` indexes to `journey_sessions` and `applications` — the two unbounded-growth tables with an active admin status filter/sort; smaller catalog tables (loan_products, lenders, lender_products) were deliberately left unindexed on `status` since they'll only ever hold dozens of rows.
+
+## Keep Livewire payload.max_nesting_depth at 32 for the rich editor
+Filament's RichEditor syncs its TipTap document as nested data, and the browser sends each edit by its full dotted path. Text in a table cell is 13 levels deep (data.body.content.N.content.r.content.c.content.p.content.t.text), and links and nested lists go deeper. Livewire 4's default of 10 broke editing loan bodies on production with MaxNestingDepthExceededException (2026-11-12). It is 32, as Filament's rich editor docs advise. Don't lower it, and never re-publish config/livewire.php over it (livewire:publish --config overwrites the file). Pinned by LoanProductBodyEditorTest "accepts an edit typed inside a table cell".
