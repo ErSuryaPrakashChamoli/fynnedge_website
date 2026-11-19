@@ -33,18 +33,26 @@
                 'countTo' => $stat['value'],
             ])->values()->all();
 
+    // The real figure is what the server renders: crawlers and AI assistants
+    // read the HTML without running JavaScript, and a `0` placeholder there was
+    // quoted back as "0+ partner banks". The count-up is a visual-only effect
+    // layered on top — it drops to 0 only once Alpine is running in a real
+    // visitor's browser, and never for reduced motion or an automated
+    // (headless/webdriver) browser, so a rendering crawler snapshots the
+    // real number too. See .ai/rules/resources-views.md.
+    //
     // Runs on mount rather than on scroll: this strip sits above the fold by
     // design, so "wait until it scrolls into view" would only race its own
     // fade-in. The short delay lets the reveal land before the numbers move.
     $countUp = <<<'JS'
         {
-            value: 0,
-            target: %d,
+            value: %1$d,
+            target: %1$d,
             init() {
-                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                    this.value = this.target;
+                if (navigator.webdriver || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
                     return;
                 }
+                this.value = 0;
                 setTimeout(() => {
                     const start = performance.now();
                     const duration = 2200;
@@ -69,7 +77,7 @@
                         <p
                             x-data="{{ sprintf($countUp, $item['countTo']) }}"
                             class="font-display text-2xl font-semibold tracking-tight text-ink lg:text-3xl"
-                        ><span x-text="value">0</span>+</p>
+                        ><span x-text="value">{{ $item['countTo'] }}</span>+</p>
                     @else
                         <p class="font-display text-2xl font-semibold tracking-tight text-ink lg:text-3xl">{{ $item['value'] }}</p>
                     @endif

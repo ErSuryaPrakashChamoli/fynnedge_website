@@ -216,6 +216,21 @@ it('fills the stats row with four figures derived from real records when no achi
         ->assertSee('Guides &amp; resources', false);
 });
 
+it('server-renders each derived figure at its real value, not the count-up starting point', function () {
+    Lender::factory()->count(3)->create();
+    LoanProduct::factory()->published()->create();
+    Article::factory()->published()->create();
+
+    $response = $this->get('/')->assertOk();
+
+    foreach ($response->viewData('heroStats') as $stat) {
+        expect($stat['value'])->toBeGreaterThan(0);
+        $response->assertSee('<span x-text="value">'.$stat['value'].'</span>+', false);
+    }
+
+    $response->assertDontSee('<span x-text="value">0</span>', false);
+});
+
 it('replaces every derived figure with the admin achievements once any are published', function () {
     Lender::factory()->create();
     Achievement::factory()->published()->create(['label' => 'Cities served', 'value' => '550', 'suffix' => '+']);
