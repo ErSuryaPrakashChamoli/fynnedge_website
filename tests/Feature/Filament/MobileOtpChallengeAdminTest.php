@@ -15,7 +15,7 @@ function otpAdmin(): User
     return User::factory()->create(['is_admin' => true]);
 }
 
-it('shows a challenge to an administrator with the number masked and no code material', function () {
+it('shows the full number in the list and on the view page, with no code material', function () {
     $challenge = MobileOtpChallenge::factory()->verified()->create([
         'mobile_number' => '8800618269',
         'sms_provider_reference' => 'areach-ref-123',
@@ -24,13 +24,13 @@ it('shows a challenge to an administrator with the number masked and no code mat
 
     $this->get('/admin/mobile-otp-verifications')
         ->assertOk()
-        ->assertSee('******8269');
+        ->assertSee('8800618269')
+        ->assertDontSee('******8269');
 
     $this->get("/admin/mobile-otp-verifications/{$challenge->public_id}")
-        ->assertSee('******8269')
+        ->assertSee('+91 8800618269')
         ->assertSee('areach-ref-123')
         ->assertSee('Verified')
-        ->assertDontSee('8800618269')
         ->assertDontSee($challenge->otp_hash);
 });
 
@@ -80,7 +80,7 @@ it('never authorises writes, whatever permissions a role is given', function () 
         ->and($policy->viewAny($user))->toBeFalse();
 });
 
-it('finds a challenge by the full number although it shows only the last four digits', function () {
+it('finds a challenge by the full number', function () {
     $match = MobileOtpChallenge::factory()->create(['mobile_number' => '8800618269']);
     $other = MobileOtpChallenge::factory()->create(['mobile_number' => '9123456780']);
     $this->actingAs(otpAdmin());

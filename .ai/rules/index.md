@@ -81,6 +81,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Http/Middleware/SecurityHeaders.php | .ai/rules/middleware.md |
 | app/Models/**,app/Modules/**/Models/*.php,database/migrations/**,app/Filament/** | .ai/rules/migrations-filament.md |
 | database/migrations/** | .ai/rules/migrations.md |
+| app/Filament/Resources/MobileOtpChallenges/** | .ai/rules/mobile-otp-challenges.md |
 | app/Modules/MobileOtp/** | .ai/rules/mobile-otp.md |
 | app/Support/ContentCache/**,app/Enums/ContentCacheSection.php,app/Models/Concerns/InvalidatesContentCache.php | .ai/rules/models-concerns.md |
 | app/Support/Seo/Sitemap.php,app/Models/PageSeo.php,app/Filament/Schemas/SeoFormSection.php | .ai/rules/models-filament-schemas.md |

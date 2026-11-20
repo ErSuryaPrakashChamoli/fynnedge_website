@@ -19,8 +19,8 @@ use Illuminate\Database\Eloquent\Builder;
  * past its expiry is shown and filtered as Expired, though the stored column
  * still says pending (see MobileOtpStatus).
  *
- * The number is searchable in full (support staff are handed a number by the
- * customer) but only ever displayed masked.
+ * The number is shown and searchable in full, so support staff can find and
+ * call back the customer.
  */
 class MobileOtpChallengesTable
 {
@@ -30,7 +30,7 @@ class MobileOtpChallengesTable
             ->columns([
                 TextColumn::make('mobile_number')
                     ->label('Mobile')
-                    ->formatStateUsing(fn (MobileOtpChallenge $record): string => $record->maskedMobileNumber())
+                    ->copyable()
                     ->searchable(),
                 TextColumn::make('purpose')
                     ->badge()

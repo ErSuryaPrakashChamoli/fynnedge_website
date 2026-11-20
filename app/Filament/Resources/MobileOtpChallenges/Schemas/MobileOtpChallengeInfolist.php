@@ -9,8 +9,9 @@ use Filament\Schemas\Schema;
 
 /**
  * Everything safe to know about one challenge. Never the code or its hash
- * (otp_hash is also $hidden on the model), never the full number, never the
- * provider's raw response — only the normalised fields RequestMobileOtp stored.
+ * (otp_hash is also $hidden on the model), never the provider's raw response —
+ * only the normalised fields RequestMobileOtp stored. The full number is shown
+ * here (the list masks it) so support can call the customer back.
  */
 class MobileOtpChallengeInfolist
 {
@@ -24,7 +25,9 @@ class MobileOtpChallengeInfolist
                     ->components([
                         TextEntry::make('mobile_number')
                             ->label('Mobile number')
-                            ->formatStateUsing(fn (MobileOtpChallenge $record): string => '+91 '.$record->maskedMobileNumber()),
+                            ->formatStateUsing(fn (?string $state): string => '+91 '.$state)
+                            ->copyable()
+                            ->copyableState(fn (?string $state): ?string => $state),
                         TextEntry::make('purpose')
                             ->badge()
                             ->placeholder('Not recorded (before SMS integration)'),
