@@ -26,6 +26,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Support/Contact/**,resources/views/components/site/location-map.blade.php,resources/views/components/site/footer.blade.php,resources/views/contact.blade.php | .ai/rules/components-site-views.md |
 | app/Models/MarketingSection.php,app/Models/NavigationLink.php,resources/views/home.blade.php,resources/views/components/site/footer.blade.php | .ai/rules/components-site.md |
 | app/Support/Calculators/**,resources/views/components/⚡*.blade.php, app/Support/Calculators/**,resources/views/components/⚡emi-calculator.blade.php | .ai/rules/components.md |
+| app/Support/Media/ResponsiveImage.php,app/Models/Concerns/HasResponsiveImage.php,resources/views/components/site/banner-carousel.blade.php | .ai/rules/concerns-views-components-site.md |
 | app/Filament/RelationManagers/**,app/Filament/Concerns/** | .ai/rules/concerns.md |
 | config/filesystems.php,app/Filament/**/*Form.php,docker/entrypoint.sh | .ai/rules/config-filament.md |
 | config/database.php,.env*, config/cache.php,config/queue.php,config/session.php,.env*, config/{cache,queue,session}.php, config/livewire.php | .ai/rules/config.md |
