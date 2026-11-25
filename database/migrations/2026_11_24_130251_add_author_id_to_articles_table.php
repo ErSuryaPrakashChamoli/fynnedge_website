@@ -9,13 +9,17 @@ use Illuminate\Support\Facades\Schema;
  * FynnEdge-as-author byline and JSON-LD), and set to null — never cascaded —
  * if the author row is deleted, so deleting an author can never delete or
  * hide an article.
+ *
+ * No ->after(): column position is cosmetic, and the column it once named
+ * (city_id) exists only in some local databases, not in any migration, so it
+ * failed on production MySQL.
  */
 return new class extends Migration
 {
     public function up(): void
     {
         Schema::table('articles', function (Blueprint $table) {
-            $table->foreignId('author_id')->nullable()->after('city_id')->constrained('authors')->nullOnDelete();
+            $table->foreignId('author_id')->nullable()->constrained('authors')->nullOnDelete();
         });
     }
 
