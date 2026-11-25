@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\DocumentRequirements;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\DocumentRequirements\Pages\CreateDocumentRequirement;
 use App\Filament\Resources\DocumentRequirements\Pages\EditDocumentRequirement;
 use App\Filament\Resources\DocumentRequirements\Pages\ListDocumentRequirements;
@@ -16,11 +17,11 @@ use Filament\Tables\Table;
 
 class DocumentRequirementResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = LenderProductDocumentRequirement::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
 
     protected static ?string $navigationLabel = 'Document Requirements';
 

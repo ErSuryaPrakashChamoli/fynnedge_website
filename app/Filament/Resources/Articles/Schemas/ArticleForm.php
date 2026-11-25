@@ -4,10 +4,13 @@ namespace App\Filament\Resources\Articles\Schemas;
 
 use App\Enums\LoanCategory;
 use App\Enums\PublishStatus;
+use App\Filament\Resources\Authors\AuthorResource;
 use App\Filament\Schemas\HindiTranslationSection;
 use App\Filament\Schemas\HtmlBodyEditor;
 use App\Filament\Schemas\SeoFormSection;
 use App\Models\Article;
+use App\Models\Author;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -15,6 +18,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 class ArticleForm
@@ -36,6 +41,31 @@ class ArticleForm
                         TextInput::make('excerpt')
                             ->maxLength(160)
                             ->columnSpanFull(),
+                        Select::make('author_id')
+                            ->label('Author')
+                            ->relationship(
+                                'author',
+                                'name',
+                                // Active authors, plus the current one even if since deactivated.
+                                fn (Builder $query, ?Article $record): Builder => $query
+                                    ->where(fn (Builder $query): Builder => $query->where('is_active', true)->when($record?->author_id, fn (Builder $query, int $id): Builder => $query->orWhere('id', $id)))
+                                    ->orderBy('name'),
+                            )
+                            ->getOptionLabelFromRecordUsing(fn (Author $author): string => $author->name.($author->designation ? ' — '.$author->designation : '').($author->is_active ? '' : ' (inactive)'))
+                            ->placeholder('No byline')
+                            ->searchable()
+                            ->preload()
+                            ->helperText(fn (): string => Author::query()->active()->exists()
+                                ? 'Shown as a byline with photo, and in an "About the author" box.'
+                                : 'No authors yet — add them under Blog & Content → Authors.')
+                            ->suffixAction(
+                                Action::make('manageAuthors')
+                                    ->icon(Heroicon::OutlinedUserPlus)
+                                    ->tooltip('Manage authors')
+                                    ->url(fn (): string => AuthorResource::getUrl('index'))
+                                    ->openUrlInNewTab()
+                                    ->visible(fn (): bool => AuthorResource::canAccess()),
+                            ),
                         FileUpload::make('image_path')
                             ->label('Cover image')
                             ->image()

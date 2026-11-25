@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CalculatorPages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\CalculatorPages\Pages\CreateCalculatorPage;
 use App\Filament\Resources\CalculatorPages\Pages\EditCalculatorPage;
 use App\Filament\Resources\CalculatorPages\Pages\ListCalculatorPages;
@@ -16,11 +17,11 @@ use Filament\Tables\Table;
 
 class CalculatorPageResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = CalculatorPage::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalculator;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Calculator Pages';
 

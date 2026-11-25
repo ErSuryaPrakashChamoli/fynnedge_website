@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Support\Media\MediaCatalog;
 use App\Support\Media\MediaCatalogEntry;
 use BackedEnum;
@@ -22,11 +23,10 @@ use Livewire\WithPagination;
  */
 class MediaGovernance extends Page
 {
+    use BelongsToAdminModule;
     use WithPagination;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Media Library';
 

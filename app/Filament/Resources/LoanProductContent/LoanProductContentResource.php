@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\LoanProductContent;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\LoanProductContent\Pages\EditLoanProductContent;
 use App\Filament\Resources\LoanProductContent\Pages\ListLoanProductContent;
@@ -36,11 +37,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class LoanProductContentResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = LoanProduct::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Loan Product Content';
 

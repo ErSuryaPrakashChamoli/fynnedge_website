@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\NotFoundUrl;
+use App\Modules\Analytics\Models\AnalyticsEvent;
 use App\Modules\Newsletter\Jobs\SendNewsletterCampaign;
 use App\Modules\Newsletter\Models\NewsletterCampaign;
 use Illuminate\Foundation\Inspiring;
@@ -71,6 +72,8 @@ Schedule::command('cibil:enforce-retention')->dailyAt('02:55')->withoutOverlappi
 /*
  * Missing pages (Admin → Missing pages (404)): drops paths nobody has asked
  * for within config('seo.not_found.retention_days'), so the list holds what
- * is still being requested and the table stays small.
+ * is still being requested and the table stays small. Also ages out page-view
+ * counts after config('seo.page_views.retention_days') — page views only;
+ * funnel milestones in analytics_events are never pruned.
  */
-Schedule::command('model:prune', ['--model' => [NotFoundUrl::class]])->dailyAt('03:10')->withoutOverlapping();
+Schedule::command('model:prune', ['--model' => [NotFoundUrl::class, AnalyticsEvent::class]])->dailyAt('03:10')->withoutOverlapping();

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\HowItWorksSteps;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\RestorableAuditLogsRelationManager;
 use App\Filament\Resources\HowItWorksSteps\Pages\CreateHowItWorksStep;
 use App\Filament\Resources\HowItWorksSteps\Pages\EditHowItWorksStep;
@@ -17,11 +18,11 @@ use Filament\Tables\Table;
 
 class HowItWorksStepResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = HowItWorksStep::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedListBullet;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'How It Works Steps';
 

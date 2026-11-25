@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Models\Setting;
 use App\Modules\Experian\Services\ExperianSettings as Settings;
 use App\Modules\Experian\Services\SurepassExperianService;
@@ -28,11 +29,11 @@ use Filament\Support\Icons\Heroicon;
  */
 class ExperianSettings extends Page
 {
+    use BelongsToAdminModule;
+
     protected string $view = 'filament.pages.experian-settings';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Experian';
 
     protected static ?string $navigationLabel = 'Experian Settings';
 

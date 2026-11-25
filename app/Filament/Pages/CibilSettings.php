@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Models\Setting;
 use App\Modules\Cibil\Services\CibilRoles;
 use App\Modules\Cibil\Services\CibilSettings as Settings;
@@ -31,11 +32,11 @@ use Filament\Support\Icons\Heroicon;
  */
 class CibilSettings extends Page
 {
+    use BelongsToAdminModule;
+
     protected string $view = 'filament.pages.cibil-settings';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'CIBIL';
 
     protected static ?string $navigationLabel = 'CIBIL Settings';
 

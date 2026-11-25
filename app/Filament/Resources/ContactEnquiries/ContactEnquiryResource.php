@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ContactEnquiries;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\ContactEnquiries\Pages\EditContactEnquiry;
 use App\Filament\Resources\ContactEnquiries\Pages\ListContactEnquiries;
 use App\Filament\Resources\ContactEnquiries\Schemas\ContactEnquiryForm;
@@ -15,11 +16,11 @@ use Filament\Tables\Table;
 
 class ContactEnquiryResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = ContactEnquiry::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelope;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?int $navigationSort = 10;
 

@@ -4,37 +4,42 @@
     @php
         $integration = $this->integration();
         $max = $this->maxByDay();
+        $statTones = [
+            'Successful' => 'success',
+            'Failed' => 'danger',
+            'In progress' => 'warning',
+            'Needs reconciliation' => 'warning',
+            'Duplicates prevented' => 'gray',
+            'Reports reused' => 'gray',
+            'Fresh requests' => 'info',
+        ];
+        $statItems = collect($this->stats())->map(fn (array $stat, string $label): array => [
+            'label' => $label,
+            'value' => number_format($stat['value']),
+            'description' => $stat['description'],
+            'tone' => $statTones[$label] ?? 'primary',
+        ])->values()->all();
     @endphp
 
     @if (! $integration['enabled'] || ! $integration['configured'])
-        <div class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
-            <p class="font-semibold">CRIF requests are currently not possible.</p>
-            <ul class="mt-1 list-disc ps-5">
+        <x-filament::callout color="warning" icon="heroicon-o-exclamation-triangle" heading="CRIF requests are currently not possible.">
+            <x-slot name="description">
                 @unless ($integration['enabled'])
-                    <li>The integration is switched off in CRIF Settings.</li>
+                    <span class="ms-4 list-item list-disc">The integration is switched off in CRIF Settings.</span>
                 @endunless
                 @unless ($integration['configured'])
-                    <li>The Surepass API token is not set in this server's environment (SUREPASS_BEARER_TOKEN).</li>
+                    <span class="ms-4 list-item list-disc">The Surepass API token is not set in this server's environment (SUREPASS_BEARER_TOKEN).</span>
                 @endunless
-            </ul>
-        </div>
+            </x-slot>
+        </x-filament::callout>
     @endif
 
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        @foreach ($this->stats() as $label => $stat)
-            <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $label }}</p>
-                <p class="mt-1 text-3xl font-semibold text-gray-950 dark:text-white">{{ number_format($stat['value']) }}</p>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ $stat['description'] }}</p>
-            </div>
-        @endforeach
-    </div>
+    <x-admin.stat-band :columns="4" :items="$statItems" />
 
-    <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-        <p class="text-sm font-medium text-gray-950 dark:text-white">Requests per day</p>
-        <p class="text-xs text-gray-500 dark:text-gray-400">Last 14 days. Reuse period {{ $integration['reuse_days'] }} days · consent valid {{ $integration['consent_days'] }} days.</p>
+    <x-filament::section heading="Requests per day">
+        <x-slot name="description">Last 14 days. Reuse period {{ $integration['reuse_days'] }} days · consent valid {{ $integration['consent_days'] }} days.</x-slot>
 
-        <div class="mt-4 flex h-32 items-end gap-2">
+        <div class="flex h-32 items-end gap-2">
             @foreach ($this->byDay() as $day)
                 <div class="flex flex-1 flex-col items-center gap-1">
                     <span class="text-xs text-gray-500 dark:text-gray-400">{{ $day['total'] ?: '' }}</span>
@@ -47,79 +52,80 @@
                 </div>
             @endforeach
         </div>
-    </div>
+    </x-filament::section>
 
-    <div class="grid gap-4 lg:grid-cols-2">
-        <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-            <p class="text-sm font-medium text-gray-950 dark:text-white">Requests by employee</p>
-            <div class="mt-3 overflow-x-auto">
+    <div class="grid gap-6 lg:grid-cols-2">
+        <x-filament::section heading="Requests by employee">
+            <div class="overflow-x-auto">
                 <table class="w-full text-sm">
-                    <thead class="text-left text-xs uppercase text-gray-500 dark:text-gray-400">
+                    <thead class="border-b border-gray-100 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:border-white/5 dark:text-gray-400">
                         <tr>
-                            <th class="py-2">Employee</th>
-                            <th class="py-2 text-right">Requests</th>
-                            <th class="py-2 text-right">Successful</th>
-                            <th class="py-2 text-right">Failed</th>
-                            <th class="py-2 text-right">Fresh</th>
+                            <th class="py-2.5 pe-4">Employee</th>
+                            <th class="py-2.5 pe-4 text-right">Requests</th>
+                            <th class="py-2.5 pe-4 text-right">Successful</th>
+                            <th class="py-2.5 pe-4 text-right">Failed</th>
+                            <th class="py-2.5 text-right">Fresh</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                    <tbody class="divide-y divide-gray-100 text-gray-700 dark:divide-white/5 dark:text-gray-300">
                         @forelse ($this->byEmployee() as $row)
                             <tr>
-                                <td class="py-2 text-gray-950 dark:text-white">{{ $row['name'] }}</td>
-                                <td class="py-2 text-right">{{ $row['total'] }}</td>
-                                <td class="py-2 text-right">{{ $row['success'] }}</td>
-                                <td class="py-2 text-right">{{ $row['failed'] }}</td>
-                                <td class="py-2 text-right">{{ $row['fresh'] }}</td>
+                                <td class="py-2.5 pe-4 font-medium text-gray-950 dark:text-white">{{ $row['name'] }}</td>
+                                <td class="py-2.5 pe-4 text-right tabular-nums">{{ $row['total'] }}</td>
+                                <td class="py-2.5 pe-4 text-right tabular-nums">{{ $row['success'] }}</td>
+                                <td class="py-2.5 pe-4 text-right tabular-nums">{{ $row['failed'] }}</td>
+                                <td class="py-2.5 text-right tabular-nums">{{ $row['fresh'] }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="5" class="py-3 text-gray-500 dark:text-gray-400">No CRIF requests yet.</td></tr>
+                            <tr><td colspan="5" class="py-6 text-center text-gray-500 dark:text-gray-400">No CRIF requests yet.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-        </div>
+        </x-filament::section>
 
-        <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-            <p class="text-sm font-medium text-gray-950 dark:text-white">Provider and API errors</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">"Uncertain" errors may have been charged by Surepass and go to reconciliation.</p>
-            <div class="mt-3 overflow-x-auto">
+        <x-filament::section heading="Provider and API errors">
+            <x-slot name="description">"Uncertain" errors may have been charged by Surepass and go to reconciliation.</x-slot>
+            <div class="overflow-x-auto">
                 <table class="w-full text-sm">
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                    <tbody class="divide-y divide-gray-100 text-gray-700 dark:divide-white/5 dark:text-gray-300">
                         @forelse ($this->errors() as $error)
                             <tr>
-                                <td class="py-2 text-gray-950 dark:text-white">{{ $error['label'] }}</td>
-                                <td class="py-2 text-xs text-gray-500 dark:text-gray-400">{{ $error['uncertain'] ? 'Uncertain' : '' }}</td>
-                                <td class="py-2 text-right font-medium text-gray-950 dark:text-white">{{ $error['total'] }}</td>
+                                <td class="py-2.5 pe-4 font-medium text-gray-950 dark:text-white">{{ $error['label'] }}</td>
+                                <td class="py-2.5 pe-4">
+                                    @if ($error['uncertain'])
+                                        <x-filament::badge color="warning" size="sm">Uncertain</x-filament::badge>
+                                    @endif
+                                </td>
+                                <td class="py-2.5 text-right font-semibold tabular-nums text-gray-950 dark:text-white">{{ $error['total'] }}</td>
                             </tr>
                         @empty
-                            <tr><td class="py-3 text-gray-500 dark:text-gray-400">No errors recorded.</td></tr>
+                            <tr><td colspan="3" class="py-6 text-center text-gray-500 dark:text-gray-400">No errors recorded.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-        </div>
+        </x-filament::section>
     </div>
 
-    <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-        <p class="text-sm font-medium text-gray-950 dark:text-white">Recent activity</p>
-        <div class="mt-3 overflow-x-auto">
+    <x-filament::section heading="Recent activity">
+        <div class="overflow-x-auto">
             <table class="w-full text-sm">
-                <thead class="text-left text-xs uppercase text-gray-500 dark:text-gray-400">
+                <thead class="border-b border-gray-100 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:border-white/5 dark:text-gray-400">
                     <tr>
-                        <th class="py-2">When</th>
-                        <th class="py-2">Who</th>
-                        <th class="py-2">What</th>
-                        <th class="py-2">PAN</th>
+                        <th class="py-2.5 pe-4">When</th>
+                        <th class="py-2.5 pe-4">Who</th>
+                        <th class="py-2.5 pe-4">What</th>
+                        <th class="py-2.5">PAN</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                <tbody class="divide-y divide-gray-100 text-gray-700 dark:divide-white/5 dark:text-gray-300">
                     @forelse ($this->recentActivity() as $log)
                         <tr>
-                            <td class="py-2 text-gray-500 dark:text-gray-400">{{ $log->created_at?->format('d M Y, H:i') }}</td>
-                            <td class="py-2 text-gray-950 dark:text-white">{{ $log->user?->name ?? 'System' }}</td>
-                            <td class="py-2 text-gray-950 dark:text-white">{{ str_replace('_', ' ', $log->action) }}</td>
-                            <td class="py-2">
+                            <td class="whitespace-nowrap py-2.5 pe-4 font-medium text-gray-950 dark:text-white">{{ $log->created_at?->format('d M Y, H:i') }}</td>
+                            <td class="py-2.5 pe-4">{{ $log->user?->name ?? 'System' }}</td>
+                            <td class="py-2.5 pe-4">{{ str_replace('_', ' ', $log->action) }}</td>
+                            <td class="py-2.5">
                                 @if ($log->auditable)
                                     <a class="text-primary-600 underline dark:text-primary-400" href="{{ CrifReportResource::getUrl('view', ['record' => $log->auditable]) }}">{{ $log->auditable->pan_masked }}</a>
                                 @else
@@ -128,10 +134,10 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="4" class="py-3 text-gray-500 dark:text-gray-400">No activity yet.</td></tr>
+                        <tr><td colspan="4" class="py-6 text-center text-gray-500 dark:text-gray-400">No activity yet.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-    </div>
+    </x-filament::section>
 </x-filament-panels::page>

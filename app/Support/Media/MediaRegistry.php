@@ -3,6 +3,7 @@
 namespace App\Support\Media;
 
 use App\Models\Article;
+use App\Models\Author;
 use App\Models\Banner;
 use App\Models\CompanyPhoto;
 use App\Models\HowItWorksStep;
@@ -174,6 +175,13 @@ final class MediaRegistry
                 settingKey: 'founder_photo',
                 label: 'Founder Photo',
                 directory: 'founder',
+            ),
+            MediaFieldDefinition::forModel(
+                modelClass: Author::class,
+                label: 'Article Author',
+                pathField: 'photo_path',
+                directory: Author::PHOTO_DIRECTORY,
+                recordLabelField: 'name',
             ),
         ];
     }

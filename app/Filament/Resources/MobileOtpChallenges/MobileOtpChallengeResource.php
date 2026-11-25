@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\MobileOtpChallenges;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\MobileOtpChallenges\Pages\ListMobileOtpChallenges;
 use App\Filament\Resources\MobileOtpChallenges\Pages\ViewMobileOtpChallenge;
 use App\Filament\Resources\MobileOtpChallenges\Schemas\MobileOtpChallengeInfolist;
@@ -25,11 +26,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class MobileOtpChallengeResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = MobileOtpChallenge::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDevicePhoneMobile;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
 
     protected static ?string $navigationLabel = 'Mobile OTP Verifications';
 

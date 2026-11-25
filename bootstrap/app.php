@@ -4,6 +4,7 @@ use App\Http\Middleware\EnsureCustomerPortalAccess;
 use App\Http\Middleware\ForceJsonResponse;
 use App\Http\Middleware\HandleRedirects;
 use App\Http\Middleware\RecordNotFoundRequests;
+use App\Http\Middleware\RecordPageView;
 use App\Http\Middleware\SearchEngineIndexingHeader;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetSiteLocale;
@@ -54,6 +55,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prependToPriorityList(AuthenticatesRequests::class, ForceJsonResponse::class);
 
         $middleware->appendToGroup('web', SecurityHeaders::class);
+        // Counts public page views for Lead Analytics (no cookie, IP or user agent kept).
+        $middleware->appendToGroup('web', RecordPageView::class);
         // The public JSON API gets the same nosniff/framing/CSP headers as every page.
         $middleware->appendToGroup('api', SecurityHeaders::class);
 

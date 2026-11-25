@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\GrievanceLevels;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\GrievanceLevels\Pages\CreateGrievanceLevel;
 use App\Filament\Resources\GrievanceLevels\Pages\EditGrievanceLevel;
 use App\Filament\Resources\GrievanceLevels\Pages\ListGrievanceLevels;
@@ -16,11 +17,11 @@ use Filament\Tables\Table;
 
 class GrievanceLevelResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = GrievanceLevel::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Grievance Redressal Matrix';
 

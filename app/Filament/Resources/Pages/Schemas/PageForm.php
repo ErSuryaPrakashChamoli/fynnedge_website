@@ -6,7 +6,9 @@ use App\Enums\PublishStatus;
 use App\Filament\Schemas\HindiTranslationSection;
 use App\Filament\Schemas\SeoFormSection;
 use App\Models\Page;
+use App\Models\Redirect;
 use App\Support\Seo\Sitemap;
+use Closure;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -44,12 +46,45 @@ class PageForm
                          * form can never write a different slug for them.
                          */
                         TextInput::make('slug')
+                            ->label('Address (slug)')
                             ->required()
                             ->unique(Page::class, 'slug', ignoreRecord: true)
+                            ->prefix(fn (): string => rtrim((string) config('app.url'), '/').'/')
                             ->disabled(fn (?Page $record): bool => $record !== null && in_array($record->slug, Sitemap::publicPageSlugs(), true))
-                            ->helperText(fn (?Page $record): ?string => $record !== null && in_array($record->slug, Sitemap::publicPageSlugs(), true)
+                            /*
+                             * A new general page is served at /{slug} by the catch-all
+                             * route, which every other route outranks — so a slug some
+                             * other page already answers (/contact, /loans…) or that a
+                             * redirect sends elsewhere would never show this page.
+                             */
+                            ->rules([
+                                fn (?Page $record): Closure => function (string $attribute, mixed $value, Closure $fail) use ($record): void {
+                                    $slug = (string) $value;
+
+                                    if ($record !== null && in_array($record->slug, Sitemap::publicPageSlugs(), true)) {
+                                        return;
+                                    }
+
+                                    if (preg_match('/^'.Sitemap::GENERAL_PAGE_SLUG_PATTERN.'$/', $slug) !== 1) {
+                                        $fail('Use lowercase letters, numbers and single hyphens only (e.g. home-loan-guide).');
+
+                                        return;
+                                    }
+
+                                    if (! Sitemap::servesGeneralPage($slug)) {
+                                        $fail("fynnedge.com/{$slug} is already used by another part of the website. Choose a different address.");
+
+                                        return;
+                                    }
+
+                                    if (Redirect::query()->where('is_active', true)->get(['source_path'])->contains(fn (Redirect $redirect): bool => Redirect::normalizePath($redirect->source_path) === Redirect::normalizePath('/'.$slug))) {
+                                        $fail("An active redirect sends /{$slug} to another address (SEO & Performance → Redirects). Remove it or choose a different address.");
+                                    }
+                                },
+                            ])
+                            ->helperText(fn (?Page $record): string => $record !== null && in_array($record->slug, Sitemap::publicPageSlugs(), true)
                                 ? 'Locked: this page is served at /'.$record->slug.', and the website links to that address.'
-                                : null),
+                                : 'The page\'s web address. Changing it after publishing breaks existing links — add a redirect from the old address if you do.'),
                         TextInput::make('excerpt')
                             ->maxLength(160)
                             ->columnSpanFull(),

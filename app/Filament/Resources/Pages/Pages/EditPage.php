@@ -10,7 +10,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Facades\Route;
 
 class EditPage extends EditRecord
 {
@@ -29,9 +28,10 @@ class EditPage extends EditRecord
             // matching route (e.g. a newly created page a route hasn't been
             // added for yet) simply hides the action rather than generating a
             // dead preview link.
+            // New general pages are served by the /{slug} catch-all (Sitemap::pageRoute()).
             $this->previewAction(
-                fn (Page $record) => Route::has(Sitemap::pageRouteName($record->slug)) ? Sitemap::pageRouteName($record->slug) : null,
-                fn (Page $record) => [],
+                fn (Page $record) => Sitemap::pageRoute($record->slug)[0] ?? null,
+                fn (Page $record) => Sitemap::pageRoute($record->slug)[1] ?? [],
             ),
             DeleteAction::make(),
             ForceDeleteAction::make(),

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CreditScorePages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\CreditScorePages\Pages\CreateCreditScorePage;
 use App\Filament\Resources\CreditScorePages\Pages\EditCreditScorePage;
 use App\Filament\Resources\CreditScorePages\Pages\ListCreditScorePages;
@@ -16,11 +17,11 @@ use Filament\Tables\Table;
 
 class CreditScorePageResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = CreditScorePage::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Credit Score Pages';
 

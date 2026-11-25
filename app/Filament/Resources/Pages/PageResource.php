@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\FaqsRelationManager;
 use App\Filament\RelationManagers\RestorableAuditLogsRelationManager;
 use App\Filament\Resources\Pages\Pages\CreatePage;
@@ -20,11 +21,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PageResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = Page::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     public static function form(Schema $schema): Schema
     {

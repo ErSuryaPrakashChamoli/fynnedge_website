@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\MarketingSections;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\RestorableAuditLogsRelationManager;
 use App\Filament\Resources\MarketingSections\Pages\CreateMarketingSection;
 use App\Filament\Resources\MarketingSections\Pages\EditMarketingSection;
@@ -19,11 +20,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class MarketingSectionResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = MarketingSection::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMegaphone;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Marketing Sections';
 

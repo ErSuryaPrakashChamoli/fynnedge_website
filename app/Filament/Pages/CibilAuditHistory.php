@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Concerns\FormatsAuditChanges;
 use App\Filament\Resources\CibilCreditRequests\CibilCreditRequestResource;
 use App\Models\AuditLog;
@@ -24,14 +25,13 @@ use Filament\Tables\Table;
  */
 class CibilAuditHistory extends Page implements HasTable
 {
+    use BelongsToAdminModule;
     use FormatsAuditChanges;
     use InteractsWithTable;
 
     protected string $view = 'filament.pages.cibil-audit-history';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClock;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'CIBIL';
 
     protected static ?string $navigationLabel = 'CIBIL Audit History';
 

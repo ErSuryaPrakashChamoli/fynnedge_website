@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CrifReports;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\CrifReports\Pages\ListCrifReports;
 use App\Filament\Resources\CrifReports\Pages\ViewCrifReport;
@@ -27,11 +28,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CrifReportResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = CrifReport::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentMagnifyingGlass;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Credit Bureau';
 
     protected static ?string $navigationLabel = 'CRIF Reports';
 

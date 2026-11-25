@@ -4,6 +4,7 @@ namespace App\Support\Media;
 
 use App\Filament\Pages\Settings;
 use App\Filament\Resources\Articles\ArticleResource;
+use App\Filament\Resources\Authors\AuthorResource;
 use App\Filament\Resources\Banners\BannerResource;
 use App\Filament\Resources\CompanyPhotos\CompanyPhotoResource;
 use App\Filament\Resources\HowItWorksSteps\HowItWorksStepResource;
@@ -16,6 +17,7 @@ use App\Filament\Resources\SocialVideos\SocialVideoResource;
 use App\Filament\Resources\Testimonials\TestimonialResource;
 use App\Filament\Resources\VideoTestimonials\VideoTestimonialResource;
 use App\Models\Article;
+use App\Models\Author;
 use App\Models\Banner;
 use App\Models\CompanyPhoto;
 use App\Models\HowItWorksStep;
@@ -57,6 +59,7 @@ class MediaCatalog
         HowItWorksStep::class => HowItWorksStepResource::class,
         Lender::class => LenderResource::class,
         Article::class => ArticleResource::class,
+        Author::class => AuthorResource::class,
         Page::class => PageResource::class,
         LoanLandingPage::class => LoanLandingPageResource::class,
     ];

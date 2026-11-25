@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\LoanProductSeo;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\LoanProductSeo\Pages\EditLoanProductSeo;
 use App\Filament\Resources\LoanProductSeo\Pages\ListLoanProductSeo;
@@ -28,11 +29,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class LoanProductSeoResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = LoanProduct::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMagnifyingGlass;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Loan Product SEO';
 

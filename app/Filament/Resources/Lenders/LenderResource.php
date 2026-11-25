@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Lenders;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\Lenders\Pages\CreateLender;
 use App\Filament\Resources\Lenders\Pages\EditLender;
@@ -20,11 +21,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class LenderResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = Lender::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingLibrary;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
 
     public static function form(Schema $schema): Schema
     {

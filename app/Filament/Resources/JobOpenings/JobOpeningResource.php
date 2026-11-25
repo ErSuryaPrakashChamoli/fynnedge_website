@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\JobOpenings;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\JobOpenings\Pages\CreateJobOpening;
 use App\Filament\Resources\JobOpenings\Pages\EditJobOpening;
 use App\Filament\Resources\JobOpenings\Pages\ListJobOpenings;
@@ -16,11 +17,11 @@ use Filament\Tables\Table;
 
 class JobOpeningResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = JobOpening::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBriefcase;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Job Openings';
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PageFaqs;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\RestorableAuditLogsRelationManager;
 use App\Filament\Resources\PageFaqs\Pages\CreatePageFaq;
 use App\Filament\Resources\PageFaqs\Pages\EditPageFaq;
@@ -26,11 +27,11 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class PageFaqResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = Faq::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedQuestionMarkCircle;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Page FAQs';
 

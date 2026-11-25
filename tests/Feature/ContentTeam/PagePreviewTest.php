@@ -45,14 +45,28 @@ it('exposes a working preview action on the page edit page for a routable slug',
         ->assertActionExists('preview');
 });
 
-it('hides the preview action for a page slug with no matching public route', function () {
+it('hides the preview action for a page slug no public route serves', function () {
     $admin = User::factory()->create(['is_admin' => true]);
     $this->actingAs($admin);
 
-    $page = Page::factory()->create(['slug' => 'some-unrouted-slug']);
+    // /contact belongs to ContactController, so a page with that slug can never be shown.
+    $page = Page::factory()->create(['slug' => 'contact']);
 
     Livewire::test(EditPage::class, ['record' => $page->getRouteKey()])
         ->assertActionHidden('preview');
+});
+
+it('previews a new general page at its own address', function () {
+    $this->actingAs(User::factory()->create(['is_admin' => true]));
+
+    // Since 2026-11-24 any other slug is served at /{slug} (Sitemap::GENERAL_PAGE_ROUTE).
+    $page = Page::factory()->create(['slug' => 'some-new-page', 'title' => 'Some new page']);
+
+    Livewire::test(EditPage::class, ['record' => $page->getRouteKey()])
+        ->assertActionVisible('preview');
+
+    $this->get('/some-new-page')->assertNotFound();
+    $this->get(URL::temporarySignedRoute('pages.show', now()->addMinutes(30), ['slug' => 'some-new-page']))->assertOk()->assertSee('Some new page');
 });
 
 it('lets an admin preview a draft FAQs page via a signed URL', function () {

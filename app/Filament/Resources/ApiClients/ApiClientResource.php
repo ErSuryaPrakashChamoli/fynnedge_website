@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ApiClients;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\ApiClients\Pages\CreateApiClient;
 use App\Filament\Resources\ApiClients\Pages\EditApiClient;
@@ -24,11 +25,11 @@ use Filament\Tables\Table;
  */
 class ApiClientResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = ApiClient::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedKey;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Access Control';
 
     protected static ?string $navigationLabel = 'API Clients';
 

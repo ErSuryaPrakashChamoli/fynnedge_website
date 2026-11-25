@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Modules\Newsletter\Enums\CampaignStatus;
 use App\Modules\Newsletter\Enums\SubscriberStatus;
 use App\Modules\Newsletter\Enums\SubscriptionSource;
@@ -22,11 +23,11 @@ use Illuminate\Support\Collection;
  */
 class NewsletterDashboard extends Page
 {
+    use BelongsToAdminModule;
+
     protected string $view = 'filament.pages.newsletter-dashboard';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBarSquare;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Marketing';
 
     protected static ?string $navigationLabel = 'Newsletter';
 

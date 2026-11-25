@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Employers;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\Employers\Pages\CreateEmployer;
 use App\Filament\Resources\Employers\Pages\EditEmployer;
 use App\Filament\Resources\Employers\Pages\ListEmployers;
@@ -16,11 +17,11 @@ use Filament\Tables\Table;
 
 class EmployerResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = Employer::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBriefcase;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
 
     public static function form(Schema $schema): Schema
     {

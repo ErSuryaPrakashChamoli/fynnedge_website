@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\LenderProducts;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\LenderProducts\Pages\CreateLenderProduct;
 use App\Filament\Resources\LenderProducts\Pages\EditLenderProduct;
@@ -17,11 +18,11 @@ use Filament\Tables\Table;
 
 class LenderProductResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = LenderProduct::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
 
     protected static ?string $navigationLabel = 'Lender Offers';
 

@@ -25,7 +25,7 @@ class LoanProductsTable
                     ->sortable(),
                 TextColumn::make('category')
                     ->badge(),
-                TextColumn::make('lenderProducts_count')
+                TextColumn::make('lender_products_count')
                     ->label('Lenders')
                     ->counts('lenderProducts')
                     ->alignCenter(),

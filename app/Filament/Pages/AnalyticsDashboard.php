@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Models\LoanProduct;
 use App\Modules\Analytics\Enums\AnalyticsEventKey;
 use App\Modules\Analytics\Models\AnalyticsEvent;
@@ -15,9 +16,9 @@ use Livewire\Attributes\Computed;
 
 class AnalyticsDashboard extends Page
 {
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
+    use BelongsToAdminModule;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
     protected static ?string $navigationLabel = 'Funnel Analytics';
 

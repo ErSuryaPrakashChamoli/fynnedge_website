@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Models\AuditLog;
 use App\Models\User;
 use App\Modules\Equifax\Enums\EquifaxErrorCode;
@@ -23,11 +24,11 @@ use Illuminate\Support\Collection;
  */
 class EquifaxDashboard extends Page
 {
+    use BelongsToAdminModule;
+
     protected string $view = 'filament.pages.equifax-dashboard';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBarSquare;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Equifax';
 
     protected static ?string $navigationLabel = 'Equifax Dashboard';
 

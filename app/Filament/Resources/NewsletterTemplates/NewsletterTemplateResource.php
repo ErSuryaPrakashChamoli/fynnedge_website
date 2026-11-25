@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\NewsletterTemplates;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\NewsletterTemplates\Pages\CreateNewsletterTemplate;
 use App\Filament\Resources\NewsletterTemplates\Pages\EditNewsletterTemplate;
 use App\Filament\Resources\NewsletterTemplates\Pages\ListNewsletterTemplates;
@@ -16,11 +17,11 @@ use Filament\Tables\Table;
 
 class NewsletterTemplateResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = NewsletterTemplate::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentDuplicate;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Marketing';
 
     protected static ?string $navigationLabel = 'Templates';
 

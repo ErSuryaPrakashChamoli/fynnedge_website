@@ -59,6 +59,14 @@ class ListLenderProductRates extends ListRecords
     }
 
     /**
+     * The rate health panel spans the full width above the list.
+     */
+    public function getHeaderWidgetsColumns(): int|array
+    {
+        return 1;
+    }
+
+    /**
      * The views the team works from day to day; "Needs attention" is the
      * default because unverified, expiring and submitted rates are the work.
      *

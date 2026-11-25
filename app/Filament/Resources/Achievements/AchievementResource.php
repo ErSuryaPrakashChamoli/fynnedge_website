@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Achievements;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\RestorableAuditLogsRelationManager;
 use App\Filament\Resources\Achievements\Pages\CreateAchievement;
 use App\Filament\Resources\Achievements\Pages\EditAchievement;
@@ -17,11 +18,11 @@ use Filament\Tables\Table;
 
 class AchievementResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = Achievement::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Achievements';
 

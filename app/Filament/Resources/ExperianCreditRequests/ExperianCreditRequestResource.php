@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ExperianCreditRequests;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\ExperianCreditRequests\Pages\ListExperianCreditRequests;
 use App\Filament\Resources\ExperianCreditRequests\Pages\ViewExperianCreditRequest;
@@ -36,11 +37,11 @@ use function Filament\Support\original_request;
  */
 class ExperianCreditRequestResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = ExperianCreditRequest::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedQueueList;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Experian';
 
     protected static ?string $navigationLabel = 'Experian Requests';
 

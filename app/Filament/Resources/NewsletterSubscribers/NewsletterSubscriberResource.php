@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\NewsletterSubscribers;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\NewsletterSubscribers\Pages\ListNewsletterSubscribers;
 use App\Filament\Resources\NewsletterSubscribers\Pages\ViewNewsletterSubscriber;
 use App\Filament\Resources\NewsletterSubscribers\Schemas\NewsletterSubscriberForm;
@@ -24,11 +25,11 @@ use Filament\Tables\Table;
  */
 class NewsletterSubscriberResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = NewsletterSubscriber::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelope;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Marketing';
 
     protected static ?string $navigationLabel = 'Subscribers';
 

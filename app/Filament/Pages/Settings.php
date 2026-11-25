@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\Setting;
 use App\Support\Contact\OfficeMap;
@@ -25,11 +26,11 @@ use Illuminate\Validation\ValidationException;
 
 class Settings extends Page
 {
+    use BelongsToAdminModule;
+
     protected string $view = 'filament.pages.settings';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website Settings';
 
     /**
      * @var array<string, mixed>

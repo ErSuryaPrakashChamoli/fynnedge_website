@@ -19,6 +19,11 @@ export default defineConfig({
                 bunny('IBM Plex Mono', {
                     weights: [400, 500, 600],
                 }),
+                // Admin panel typeface, rendered only by AdminPanelProvider's head hook.
+                bunny('Plus Jakarta Sans', {
+                    weights: [400, 500, 600, 700, 800],
+                    preload: [{ weight: 500 }, { weight: 700 }],
+                }),
             ],
         }),
         tailwindcss(),

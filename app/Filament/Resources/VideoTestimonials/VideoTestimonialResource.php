@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\VideoTestimonials;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\RestorableAuditLogsRelationManager;
 use App\Filament\Resources\VideoTestimonials\Pages\CreateVideoTestimonial;
 use App\Filament\Resources\VideoTestimonials\Pages\EditVideoTestimonial;
@@ -24,11 +25,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
  */
 class VideoTestimonialResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = VideoTestimonial::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedVideoCamera;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
 
     protected static ?string $navigationLabel = 'Video testimonials';
 

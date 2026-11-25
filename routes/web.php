@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\ArticleAuthorController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CalculatorController;
 use App\Http\Controllers\CareerController;
@@ -190,8 +191,21 @@ Route::get('/calculators/prepayment/{category}', [CalculatorController::class, '
 
 Route::get('/resources', [ArticleController::class, 'index'])->name('resources.index');
 Route::get('/resources/{article:slug}', [ArticleController::class, 'show'])->name('resources.show');
+Route::get('/resources/authors/{author:slug}', ArticleAuthorController::class)->name('resources.authors.show');
 
 Route::get('/faqs', [FaqController::class, 'index'])->name('faqs.index');
 
 Route::get('/contact', [ContactController::class, 'show'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store')->middleware('throttle:contact-form');
+
+/*
+ * General pages an admin creates in Website Pages → General Pages, at
+ * /{slug}. MUST stay the last route in this file: Laravel matches routes in
+ * registration order, so every real route above always wins, and a slug only
+ * reaches this one when nothing else answers it (Sitemap::servesGeneralPage(),
+ * which PageForm uses to refuse slugs that would clash). Only published pages
+ * answer; anything else is the normal 404 (and still counted in Missing pages).
+ */
+Route::get('/{slug}', [PageController::class, 'show'])
+    ->where('slug', Sitemap::GENERAL_PAGE_SLUG_PATTERN)
+    ->name(Sitemap::GENERAL_PAGE_ROUTE);

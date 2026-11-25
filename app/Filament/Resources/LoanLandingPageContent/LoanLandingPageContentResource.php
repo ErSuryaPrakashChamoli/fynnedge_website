@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\LoanLandingPageContent;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\LoanLandingPageContent\Pages\EditLoanLandingPageContent;
 use App\Filament\Resources\LoanLandingPageContent\Pages\ListLoanLandingPageContent;
@@ -34,11 +35,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class LoanLandingPageContentResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = LoanLandingPage::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Loan Landing Page Content';
 

@@ -1,20 +1,24 @@
 <x-filament-panels::page>
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        @foreach ($this->stats() as $label => $stat)
-            <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $label }}</p>
-                <p class="mt-1 text-3xl font-semibold text-gray-950 dark:text-white">{{ number_format($stat['value']) }}</p>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ $stat['description'] }}</p>
-            </div>
-        @endforeach
-    </div>
+    @php
+        $statTones = [
+            'Active' => 'success',
+            'Pending confirmation' => 'warning',
+            'Unsubscribed' => 'gray',
+            'New in last 30 days' => 'info',
+        ];
+        $statItems = collect($this->stats())->map(fn (array $stat, string $label): array => [
+            'label' => $label,
+            'value' => number_format($stat['value']),
+            'description' => $stat['description'],
+            'tone' => $statTones[$label] ?? 'primary',
+        ])->values()->all();
+    @endphp
 
-    <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-        <p class="text-sm font-medium text-gray-950 dark:text-white">Signups per week</p>
-        <p class="text-xs text-gray-500 dark:text-gray-400">Last 12 weeks.</p>
+    <x-admin.stat-band :columns="5" :items="$statItems" />
 
+    <x-filament::section heading="Signups per week" description="Last 12 weeks.">
         {{-- A CSS bar chart: no charting library, and it reads fine when the numbers are all zero. --}}
-        <div class="mt-4 flex h-32 items-end gap-2">
+        <div class="flex h-32 items-end gap-2">
             @php $max = $this->maxGrowth(); @endphp
             @foreach ($this->growth() as $week)
                 <div class="flex flex-1 flex-col items-center gap-1">
@@ -28,65 +32,57 @@
                 </div>
             @endforeach
         </div>
-    </div>
+    </x-filament::section>
 
-    <div class="grid gap-4 lg:grid-cols-2">
-        <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-            <p class="text-sm font-medium text-gray-950 dark:text-white">Which pages win subscribers</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">Signups grouped by the page they came from.</p>
-
-            <div class="mt-3 overflow-x-auto">
+    <div class="grid gap-6 lg:grid-cols-2">
+        <x-filament::section heading="Which pages win subscribers" description="Signups grouped by the page they came from.">
+            <div class="overflow-x-auto">
                 <table class="w-full text-sm">
-                    <thead class="text-left text-xs uppercase text-gray-500 dark:text-gray-400">
+                    <thead class="border-b border-gray-100 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:border-white/5 dark:text-gray-400">
                         <tr>
-                            <th class="py-2">Page</th>
-                            <th class="py-2">Source</th>
-                            <th class="py-2 text-right">Signups</th>
+                            <th class="py-2.5 pe-4">Page</th>
+                            <th class="py-2.5 pe-4">Source</th>
+                            <th class="py-2.5 text-right">Signups</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                    <tbody class="divide-y divide-gray-100 text-gray-700 dark:divide-white/5 dark:text-gray-300">
                         @forelse ($this->topPages() as $page)
                             <tr>
-                                <td class="py-2 text-gray-950 dark:text-white">{{ $page['url'] }}</td>
-                                <td class="py-2 text-gray-500 dark:text-gray-400">{{ $page['source'] }}</td>
-                                <td class="py-2 text-right font-medium text-gray-950 dark:text-white">{{ $page['total'] }}</td>
+                                <td class="py-2.5 pe-4 font-medium text-gray-950 dark:text-white">{{ $page['url'] }}</td>
+                                <td class="py-2.5 pe-4 text-gray-500 dark:text-gray-400">{{ $page['source'] }}</td>
+                                <td class="py-2.5 text-right font-semibold tabular-nums text-gray-950 dark:text-white">{{ $page['total'] }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="3" class="py-3 text-gray-500 dark:text-gray-400">No subscribers yet.</td></tr>
+                            <tr><td colspan="3" class="py-6 text-center text-gray-500 dark:text-gray-400">No subscribers yet.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-        </div>
+        </x-filament::section>
 
-        <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-            <p class="text-sm font-medium text-gray-950 dark:text-white">Recent campaigns</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">
-                Opens are counted by a tracking image, which many mail clients block — treat them as a minimum, not an exact figure.
-            </p>
-
-            <div class="mt-3 overflow-x-auto">
+        <x-filament::section heading="Recent campaigns" description="Opens are counted by a tracking image, which many mail clients block — treat them as a minimum, not an exact figure.">
+            <div class="overflow-x-auto">
                 <table class="w-full text-sm">
-                    <thead class="text-left text-xs uppercase text-gray-500 dark:text-gray-400">
+                    <thead class="border-b border-gray-100 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:border-white/5 dark:text-gray-400">
                         <tr>
-                            <th class="py-2">Campaign</th>
-                            <th class="py-2 text-right">Sent</th>
-                            <th class="py-2 text-right">Opened</th>
+                            <th class="py-2.5 pe-4">Campaign</th>
+                            <th class="py-2.5 pe-4 text-right">Sent</th>
+                            <th class="py-2.5 text-right">Opened</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                    <tbody class="divide-y divide-gray-100 text-gray-700 dark:divide-white/5 dark:text-gray-300">
                         @forelse ($this->recentCampaigns() as $campaign)
                             <tr>
-                                <td class="py-2 text-gray-950 dark:text-white">{{ $campaign->name }}</td>
-                                <td class="py-2 text-right">{{ $campaign->recipients_count }}</td>
-                                <td class="py-2 text-right">{{ $campaign->opened_count }}</td>
+                                <td class="py-2.5 pe-4 font-medium text-gray-950 dark:text-white">{{ $campaign->name }}</td>
+                                <td class="py-2.5 pe-4 text-right tabular-nums">{{ $campaign->recipients_count }}</td>
+                                <td class="py-2.5 text-right tabular-nums">{{ $campaign->opened_count }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="3" class="py-3 text-gray-500 dark:text-gray-400">No campaigns sent yet.</td></tr>
+                            <tr><td colspan="3" class="py-6 text-center text-gray-500 dark:text-gray-400">No campaigns sent yet.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-        </div>
+        </x-filament::section>
     </div>
 </x-filament-panels::page>

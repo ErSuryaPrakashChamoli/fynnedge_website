@@ -17,6 +17,7 @@ use App\Modules\Equifax\Services\EquifaxSettings;
 use App\Modules\Equifax\Services\SurepassEquifaxService;
 use App\Modules\Experian\Services\ExperianSettings;
 use App\Modules\Experian\Services\SurepassExperianService;
+use App\Modules\FynnOn\Listeners\QueueLeadsForFynnOn;
 use App\Modules\MobileOtp\Contracts\SmsProvider;
 use App\Support\Analytics\TrackingScripts;
 use App\Support\ApiClients\AuthenticateApiClient;
@@ -96,6 +97,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // New website leads → FynnOn LMS (queued; inert until FYNNON_LMS_URL/TOKEN are set).
+        QueueLeadsForFynnOn::register();
+
         // The `api-client` guard (config/auth.php): API keys of other systems.
         Auth::viaRequest('api-key', new AuthenticateApiClient);
 

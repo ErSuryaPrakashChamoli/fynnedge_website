@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Enums\LenderStatus;
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\Lender;
 use App\Models\Setting;
@@ -40,11 +41,11 @@ use Illuminate\Support\Arr;
  */
 class QuickEnquiryPageSettings extends Page
 {
+    use BelongsToAdminModule;
+
     protected string $view = 'filament.pages.quick-enquiry-page-settings';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBolt;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website Settings';
 
     protected static ?string $navigationLabel = 'Quick Enquiry Page';
 

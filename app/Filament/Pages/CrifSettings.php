@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Models\Setting;
 use App\Modules\CreditBureau\Services\CrifSettings as Settings;
 use BackedEnum;
@@ -24,11 +25,11 @@ use Filament\Support\Icons\Heroicon;
  */
 class CrifSettings extends Page
 {
+    use BelongsToAdminModule;
+
     protected string $view = 'filament.pages.crif-settings';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Credit Bureau';
 
     protected static ?string $navigationLabel = 'CRIF Settings';
 

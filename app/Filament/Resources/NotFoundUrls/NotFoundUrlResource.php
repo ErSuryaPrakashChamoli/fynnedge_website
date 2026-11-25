@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\NotFoundUrls;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\NotFoundUrls\Pages\ListNotFoundUrls;
 use App\Filament\Resources\NotFoundUrls\Tables\NotFoundUrlsTable;
 use App\Models\NotFoundUrl;
@@ -20,11 +21,11 @@ use Filament\Tables\Table;
  */
 class NotFoundUrlResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = NotFoundUrl::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedExclamationTriangle;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website Settings';
 
     protected static ?string $navigationLabel = 'Missing pages (404)';
 

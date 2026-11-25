@@ -21,6 +21,14 @@
         @if ($article->excerpt)
             <p class="mt-2 text-sm text-ink-muted">{{ $article->excerpt }}</p>
         @endif
+        @if ($cardAuthor = $article->publicAuthor())
+            <p class="mt-3 flex items-center gap-2 text-xs text-ink-faint">
+                @if ($cardAuthorPhoto = $cardAuthor->photoUrl())
+                    <img src="{{ $cardAuthorPhoto }}" alt="" width="20" height="20" loading="lazy" decoding="async" class="h-5 w-5 rounded-full object-cover">
+                @endif
+                <span>{{ __('Written by') }} <span class="font-medium text-ink-muted">{{ $cardAuthor->name }}</span></span>
+            </p>
+        @endif
         <span class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-accent">
             {{ __('Read more') }}
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8h10m0 0-4-4m4 4-4 4" /></svg>

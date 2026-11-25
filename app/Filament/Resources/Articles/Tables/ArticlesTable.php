@@ -31,6 +31,9 @@ class ArticlesTable
                 TextColumn::make('title')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('author.name')
+                    ->label('Author')
+                    ->placeholder('No byline'),
                 TextColumn::make('slug')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),

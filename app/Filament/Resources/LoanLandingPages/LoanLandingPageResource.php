@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\LoanLandingPages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\RestorableAuditLogsRelationManager;
 use App\Filament\Resources\LoanLandingPages\Pages\CreateLoanLandingPage;
 use App\Filament\Resources\LoanLandingPages\Pages\EditLoanLandingPage;
@@ -19,11 +20,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class LoanLandingPageResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = LoanLandingPage::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleGroup;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Loan Landing Pages';
 

@@ -14,8 +14,11 @@ use App\Support\Calculators\CalculatorCatalog;
 use App\Support\Calculators\CalculatorIndexing;
 use App\Support\Pages\CreditScoreIndexing;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Route;
+use Throwable;
 
 /**
  * The canonical, indexable public URL set.
@@ -64,6 +67,17 @@ class Sitemap
     public const CONTROLLER_PAGE_SLUGS = ['about', 'careers', 'faqs'];
 
     /**
+     * Any other published `pages` row — one an admin created in Website Pages →
+     * General Pages — is served at /{slug} by this catch-all route, registered
+     * last in routes/web.php so every real route wins. A slug that an existing
+     * route already answers can never be served by it (see servesGeneralPage()),
+     * and PageForm refuses such slugs.
+     */
+    public const GENERAL_PAGE_ROUTE = 'pages.show';
+
+    public const GENERAL_PAGE_SLUG_PATTERN = '[a-z0-9]+(?:-[a-z0-9]+)*';
+
+    /**
      * Pages whose route is not named after their slug. /faqs was a route long
      * before it had a `pages` row, and `faqs.index` is stored in
      * `faqs.placements` (App\Enums\FaqPlacement), so it keeps that name.
@@ -76,6 +90,51 @@ class Sitemap
     public static function pageRouteName(string $slug): string
     {
         return self::PAGE_ROUTE_NAMES[$slug] ?? $slug;
+    }
+
+    /**
+     * The route name and parameters that serve a page's slug, or null when no
+     * public route serves it.
+     *
+     * @return array{0: string, 1: array<string, string>}|null
+     */
+    public static function pageRoute(string $slug): ?array
+    {
+        if (in_array($slug, self::publicPageSlugs(), true)) {
+            $name = self::pageRouteName($slug);
+
+            return Route::has($name) ? [$name, []] : null;
+        }
+
+        return self::servesGeneralPage($slug) ? [self::GENERAL_PAGE_ROUTE, ['slug' => $slug]] : null;
+    }
+
+    /**
+     * The public URL of a page (whatever its status), or null if it has none.
+     */
+    public static function pageUrl(string $slug, bool $absolute = true): ?string
+    {
+        $route = self::pageRoute($slug);
+
+        return $route ? route($route[0], $route[1], $absolute) : null;
+    }
+
+    /**
+     * Whether /{slug} reaches the general-page catch-all — i.e. the slug is
+     * well-formed and no earlier route (a controller page, /contact, /loans…)
+     * answers that address first.
+     */
+    public static function servesGeneralPage(string $slug): bool
+    {
+        if (preg_match('/^'.self::GENERAL_PAGE_SLUG_PATTERN.'$/', $slug) !== 1 || ! Route::has(self::GENERAL_PAGE_ROUTE)) {
+            return false;
+        }
+
+        try {
+            return Route::getRoutes()->match(Request::create('/'.$slug, 'GET'))->getName() === self::GENERAL_PAGE_ROUTE;
+        } catch (Throwable) {
+            return false;
+        }
     }
 
     /**
@@ -287,16 +346,21 @@ class Sitemap
     }
 
     /**
-     * Legal pages plus /about, /careers and /faqs — every one 404s unless its
-     * row is published.
+     * Legal pages, /about, /careers and /faqs, plus admin-created general pages
+     * at /{slug} — every one 404s unless its row is published. A page no route
+     * serves is left out.
      *
      * @return Collection<int, SitemapCandidate>
      */
     private static function cmsPages(): Collection
     {
+        $pages = Page::query()->published()->get()
+            ->filter(fn (Page $page): bool => self::pageRoute($page->slug) !== null)
+            ->values();
+
         return self::fromRecords(
-            Page::query()->published()->whereIn('slug', self::publicPageSlugs())->get(),
-            fn (Page $page): string => route(self::pageRouteName($page->slug)),
+            $pages,
+            fn (Page $page): string => (string) self::pageUrl($page->slug),
         );
     }
 

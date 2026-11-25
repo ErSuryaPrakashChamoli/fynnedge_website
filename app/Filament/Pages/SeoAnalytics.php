@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Models\Setting;
 use App\Support\Analytics\TrackingScripts;
 use App\Support\Seo\CrawlerPolicy;
@@ -46,11 +47,11 @@ use Filament\Support\Icons\Heroicon;
  */
 class SeoAnalytics extends Page
 {
+    use BelongsToAdminModule;
+
     protected string $view = 'filament.pages.seo-analytics';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMagnifyingGlass;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website Settings';
 
     protected static ?string $navigationLabel = 'SEO & Tracking';
 

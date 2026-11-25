@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CibilCreditRequests;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\CibilCreditRequests\Pages\ListCibilCreditRequests;
 use App\Filament\Resources\CibilCreditRequests\Pages\ViewCibilCreditRequest;
@@ -38,11 +39,11 @@ use function Filament\Support\original_request;
  */
 class CibilCreditRequestResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = CibilCreditRequest::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedQueueList;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'CIBIL';
 
     protected static ?string $navigationLabel = 'CIBIL Requests';
 

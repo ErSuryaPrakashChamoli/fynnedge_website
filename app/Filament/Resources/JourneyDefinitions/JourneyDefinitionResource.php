@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\JourneyDefinitions;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\JourneyDefinitions\Pages\CreateJourneyDefinition;
 use App\Filament\Resources\JourneyDefinitions\Pages\EditJourneyDefinition;
 use App\Filament\Resources\JourneyDefinitions\Pages\ListJourneyDefinitions;
@@ -17,11 +18,11 @@ use Filament\Tables\Table;
 
 class JourneyDefinitionResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = JourneyDefinition::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMapPin;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
 
     protected static ?string $navigationLabel = 'Journeys';
 

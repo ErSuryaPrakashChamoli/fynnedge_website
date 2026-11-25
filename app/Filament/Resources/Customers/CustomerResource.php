@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Customers;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\RelationManagers\CibilRequestsRelationManager;
 use App\Filament\RelationManagers\CreditScoreChecksRelationManager;
@@ -23,11 +24,11 @@ use Filament\Tables\Table;
 
 class CustomerResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = Customer::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
 
     public static function form(Schema $schema): Schema
     {

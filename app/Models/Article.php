@@ -15,11 +15,12 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['title', 'slug', 'excerpt', 'image_path', 'image_alt', 'body', 'category', 'status', 'show_on_home', 'published_at', 'expires_at', 'title_hi', 'excerpt_hi', 'image_alt_hi', 'body_hi'])]
+#[Fillable(['author_id', 'title', 'slug', 'excerpt', 'image_path', 'image_alt', 'body', 'category', 'status', 'show_on_home', 'published_at', 'expires_at', 'title_hi', 'excerpt_hi', 'image_alt_hi', 'body_hi'])]
 class Article extends Model
 {
     /** @use HasFactory<ArticleFactory> */
@@ -34,6 +35,25 @@ class Article extends Model
             'published_at' => 'datetime',
             'expires_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Who wrote it (Admin → Blog & Content → Authors). Optional.
+     */
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(Author::class);
+    }
+
+    /**
+     * The author to credit publicly: only while that author is active, so a
+     * deactivated author's byline disappears without unlinking the article.
+     */
+    public function publicAuthor(): ?Author
+    {
+        $author = $this->author;
+
+        return $author?->is_active ? $author : null;
     }
 
     /**

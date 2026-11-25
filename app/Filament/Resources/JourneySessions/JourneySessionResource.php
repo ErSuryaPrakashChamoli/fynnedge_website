@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\JourneySessions;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\CibilRequestsRelationManager;
 use App\Filament\RelationManagers\CrifReportsRelationManager;
 use App\Filament\RelationManagers\EquifaxRequestsRelationManager;
@@ -21,11 +22,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class JourneySessionResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = JourneySession::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedInboxStack;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
 
     protected static ?string $navigationLabel = 'Applications';
 

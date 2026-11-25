@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SocialVideos;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\RestorableAuditLogsRelationManager;
 use App\Filament\Resources\SocialVideos\Pages\CreateSocialVideo;
 use App\Filament\Resources\SocialVideos\Pages\EditSocialVideo;
@@ -25,11 +26,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
  */
 class SocialVideoResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = SocialVideo::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedFilm;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Social media videos';
 

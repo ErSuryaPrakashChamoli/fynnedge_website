@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\Setting;
 use App\Modules\CreditScore\Enums\BureauName;
@@ -43,11 +44,11 @@ use Livewire\Attributes\Url;
  */
 class CreditScorePageSettings extends Page
 {
+    use BelongsToAdminModule;
+
     protected string $view = 'filament.pages.credit-score-page-settings';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website Settings';
 
     protected static ?string $navigationLabel = 'Credit Score Page';
 

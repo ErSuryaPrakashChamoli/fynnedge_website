@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use App\Models\Page;
+use App\Support\Seo\Sitemap;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -47,11 +49,22 @@ class UrlPath
     public static function isRoutable(string $path): bool
     {
         try {
-            Route::getRoutes()->match(Request::create($path));
-
-            return true;
+            $route = Route::getRoutes()->match(Request::create($path));
         } catch (NotFoundHttpException|MethodNotAllowedHttpException) {
             return false;
         }
+
+        /*
+         * The general-page catch-all (/{slug}, Sitemap::GENERAL_PAGE_ROUTE)
+         * matches almost any one-segment path, but only answers for a
+         * published page. Counting the bare match would send "/no-such-page/"
+         * through a 301 to a 404 and accept redirects to pages that do not
+         * exist.
+         */
+        if ($route->getName() === Sitemap::GENERAL_PAGE_ROUTE) {
+            return Page::query()->published()->where('slug', trim(self::normalize($path), '/'))->exists();
+        }
+
+        return true;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\LoanLandingPageSeo;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\LoanLandingPageSeo\Pages\EditLoanLandingPageSeo;
 use App\Filament\Resources\LoanLandingPageSeo\Pages\ListLoanLandingPageSeo;
@@ -28,11 +29,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class LoanLandingPageSeoResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = LoanLandingPage::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMagnifyingGlass;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Loan Landing Page SEO';
 

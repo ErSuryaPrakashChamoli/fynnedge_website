@@ -2,9 +2,12 @@
 
 use App\Enums\LoanCategory;
 use App\Filament\RelationManagers\AuditLogsRelationManager;
+use App\Filament\Resources\Lenders\Pages\ListLenders;
 use App\Filament\Resources\LoanProducts\Pages\CreateLoanProduct;
 use App\Filament\Resources\LoanProducts\Pages\EditLoanProduct;
 use App\Filament\Resources\LoanProducts\Pages\ListLoanProducts;
+use App\Models\Lender;
+use App\Models\LenderProduct;
 use App\Models\LoanProduct;
 use App\Models\User;
 use Livewire\Livewire;
@@ -18,6 +21,19 @@ it('lists loan products', function () {
 
     Livewire::test(ListLoanProducts::class)
         ->assertSuccessful();
+});
+
+it('counts each loan product\'s lender offers and each lender\'s products in the lists', function () {
+    $product = LoanProduct::factory()->create();
+    $lender = Lender::factory()->create();
+    LenderProduct::factory()->for($product, 'loanProduct')->for($lender, 'lender')->create();
+    LenderProduct::factory()->for($product, 'loanProduct')->create();
+
+    Livewire::test(ListLoanProducts::class)
+        ->assertTableColumnStateSet('lender_products_count', 2, $product);
+
+    Livewire::test(ListLenders::class)
+        ->assertTableColumnStateSet('lender_products_count', 1, $lender);
 });
 
 it('creates a loan product with a slug and category', function () {

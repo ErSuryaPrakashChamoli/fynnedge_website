@@ -2,3 +2,1329 @@
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
+@source '../../../../resources/views/components/admin/**/*';
+
+/*
+ * FynnEdge admin look. A calm financial-services base (navy primary, cool
+ * grey canvas, Plus Jakarta Sans) with one accent colour per module so the
+ * sidebar, module tabs and dashboard are easy to scan. Presentation only — no
+ * component is hidden or re-ordered in a way that changes what a role can do.
+ *
+ * Filament's own styles live in CSS layers; everything here is unlayered, so
+ * it wins without !important. Never set `display` on Filament elements that
+ * use responsive `hidden md:flex` utilities without a media query.
+ */
+
+/* ===================================================================== */
+/* Design tokens                                                          */
+/* ===================================================================== */
+:root {
+    --fe-canvas: #f3f5f9;
+    --fe-surface: #ffffff;
+    --fe-surface-2: #f8fafc;
+    --fe-line: rgb(15 23 42 / 0.08);
+    --fe-line-strong: rgb(15 23 42 / 0.13);
+    --fe-ink: #0f172a;
+    --fe-ink-2: #334155;
+    --fe-muted: #64748b;
+    --fe-faint: #94a3b8;
+    --fe-radius: 1rem;
+    --fe-shadow-xs: 0 1px 2px rgb(15 23 42 / 0.05);
+    --fe-shadow-sm: 0 1px 2px rgb(15 23 42 / 0.04), 0 2px 6px -1px rgb(15 23 42 / 0.06);
+    --fe-shadow-md: 0 10px 30px -12px rgb(15 23 42 / 0.18), 0 2px 6px -2px rgb(15 23 42 / 0.06);
+    --fe-topbar-h: 4rem;
+    --fe-gutter: 1rem;
+
+    /* Default accent (Dashboard and anything without a module). */
+    --fe-accent: var(--primary-600);
+    --fe-accent-soft: var(--primary-50);
+
+    /*
+     * Hover and selected states, used everywhere in the admin. Each is the
+     * current accent (module colour, else primary navy) mixed into the
+     * surface: hover is a clear tint with a thin accent outline, selected is
+     * a deeper tint with a stronger outline (and an accent bar where there is
+     * room). Never a near-white grey that is hard to see.
+     */
+    --fe-hover-mix: 11%;
+    --fe-hover-ring-mix: 32%;
+    --fe-selected-mix: 17%;
+    --fe-selected-ring-mix: 58%;
+}
+
+@media (width >= 48rem) {
+    :root {
+        --fe-gutter: 1.5rem;
+    }
+}
+
+@media (width >= 64rem) {
+    :root {
+        --fe-gutter: 2rem;
+    }
+}
+
+.dark {
+    --fe-canvas: var(--gray-950);
+    --fe-surface: var(--gray-900);
+    --fe-surface-2: rgb(255 255 255 / 0.03);
+    --fe-line: rgb(255 255 255 / 0.08);
+    --fe-line-strong: rgb(255 255 255 / 0.14);
+    --fe-ink: #ffffff;
+    --fe-ink-2: var(--gray-200);
+    --fe-muted: var(--gray-400);
+    --fe-faint: var(--gray-500);
+    --fe-accent-soft: rgb(255 255 255 / 0.06);
+    --fe-hover-mix: 18%;
+    --fe-hover-ring-mix: 42%;
+    --fe-selected-mix: 28%;
+    --fe-selected-ring-mix: 70%;
+}
+
+/* One accent per main module (data-module comes from AdminModuleCluster). */
+[data-module='leads'] {
+    --fe-accent: #0284c7;
+    --fe-accent-soft: #e0f2fe;
+}
+
+[data-module='loan-catalog'] {
+    --fe-accent: #059669;
+    --fe-accent-soft: #d1fae5;
+}
+
+[data-module='credit-bureau'] {
+    --fe-accent: #7c3aed;
+    --fe-accent-soft: #ede9fe;
+}
+
+[data-module='website'] {
+    --fe-accent: #4f46e5;
+    --fe-accent-soft: #e0e7ff;
+}
+
+[data-module='content'] {
+    --fe-accent: #d97706;
+    --fe-accent-soft: #fef3c7;
+}
+
+[data-module='seo'] {
+    --fe-accent: #e11d48;
+    --fe-accent-soft: #ffe4e6;
+}
+
+[data-module='marketing'] {
+    --fe-accent: #c026d3;
+    --fe-accent-soft: #fae8ff;
+}
+
+[data-module='site-settings'] {
+    --fe-accent: #0d9488;
+    --fe-accent-soft: #ccfbf1;
+}
+
+[data-module='administration'] {
+    --fe-accent: #475569;
+    --fe-accent-soft: #e2e8f0;
+}
+
+[data-module='help'] {
+    --fe-accent: #ea580c;
+    --fe-accent-soft: #ffedd5;
+}
+
+.dark [data-module] {
+    --fe-accent-soft: color-mix(in srgb, var(--fe-accent) 22%, transparent);
+}
+
+/*
+ * Shared hover for custom admin views (dashboard widgets, help panels, stat
+ * bands): add `fe-hover` to a link/row instead of hover:bg-gray-50. Set
+ * --fe-accent on the element to tint it with another colour.
+ */
+.fe-hover {
+    transition:
+        background-color 150ms,
+        box-shadow 150ms,
+        color 150ms;
+}
+
+.fe-hover:is(:hover, :focus-visible) {
+    outline: none;
+    background-color: color-mix(in srgb, var(--fe-accent) var(--fe-hover-mix), var(--fe-surface));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fe-accent) var(--fe-hover-ring-mix), transparent);
+}
+
+/* ===================================================================== */
+/* Base                                                                   */
+/* ===================================================================== */
+.fi-body {
+    background:
+        radial-gradient(1100px 420px at 85% -120px, rgb(30 58 95 / 0.07), transparent 70%),
+        radial-gradient(800px 360px at 10% -160px, rgb(14 165 233 / 0.06), transparent 70%),
+        var(--fe-canvas);
+    background-attachment: fixed;
+    color: var(--fe-ink);
+    /* Plus Jakarta Sans sets words close together; open them up a touch. */
+    word-spacing: 0.06em;
+}
+
+.fi-body :is(input, textarea, select, button) {
+    word-spacing: inherit;
+}
+
+.fi-main {
+    padding-inline: var(--fe-gutter);
+}
+
+/* Scrollbars that are always visible and easy to grab (wide tables, sidebar). */
+.fi-body * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(100 116 139 / 0.45) transparent;
+}
+
+.fi-body *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.fi-body *::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background-clip: padding-box;
+    background-color: rgb(100 116 139 / 0.45);
+}
+
+.fi-body *::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(71 85 105 / 0.7);
+}
+
+.fi-body *::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* ===================================================================== */
+/* Top bar                                                                */
+/* ===================================================================== */
+.fi-topbar {
+    @apply relative;
+    min-height: var(--fe-topbar-h);
+    padding-inline: var(--fe-gutter);
+    border-bottom: 1px solid var(--fe-line);
+    background: rgb(255 255 255 / 0.86);
+    box-shadow: none;
+    --tw-ring-shadow: 0 0 #0000;
+    backdrop-filter: saturate(1.6) blur(14px);
+}
+
+.dark .fi-topbar {
+    background: rgb(17 24 39 / 0.86);
+}
+
+/* A thin brand stripe along the very top edge. */
+.fi-topbar::before {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #1e3a5f 0%, #2563eb 35%, #0ea5e9 65%, #10b981 100%);
+    content: '';
+}
+
+@media (width >= 64rem) {
+    .fi-topbar-start {
+        width: calc(var(--sidebar-width) - var(--fe-gutter));
+        margin-inline-end: 1.5rem;
+        gap: 0.25rem;
+    }
+}
+
+.fi-topbar-start .fi-logo {
+    margin-inline-start: 0.25rem;
+}
+
+.fe-brand {
+    margin-inline-start: 0.625rem;
+}
+
+.fe-brand-name {
+    font-size: 1.0625rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--fe-ink);
+}
+
+.fe-brand-tag {
+    margin-top: 0.25rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fe-faint);
+}
+
+.fi-topbar-end {
+    gap: 0.75rem;
+}
+
+.fe-topbar-date {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold;
+    color: var(--fe-muted);
+    background: var(--fe-surface-2);
+    box-shadow: inset 0 0 0 1px var(--fe-line);
+}
+
+.fe-topbar-link {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-semibold transition;
+    color: var(--fe-ink-2);
+    background: var(--fe-surface);
+    box-shadow:
+        inset 0 0 0 1px var(--fe-line-strong),
+        var(--fe-shadow-xs);
+}
+
+.fe-topbar-link:is(:hover, :focus-visible) {
+    outline: none;
+    color: var(--primary-800);
+    background: color-mix(in srgb, var(--primary-600) var(--fe-hover-mix), var(--fe-surface));
+    box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--primary-600) var(--fe-selected-ring-mix), transparent),
+        var(--fe-shadow-xs);
+}
+
+.dark .fe-topbar-link:is(:hover, :focus-visible) {
+    color: #ffffff;
+}
+
+/* Global search: a soft pill that lights up on focus. */
+.fi-global-search-field .fi-input-wrp {
+    border-radius: 999px;
+    background: var(--fe-surface-2);
+    box-shadow: inset 0 0 0 1px var(--fe-line);
+    --tw-ring-shadow: 0 0 #0000;
+}
+
+@media (width >= 64rem) {
+    .fi-global-search-field {
+        width: 20rem;
+    }
+}
+
+.fi-global-search-field .fi-input-wrp:focus-within {
+    background: var(--fe-surface);
+    box-shadow:
+        inset 0 0 0 1px var(--primary-400),
+        0 0 0 4px rgb(37 99 235 / 0.12);
+}
+
+.fi-user-menu .fi-avatar,
+.fi-topbar .fi-user-avatar {
+    box-shadow:
+        0 0 0 2px var(--fe-surface),
+        0 0 0 3.5px var(--primary-200);
+}
+
+/* ===================================================================== */
+/* Sidebar: modules only, each with a coloured icon tile                 */
+/* ===================================================================== */
+.fi-sidebar {
+    @apply bg-white dark:bg-gray-900;
+    border-inline-end: 1px solid var(--fe-line);
+}
+
+.fi-sidebar-header {
+    border-bottom: 1px solid var(--fe-line);
+}
+
+.fi-sidebar-nav {
+    padding: 1.25rem 0.875rem 1.5rem;
+    row-gap: 1.25rem;
+}
+
+.fi-sidebar-nav-groups {
+    margin-inline: 0;
+    row-gap: 1.25rem;
+}
+
+.fi-sidebar-group {
+    row-gap: 0.125rem;
+}
+
+.fi-sidebar-group-btn {
+    padding: 0 0.75rem 0.375rem;
+}
+
+.fi-sidebar-group-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    line-height: 1rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fe-faint);
+}
+
+/* No collapse arrows: groups are always open. */
+.fi-sidebar-group-collapse-btn {
+    display: none;
+}
+
+.fi-sidebar-group-items {
+    row-gap: 0.125rem;
+}
+
+.fi-sidebar-item-btn {
+    position: relative;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    border-radius: 0.75rem;
+    padding: 0.4375rem 0.625rem 0.4375rem 0.4375rem;
+}
+
+.fi-sidebar-item-btn > .fi-sidebar-item-icon {
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    padding: 0.4375rem;
+    border-radius: 0.625rem;
+    color: var(--fe-accent);
+    background: var(--fe-accent-soft);
+    transition:
+        background-color 150ms,
+        color 150ms,
+        box-shadow 150ms;
+}
+
+.fi-sidebar-item-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--fe-ink-2);
+}
+
+.fi-sidebar-item-btn {
+    transition:
+        background-color 150ms,
+        box-shadow 150ms;
+}
+
+.fi-sidebar-item.fi-sidebar-item-has-url:not(.fi-active) > .fi-sidebar-item-btn:is(:hover, :focus-visible) {
+    background: color-mix(in srgb, var(--fe-accent) var(--fe-hover-mix), var(--fe-surface));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fe-accent) var(--fe-hover-ring-mix), transparent);
+}
+
+.fi-sidebar-item.fi-sidebar-item-has-url:not(.fi-active) > .fi-sidebar-item-btn:is(:hover, :focus-visible) > .fi-sidebar-item-label {
+    font-weight: 600;
+    color: color-mix(in srgb, var(--fe-accent) 60%, var(--fe-ink));
+}
+
+.fi-sidebar-item.fi-sidebar-item-has-url:not(.fi-active) > .fi-sidebar-item-btn:is(:hover, :focus-visible) > .fi-sidebar-item-icon {
+    background: color-mix(in srgb, var(--fe-accent) 24%, var(--fe-surface));
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn,
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn:is(:hover, :focus-visible) {
+    background: color-mix(in srgb, var(--fe-accent) var(--fe-selected-mix), var(--fe-surface));
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--fe-accent) var(--fe-selected-ring-mix), transparent);
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn::before {
+    position: absolute;
+    inset-block: 0.625rem;
+    inset-inline-start: -0.875rem;
+    width: 4px;
+    border-radius: 0 4px 4px 0;
+    background: var(--fe-accent);
+    content: '';
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-icon {
+    color: #ffffff;
+    background: var(--fe-accent);
+    box-shadow: 0 6px 14px -6px var(--fe-accent);
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-label {
+    font-weight: 700;
+    color: color-mix(in srgb, var(--fe-accent) 70%, #0f172a);
+}
+
+.dark .fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-label,
+.dark .fi-sidebar-item.fi-sidebar-item-has-url:not(.fi-active) > .fi-sidebar-item-btn:is(:hover, :focus-visible) > .fi-sidebar-item-label {
+    color: #ffffff;
+}
+
+/* Collapsed (icon-only) sidebar keeps the tiles centred. */
+.fi-sidebar:not(.fi-sidebar-open) .fi-sidebar-item-btn {
+    justify-content: center;
+    padding-inline: 0.4375rem;
+}
+
+/* ===================================================================== */
+/* Module tabs: a sticky sub-header under the top bar                    */
+/* ===================================================================== */
+.fi-page.fi-page-has-sub-navigation-top .fi-page-main {
+    display: contents;
+}
+
+.fi-page.fi-page-has-sub-navigation-top .fi-page-header-main-ctn {
+    padding-top: 0;
+}
+
+.fi-page.fi-page-has-sub-navigation-top .fi-page-sub-navigation-tabs {
+    order: -1;
+}
+
+.fi-page.fi-page-has-sub-navigation-top .fi-page-content {
+    order: 1;
+}
+
+.fi-page-sub-navigation-tabs.fi-tabs:not(.fi-contained) {
+    position: sticky;
+    top: var(--fe-topbar-h);
+    z-index: 25;
+    width: auto;
+    max-width: none;
+    margin: 0 calc(var(--fe-gutter) * -1) -0.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0 0.25rem;
+    overflow: visible;
+    padding: 0 calc(var(--fe-gutter) - 0.5rem);
+    border-radius: 0;
+    border-bottom: 1px solid var(--fe-line);
+    background: rgb(255 255 255 / 0.9);
+    box-shadow: 0 6px 16px -14px rgb(15 23 42 / 0.35);
+    --tw-ring-shadow: 0 0 #0000;
+    backdrop-filter: saturate(1.6) blur(14px);
+}
+
+.dark .fi-page-sub-navigation-tabs.fi-tabs:not(.fi-contained) {
+    background: rgb(17 24 39 / 0.9);
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item {
+    position: relative;
+    flex-shrink: 0;
+    gap: 0.5rem;
+    border-radius: 0;
+    padding: 0.9375rem 0.75rem 0.875rem;
+    background: transparent;
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item .fi-tabs-item-label {
+    color: var(--fe-muted);
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item > .fi-icon {
+    color: var(--primary-400);
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item {
+    border-radius: 0.625rem 0.625rem 0 0;
+    transition:
+        background-color 150ms,
+        color 150ms;
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item:is(:hover, :focus-visible):not(.fi-active) {
+    outline: none;
+    background: color-mix(in srgb, var(--primary-600) var(--fe-hover-mix), var(--fe-surface));
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item:is(:hover, :focus-visible):not(.fi-active) .fi-tabs-item-label {
+    color: var(--primary-800);
+}
+
+.dark .fi-page-sub-navigation-tabs .fi-tabs-item:is(:hover, :focus-visible):not(.fi-active) .fi-tabs-item-label {
+    color: #ffffff;
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item:is(:hover, :focus-visible):not(.fi-active) > .fi-icon {
+    color: var(--primary-600);
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item:is(:hover, :focus-visible):not(.fi-active)::after {
+    position: absolute;
+    inset-inline: 0.75rem;
+    bottom: 0;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    background: color-mix(in srgb, var(--primary-600) 45%, transparent);
+    content: '';
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item.fi-active {
+    background: color-mix(in srgb, var(--primary-600) var(--fe-selected-mix), var(--fe-surface));
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item.fi-active .fi-tabs-item-label {
+    font-weight: 700;
+    color: var(--primary-800);
+}
+
+.dark .fi-page-sub-navigation-tabs .fi-tabs-item.fi-active .fi-tabs-item-label {
+    color: var(--primary-300);
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item.fi-active > .fi-icon {
+    color: var(--primary-600);
+}
+
+.fi-page-sub-navigation-tabs .fi-tabs-item.fi-active::after {
+    position: absolute;
+    inset-inline: 0.75rem;
+    bottom: 0;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    background: linear-gradient(90deg, var(--primary-600), #0ea5e9);
+    content: '';
+}
+
+/* Laptop widths: tighter tabs so a module's screens fit on one row. */
+@media (width < 96rem) {
+    .fi-page-sub-navigation-tabs.fi-tabs:not(.fi-contained) {
+        gap: 0;
+    }
+
+    .fi-page-sub-navigation-tabs .fi-tabs-item {
+        gap: 0.375rem;
+        padding-inline: 0.5rem;
+        font-size: 0.8125rem;
+    }
+
+    .fi-page-sub-navigation-tabs .fi-tabs-item > .fi-icon {
+        width: 1.125rem;
+        height: 1.125rem;
+    }
+
+    .fi-page-sub-navigation-tabs .fi-tabs-item.fi-active::after,
+    .fi-page-sub-navigation-tabs .fi-tabs-item:hover::after {
+        inset-inline: 0.5rem;
+    }
+}
+
+/* In-page tabs (list filters such as "Needs attention", form tabs): a segmented control. */
+.fi-tabs:not(.fi-contained):not(.fi-page-sub-navigation-tabs) {
+    gap: 0.25rem;
+    padding: 0.3125rem;
+    border-radius: 0.875rem;
+    background: rgb(226 232 240 / 0.6);
+    box-shadow: inset 0 1px 2px rgb(15 23 42 / 0.06);
+    --tw-ring-shadow: 0 0 #0000;
+}
+
+.dark .fi-tabs:not(.fi-contained):not(.fi-page-sub-navigation-tabs) {
+    background: rgb(255 255 255 / 0.05);
+}
+
+.fi-tabs:not(.fi-contained):not(.fi-page-sub-navigation-tabs) .fi-tabs-item {
+    border-radius: 0.625rem;
+    font-weight: 600;
+}
+
+.fi-tabs:not(.fi-contained):not(.fi-page-sub-navigation-tabs) .fi-tabs-item:is(:hover, :focus-visible):not(.fi-active) {
+    background: color-mix(in srgb, var(--primary-600) var(--fe-hover-mix), var(--fe-surface));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary-600) var(--fe-hover-ring-mix), transparent);
+}
+
+.fi-tabs:not(.fi-contained):not(.fi-page-sub-navigation-tabs) .fi-tabs-item.fi-active {
+    background: var(--fe-surface);
+    box-shadow:
+        inset 0 0 0 1.5px color-mix(in srgb, var(--primary-600) var(--fe-selected-ring-mix), transparent),
+        0 1px 2px rgb(15 23 42 / 0.08),
+        0 2px 8px -2px rgb(15 23 42 / 0.12);
+}
+
+.fi-tabs:not(.fi-page-sub-navigation-tabs) .fi-tabs-item.fi-active .fi-tabs-item-label {
+    font-weight: 700;
+    color: var(--primary-700);
+}
+
+.dark .fi-tabs:not(.fi-page-sub-navigation-tabs) .fi-tabs-item.fi-active .fi-tabs-item-label {
+    color: var(--primary-300);
+}
+
+.fi-tabs:not(.fi-page-sub-navigation-tabs) .fi-tabs-item:is(:hover, :focus-visible):not(.fi-active) .fi-tabs-item-label {
+    color: var(--primary-800);
+}
+
+.dark .fi-tabs:not(.fi-page-sub-navigation-tabs) .fi-tabs-item:is(:hover, :focus-visible):not(.fi-active) .fi-tabs-item-label {
+    color: #ffffff;
+}
+
+.fi-tabs.fi-contained .fi-tabs-item:is(:hover, :focus-visible):not(.fi-active) {
+    background: color-mix(in srgb, var(--primary-600) var(--fe-hover-mix), var(--fe-surface));
+}
+
+.fi-tabs.fi-contained .fi-tabs-item.fi-active {
+    background: color-mix(in srgb, var(--primary-600) var(--fe-selected-mix), var(--fe-surface));
+    box-shadow: inset 0 -2px 0 var(--primary-600);
+}
+
+/*
+ * Tabs that open a menu (Eligibility, Application setup, each bureau…) get a
+ * leading stack icon and a trailing chevron, so it is obvious they drop down.
+ */
+.fi-page-sub-navigation-tabs .fi-dropdown-trigger > .fi-tabs-item::before {
+    order: 9;
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    margin-inline-start: -0.125rem;
+    background: currentColor;
+    color: var(--fe-faint);
+    content: '';
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill-rule='evenodd' d='M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+    transition: transform 150ms;
+}
+
+.fi-page-sub-navigation-tabs .fi-dropdown-trigger[aria-expanded='true'] > .fi-tabs-item::before,
+.fi-page-sub-navigation-tabs .fi-dropdown:has(.fi-dropdown-panel:not([style*='display: none'])) .fi-dropdown-trigger > .fi-tabs-item::before {
+    transform: rotate(180deg);
+}
+
+.fi-page-sub-navigation-tabs .fi-dropdown-trigger > .fi-tabs-item.fi-active::before {
+    color: var(--primary-600);
+}
+
+.fi-page-sub-navigation-tabs .fi-dropdown-trigger > .fi-tabs-item:not(:has(> .fi-icon)) .fi-tabs-item-label::before {
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-inline-end: 0.5rem;
+    vertical-align: -0.3125rem;
+    background: var(--primary-400);
+    content: '';
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 6.878V6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 0 0 4.5 9v.878m13.5-3A2.25 2.25 0 0 1 19.5 9v.878m0 0a2.246 2.246 0 0 0-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0 1 21 12v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6c0-.98.626-1.813 1.5-2.122'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+}
+
+.fi-page-sub-navigation-tabs .fi-dropdown-trigger > .fi-tabs-item.fi-active .fi-tabs-item-label::before {
+    background: var(--primary-600);
+}
+
+/* ===================================================================== */
+/* Page header                                                            */
+/* ===================================================================== */
+.fi-page-header-main-ctn {
+    row-gap: 1.75rem;
+}
+
+.fi-header .fi-breadcrumbs {
+    margin-bottom: 0.375rem;
+}
+
+.fi-breadcrumbs-item-label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--fe-muted);
+}
+
+.fi-breadcrumbs-item:last-child .fi-breadcrumbs-item-label {
+    color: var(--fe-faint);
+}
+
+.fi-header-heading {
+    font-size: 1.75rem;
+    line-height: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--fe-ink);
+}
+
+.fe-screen-summary {
+    margin-top: 0.375rem;
+    font-size: 0.9375rem;
+    line-height: 1.5rem;
+    color: var(--fe-muted);
+}
+
+/* ===================================================================== */
+/* Buttons, badges, inputs                                               */
+/* ===================================================================== */
+.fi-btn {
+    border-radius: 0.75rem;
+    font-weight: 600;
+}
+
+.fi-btn.fi-color-primary:not(.fi-outlined):not(.fi-link) {
+    background-image: linear-gradient(180deg, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0));
+    box-shadow:
+        0 1px 2px rgb(15 23 42 / 0.12),
+        0 8px 18px -10px var(--primary-600);
+}
+
+/* Plain (gray) buttons: a clear tint and outline on hover, not gray-50. */
+.fi-btn:not(.fi-color):not(.fi-outlined):not(.fi-link):not(.fi-disabled):not([disabled]):not(input:checked + label):is(:hover, :focus-visible) {
+    color: var(--primary-800);
+    background: color-mix(in srgb, var(--primary-600) var(--fe-hover-mix), var(--fe-surface));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary-600) var(--fe-selected-ring-mix), transparent);
+}
+
+.fi-btn:not(.fi-color):not(.fi-outlined):not(.fi-link):not(.fi-disabled):not([disabled]):not(input:checked + label):is(:hover, :focus-visible) > .fi-icon {
+    color: var(--primary-600);
+}
+
+.dark .fi-btn:not(.fi-color):not(.fi-outlined):not(.fi-link):not(.fi-disabled):not([disabled]):not(input:checked + label):is(:hover, :focus-visible) {
+    color: #ffffff;
+}
+
+/* Coloured solid buttons brighten a little on hover. */
+.fi-btn.fi-color:not(.fi-outlined):not(.fi-link):not(.fi-disabled):not([disabled]):hover {
+    filter: brightness(1.08);
+}
+
+/* Icon-only buttons (row actions, toolbar icons) get a tinted backdrop on hover. */
+.fi-icon-btn {
+    --fe-item-tone: var(--primary-600);
+}
+
+.fi-icon-btn.fi-color {
+    --fe-item-tone: var(--color-600);
+}
+
+.fi-icon-btn:not(.fi-disabled):not([disabled]):is(:hover, :focus-visible) {
+    background: color-mix(in srgb, var(--fe-item-tone) var(--fe-hover-mix), transparent);
+}
+
+.fi-icon-btn:not(.fi-color):not(.fi-disabled):not([disabled]):is(:hover, :focus-visible) {
+    color: var(--primary-700);
+}
+
+.dark .fi-icon-btn:not(.fi-color):not(.fi-disabled):not([disabled]):is(:hover, :focus-visible) {
+    color: var(--primary-300);
+}
+
+.fi-badge {
+    border-radius: 999px;
+    padding-inline: 0.5625rem;
+    font-weight: 600;
+}
+
+.fi-input-wrp {
+    border-radius: 0.75rem;
+}
+
+.fi-fo-field-label-content {
+    font-weight: 600;
+    color: var(--fe-ink-2);
+}
+
+.fi-dropdown-panel {
+    border-radius: 0.875rem;
+    box-shadow:
+        var(--fe-shadow-md),
+        0 0 0 1px var(--fe-line);
+}
+
+.fi-dropdown-list-item {
+    border-radius: 0.5rem;
+}
+
+/*
+ * Menu items and select options: hover, keyboard focus and the keyboard-
+ * highlighted option (.fi-selected) share one clear tint. Coloured items
+ * (e.g. a red Delete) keep their own colour.
+ */
+.fi-dropdown-list-item {
+    --fe-item-tone: var(--primary-600);
+    transition:
+        background-color 120ms,
+        box-shadow 120ms;
+}
+
+.fi-dropdown-list-item.fi-color {
+    --fe-item-tone: var(--color-600);
+}
+
+.fi-dropdown-list-item:not(.fi-disabled):not([disabled]):is(:hover, :focus-visible, .fi-selected) {
+    outline: none;
+    background: color-mix(in srgb, var(--fe-item-tone) var(--fe-hover-mix), var(--fe-surface));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fe-item-tone) var(--fe-hover-ring-mix), transparent);
+}
+
+.fi-dropdown-list-item:not(.fi-color):not(.fi-disabled):not([disabled]):is(:hover, :focus-visible, .fi-selected) .fi-dropdown-list-item-label,
+.fi-select-input-option:not(.fi-disabled):is(:hover, :focus-visible, .fi-selected) {
+    color: var(--primary-800);
+}
+
+.dark .fi-dropdown-list-item:not(.fi-color):not(.fi-disabled):not([disabled]):is(:hover, :focus-visible, .fi-selected) .fi-dropdown-list-item-label,
+.dark .fi-select-input-option:not(.fi-disabled):is(:hover, :focus-visible, .fi-selected) {
+    color: #ffffff;
+}
+
+.fi-dropdown-list-item:not(.fi-color):not(.fi-disabled):not([disabled]):is(:hover, :focus-visible, .fi-selected) > .fi-icon {
+    color: var(--primary-600);
+}
+
+.fi-modal-window {
+    border-radius: 1.25rem;
+}
+
+/* ===================================================================== */
+/* Surfaces: sections and form panels                                    */
+/* ===================================================================== */
+.fi-section:not(.fi-section-not-contained):not(.fi-aside) {
+    border-radius: var(--fe-radius);
+    box-shadow:
+        var(--fe-shadow-sm),
+        0 0 0 1px var(--fe-line);
+    --tw-ring-shadow: 0 0 #0000;
+}
+
+.fi-section:not(.fi-section-not-contained):not(.fi-aside) > .fi-section-header {
+    border-radius: var(--fe-radius) var(--fe-radius) 0 0;
+    background: linear-gradient(180deg, var(--fe-surface-2), transparent);
+}
+
+.fi-section-header-heading {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--fe-ink);
+}
+
+.fi-section-header-description {
+    color: var(--fe-muted);
+}
+
+.fi-section.fi-aside > .fi-section-content-ctn {
+    border-radius: var(--fe-radius);
+}
+
+/* ===================================================================== */
+/* Tables                                                                 */
+/* ===================================================================== */
+.fi-ta-ctn {
+    border-radius: var(--fe-radius);
+    box-shadow:
+        var(--fe-shadow-sm),
+        0 0 0 1px var(--fe-line);
+    --tw-ring-shadow: 0 0 #0000;
+}
+
+.fi-ta-header-toolbar {
+    padding-block: 0.625rem;
+}
+
+.fi-ta-header-toolbar .fi-input-wrp {
+    border-radius: 999px;
+}
+
+/*
+ * The rows scroll inside the table, so the column headings stay in view
+ * and the sideways scrollbar is always on screen instead of only at the
+ * bottom of a long list.
+ */
+.fi-ta-content-ctn {
+    max-height: max(22rem, calc(100dvh - 15rem));
+    overflow: auto;
+    overscroll-behavior-x: contain;
+}
+
+.fi-ta-table > thead > tr > th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #f8fafc;
+    box-shadow: inset 0 -1px 0 var(--fe-line);
+}
+
+.dark .fi-ta-table > thead > tr > th {
+    background: var(--gray-900);
+}
+
+.fi-ta-table > thead > tr.fi-ta-table-head-groups-row > th {
+    z-index: 3;
+}
+
+.fi-ta-table > thead > tr:not(:first-child) > th {
+    top: 2.625rem;
+}
+
+.fi-ta-header-cell {
+    padding-block: 0.6875rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    line-height: 1.25rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--fe-muted);
+}
+
+.fi-ta-header-cell .fi-ta-header-cell-sort-btn {
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    color: inherit;
+}
+
+.fi-ta-header-cell.fi-ta-header-cell-sorted {
+    color: var(--primary-700);
+}
+
+/*
+ * Columns sit next to each other at their natural width; the last column
+ * (usually the row actions) takes up the spare width instead of it being
+ * spread as wide gaps between every column. Tables with a ->grow() column
+ * keep Filament's behaviour.
+ */
+.fi-ta-table:not(:has(.fi-growable)) > thead > tr:last-child > th:last-child {
+    width: 100%;
+}
+
+.fi-ta-text.fi-wrapped {
+    min-width: 16rem;
+}
+
+/*
+ * Long descriptions under a cell's main text wrap at a readable width
+ * instead of pushing the other columns off screen; short ones stay on
+ * one line (width: max-content).
+ */
+.fi-ta-text > .fi-ta-text-description {
+    width: max-content;
+    max-width: 24rem;
+    white-space: normal;
+}
+
+@media (width >= 40rem) {
+    .fi-ta-table
+        :is(
+            .fi-ta-text,
+            .fi-ta-icon,
+            .fi-ta-image,
+            .fi-ta-color,
+            .fi-ta-select,
+            .fi-ta-toggle,
+            .fi-ta-checkbox,
+            .fi-ta-text-input
+        ):not(.fi-inline) {
+        padding: 0.75rem 1rem;
+    }
+
+    .fi-ta-header-cell {
+        padding-inline: 1rem;
+    }
+}
+
+.fi-ta-table > tbody > tr {
+    transition: background-color 120ms;
+}
+
+.fi-ta-table > tbody > tr:nth-child(even):not(.fi-selected) {
+    background: rgb(248 250 252 / 0.6);
+}
+
+.dark .fi-ta-table > tbody > tr:nth-child(even):not(.fi-selected) {
+    background: rgb(255 255 255 / 0.015);
+}
+
+/*
+ * Row hover and selection. `tr.fi-ta-row` outranks the even-row stripe
+ * above, so striped rows light up too. A hovered row is tinted with an
+ * accent bar at its start; a ticked (bulk-selected) row is tinted deeper.
+ */
+.fi-ta-table > tbody > tr.fi-ta-row:not(.fi-ta-group-header-row):hover {
+    background: color-mix(in srgb, var(--primary-600) var(--fe-hover-mix), var(--fe-surface));
+}
+
+.fi-ta-table > tbody > tr.fi-ta-row.fi-selected {
+    background: color-mix(in srgb, var(--primary-600) var(--fe-selected-mix), var(--fe-surface));
+}
+
+.fi-ta-table > tbody > tr.fi-ta-row.fi-selected:hover {
+    background: color-mix(in srgb, var(--primary-600) calc(var(--fe-selected-mix) + 4%), var(--fe-surface));
+}
+
+@media (width >= 40rem) {
+    .fi-ta-table > tbody > tr.fi-ta-row:not(.fi-ta-group-header-row):hover > td:first-child {
+        box-shadow: inset 3px 0 0 color-mix(in srgb, var(--primary-600) 70%, transparent);
+    }
+
+    .fi-ta-table > tbody > tr.fi-ta-row.fi-selected > td:first-child {
+        box-shadow: inset 3px 0 0 var(--primary-600);
+    }
+}
+
+/* The first column is usually the record's name — give it weight. */
+.fi-ta-table > tbody > tr > td.fi-ta-cell:not(.fi-ta-selection-cell):first-child .fi-ta-text-item:not(.fi-ta-text-has-badges),
+.fi-ta-table > tbody > tr > td.fi-ta-selection-cell + td.fi-ta-cell .fi-ta-text-item:not(.fi-ta-text-has-badges) {
+    font-weight: 600;
+    color: var(--fe-ink);
+}
+
+.fi-ta-footer,
+.fi-ta-ctn .fi-pagination {
+    padding-block: 0.625rem;
+}
+
+.fi-pagination-item-btn,
+.fi-pagination .fi-btn {
+    border-radius: 0.625rem;
+}
+
+.fi-pagination-item:not(.fi-active) .fi-pagination-item-btn:enabled:is(:hover, :focus-visible) {
+    background: color-mix(in srgb, var(--primary-600) var(--fe-hover-mix), var(--fe-surface));
+}
+
+.fi-pagination-item:not(.fi-active) .fi-pagination-item-btn:enabled:is(:hover, :focus-visible) .fi-pagination-item-label {
+    color: var(--primary-800);
+}
+
+/* The current page is a solid navy chip, so it is obvious where you are. */
+.fi-pagination-item.fi-active .fi-pagination-item-btn {
+    background: var(--primary-600);
+}
+
+.fi-pagination-item.fi-active .fi-pagination-item-label {
+    font-weight: 700;
+    color: #ffffff;
+}
+
+/* Global search results. */
+.fi-global-search-result:is(:hover, :focus-within) {
+    background: color-mix(in srgb, var(--primary-600) var(--fe-hover-mix), var(--fe-surface));
+    box-shadow: inset 3px 0 0 var(--primary-600);
+}
+
+.fi-ta-empty-state-icon-bg {
+    background: var(--primary-50);
+}
+
+.fi-ta-empty-state-icon-bg .fi-icon {
+    color: var(--primary-500);
+}
+
+/* ===================================================================== */
+/* Widgets: stats sit on one continuous band, not a grid of cards        */
+/* ===================================================================== */
+.fi-wi-stats-overview-stat {
+    border-radius: var(--fe-radius);
+    box-shadow:
+        var(--fe-shadow-sm),
+        0 0 0 1px var(--fe-line);
+    --tw-ring-shadow: 0 0 #0000;
+}
+
+.fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--fe-muted);
+}
+
+.fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-value {
+    font-size: 1.875rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+}
+
+.fi-wi-chart .fi-section,
+.fi-wi-widget .fi-section {
+    border-radius: var(--fe-radius);
+}
+
+/* Chart headers match the dashboard's own panels. */
+.fi-wi-chart .fi-section-header {
+    padding-block: 1rem;
+    background: none;
+}
+
+.fi-wi-chart .fi-section-header-heading {
+    font-size: 0.9375rem;
+    font-weight: 700;
+}
+
+.fi-wi-chart .fi-section-header-description {
+    margin-top: 0;
+    font-size: 0.75rem;
+}
+
+/* ===================================================================== */
+/* Dashboard welcome banner: the "Jump to" dock                          */
+/* ===================================================================== */
+.fe-jump {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+    padding: 0.875rem 1.5rem 0.625rem;
+    border-top: 1px solid rgb(255 255 255 / 0.14);
+    background: linear-gradient(90deg, rgb(2 6 23 / 0.42), rgb(2 6 23 / 0.2) 60%, rgb(2 6 23 / 0.32));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+}
+
+@media (width >= 40rem) {
+    .fe-jump {
+        padding-inline: 2rem;
+    }
+}
+
+/* The label stays put while the shortcuts scroll beside it. */
+.fe-jump-label {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.375rem;
+    /* Level with the chips: they start 0.25rem down and are 0.25rem taller. */
+    margin-top: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    line-height: 1rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: linear-gradient(135deg, #0ea5e9, #10b981);
+    box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 0.25),
+        0 6px 16px -8px rgb(14 165 233 / 0.9);
+}
+
+.fe-jump-scroller {
+    display: flex;
+    flex: 1;
+    gap: 0.5rem;
+    min-width: 0;
+    overflow-x: auto;
+    padding-block: 0.25rem 0.625rem;
+    /* 'auto' lets Chrome/Edge/Safari use the ::-webkit-scrollbar styles below. */
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+}
+
+.fe-jump-scroller::-webkit-scrollbar {
+    height: 8px;
+}
+
+.fe-jump-scroller::-webkit-scrollbar-track {
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.1);
+}
+
+.fe-jump-scroller::-webkit-scrollbar-thumb {
+    border: 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #38bdf8, #34d399);
+}
+
+.fe-jump-scroller::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(90deg, #7dd3fc, #6ee7b7);
+}
+
+/* Firefox has no ::-webkit-scrollbar: a thin sky thumb on a faint track. */
+@supports not selector(::-webkit-scrollbar) {
+    .fe-jump-scroller {
+        scrollbar-width: thin;
+        scrollbar-color: #38bdf8 rgb(255 255 255 / 0.1);
+    }
+}
+
+/* Each shortcut carries data-module, so --fe-accent is that module's colour. */
+.fe-jump-chip {
+    --fe-jump-tint: color-mix(in srgb, var(--fe-accent) 50%, #ffffff);
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.875rem 0.25rem 0.25rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1rem;
+    color: rgb(255 255 255 / 0.9);
+    background: rgb(255 255 255 / 0.07);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.13);
+    transition:
+        background-color 150ms,
+        box-shadow 150ms,
+        color 150ms,
+        transform 150ms;
+}
+
+.fe-jump-chip-icon {
+    display: inline-flex;
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    color: var(--fe-jump-tint);
+    background: color-mix(in srgb, var(--fe-accent) 30%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fe-accent) 50%, transparent);
+    transition:
+        background-color 150ms,
+        color 150ms;
+}
+
+.fe-jump-chip:is(:hover, :focus-visible) {
+    outline: none;
+    color: #ffffff;
+    background: color-mix(in srgb, var(--fe-accent) 40%, transparent);
+    box-shadow:
+        inset 0 0 0 1px var(--fe-jump-tint),
+        0 8px 18px -10px var(--fe-accent);
+    transform: translateY(-1px);
+}
+
+.fe-jump-chip:is(:hover, :focus-visible) .fe-jump-chip-icon {
+    color: #ffffff;
+    background: var(--fe-accent);
+}
+
+/* ===================================================================== */
+/* Help panels (resources/views/filament/admin)                          */
+/* ===================================================================== */
+.fe-screen-guide summary::-webkit-details-marker {
+    display: none;
+}
+
+/* ===================================================================== */
+/* Sign-in and other simple pages                                        */
+/* ===================================================================== */
+.fi-simple-layout {
+    background:
+        radial-gradient(700px 420px at 85% 10%, rgb(14 165 233 / 0.28), transparent 70%),
+        radial-gradient(640px 420px at 10% 95%, rgb(16 185 129 / 0.18), transparent 70%),
+        linear-gradient(160deg, #0d1b33 0%, #13284a 50%, #0e2f4f 100%);
+}
+
+.fi-simple-main {
+    border-radius: 1.5rem;
+    box-shadow:
+        0 40px 80px -32px rgb(0 0 0 / 0.55),
+        0 0 0 1px rgb(255 255 255 / 0.08);
+    --tw-ring-shadow: 0 0 #0000;
+}
+
+.fi-simple-header-heading {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.fi-simple-layout-header .fi-icon-btn,
+.fi-simple-layout-header .fi-dropdown-trigger {
+    color: rgb(255 255 255 / 0.8);
+}
+
+/* ===================================================================== */
+/* Print                                                                  */
+/* ===================================================================== */
+@media print {
+    .fi-sidebar,
+    .fi-topbar,
+    .fi-page-sub-navigation-tabs {
+        display: none !important;
+    }
+
+    .fi-ta-content-ctn {
+        max-height: none;
+        overflow: visible;
+    }
+}

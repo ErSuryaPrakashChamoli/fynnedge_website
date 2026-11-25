@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\CibilCreditRequests\CibilCreditRequestResource;
 use App\Filament\Resources\ExperianCreditRequests\ExperianCreditRequestResource;
 use App\Models\AuditLog;
@@ -26,11 +27,11 @@ use Illuminate\Support\Collection;
  */
 class CibilDashboard extends Page
 {
+    use BelongsToAdminModule;
+
     protected string $view = 'filament.pages.cibil-dashboard';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBarSquare;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'CIBIL';
 
     protected static ?string $navigationLabel = 'CIBIL Dashboard';
 

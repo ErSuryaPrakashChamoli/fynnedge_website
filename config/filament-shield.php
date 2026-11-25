@@ -1,6 +1,8 @@
 <?php
 
 declare(strict_types=1);
+use App\Filament\Clusters\Administration\AdministrationCluster;
+use App\Filament\Pages\Dashboard;
 use App\Filament\Resources\CibilCreditRequests\CibilCreditRequestResource;
 use App\Filament\Resources\CrifReports\CrifReportResource;
 use App\Filament\Resources\EquifaxCreditRequests\EquifaxCreditRequestResource;
@@ -8,7 +10,6 @@ use App\Filament\Resources\ExperianCreditRequests\ExperianCreditRequestResource;
 use App\Filament\Resources\LenderProductRates\LenderProductRateResource;
 use App\Filament\Widgets\RateHealthOverview;
 use BezhanSalleh\FilamentShield\Resources\Roles\RoleResource;
-use Filament\Pages\Dashboard;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 
@@ -28,7 +29,7 @@ return [
     'shield_resource' => [
         'slug' => 'shield/roles',
         'show_model_path' => true,
-        'cluster' => null,
+        'cluster' => AdministrationCluster::class,
         'tabs' => [
             'pages' => true,
             'widgets' => true,

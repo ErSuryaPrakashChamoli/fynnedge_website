@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PageSeos;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\PageSeos\Pages\CreatePageSeo;
 use App\Filament\Resources\PageSeos\Pages\EditPageSeo;
 use App\Filament\Resources\PageSeos\Pages\ListPageSeos;
@@ -24,11 +25,11 @@ use Filament\Tables\Table;
  */
 class PageSeoResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = PageSeo::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedHashtag;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website Settings';
 
     protected static ?string $navigationLabel = 'Page SEO';
 

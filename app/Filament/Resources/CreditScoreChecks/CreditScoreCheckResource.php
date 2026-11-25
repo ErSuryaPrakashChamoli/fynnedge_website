@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CreditScoreChecks;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\CibilCreditRequests\CibilCreditRequestResource;
 use App\Filament\Resources\CreditScoreChecks\Pages\ListCreditScoreChecks;
 use App\Filament\Resources\CreditScoreChecks\Pages\ViewCreditScoreCheck;
@@ -21,11 +22,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class CreditScoreCheckResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = CreditScoreCheck::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCreditCard;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
 
     protected static ?string $navigationLabel = 'Credit Score Checks';
 

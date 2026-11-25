@@ -1496,5 +1496,12 @@
     "— your profile is created as you do.": "— इसी के साथ आपकी प्रोफ़ाइल बन जाती है।",
     "₹:amount is overdue on your accounts. Pay it in full straight away — every month it stays unpaid is reported to :bureau and pulls your score down further.": "आपके खातों पर ₹:amount ओवरड्यू है। इसे तुरंत पूरा चुकाएं — जितने महीने यह बकाया रहता है, हर महीने :bureau को इसकी जानकारी जाती है और आपका स्कोर और गिरता है।",
     "← All my reports": "← मेरी सभी रिपोर्ट",
-    "← Search from list instead": "← इसके बजाय सूची से खोजें"
+    "← Search from list instead": "← इसके बजाय सूची से खोजें",
+    "Written by": "लेखक",
+    "About the author": "लेखक के बारे में",
+    "Author": "लेखक",
+    "Profile": "प्रोफ़ाइल",
+    "View all articles by :name": ":name के सभी लेख देखें",
+    "Articles by :name": ":name के लेख",
+    "No published articles yet.": "अभी कोई प्रकाशित लेख नहीं है।"
 }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\NewsletterCampaigns;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\NewsletterCampaigns\Pages\CreateNewsletterCampaign;
 use App\Filament\Resources\NewsletterCampaigns\Pages\EditNewsletterCampaign;
 use App\Filament\Resources\NewsletterCampaigns\Pages\ListNewsletterCampaigns;
@@ -16,11 +17,11 @@ use Filament\Tables\Table;
 
 class NewsletterCampaignResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = NewsletterCampaign::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPaperAirplane;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Marketing';
 
     protected static ?string $navigationLabel = 'Campaigns';
 

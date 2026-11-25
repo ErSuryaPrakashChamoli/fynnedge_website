@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Applications;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\Applications\Pages\EditApplication;
 use App\Filament\Resources\Applications\Pages\ListApplications;
@@ -17,11 +18,11 @@ use Filament\Tables\Table;
 
 class ApplicationResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = Application::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentCheck;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
 
     protected static ?string $navigationLabel = 'Loan Applications';
 

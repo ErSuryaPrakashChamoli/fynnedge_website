@@ -10,7 +10,7 @@
     </form>
 
     @if ($results !== null)
-        <div class="mt-8 flex flex-col gap-4">
+        <div class="flex flex-col gap-4">
             @forelse ($results as $row)
                 @php
                     $color = match ($row['status']) {
@@ -19,25 +19,22 @@
                         default => 'danger',
                     };
                 @endphp
-                <x-filament::section>
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-base font-semibold">{{ $row['lender_name'] }}</p>
-                            @if ($row['foir'] !== null)
-                                <p class="text-xs text-gray-500">FOIR: {{ $row['foir'] }}%</p>
-                            @endif
-                        </div>
+                <x-filament::section
+                    :heading="$row['lender_name']"
+                    :description="$row['foir'] !== null ? 'FOIR: '.$row['foir'].'%' : null"
+                >
+                    <x-slot name="afterHeader">
                         <x-filament::badge :color="$color">
                             {{ $row['status_label'] }}
                         </x-filament::badge>
-                    </div>
+                    </x-slot>
 
                     @if (empty($row['reasons']))
-                        <p class="mt-3 text-sm text-gray-500">No eligibility rules are configured yet for this lender product.</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">No eligibility rules are configured yet for this lender product.</p>
                     @else
-                        <ul class="mt-3 flex flex-col gap-1.5">
+                        <ul class="flex flex-col gap-1.5">
                             @foreach ($row['reasons'] as $reason)
-                                <li class="flex items-center gap-2 text-sm">
+                                <li class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                                     @if ($reason['passed'])
                                         <x-filament::icon icon="heroicon-o-check-circle" class="h-4 w-4 text-success-500" />
                                     @else
@@ -54,7 +51,7 @@
                 </x-filament::section>
             @empty
                 <x-filament::section>
-                    <p class="text-sm text-gray-500">No active lenders offer this loan product yet.</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">No active lenders offer this loan product yet.</p>
                 </x-filament::section>
             @endforelse
         </div>

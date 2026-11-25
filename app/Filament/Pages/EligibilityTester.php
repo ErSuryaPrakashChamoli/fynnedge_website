@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Models\LoanProduct;
 use App\Modules\Eligibility\Services\EligibilityEngine;
 use BackedEnum;
@@ -15,9 +16,9 @@ use Filament\Support\Icons\Heroicon;
 
 class EligibilityTester extends Page
 {
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBeaker;
+    use BelongsToAdminModule;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBeaker;
 
     protected static ?string $navigationLabel = 'Eligibility Tester';
 

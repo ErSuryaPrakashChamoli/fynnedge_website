@@ -11,7 +11,7 @@ class ArticleController extends Controller
     public function index(): View
     {
         return view('resources.index', [
-            'articles' => Article::query()->published()->newestFirst()->get(),
+            'articles' => Article::query()->published()->newestFirst()->with('author')->get(),
         ]);
     }
 
@@ -25,6 +25,9 @@ class ArticleController extends Controller
     {
         abort_unless($article->isCurrentlyPublished() || $request->hasValidSignature(), 404);
 
-        return view('resources.show', ['article' => $article]);
+        return view('resources.show', [
+            'article' => $article,
+            'author' => $article->publicAuthor(),
+        ]);
     }
 }

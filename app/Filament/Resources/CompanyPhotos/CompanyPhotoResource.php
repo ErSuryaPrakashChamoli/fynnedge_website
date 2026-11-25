@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CompanyPhotos;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\RestorableAuditLogsRelationManager;
 use App\Filament\Resources\CompanyPhotos\Pages\CreateCompanyPhoto;
 use App\Filament\Resources\CompanyPhotos\Pages\EditCompanyPhoto;
@@ -17,11 +18,11 @@ use Filament\Tables\Table;
 
 class CompanyPhotoResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = CompanyPhoto::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Life at FynnEdge Photos';
 

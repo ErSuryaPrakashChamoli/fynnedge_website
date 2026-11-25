@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Schemas\HindiTranslationSection;
 use App\Models\Setting;
 use App\Support\Calculators\CalculatorIndexing;
@@ -41,6 +42,8 @@ use Illuminate\Support\Arr;
  */
 class CalculatorPagesSettings extends Page
 {
+    use BelongsToAdminModule;
+
     /**
      * Each section of the form: the page key in CalculatorPagesContent, its
      * heading, and the note shown under it.
@@ -59,8 +62,6 @@ class CalculatorPagesSettings extends Page
     protected string $view = 'filament.pages.calculator-pages-settings';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalculator;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website Settings';
 
     protected static ?string $navigationLabel = 'Calculators Page';
 

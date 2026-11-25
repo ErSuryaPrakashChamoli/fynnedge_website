@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Enums\SchemaPageType;
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Models\Setting;
 use App\Support\Seo\SchemaGraph;
 use BackedEnum;
@@ -36,11 +37,11 @@ use Filament\Support\Icons\Heroicon;
  */
 class StructuredData extends Page
 {
+    use BelongsToAdminModule;
+
     protected string $view = 'filament.pages.structured-data';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCodeBracket;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Website Settings';
 
     protected static ?string $navigationLabel = 'Structured Data';
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Models\AuditLog;
 use App\Models\User;
 use App\Modules\CreditBureau\Enums\CrifErrorCode;
@@ -22,11 +23,11 @@ use Illuminate\Support\Collection;
  */
 class CrifDashboard extends Page
 {
+    use BelongsToAdminModule;
+
     protected string $view = 'filament.pages.crif-dashboard';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBarSquare;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Credit Bureau';
 
     protected static ?string $navigationLabel = 'CRIF Dashboard';
 

@@ -2,9 +2,11 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Concerns\FormatsAuditChanges;
 use App\Models\AuditLog;
 use App\Models\User;
+use App\Modules\FynnOn\Enums\FynnOnSyncStatus;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
@@ -24,12 +26,11 @@ use Livewire\WithPagination;
  */
 class AdminActivity extends Page
 {
+    use BelongsToAdminModule;
     use FormatsAuditChanges;
     use WithPagination;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClock;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Access Control';
 
     protected static ?string $navigationLabel = 'Activity';
 
@@ -83,6 +84,7 @@ class AdminActivity extends Page
     public function modelOptions(): array
     {
         return ['' => 'All entities', ...AuditLog::query()
+            ->where('action', 'not like', FynnOnSyncStatus::ACTION_PREFIX.'%')
             ->distinct()
             ->orderBy('auditable_type')
             ->pluck('auditable_type')
@@ -101,9 +103,14 @@ class AdminActivity extends Page
             ->paginate(25);
     }
 
+    /**
+     * FynnOn LMS delivery attempts share audit_logs (see FynnOnSync) but are
+     * system events, not admin activity — they have their own screen.
+     */
     private function filteredQuery(): Builder
     {
         return AuditLog::query()
+            ->where('action', 'not like', FynnOnSyncStatus::ACTION_PREFIX.'%')
             ->when($this->userId, fn (Builder $query) => $query->where('user_id', $this->userId))
             ->when($this->action, fn (Builder $query) => $query->where('action', $this->action))
             ->when($this->model, fn (Builder $query) => $query->where('auditable_type', $this->model))

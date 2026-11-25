@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PromoBars;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\RestorableAuditLogsRelationManager;
 use App\Filament\Resources\PromoBars\Pages\CreatePromoBar;
 use App\Filament\Resources\PromoBars\Pages\EditPromoBar;
@@ -24,11 +25,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
  */
 class PromoBarResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = PromoBar::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMegaphone;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Promo bars';
 

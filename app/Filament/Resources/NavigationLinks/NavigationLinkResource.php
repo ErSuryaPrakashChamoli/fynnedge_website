@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\NavigationLinks;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\RestorableAuditLogsRelationManager;
 use App\Filament\Resources\NavigationLinks\Pages\CreateNavigationLink;
 use App\Filament\Resources\NavigationLinks\Pages\EditNavigationLink;
@@ -17,11 +18,11 @@ use Filament\Tables\Table;
 
 class NavigationLinkResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = NavigationLink::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedLink;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Navigation Links';
 

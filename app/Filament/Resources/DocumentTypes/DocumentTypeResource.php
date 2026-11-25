@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\DocumentTypes;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\DocumentTypes\Pages\CreateDocumentType;
 use App\Filament\Resources\DocumentTypes\Pages\EditDocumentType;
 use App\Filament\Resources\DocumentTypes\Pages\ListDocumentTypes;
@@ -16,11 +17,11 @@ use Filament\Tables\Table;
 
 class DocumentTypeResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = DocumentType::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
 
     public static function form(Schema $schema): Schema
     {

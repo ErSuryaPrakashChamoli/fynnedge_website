@@ -8,7 +8,9 @@ use App\Modules\Analytics\Enums\AnalyticsEventKey;
 use App\Modules\Journey\Models\JourneySession;
 use Database\Factories\AnalyticsEventFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -16,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class AnalyticsEvent extends Model
 {
     /** @use HasFactory<AnalyticsEventFactory> */
-    use HasFactory;
+    use HasFactory, MassPrunable;
 
     public const UPDATED_AT = null;
 
@@ -32,6 +34,17 @@ class AnalyticsEvent extends Model
             'properties' => 'array',
             'created_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Only page views age out (config seo.page_views.retention_days); funnel
+     * milestones are kept for good.
+     */
+    public function prunable(): Builder
+    {
+        return static::query()
+            ->where('event_key', AnalyticsEventKey::PageView)
+            ->where('created_at', '<', now()->subDays(max(30, (int) config('seo.page_views.retention_days', 400))));
     }
 
     public function journeySession(): BelongsTo

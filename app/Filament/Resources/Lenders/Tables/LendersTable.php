@@ -30,7 +30,7 @@ class LendersTable
                 TextColumn::make('type')
                     ->badge()
                     ->toggleable(),
-                TextColumn::make('lenderProducts_count')
+                TextColumn::make('lender_products_count')
                     ->label('Products')
                     ->counts('lenderProducts')
                     ->alignCenter(),

@@ -1,3 +1,6 @@
+@php
+    $author ??= null;
+@endphp
 <x-layouts.app :title="$article->seoTitle()" :description="$article->seoDescription()" :canonical="$article->seoCanonicalUrl()" :og-image="$article->seoOgImageUrl() ?? $article->imageUrl()" :social="$article->seoSocial()" :robots="$article->seoRobots()" :structured-data="$article->seoStructuredData()" :page-type="$article->seoPageType()" :schema-template="$article->seoSchemaTemplate()" og-type="article">
     <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <x-ui.breadcrumbs :trail="[__('Resources') => route('resources.index'), $article->title => null]" />
@@ -9,6 +12,8 @@
         @if ($article->excerpt)
             <p class="mt-3 text-lg text-ink-muted text-justify hyphens-auto">{{ $article->excerpt }}</p>
         @endif
+
+        <x-site.article-byline :author="$author" class="mt-5" />
 
         {{-- Near the top of the article, so it can be the page's Largest Contentful Paint: never lazy. --}}
         @if ($article->imageUrl())
@@ -35,6 +40,8 @@
             </div>
         @endif
 
+        <x-site.article-author-box :author="$author" class="mt-12" />
+
         {{-- Newsletter CTA: after the article, before the schema block, so it reads
              as the natural next step rather than interrupting the article. --}}
         <x-site.newsletter-form
@@ -54,7 +61,15 @@
                 'datePublished' => $article->publishedOn()->toIso8601String(),
                 'dateModified' => $article->updated_at->toIso8601String(),
                 'image' => $article->seoOgImageUrl() ?? $article->imageUrl(),
-                'author' => ['@id' => \App\Support\Seo\SchemaGraph::organizationId()],
+                // The named author when one is assigned (Blog & Content → Authors); otherwise FynnEdge itself.
+                'author' => $author ? array_filter([
+                    '@type' => 'Person',
+                    'name' => $author->name,
+                    'jobTitle' => $author->designation,
+                    'image' => $author->photoUrl(),
+                    'url' => route('resources.authors.show', $author->slug),
+                    'sameAs' => $author->profile_url ? [$author->profile_url] : null,
+                ]) : ['@id' => \App\Support\Seo\SchemaGraph::organizationId()],
                 'publisher' => ['@id' => \App\Support\Seo\SchemaGraph::organizationId()],
                 'mainEntityOfPage' => ['@id' => ($article->seoCanonicalUrl() ?: url()->current()).'#webpage'],
             ])) !!}

@@ -38,6 +38,23 @@ return [
         ],
     ],
 
+    /*
+     * FynnOn LMS — new website leads are pushed here the moment they arrive
+     * (App\Modules\FynnOn). Nothing is sent until FYNNON_LMS_URL and
+     * FYNNON_LMS_TOKEN are both set. `sources` limits which lead types are
+     * pushed (App\Modules\Leads\Enums\LeadSource values, comma separated).
+     * `alert_email` receives a notice when a lead could not be delivered
+     * after every retry.
+     */
+    'fynnon' => [
+        'url' => env('FYNNON_LMS_URL'),
+        'token' => env('FYNNON_LMS_TOKEN'),
+        'signing_secret' => env('FYNNON_LMS_SIGNING_SECRET'),
+        'timeout' => (int) env('FYNNON_LMS_TIMEOUT', 15),
+        'sources' => env('FYNNON_LMS_SOURCES', 'enquiry,credit_score_check,online_application,loan_application,otp_verification'),
+        'alert_email' => env('FYNNON_LMS_ALERT_EMAIL'),
+    ],
+
     'credit_bureau' => [
         // No real bureau is contracted yet — swap this to a concrete provider class
         // (implementing App\Modules\CreditBureau\Contracts\CreditBureauProvider) once

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\LenderProductRates;
 
 use App\Enums\RateStatus;
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\LenderProductRates\Pages\CreateLenderProductRate;
 use App\Filament\Resources\LenderProductRates\Pages\EditLenderProductRate;
@@ -28,11 +29,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class LenderProductRateResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = LenderProductRate::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedReceiptPercent;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
 
     protected static ?string $navigationLabel = 'Interest Rates';
 

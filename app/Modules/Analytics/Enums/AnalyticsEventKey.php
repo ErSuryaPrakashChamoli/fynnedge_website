@@ -21,6 +21,9 @@ enum AnalyticsEventKey: string implements HasLabel
     case DocumentUploaded = 'document_uploaded';
     case ApplicationSubmitted = 'application_submitted';
 
+    /** A public page was viewed (App\Http\Middleware\RecordPageView) — the denominator for Lead Analytics' conversion rates. */
+    case PageView = 'page_view';
+
     public function getLabel(): string
     {
         return match ($this) {
@@ -32,6 +35,7 @@ enum AnalyticsEventKey: string implements HasLabel
             self::LoanExpertRequested => 'Loan expert requested',
             self::DocumentUploaded => 'Document uploaded',
             self::ApplicationSubmitted => 'Application submitted',
+            self::PageView => 'Page view',
         };
     }
 }

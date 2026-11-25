@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\EquifaxCreditRequests;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\EquifaxCreditRequests\Pages\ListEquifaxCreditRequests;
 use App\Filament\Resources\EquifaxCreditRequests\Pages\ViewEquifaxCreditRequest;
@@ -34,11 +35,11 @@ use function Filament\Support\original_request;
  */
 class EquifaxCreditRequestResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = EquifaxCreditRequest::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedQueueList;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Equifax';
 
     protected static ?string $navigationLabel = 'Equifax Requests';
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Models\Setting;
 use App\Modules\Equifax\Services\EquifaxSettings as Settings;
 use BackedEnum;
@@ -25,11 +26,11 @@ use Filament\Support\Icons\Heroicon;
  */
 class EquifaxSettings extends Page
 {
+    use BelongsToAdminModule;
+
     protected string $view = 'filament.pages.equifax-settings';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Equifax';
 
     protected static ?string $navigationLabel = 'Equifax Settings';
 

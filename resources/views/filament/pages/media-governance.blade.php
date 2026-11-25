@@ -40,46 +40,46 @@
         </div>
     </x-filament::section>
 
-    <x-filament::section class="mt-6">
+    <x-filament::section>
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
-                <thead>
-                    <tr class="border-b border-gray-200 text-left text-gray-500 dark:border-gray-700">
-                        <th class="py-2 pr-4 font-medium">Preview</th>
-                        <th class="py-2 pr-4 font-medium">File</th>
-                        <th class="py-2 pr-4 font-medium">Disk</th>
-                        <th class="py-2 pr-4 font-medium">Type</th>
-                        <th class="py-2 pr-4 font-medium">Size</th>
-                        <th class="py-2 pr-4 font-medium">Modified</th>
-                        <th class="py-2 pr-4 font-medium">Used by</th>
-                        <th class="py-2 pr-4 font-medium">Status</th>
-                        <th class="py-2 font-medium">Actions</th>
+                <thead class="border-b border-gray-100 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:border-white/5 dark:text-gray-400">
+                    <tr>
+                        <th class="py-2.5 pe-4">Preview</th>
+                        <th class="py-2.5 pe-4">File</th>
+                        <th class="py-2.5 pe-4">Disk</th>
+                        <th class="py-2.5 pe-4">Type</th>
+                        <th class="py-2.5 pe-4">Size</th>
+                        <th class="py-2.5 pe-4">Modified</th>
+                        <th class="py-2.5 pe-4">Used by</th>
+                        <th class="py-2.5 pe-4">Status</th>
+                        <th class="py-2.5">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-100 text-gray-700 dark:divide-white/5 dark:text-gray-300">
                     @forelse ($this->filteredEntries() as $entry)
-                        <tr class="border-b border-gray-100 align-top dark:border-gray-800">
-                            <td class="py-3 pr-4">
+                        <tr class="align-top">
+                            <td class="py-2.5 pe-4 font-medium text-gray-950 dark:text-white">
                                 @if ($entry->existsOnDisk && $entry->isImage())
                                     <img src="{{ Illuminate\Support\Facades\Storage::disk($entry->disk)->url($entry->path) }}" class="h-12 w-12 rounded object-cover" loading="lazy" alt="">
                                 @else
-                                    <span class="flex h-12 w-12 items-center justify-center rounded bg-gray-100 font-mono text-[0.6rem] uppercase text-gray-400 dark:bg-gray-800">{{ $entry->extension() ?: '?' }}</span>
+                                    <span class="flex h-12 w-12 items-center justify-center rounded bg-gray-100 font-mono text-[0.6rem] uppercase text-gray-400 dark:bg-white/5">{{ $entry->extension() ?: '?' }}</span>
                                 @endif
                             </td>
-                            <td class="py-3 pr-4">
-                                <p class="font-medium text-gray-900 dark:text-gray-100">{{ $entry->filename() }}</p>
-                                <p class="text-xs text-gray-500">{{ $entry->path }}</p>
+                            <td class="py-2.5 pe-4">
+                                <p class="font-medium text-gray-950 dark:text-white">{{ $entry->filename() }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $entry->path }}</p>
                             </td>
-                            <td class="py-3 pr-4">{{ $entry->disk }}</td>
-                            <td class="py-3 pr-4 uppercase">{{ $entry->extension() ?: '—' }}</td>
-                            <td class="py-3 pr-4">{{ $entry->humanSize() ?? '—' }}</td>
-                            <td class="py-3 pr-4 whitespace-nowrap">{{ $entry->lastModifiedAt?->format('d M Y, H:i') ?? '—' }}</td>
-                            <td class="py-3 pr-4">
+                            <td class="py-2.5 pe-4">{{ $entry->disk }}</td>
+                            <td class="py-2.5 pe-4 uppercase">{{ $entry->extension() ?: '—' }}</td>
+                            <td class="py-2.5 pe-4 whitespace-nowrap tabular-nums">{{ $entry->humanSize() ?? '—' }}</td>
+                            <td class="py-2.5 pe-4 whitespace-nowrap tabular-nums">{{ $entry->lastModifiedAt?->format('d M Y, H:i') ?? '—' }}</td>
+                            <td class="py-2.5 pe-4">
                                 @forelse ($entry->references as $reference)
                                     <div class="mb-1 last:mb-0">
-                                        <span class="font-medium">{{ $reference->modelLabel }}</span> —
+                                        <span class="font-medium text-gray-950 dark:text-white">{{ $reference->modelLabel }}</span> —
                                         @if ($reference->recordEditUrl)
-                                            <a href="{{ $reference->recordEditUrl }}" class="text-primary-600 underline" target="_blank">{{ $reference->recordLabel }}</a>
+                                            <a href="{{ $reference->recordEditUrl }}" class="text-primary-600 underline dark:text-primary-400" target="_blank">{{ $reference->recordLabel }}</a>
                                         @else
                                             {{ $reference->recordLabel }}
                                         @endif
@@ -89,10 +89,10 @@
                                     <span class="text-gray-400">Not referenced</span>
                                 @endforelse
                                 @if ($entry->usageCount() > 1)
-                                    <p class="mt-1 text-xs font-semibold text-gray-500">{{ $entry->usageCount() }} usages</p>
+                                    <p class="mt-1 text-xs font-semibold text-gray-500 dark:text-gray-400">{{ $entry->usageCount() }} usages</p>
                                 @endif
                             </td>
-                            <td class="py-3 pr-4">
+                            <td class="py-2.5 pe-4">
                                 <x-filament::badge :color="match ($entry->status()) {
                                     'used' => 'success',
                                     'unused' => 'warning',
@@ -101,7 +101,7 @@
                                     {{ ucfirst($entry->status()) }}
                                 </x-filament::badge>
                             </td>
-                            <td class="py-3">
+                            <td class="py-2.5">
                                 @if ($entry->status() === 'unused')
                                     <x-filament::button
                                         size="xs"
@@ -116,7 +116,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="py-6 text-center text-gray-500">No media matches these filters.</td>
+                            <td colspan="9" class="py-6 text-center text-gray-500 dark:text-gray-400">No media matches these filters.</td>
                         </tr>
                     @endforelse
                 </tbody>

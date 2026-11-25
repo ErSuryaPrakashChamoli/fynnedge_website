@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\EligibilityRuleSets;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\EligibilityRuleSets\Pages\CreateEligibilityRuleSet;
 use App\Filament\Resources\EligibilityRuleSets\Pages\EditEligibilityRuleSet;
@@ -18,11 +19,11 @@ use Filament\Tables\Table;
 
 class EligibilityRuleSetResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = EligibilityRuleSet::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedScale;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
 
     protected static ?string $navigationLabel = 'Eligibility Rules';
 

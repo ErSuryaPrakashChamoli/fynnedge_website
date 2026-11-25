@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\NewsletterSegments;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\NewsletterSegments\Pages\CreateNewsletterSegment;
 use App\Filament\Resources\NewsletterSegments\Pages\EditNewsletterSegment;
 use App\Filament\Resources\NewsletterSegments\Pages\ListNewsletterSegments;
@@ -16,11 +17,11 @@ use Filament\Tables\Table;
 
 class NewsletterSegmentResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = NewsletterSegment::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Marketing';
 
     protected static ?string $navigationLabel = 'Segments';
 

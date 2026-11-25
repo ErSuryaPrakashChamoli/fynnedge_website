@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SchemaTemplates;
 
+use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\RelationManagers\RestorableAuditLogsRelationManager;
 use App\Filament\Resources\SchemaTemplates\Pages\CreateSchemaTemplate;
 use App\Filament\Resources\SchemaTemplates\Pages\EditSchemaTemplate;
@@ -17,11 +18,11 @@ use Filament\Tables\Table;
 
 class SchemaTemplateResource extends Resource
 {
+    use BelongsToAdminModule;
+
     protected static ?string $model = SchemaTemplate::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCodeBracketSquare;
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?string $navigationLabel = 'Schema Templates';
 
