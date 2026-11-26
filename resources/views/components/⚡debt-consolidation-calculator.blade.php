@@ -63,6 +63,20 @@ new class extends Component
         $this->resetForApplicant();
     }
 
+    /**
+     * The add button stops at MAX_ROWS; a request that sends more is cut back
+     * before anything renders.
+     */
+    public function updatedLiabilities(): void
+    {
+        $this->liabilities = LiabilityRows::limit($this->liabilities);
+    }
+
+    public function updatedScenarios(): void
+    {
+        $this->scenarios = array_slice(array_values($this->scenarios), 0, LiabilityRows::MAX_SCENARIOS);
+    }
+
     public function addLiability(): void
     {
         if (count($this->liabilities) < LiabilityRows::MAX_ROWS) {
@@ -332,11 +346,11 @@ new class extends Component
 
     {{-- Results --}}
     {{--
-        Desktop: the results stick below the sticky site header (top-24; at top-6 the first
-        row of tabs slid under it) and are capped at the screen's height, scrolling on their
+        Desktop: the results stick below the sticky site header (top-below-header; at top-6 the
+        first row of tabs slid under it) and are capped at the screen's height, scrolling on their
         own with the tab bar pinned, so a long result can never push the tabs out of reach.
     --}}
-    <div class="flex flex-col gap-4 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pb-1" data-calculator-results>
+    <div class="flex flex-col gap-4 lg:sticky lg:top-below-header lg:max-h-[calc(100vh-var(--site-header-height)-2rem)] lg:overflow-y-auto lg:pb-1" data-calculator-results>
         <div class="flex flex-wrap gap-1 rounded-2xl border border-line bg-surface p-1 lg:sticky lg:top-0 lg:z-10" role="tablist">
             @foreach ($calculators as $key)
                 <button type="button" role="tab" aria-selected="{{ $tab === $key ? 'true' : 'false' }}" wire:click="showTab('{{ $key }}')" @class(['shrink-0 rounded-xl px-3 py-2 text-xs font-semibold sm:text-sm', 'bg-accent text-white' => $tab === $key, 'text-ink-muted hover:text-ink' => $tab !== $key])>{{ $tabLabels[$key] }}</button>

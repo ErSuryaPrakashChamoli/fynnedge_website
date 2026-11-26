@@ -17,6 +17,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Models/Article.php, app/Models/Setting.php | .ai/rules/app-models.md |
 | app/Providers/Filament/AdminPanelProvider.php | .ai/rules/app-providers-filament.md |
 | app/** | .ai/rules/app.md |
+| app/Support/Calculators/CalculatorCatalog.php,app/Http/Controllers/CalculatorController.php | .ai/rules/calculators-http-controllers.md |
 | app/Support/Loans/LoanMegaMenu.php,app/Support/Calculators/CalculatorCatalog.php,app/Models/NavigationLink.php | .ai/rules/calculators-models.md |
 | app/Support/Calculators/CalculatorPagesContent.php,app/Filament/Pages/CalculatorPagesSettings.php,resources/views/calculators/** | .ai/rules/calculators.md |
 | app/Modules/Cibil/** | .ai/rules/cibil.md |
@@ -48,6 +49,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | resources/views/components/⚡credit-score-check.blade.php,app/Modules/CreditScore/**,resources/views/components/site/credit-score-*.blade.php | .ai/rules/credit-score-views-components-site.md |
 | app/Support/Pages/CreditScorePageContent.php,app/Filament/Pages/CreditScorePageSettings.php,resources/views/credit-score/show.blade.php | .ai/rules/credit-score.md |
 | resources/css/filament/admin/theme.css | .ai/rules/css-filament-admin.md |
+| resources/css/app.css,resources/views/components/site/header.blade.php | .ai/rules/css-views-components-site.md |
 | resources/views/components/site/promo-bar.blade.php,resources/js/app.js,resources/css/app.css | .ai/rules/css.md |
 | app/Modules/DebtConsolidation/Actions/UploadDebtDocument.php, app/Modules/DebtConsolidation/Actions/** | .ai/rules/debt-consolidation-actions.md |
 | app/Modules/DebtConsolidation/** | .ai/rules/debt-consolidation.md |
@@ -132,7 +134,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Filament/Schemas/HtmlBodyEditor.php,app/Filament/Resources/**/Schemas/*Form.php | .ai/rules/resources-schemas.md |
 | resources/css/filament/admin/theme.css,app/Filament/Resources/**/Tables/*.php | .ai/rules/resources-tables.md |
 | resources/views/components/layouts/app.blade.php | .ai/rules/resources-views-components-layouts.md |
-| resources/views/components/⚡credit-score-check.blade.php | .ai/rules/resources-views-components.md |
+| resources/views/components/⚡credit-score-check.blade.php, resources/views/components/⚡debt-consolidation-savings-calculator.blade.php | .ai/rules/resources-views-components.md |
 | resources/views/quick-enquiry.blade.php, resources/views/**, resources/views/home.blade.php, resources/views/contact.blade.php | .ai/rules/resources-views.md |
 | app/Filament/Resources/** | .ai/rules/resources.md |
 | routes/api.php, routes/equifax.php, routes/experian.php | .ai/rules/routes.md |
@@ -155,6 +157,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Support/Rates/**,app/Models/LenderProductRate.php,app/Models/LenderProduct.php,app/Models/LoanProduct.php,resources/views/components/site/lender-comparison-table.blade.php,resources/views/components/site/loan-enquiry*.blade.php,app/Support/Calculators/LoanCalculatorPreset.php | .ai/rules/support-calculators.md |
 | resources/views/components/site/partials/loan-mega-menu-panel.blade.php,resources/views/components/site/header.blade.php,app/Support/Loans/LoanMegaMenu.php | .ai/rules/support-loans.md |
 | app/Models/Author.php,app/Filament/Resources/Authors/**,app/Policies/AuthorPolicy.php,app/Filament/Resources/Articles/**,resources/views/resources/**,app/Support/Media/MediaRegistry.php | .ai/rules/support-media.md |
+| resources/views/debt-consolidation/**,app/Http/Controllers/DebtConsolidationPageController.php,app/Support/Pages/DebtConsolidationPageContent.php,app/Filament/Pages/DebtConsolidationPagesSettings.php | .ai/rules/support-pages-filament-pages.md |
 | app/Support/Rates/** | .ai/rules/support-rates.md |
 | app/Filament/Resources/**/Tables/*.php | .ai/rules/tables.md |
 | tests/** | .ai/rules/tests.md |

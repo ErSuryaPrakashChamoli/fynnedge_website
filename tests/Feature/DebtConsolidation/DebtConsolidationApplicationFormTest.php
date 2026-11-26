@@ -15,6 +15,7 @@ use App\Modules\DebtConsolidation\Models\DebtCalculationSnapshot;
 use App\Modules\DebtConsolidation\Models\DebtLiability;
 use App\Modules\DebtConsolidation\Notifications\DebtCaseStaffAlert;
 use App\Modules\DebtConsolidation\Services\DebtConsolidationSettings;
+use App\Modules\DebtConsolidation\Services\LiabilityRows;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
@@ -98,6 +99,14 @@ it('saves loans as they are typed and resumes where the customer left off', func
         ->assertSet('step', 'liabilities')
         ->assertSet('liabilities.0.lender_name', 'Card Co')
         ->assertSet('liabilities.0.outstanding', '120000');
+});
+
+it('saves at most the allowed number of loans, whatever a request sends', function () {
+    $rows = array_map(fn (int $index): array => [...LiabilityRows::blank(ApplicantType::Individual), 'lender_name' => 'Lender '.$index, 'outstanding' => '1000'], range(1, LiabilityRows::MAX_ROWS + 30));
+
+    verifiedApplicationForm()->set('liabilities', $rows)->assertCount('liabilities', LiabilityRows::MAX_ROWS);
+
+    expect(DebtLiability::query()->count())->toBe(LiabilityRows::MAX_ROWS);
 });
 
 it('carries loans entered in the calculator into the case and links the calculator snapshot', function () {

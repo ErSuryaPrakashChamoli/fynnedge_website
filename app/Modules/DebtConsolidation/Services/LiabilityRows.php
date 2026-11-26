@@ -88,7 +88,7 @@ final class LiabilityRows
     {
         $inputs = [];
 
-        foreach ($rows as $row) {
+        foreach (self::limit($rows) as $row) {
             $type = LiabilityType::tryFrom((string) ($row['type'] ?? ''));
             $outstanding = self::number($row['outstanding'] ?? null);
 
@@ -123,6 +123,20 @@ final class LiabilityRows
         }
 
         return $inputs;
+    }
+
+    /**
+     * The first MAX_ROWS rows, re-indexed. The "add a loan" button stops at
+     * MAX_ROWS, but a request can send any number of rows; everything that
+     * calculates or saves goes through this so one request cannot make the
+     * engine or the database work on thousands.
+     *
+     * @param  array<int, array<string, mixed>>  $rows
+     * @return list<array<string, mixed>>
+     */
+    public static function limit(array $rows): array
+    {
+        return array_slice(array_values($rows), 0, self::MAX_ROWS);
     }
 
     /**

@@ -911,7 +911,7 @@ new class extends Component
                 </div>
             @else
                 {{-- Brings the dial into view when the result lands below a scrolled-past form. --}}
-                <div class="flex scroll-mt-28 flex-col gap-6" x-data x-init="if ($el.getBoundingClientRect().top < 0) { $el.scrollIntoView({ behavior: 'smooth', block: 'start' }) }">
+                <div class="flex scroll-mt-below-header flex-col gap-6" x-data x-init="if ($el.getBoundingClientRect().top < 0) { $el.scrollIntoView({ behavior: 'smooth', block: 'start' }) }">
                     @if (in_array($resultKind, ['live', 'demo'], true))
                         <div class="flex flex-col items-center text-center">
                             @if ($resultKind === 'live')

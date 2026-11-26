@@ -89,7 +89,7 @@ class DebtConsolidationPagesSettings extends Page
 
         return [
             Section::make('Hero')->columns(3)->components([
-                $input('hero_badge', 'Badge'), $input('primary_cta_label', 'Primary button (assessment)', 60), $input('secondary_cta_label', 'Secondary button (calculator)', 60),
+                $input('hero_badge', 'Badge'), $input('primary_cta_label', 'Primary button (assessment)', 60), $input('secondary_cta_label', 'Secondary button (debt analyser)', 60),
                 $list('trust_points', 'Trust points')->columnSpanFull(),
             ]),
             Section::make('How it works')->components([
@@ -107,7 +107,9 @@ class DebtConsolidationPagesSettings extends Page
             ]),
             Section::make('Tools, enquiry form and related pages')->columns(2)->components([
                 $input('tools_heading', 'Tools heading')->columnSpanFull(),
-                $input('calculator_card_title', 'Calculator card title'), $area('calculator_card_body', 'Calculator card text'),
+                $input('savings_card_title', 'Savings calculator card title'), $area('savings_card_body', 'Savings calculator card text'),
+                $input('savings_cta_label', 'Savings calculator card button', 60)->columnSpanFull(),
+                $input('calculator_card_title', 'Debt analyser card title'), $area('calculator_card_body', 'Debt analyser card text'),
                 $input('assessment_card_title', 'Assessment card title'), $area('assessment_card_body', 'Assessment card text'),
                 $input('enquiry_heading', 'Enquiry form heading'), $area('enquiry_subheading', 'Enquiry form text'),
                 $input('related_heading', 'Related loan pages heading')->columnSpanFull(),

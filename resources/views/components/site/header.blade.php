@@ -1,32 +1,63 @@
 {{--
-    The top strip sits ABOVE the sticky header, so it is the first thing a
-    visitor meets: the language switch, then the customer portal's Sign in
-    pill in the page's top-right corner. It scrolls away with the page instead
-    of sticking, which keeps the header no taller than it was. The 1024–1279px
-    header row has no spare width for another control (see .ai/rules/site.md).
-    The mobile menu repeats the language switch for a phone visitor who has
-    scrolled down.
---}}
-@php $debtConsolidationLive = \App\Support\Pages\DebtConsolidationPages::hubIsLive(); @endphp
+    The top strip sits ABOVE the header, so it is the first thing a visitor
+    meets: Debt Consolidation (while live), the language switch, then the
+    customer portal's Sign in pill in the page's top-right corner. The
+    1024–1279px header row has no spare width for another control (see
+    .ai/rules/site.md).
 
-<div class="border-b border-line bg-surface" data-language-strip>
-    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-end gap-x-2 gap-y-1 px-6 py-1.5 sm:flex-nowrap sm:gap-3 lg:px-8">
+    Strip and header stick to the top together ([data-site-top]): the user
+    asked (2026-11-26) for the Debt Consolidation band to stay in view while
+    scrolling, where it used to scroll away above the sticky header. Their
+    combined height is published as --site-header-height on <html> (measured
+    on every resize, so a wrapped phone strip or a longer Hindi line is
+    counted), and every sticky panel and scroll target below the header
+    offsets itself by it instead of a fixed top-24.
+--}}
+@php
+    $debtConsolidationLive = \App\Support\Pages\DebtConsolidationPages::hubIsLive();
+    $debtAssessmentUrl = $debtConsolidationLive ? \App\Support\Pages\DebtConsolidationPages::liveUrl('assessment') : null;
+@endphp
+
+<div
+    class="sticky top-0 z-40"
+    x-data
+    x-init="new ResizeObserver(() => document.documentElement.style.setProperty('--site-header-height', `${$el.offsetHeight}px`)).observe($el)"
+    data-site-top
+>
+<div @class(['border-b', 'dc-strip' => $debtConsolidationLive, 'border-line bg-surface' => ! $debtConsolidationLive]) data-language-strip>
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-end gap-x-2 gap-y-1.5 px-6 py-1.5 sm:flex-nowrap sm:gap-3 lg:px-8">
         {{--
             Debt Consolidation is the service the user asked (2026-11-25) to be
-            preferred across the site, so while it is live it opens the strip at
-            every width: on the left from sm, and as its own line above the
-            language switch on phones, where the row has no room for it. Below
-            1280px the header row is already full, so this is its desktop entry
-            there. Everything else in the strip is shrink-0 so only the tagline
-            gives way (with an ellipsis) when space runs short.
+            preferred across the site. The header row stays as it was (the user
+            asked on 2026-11-26 for it to leave the nav), so this strip is its
+            highlighted home instead: while it is live the whole strip turns
+            into a champagne band (.dc-strip) that opens with it, on the left
+            from sm and as its own line above the language switch on phones.
+            Everything else in the strip is shrink-0 so only the tagline gives
+            way (with an ellipsis) when space runs short; the icon waits for md
+            and the Free assessment button for lg, where there is room.
         --}}
         @if ($debtConsolidationLive)
-            <a href="{{ route('debt-consolidation.hub') }}" class="group inline-flex min-w-0 basis-full items-center gap-1.5 text-xs sm:mr-auto sm:basis-auto" data-debt-consolidation-strip>
-                <span class="nav-champagne-badge shrink-0 rounded-full px-1.5 font-mono text-[0.6rem] font-semibold uppercase leading-4 tracking-wider">{{ __('New') }}</span>
-                <span class="shrink-0 font-semibold text-ink transition-colors group-hover:text-accent">{{ __('Debt Consolidation') }}</span>
-                <span class="hidden truncate text-ink-muted lg:inline">— {{ __('Many EMIs? See if one loan would really cost less.') }}</span>
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" class="h-3 w-3 shrink-0 text-accent transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m8 5 5 5-5 5" /></svg>
-            </a>
+            <div class="flex min-w-0 basis-full items-center gap-3 sm:mr-auto sm:basis-auto" data-debt-consolidation-strip>
+                <a href="{{ route('debt-consolidation.hub') }}" class="group inline-flex min-w-0 items-center gap-2 text-xs">
+                    <span class="dc-strip-icon hidden h-6 w-6 shrink-0 items-center justify-center rounded-full md:flex" aria-hidden="true">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h2.5l4 5H17M3 15h2.5l4-5M3 10h6.5m4.5-3 3 3-3 3" /></svg>
+                    </span>
+                    <span class="nav-champagne-badge shrink-0 rounded-full px-1.5 font-mono text-[0.6rem] font-semibold uppercase leading-4 tracking-wider">{{ __('New') }}</span>
+                    <span class="shrink-0 font-semibold text-ink transition-colors group-hover:text-accent">{{ __('Debt Consolidation') }}</span>
+                    <span class="hidden min-w-0 items-center gap-2 text-ink-muted xl:inline-flex">
+                        <span class="h-1 w-1 shrink-0 rounded-full bg-champagne" aria-hidden="true"></span>
+                        <span class="min-w-0 truncate">{{ __('Many EMIs? See if one loan would really cost less.') }}</span>
+                    </span>
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" @class(['h-3 w-3 shrink-0 text-accent transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none', 'lg:hidden' => $debtAssessmentUrl]) aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m8 5 5 5-5 5" /></svg>
+                </a>
+                @if ($debtAssessmentUrl)
+                    <a href="{{ $debtAssessmentUrl }}" class="dc-strip-cta group hidden shrink-0 items-center gap-1 rounded-full px-2.5 text-xs font-semibold leading-6 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent lg:inline-flex" data-debt-consolidation-strip-cta>
+                        {{ __('Free assessment') }}
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" class="h-3 w-3 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m8 5 5 5-5 5" /></svg>
+                    </a>
+                @endif
+            </div>
         @endif
         <span class="hidden shrink-0 items-center gap-1.5 whitespace-nowrap text-xs text-ink-faint sm:inline-flex" aria-hidden="true">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><circle cx="10" cy="10" r="7.25" /><path stroke-linecap="round" d="M2.75 10h14.5M10 2.75c1.9 2 2.9 4.4 2.9 7.25S11.9 15.25 10 17.25C8.1 15.25 7.1 12.85 7.1 10S8.1 4.75 10 2.75Z" /></svg>
@@ -55,7 +86,7 @@
     </div>
 </div>
 
-<header class="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur">
+<header class="relative border-b border-line bg-bg/85 backdrop-blur">
     {{--
         The mobile menu is taller than a phone screen once a section is
         expanded, and it hangs off a sticky header — so without a height of its
@@ -102,7 +133,7 @@
 
         @php $loanCategories = \App\Support\Loans\LoanMegaMenu::categories(); @endphp
 
-        <nav @class(['hidden items-center gap-3.5 lg:flex', 'xl:gap-6' => ! $debtConsolidationLive]) aria-label="{{ __('Primary') }}">
+        <nav class="hidden items-center gap-3.5 lg:flex xl:gap-6" aria-label="{{ __('Primary') }}">
             @if (count($loanCategories))
                 <div x-data="{ open: false, active: '{{ $loanCategories[0]['overviewParams']['loanProduct'] }}' }" @click.outside="open = false" @keydown.escape="open = false" @mouseenter="open = true" @mouseleave="open = false" class="relative">
                     <button
@@ -141,38 +172,45 @@
             @else
                 <x-site.nav-link route="loans.index" :label="__('Loans')" />
             @endif
-            {{--
-                Debt Consolidation sits straight after Loans, in full ink with a
-                "New" tag floated above it (absolute, so it costs no row width).
-                It takes the room of the Eligibility link (the same page as the
-                Check Eligibility button), which shows only while the service is
-                off, and the xl gap drops to the lg one (xl:gap-6 returns while
-                the service is off, as before it existed): even so the English row at
-                1280px has under 20px to spare (see .ai/rules/site.md). Below
-                xl there is no room at all: the strip above carries it there.
-            --}}
-            @if ($debtConsolidationLive)
-                <a
-                    href="{{ route('debt-consolidation.hub') }}"
-                    @if (request()->routeIs('debt-consolidation.*')) aria-current="true" @endif
-                    @class([
-                        'relative whitespace-nowrap text-sm transition-colors max-xl:hidden',
-                        'text-accent font-semibold' => request()->routeIs('debt-consolidation.*'),
-                        'font-medium text-ink hover:text-accent' => ! request()->routeIs('debt-consolidation.*'),
-                    ])
-                    data-nav-debt-consolidation
-                >
-                    {{ __('Debt Consolidation') }}
-                    <span class="nav-champagne-badge pointer-events-none absolute -right-2 -top-3.5 rounded-full px-1 font-mono text-[0.55rem] font-semibold uppercase leading-3.5 tracking-wider">{{ __('New') }}</span>
-                </a>
-            @endif
             <x-site.nav-dropdown :label="__('Credit Score')" activeWhen="credit-score.*" featured :badge="__('Free')">
                 <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'cibil']" :label="__('Free :bureau Score', ['bureau' => 'CIBIL'])" class="block whitespace-nowrap rounded-lg px-3 py-1 hover:bg-surface-2" />
                 <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'experian']" :label="__('Free :bureau Score', ['bureau' => 'Experian'])" class="block whitespace-nowrap rounded-lg px-3 py-1 hover:bg-surface-2" />
                 <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'equifax']" :label="__('Free :bureau Score', ['bureau' => 'Equifax'])" class="block whitespace-nowrap rounded-lg px-3 py-1 hover:bg-surface-2" />
                 <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'crif']" :label="__('Free :bureau Score', ['bureau' => 'CRIF'])" class="block whitespace-nowrap rounded-lg px-3 py-1 hover:bg-surface-2" />
             </x-site.nav-dropdown>
-            <div x-data="{ open: false }" @click.outside="open = false" @keydown.escape="open = false" @mouseenter="open = true" @mouseleave="open = false" class="relative">
+            {{--
+                The three-column Calculators panel (~790px) is wider than the room
+                right of its button at every desktop width, so anchored at the
+                button it ran past the screen. On open it is shifted left just
+                enough to end at the header row's right content edge (under
+                Check Eligibility), never past its left edge. Measured, not a fixed
+                offset like the Loans panel's -left-48, because the button moves
+                with the locale.
+            --}}
+            <div
+                x-data="{
+                    open: false,
+                    offset: 0,
+                    place() {
+                        const row = this.$root.closest('nav').parentElement;
+                        const rowBox = row.getBoundingClientRect();
+                        const rowStyle = getComputedStyle(row);
+                        const start = this.$root.getBoundingClientRect().left;
+                        const end = start + this.$refs.panel.offsetWidth;
+                        const rowLeft = rowBox.left + parseFloat(rowStyle.paddingLeft);
+                        const rowRight = rowBox.right - parseFloat(rowStyle.paddingRight);
+                        this.offset = Math.max(rowLeft - start, Math.min(0, rowRight - end));
+                    },
+                }"
+                x-init="$watch('open', (isOpen) => isOpen && $nextTick(() => place()))"
+                @resize.window="open && place()"
+                @click.outside="open = false"
+                @keydown.escape="open = false"
+                @mouseenter="open = true"
+                @mouseleave="open = false"
+                class="relative"
+                data-calculators-menu
+            >
                 <button
                     type="button"
                     @click="open = !open"
@@ -195,6 +233,8 @@
                     x-transition:enter-start="opacity-0 -translate-y-1"
                     x-transition:enter-end="opacity-100 translate-y-0"
                     @click="open = false"
+                    x-ref="panel"
+                    :style="{ left: offset + 'px' }"
                     class="absolute left-0 top-full z-10 w-max pt-3"
                 >
                     <div class="nav-dropdown-panel rounded-xl border border-line bg-surface p-5 shadow-lg">
@@ -219,13 +259,9 @@
 
             {{--
                 nowrap: a two-word Hindi label (हमारे बारे में) otherwise breaks onto two lines at 1024px.
-                Below xl the row has no room for every item, so the Eligibility link (same page as the
-                Check Eligibility button) is dropped there rather than letting the buttons wrap, and
-                everywhere while Debt Consolidation takes its room.
+                No Eligibility link: the user asked (2026-11-26) to drop it, because the highlighted
+                Check Eligibility button beside the menu opens the same page.
             --}}
-            @unless ($debtConsolidationLive)
-                <x-site.nav-link route="eligibility.index" :label="__('Eligibility')" class="whitespace-nowrap max-xl:hidden" />
-            @endunless
             <x-site.nav-link route="resources.index" :label="__('Resources')" class="whitespace-nowrap" />
             <x-site.nav-link route="faqs.index" :label="__('FAQs')" class="whitespace-nowrap" />
             <x-site.nav-link route="about" :label="__('About')" class="whitespace-nowrap" />
@@ -262,7 +298,7 @@
             x-cloak
             id="mobile-nav"
             :style="menuHeight !== null ? `max-height: ${menuHeight}px` : ''"
-            class="absolute inset-x-0 top-full max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain border-b border-line bg-bg px-6 py-5 shadow-lg lg:hidden"
+            class="absolute inset-x-0 top-full max-h-[calc(100dvh-var(--site-header-height))] overflow-y-auto overscroll-contain border-b border-line bg-bg px-6 py-5 shadow-lg lg:hidden"
         >
             <nav class="flex flex-col gap-4" aria-label="{{ __('Primary') }}">
                 @if (count($loanCategories))
@@ -350,7 +386,6 @@
                     </div>
                 </div>
 
-                <x-site.nav-link route="eligibility.index" :label="__('Eligibility')" />
                 <x-site.nav-link route="resources.index" :label="__('Resources')" />
                 <x-site.nav-link route="faqs.index" :label="__('FAQs')" />
                 <x-site.nav-link route="about" :label="__('About')" />
@@ -370,3 +405,4 @@
         </div>
     </div>
 </header>
+</div>

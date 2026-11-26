@@ -160,3 +160,16 @@ it('keeps the indexing choices when the wording is reset', function () {
 
     expect(CalculatorIndexing::isIndexable('sip'))->toBeFalse();
 });
+
+it('still saves while the Debt Consolidation service is off and its savings calculator is kept out of search', function () {
+    Setting::set(CalculatorIndexing::SETTING_KEY, ['enabled' => true, 'noindex' => ['debt-consolidation']]);
+
+    Livewire::test(CalculatorPagesSettings::class)
+        ->assertSet('data.indexing.noindex', ['debt-consolidation'])
+        ->fillForm(['index.heading' => 'Every calculator we offer'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(CalculatorIndexing::formState()['noindex'])->toBe(['debt-consolidation'])
+        ->and(CalculatorPagesContent::forPage('index')['heading'])->toBe('Every calculator we offer');
+});

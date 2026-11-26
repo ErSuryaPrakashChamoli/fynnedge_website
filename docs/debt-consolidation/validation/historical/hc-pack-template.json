@@ -1,0 +1,79 @@
+{
+    "_read_me": [
+        "TEMPLATE ONLY: contains no case data. Copy it into the restricted validation folder (never into the website repository), fill one object per case from the advisor's case input sheet, and run hc-harness.php on the copy.",
+        "hv00_reference: the reference of Legal/DPO's written HV-00 decision (for example an email or memo ID). The harness refuses to run without it.",
+        "key: HC-01 to HC-20 only. Do not enter names, PAN, Aadhaar, mobile, email, address, date of birth, employer, account, card or loan numbers, or UTRs (procedure section 4).",
+        "as_of: the closure date of the historical case (YYYY-MM-DD). Amounts must be as at that date.",
+        "Liability type: one of personal_loan, credit_card_outstanding, credit_card_emi, consumer_durable_loan, bnpl, education_loan, vehicle_loan, gold_loan, home_loan, loan_against_property, other_personal, unsecured_business_loan, secured_business_loan, msme_loan, nbfc_business_loan, business_term_loan, machinery_loan, commercial_vehicle_loan, cash_credit, overdraft, invoice_financing, merchant_financing, working_capital, other_business.",
+        "mode: full, partial (then fill partial_amount) or exclude.",
+        "Leave quoted_closure_amount null, so the engine's own estimate is compared with the lender's letter (procedure section 5).",
+        "Remove any field the document does not state, rather than guessing a value. Delete these _read_me lines and every _note field before running."
+    ],
+    "hv00_reference": null,
+    "cases": [
+        {
+            "key": "HC-01",
+            "title": null,
+            "applicant_type": "individual",
+            "as_of": null,
+            "individual_finances": {
+                "net_monthly_income": null,
+                "other_monthly_income": null,
+                "monthly_living_expenses": null,
+                "other_monthly_obligations": null
+            },
+            "liabilities": [
+                {
+                    "key": "debt_1",
+                    "type": null,
+                    "lender_name": null,
+                    "outstanding_principal": null,
+                    "annual_interest_rate": null,
+                    "monthly_payment": null,
+                    "remaining_months": null,
+                    "days_past_due": null,
+                    "overdue_amount": null,
+                    "pending_instalment": null,
+                    "accrued_interest": null,
+                    "foreclosure_charge_percent": null,
+                    "foreclosure_charge_fixed": null,
+                    "other_charges": null,
+                    "quoted_closure_amount": null,
+                    "mode": "full",
+                    "partial_amount": null
+                }
+            ],
+            "scenarios": [
+                {
+                    "key": "sanctioned",
+                    "label": "Consolidation loan as sanctioned",
+                    "route": null,
+                    "annual_interest_rate": null,
+                    "tenure_months": null,
+                    "processing_fee_percent": null,
+                    "processing_fee_fixed": null,
+                    "other_upfront_costs": null,
+                    "fees_deducted_from_disbursal": true,
+                    "closure_costs_financed": true,
+                    "loan_amount_override": null
+                }
+            ]
+        },
+        {
+            "_note": "Business case shape: use business_finances instead of individual_finances.",
+            "key": "HC-02",
+            "title": null,
+            "applicant_type": "business",
+            "as_of": null,
+            "business_finances": {
+                "average_monthly_revenue": null,
+                "monthly_operating_expenses": null,
+                "business_vintage_months": null,
+                "annual_turnover": null,
+                "other_monthly_obligations": null
+            },
+            "liabilities": [],
+            "scenarios": []
+        }
+    ]
+}

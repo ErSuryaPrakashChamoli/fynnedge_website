@@ -26,3 +26,7 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Python bytecode from the validation scripts (docs/debt-consolidation/validation)
+__pycache__/
+*.pyc

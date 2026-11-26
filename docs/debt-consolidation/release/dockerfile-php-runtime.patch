@@ -1,0 +1,22 @@
+PROPOSED, NOT APPLIED. Owner decision INF-02 (docs/debt-consolidation/27-PRODUCTION-INFRASTRUCTURE-READINESS.md section 6).
+
+The locked Composer dependencies (Symfony 8 components) require PHP >= 8.4.1
+(vendor/composer/platform_check.php), but the runtime stage uses PHP 8.3, so an
+image built from this Dockerfile stops every request with Composer platform
+error. This predates Debt Consolidation. The test suite runs on PHP 8.5, so
+the patch moves the runtime to 8.5; 8.4 would also satisfy the dependencies.
+Build it and run the smoke tests on a staging host before production.
+
+Check:  git apply --check docs/debt-consolidation/release/dockerfile-php-runtime.patch
+
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -31,7 +31,7 @@
+ ##
+ ## 3) Runtime image: php-fpm + nginx + supervisor
+ ##
+-FROM php:8.3-fpm-alpine AS app
++FROM php:8.5-fpm-alpine AS app
+ 
+ RUN apk add --no-cache \
+         nginx \

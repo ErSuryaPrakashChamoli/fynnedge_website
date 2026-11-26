@@ -1,0 +1,32 @@
+PROPOSED, NOT APPLIED. Owner / Marketing decision W-03 (docs/debt-consolidation/28-WEBSITE-AND-CUSTOMER-EXPERIENCE-REPORT.md section 4).
+
+The strip and header now stick to the top together (about 130px on desktop), so
+the two sticky enquiry panels still at lg:top-6 sit about 100px under it when
+stuck. This moves them to lg:top-below-header, as for the other sticky panels.
+.ai/rules/resources-views.md records that these two were left as they were;
+update that note if this is applied. Run `npm run build` afterwards.
+
+Check:  git apply --check docs/debt-consolidation/release/sticky-enquiry-panels.patch
+
+--- a/resources/views/components/site/loan-enquiry.blade.php
++++ b/resources/views/components/site/loan-enquiry.blade.php
+@@ -128,7 +128,7 @@
+         </div>
+ 
+         {{-- Right: the form. Same component on every loan page. --}}
+-        <div class="lg:sticky lg:top-6">
++        <div class="lg:sticky lg:top-below-header">
+             <x-site.loan-enquiry-form
+                 :loan-product="$loanProduct"
+                 :eyebrow="$content['eyebrow']"
+--- a/resources/views/quick-enquiry.blade.php
++++ b/resources/views/quick-enquiry.blade.php
+@@ -35,7 +35,7 @@
+         </div>
+ 
+         <div class="relative mx-auto grid max-w-7xl gap-10 px-6 pb-8 pt-4 lg:grid-cols-[minmax(0,1fr)_28rem] lg:items-start lg:gap-14 lg:px-8 lg:pb-12 lg:pt-6">
+-            <div id="enquiry-form" class="scroll-mt-below-header lg:sticky lg:top-6 lg:order-last">
++            <div id="enquiry-form" class="scroll-mt-below-header lg:sticky lg:top-below-header lg:order-last">
+                 @if ($loanProducts->isEmpty())
+                     <x-ui.alert tone="accent" :title="__('Online enquiries are paused')">
+                         {!! __('We aren\'t taking online enquiries right now. <a href=":url" class="font-medium underline">Contact us</a> and we\'ll help you directly.', ['url' => e(route('contact'))]) !!}

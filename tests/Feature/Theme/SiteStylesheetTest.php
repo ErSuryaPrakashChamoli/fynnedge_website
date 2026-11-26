@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\File;
+use Symfony\Component\Finder\SplFileInfo;
+
 /**
  * The --color-* tokens declared in the first block of app.css that opens with
  * $opening ('@theme {' for light mode, the data-theme selector for dark).
@@ -71,4 +74,27 @@ it('builds the public stylesheet from the templates, not from whichever views ha
  */
 it('reserves the scrollbar gutter from the first paint', function () {
     expect(file_get_contents(resource_path('css/app.css')))->toMatch('/html \{\s*scrollbar-gutter: stable;\s*\}/');
+});
+
+/*
+ * The strip and the header stick together (2026-11-26), so the sticky block
+ * is about 130px on desktop and 156px on phones. A panel stuck at a fixed
+ * top-20/top-24 (80/96px) slides under it; offsets come from the measured
+ * --site-header-height instead (top-below-header, scroll-mt-below-header).
+ */
+it('offsets every public sticky panel and scroll target by the measured header height', function () {
+    $css = file_get_contents(resource_path('css/app.css'));
+
+    expect($css)
+        ->toContain('@utility top-below-header')
+        ->toContain('@utility scroll-mt-below-header');
+
+    $offenders = collect(File::allFiles(resource_path('views')))
+        ->reject(fn (SplFileInfo $file): bool => str_contains($file->getPathname(), '/filament/'))
+        ->filter(fn (SplFileInfo $file): bool => (bool) preg_match('/class="[^"]*\bsticky\b[^"]*\btop-(?:1[2-9]|2\d|3\d)\b|class="[^"]*\bscroll-mt-(?:1[2-9]|2\d|3\d)\b/', $file->getContents()))
+        ->map(fn (SplFileInfo $file): string => $file->getRelativePathname())
+        ->values()
+        ->all();
+
+    expect($offenders)->toBe([]);
 });

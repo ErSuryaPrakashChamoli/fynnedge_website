@@ -3,6 +3,7 @@
 use App\Enums\PublishStatus;
 use App\Models\Page;
 use App\Models\Setting;
+use App\Modules\DebtConsolidation\Enums\ApplicantType;
 use App\Modules\DebtConsolidation\Models\DebtCalculationSnapshot;
 use App\Modules\DebtConsolidation\Services\DebtConsolidationSettings;
 use App\Modules\DebtConsolidation\Services\LiabilityRows;
@@ -39,6 +40,21 @@ it('shows the consolidation result from the engine, including a tenure warning',
         ->assertSee('₹17,425')
         ->assertSee('₹15,651 less')
         ->assertSee('You would be in debt 1 year longer than today.');
+});
+
+it('works on at most the allowed number of loans, whatever a request sends', function () {
+    $rows = array_map(fn (int $index): array => [...LiabilityRows::blank(ApplicantType::Individual), 'outstanding' => '100000', 'rate' => '18', 'months' => '24'], range(1, LiabilityRows::MAX_ROWS + 30));
+
+    $component = Livewire::test('debt-consolidation-calculator')->set('liabilities', $rows);
+
+    expect($component->get('liabilities'))->toHaveCount(LiabilityRows::MAX_ROWS)
+        ->and($component->instance()->assessment()->portfolio->liabilityCount)->toBe(LiabilityRows::MAX_ROWS);
+});
+
+it('keeps at most the allowed number of options, whatever a request sends', function () {
+    $options = array_map(fn (int $index): array => LiabilityRows::blankScenario('Option '.$index, 12, 48, 1.5), range(1, LiabilityRows::MAX_SCENARIOS + 30));
+
+    expect(Livewire::test('debt-consolidation-calculator')->set('scenarios', $options)->get('scenarios'))->toHaveCount(LiabilityRows::MAX_SCENARIOS);
 });
 
 it('renders every calculator view', function (string $tab, string $expected) {

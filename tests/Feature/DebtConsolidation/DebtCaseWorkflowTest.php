@@ -30,13 +30,17 @@ use App\Modules\DebtConsolidation\Models\DebtFinancialProfile;
 use App\Modules\DebtConsolidation\Models\DebtForeclosureQuotation;
 use App\Modules\DebtConsolidation\Models\DebtLenderPolicy;
 use App\Modules\DebtConsolidation\Models\DebtLiability;
+use App\Modules\DebtConsolidation\Notifications\DebtCaseNotifier;
 use App\Modules\DebtConsolidation\Notifications\DebtCaseStaffAlert;
 use App\Modules\DebtConsolidation\Notifications\DebtCaseUpdate;
 use App\Modules\DebtConsolidation\Services\DebtConsolidationSettings;
+use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\ValidationException;
 
 beforeEach(function () {
@@ -287,6 +291,31 @@ describe('acceptance fixes', function () {
 
         expect($lenderApplication->fresh()->status)->toBe(LenderApplicationStatus::Rejected);
         Notification::assertSentOnDemand(DebtCaseStaffAlert::class, fn (DebtCaseStaffAlert $alert, array $channels, object $notifiable): bool => str_contains($alert->summary, 'withdrew') && $notifiable->routes['mail'] === ['team@example.com']);
+    });
+
+    it('links every email to the site address, never to the host a visitor\'s request names', function () {
+        Notification::fake();
+        Setting::set(DebtConsolidationSettings::KEY, ['staff_notification_email' => 'team@example.com']);
+        $application = ownedAssessedCase();
+        URL::setRequest(Request::create('http://look-alike.example/debt-consolidation/assessment', 'POST'));
+
+        app(DebtCaseNotifier::class)->enquiryReceived($application);
+
+        $site = rtrim((string) config('app.url'), '/').'/';
+        Notification::assertSentOnDemand(DebtCaseStaffAlert::class, fn (DebtCaseStaffAlert $alert): bool => str_starts_with($alert->url, $site));
+        Notification::assertSentTo($application->customer, DebtCaseUpdate::class, fn (DebtCaseUpdate $update): bool => str_starts_with((string) $update->url, $site));
+    });
+
+    it('keeps the customer\'s email address encrypted while their case update waits in the queue', function () {
+        config(['queue.default' => 'database']);
+        $application = ownedAssessedCase();
+        $application->forceFill(['email' => 'customer.private@example.com'])->save();
+
+        app(DebtCaseNotifier::class)->enquiryReceived($application);
+
+        $payloads = DB::table('jobs')->pluck('payload');
+        expect($payloads)->not->toBeEmpty()
+            ->and($payloads->implode(''))->not->toContain('customer.private@example.com');
     });
 
     it('confirms a closure payment only against a known amount, including a quotation recorded after the closure opened', function () {

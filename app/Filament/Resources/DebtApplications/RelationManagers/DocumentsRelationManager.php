@@ -20,8 +20,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -66,21 +65,31 @@ class DocumentsRelationManager extends RelationManager
                     ->icon('heroicon-o-arrow-up-tray')
                     ->visible(fn (): bool => (bool) auth()->user()?->can('create', DebtDocument::class))
                     ->schema([
-                        FileUpload::make('file')->disk('local')->directory('livewire-tmp/debt')->required()
+                        // The upload reaches the action as the temporary file itself, never
+                        // as a path: a path comes from the browser and could name any
+                        // file on the private disk (another case's report, KYC files).
+                        FileUpload::make('file')->storeFiles(false)->preventFilePathTampering()->required()
                             ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])->maxSize((int) config('debt_consolidation.documents.max_kilobytes')),
                         Select::make('document_type_id')->label('Type')->options(fn () => DocumentType::query()->orderBy('order')->pluck('label', 'id'))->required(),
                         TextInput::make('label')->maxLength(150),
                         Select::make('debt_liability_id')->label('About which liability')->options(fn () => $this->getOwnerRecord()->liabilities()->pluck('lender_name', 'id')),
                     ])
                     ->action(function (array $data): void {
-                        $path = Storage::disk('local')->path($data['file']);
+                        $file = $data['file'] ?? null;
+
+                        if (! $file instanceof TemporaryUploadedFile) {
+                            Notification::make()->title('Choose the file to upload again.')->danger()->send();
+
+                            return;
+                        }
+
                         /** @var DebtApplication $application */
                         $application = $this->getOwnerRecord();
 
                         try {
-                            app(UploadDebtDocument::class)->handle($application, new UploadedFile($path, basename($path), null, null, true), DocumentType::query()->find($data['document_type_id']), ActorType::Staff, auth()->id(), $data['label'] ?? null, isset($data['debt_liability_id']) ? (int) $data['debt_liability_id'] : null);
+                            app(UploadDebtDocument::class)->handle($application, $file, DocumentType::query()->find($data['document_type_id']), ActorType::Staff, auth()->id(), $data['label'] ?? null, isset($data['debt_liability_id']) ? (int) $data['debt_liability_id'] : null);
                         } finally {
-                            Storage::disk('local')->delete($data['file']);
+                            $file->delete();
                         }
 
                         Notification::make()->title('Document stored (encrypted)')->success()->send();

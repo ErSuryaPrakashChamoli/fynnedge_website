@@ -42,6 +42,9 @@ class DebtConsolidationPageController extends Controller
 
         $content = DebtConsolidationPageContent::resolve();
         $liveKeys = DebtConsolidationPages::publishedKeys();
+        // The Savings Calculator is public only while the service is live; a
+        // signed preview while it is off must not link to its 404.
+        $savingsCalculatorUrl = DebtConsolidationSettings::enabled() ? route('calculators.debt-consolidation') : null;
 
         return view('debt-consolidation.show', [
             'page' => $page,
@@ -54,7 +57,8 @@ class DebtConsolidationPageController extends Controller
             'calculatorDisclaimer' => DebtConsolidationSettings::text('calculator_disclaimer'),
             'liveKeys' => $liveKeys,
             'previewWhileOff' => $isPreview && ! DebtConsolidationSettings::enabled(),
-            'navigation' => $this->navigation($pageKey, $liveKeys),
+            'savingsCalculatorUrl' => $savingsCalculatorUrl,
+            'navigation' => $this->navigation($pageKey, $liveKeys, $savingsCalculatorUrl),
             'schemaNodes' => in_array($pageKey, ['hub', 'personal', 'business'], true)
                 ? [SchemaGraph::service($page->getRawOriginal('title'), 'Debt consolidation advisory', route(DebtConsolidationPages::route($pageKey)), $page->seoDescription())]
                 : [],
@@ -82,19 +86,22 @@ class DebtConsolidationPageController extends Controller
     }
 
     /**
-     * Links between the Debt Consolidation pages whose rows are live.
+     * Links between the Debt Consolidation pages whose rows are live, plus the
+     * Savings Calculator under /calculators (whenever the service is live),
+     * placed just before the Debt Analyser so a visitor sees the quick estimate
+     * and the loan-by-loan tool side by side and never mistakes one for the other.
      *
      * @param  list<string>  $liveKeys
-     * @return list<array{label: string, url: string, active: bool}>
+     * @return list<array{label: string, url: string, active: bool, tool: bool}>
      */
-    private function navigation(string $current, array $liveKeys): array
+    private function navigation(string $current, array $liveKeys, ?string $savingsCalculatorUrl): array
     {
         $labels = [
             'hub' => __('Overview'),
             'personal' => __('Personal'),
             'business' => __('Business'),
             'how_it_works' => __('How it works'),
-            'calculator' => __('Calculator'),
+            'calculator' => __('Debt analyser'),
             'assessment' => __('Free assessment'),
             'faqs' => __('FAQs'),
         ];
@@ -102,8 +109,12 @@ class DebtConsolidationPageController extends Controller
         $links = [];
 
         foreach (DebtConsolidationPages::PAGES as $key => $definition) {
+            if ($key === 'calculator' && $savingsCalculatorUrl !== null) {
+                $links[] = ['label' => __('Savings calculator'), 'url' => $savingsCalculatorUrl, 'active' => false, 'tool' => true];
+            }
+
             if ($key === $current || in_array($key, $liveKeys, true)) {
-                $links[] = ['label' => $labels[$key], 'url' => route($definition['route']), 'active' => $key === $current];
+                $links[] = ['label' => $labels[$key], 'url' => route($definition['route']), 'active' => $key === $current, 'tool' => false];
             }
         }
 

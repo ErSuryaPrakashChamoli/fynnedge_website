@@ -366,6 +366,169 @@ footer {
 }
 
 /*
+ * The strip above the header while Debt Consolidation is live (x-site.header):
+ * the whole strip becomes a champagne band with a gold rule along its top, so
+ * it reads as the Debt Consolidation announcement. The band is warmest behind
+ * the Debt Consolidation link on the left and fades toward the language switch
+ * and Sign in pill, which keep their own colours on it. Champagne tokens only,
+ * so the dark-mode blocks above re-theme it.
+ */
+.dc-strip {
+    position: relative;
+    border-color: color-mix(in srgb, var(--color-champagne) 40%, transparent);
+    background:
+        radial-gradient(45% 180% at 15% 0%, color-mix(in srgb, var(--color-champagne) 28%, transparent), transparent 70%),
+        linear-gradient(90deg, color-mix(in srgb, var(--color-champagne-soft) 88%, var(--color-champagne)), color-mix(in srgb, var(--color-champagne-soft) 55%, var(--color-surface)));
+}
+
+.dc-strip::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 2px;
+    background: linear-gradient(90deg, #b9892f, #f3dca6 35%, #d9ac55 60%, transparent);
+    pointer-events: none;
+}
+
+/*
+ * The consolidate glyph's disc: navy with a gold glyph in both themes, the
+ * inverse of the Sign in pill's gold avatar, with a soft gold ring pulsing out
+ * of it.
+ */
+.dc-strip-icon {
+    background: linear-gradient(135deg, #1f4f86, #0d2340);
+    color: #f3dca6;
+    box-shadow: inset 0 0 0 1px rgb(217 172 85 / 0.55);
+    animation: dc-strip-ring 2.8s ease-out 1s infinite;
+}
+
+@keyframes dc-strip-ring {
+    0% {
+        box-shadow: inset 0 0 0 1px rgb(217 172 85 / 0.55), 0 0 0 0 rgb(217 172 85 / 0.5);
+    }
+    70%, 100% {
+        box-shadow: inset 0 0 0 1px rgb(217 172 85 / 0.55), 0 0 0 7px rgb(217 172 85 / 0);
+    }
+}
+
+/*
+ * The strip's Free assessment button: an outlined champagne chip that fills
+ * gold (navy text, like the "New" badge) on hover.
+ *
+ * The user asked (2026-11-26) for it to pop to draw the eye: every 3.2s it
+ * springs up and settles (dc-strip-cta-pop), the gold fill appears and fades
+ * away again (::before) and a gold halo ripples out (::after). The text never
+ * fades, so the button is always readable and clickable. Hover and keyboard
+ * focus stop the loop and show the plain hover state; reduced motion turns it
+ * off.
+ */
+.dc-strip-cta {
+    position: relative;
+    isolation: isolate;
+    background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+    color: var(--color-champagne-strong);
+    box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--color-champagne) 60%, transparent),
+        0 4px 10px -6px color-mix(in srgb, var(--color-champagne) 80%, transparent);
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    animation: dc-strip-cta-pop 3.2s ease-in-out 1s infinite;
+}
+
+.dc-strip-cta::before,
+.dc-strip-cta::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.dc-strip-cta::before {
+    z-index: -1;
+    background: linear-gradient(135deg, #f3dca6, #d9ac55);
+    opacity: 0;
+    animation: dc-strip-cta-fill 3.2s ease-in-out 1s infinite;
+}
+
+.dc-strip-cta::after {
+    animation: dc-strip-cta-halo 3.2s ease-out 1s infinite;
+}
+
+.dc-strip-cta:hover {
+    background: linear-gradient(135deg, #f3dca6, #d9ac55);
+    color: #0d2340;
+    box-shadow:
+        inset 0 0 0 1px rgb(185 137 47 / 0.7),
+        0 6px 14px -6px rgb(185 137 47 / 0.9);
+}
+
+.dc-strip-cta:hover,
+.dc-strip-cta:focus-visible,
+.dc-strip-cta:hover::before,
+.dc-strip-cta:focus-visible::before,
+.dc-strip-cta:hover::after,
+.dc-strip-cta:focus-visible::after {
+    animation: none;
+}
+
+@keyframes dc-strip-cta-pop {
+    0% {
+        transform: scale(1);
+        color: var(--color-champagne-strong);
+    }
+    6% {
+        transform: scale(1.14);
+        color: #0d2340;
+    }
+    12% {
+        transform: scale(0.95);
+    }
+    18% {
+        transform: scale(1.05);
+    }
+    24% {
+        transform: scale(1);
+    }
+    28% {
+        color: #0d2340;
+    }
+    40%, 100% {
+        transform: scale(1);
+        color: var(--color-champagne-strong);
+    }
+}
+
+@keyframes dc-strip-cta-fill {
+    0% {
+        opacity: 0;
+    }
+    6%, 28% {
+        opacity: 1;
+    }
+    40%, 100% {
+        opacity: 0;
+    }
+}
+
+@keyframes dc-strip-cta-halo {
+    0% {
+        box-shadow: 0 0 0 0 rgb(217 172 85 / 0.6);
+    }
+    32%, 100% {
+        box-shadow: 0 0 0 9px rgb(217 172 85 / 0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dc-strip-icon,
+    .dc-strip-cta,
+    .dc-strip-cta::before,
+    .dc-strip-cta::after {
+        animation: none;
+    }
+}
+
+/*
  * x-ui.stepper variant="arrows" (the credit-score check's progress bar): a
  * chain of chevrons. Each one is cut by clip-path with a notch on the left
  * and a tip on the right (the first is flat on the left); the stepper's -ml-2
@@ -462,6 +625,37 @@ footer {
  */
 html {
     scrollbar-gutter: stable;
+}
+
+/*
+ * The height of the sticky top block: the strip and the header, which stick
+ * together (x-site.header's [data-site-top]). The header measures itself and
+ * writes the real value on <html> as soon as Alpine starts, and again on every
+ * resize. These are only the fallbacks until then; the phone strip wraps onto
+ * two lines while Debt Consolidation is live.
+ */
+:root {
+    --site-header-height: 9.75rem;
+}
+
+@media (width >= 40rem) {
+    :root {
+        --site-header-height: 8.125rem;
+    }
+}
+
+/*
+ * For a sticky panel (lg:top-below-header) or an anchor/scroll target
+ * (scroll-mt-below-header) that has to clear the sticky top block, with 1rem
+ * to spare. Use these instead of a fixed top-24: the block's height changes
+ * with the locale, the screen width and whether Debt Consolidation is live.
+ */
+@utility top-below-header {
+    top: calc(var(--site-header-height) + 1rem);
+}
+
+@utility scroll-mt-below-header {
+    scroll-margin-top: calc(var(--site-header-height) + 1rem);
 }
 
 /*

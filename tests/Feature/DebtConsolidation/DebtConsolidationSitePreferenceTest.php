@@ -10,9 +10,16 @@ use App\Support\Pages\DebtConsolidationPages;
 
 /**
  * The user asked (2026-11-25) for Debt Consolidation to be preferred across
- * the site: the strip above the header, the desktop nav straight after
- * Loans, the top of the mobile menu, the footer and a homepage feature.
+ * the site: the strip above the header, the top of the mobile menu, the
+ * footer and a homepage feature. Since 2026-11-26 it stays out of the desktop
+ * nav, and the strip is a highlighted Debt Consolidation band instead.
  */
+function desktopNav(string $html): string
+{
+    preg_match('/<nav[^>]*aria-label="Primary">.*?<\/nav>/s', $html, $matches);
+
+    return $matches[0];
+}
 function publishDebtPages(string ...$keys): void
 {
     Page::query()
@@ -33,24 +40,69 @@ it('gives Debt Consolidation first place across the site while it is live', func
     $html = $response->getContent();
 
     $response->assertSeeInOrder(['data-language-strip', 'data-debt-consolidation-strip', 'data-locale-option="en"', 'data-portal-link', '<header'], false)
-        ->assertSeeInOrder(['aria-label="Primary"', 'Loans', 'data-nav-debt-consolidation', 'Credit Score', 'Calculators'], false)
         ->assertSeeInOrder(['id="mobile-nav"', 'Loans', 'data-mobile-debt-consolidation', 'href="'.route('debt-consolidation.assessment').'"', 'Credit Score'], false)
         ->assertSeeInOrder(['<h1', 'data-home-debt-consolidation', 'Get Started with a Quick Enquiry'], false)
         ->assertSee('data-footer-debt-consolidation', false);
 
     $feature = str($html)->after('data-home-debt-consolidation')->before('</section>')->toString();
-    $desktopNav = str($html)->after('aria-label="Primary"')->before('</nav>')->toString();
+    $strip = str($html)->after('data-debt-consolidation-strip')->before('data-locale-option')->toString();
 
     expect($feature)
         ->toContain('Paying several EMIs and card bills?')
         ->toContain('href="'.route('debt-consolidation.assessment').'"')
         ->toContain('Start your free assessment')
         ->toContain('href="'.route('debt-consolidation.calculator').'"')
+        ->toContain('Analyse my loans')
         ->toContain('href="'.route('debt-consolidation.how-it-works').'"')
-        // The desktop nav's Eligibility link (same page as the Check Eligibility
-        // button) gives its room to Debt Consolidation; the button stays.
-        ->and($desktopNav)->not->toMatch('/>\s*Eligibility\s*<\/a>/')
-        ->and($html)->toContain('Check Eligibility');
+        // The whole strip turns into the highlighted Debt Consolidation band,
+        // with the hub link and a Free assessment button.
+        ->and($html)->toMatch('/<div class="border-b dc-strip" data-language-strip>/')
+        ->and($strip)
+        ->toContain('href="'.route('debt-consolidation.hub').'"')
+        ->toMatch('/href="'.preg_quote(route('debt-consolidation.assessment'), '/').'"[^>]*data-debt-consolidation-strip-cta>\s*Free assessment/');
+});
+
+it('leaves the desktop menu as it is without the service while the service is live', function () {
+    $offNav = desktopNav($this->get('/')->getContent());
+
+    switchDebtConsolidation();
+    publishDebtPages('hub', 'assessment');
+    $onNav = desktopNav($this->get('/')->getContent());
+
+    // The only difference: the Calculators menu lists the Savings Calculator,
+    // which is public only while the service is live (CalculatorCatalog).
+    $savingsCalculator = route('calculators.debt-consolidation');
+    $savingsCalculatorLink = '/\s*<a\s+href="'.preg_quote($savingsCalculator, '/').'"[^>]*>\s*Debt Consolidation Savings Calculator\s*<\/a>/';
+
+    expect($offNav)->not->toContain($savingsCalculator)
+        ->and($onNav)->toContain($savingsCalculator)
+        ->and(preg_replace($savingsCalculatorLink, '', $onNav))->toBe($offNav)
+        ->and($onNav)->toContain('xl:gap-6')
+        ->not->toContain(route('debt-consolidation.hub'));
+});
+
+it('keeps the Debt Consolidation strip in view by sticking it to the top together with the header', function () {
+    switchDebtConsolidation();
+    publishDebtPages('hub');
+
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect($html)
+        ->toMatch('/<div\s+class="sticky top-0 z-40"\s+x-data\s+x-init="new ResizeObserver\(.*setProperty\(\'--site-header-height\'.*"\s+data-site-top\s*>\s*<div class="border-b dc-strip" data-language-strip>/')
+        ->toMatch('/<\/header>\s*<\/div>\s*<main/')
+        // Only the wrapper sticks; a sticky <header> inside it would detach from the strip.
+        ->toContain('<header class="relative border-b');
+});
+
+it('pops the strip\'s Free assessment chip to draw the eye, except on hover, focus or with reduced motion', function () {
+    $css = file_get_contents(resource_path('css/app.css'));
+
+    expect($css)
+        ->toMatch('/\.dc-strip-cta \{[^}]*animation: dc-strip-cta-pop 3\.2s[^}]*\}/')
+        ->toMatch('/\.dc-strip-cta::before \{[^}]*animation: dc-strip-cta-fill[^}]*\}/')
+        ->toMatch('/\.dc-strip-cta::after \{[^}]*animation: dc-strip-cta-halo[^}]*\}/')
+        ->toMatch('/\.dc-strip-cta:hover,\s*\.dc-strip-cta:focus-visible,[^{]*\{\s*animation: none;\s*\}/')
+        ->toMatch('/@media \(prefers-reduced-motion: reduce\) \{\s*\.dc-strip-icon,\s*\.dc-strip-cta,\s*\.dc-strip-cta::before,\s*\.dc-strip-cta::after \{\s*animation: none;/');
 });
 
 it('shows none of it while the service is off or the hub is a draft', function (bool $enabled, bool $hubPublished) {
@@ -65,12 +117,10 @@ it('shows none of it while the service is off or the hub is a draft', function (
     $response = $this->get('/')
         ->assertOk()
         ->assertDontSee('data-debt-consolidation-strip', false)
-        ->assertDontSee('data-nav-debt-consolidation', false)
+        ->assertSee('<div class="border-b border-line bg-surface" data-language-strip>', false)
         ->assertDontSee('data-mobile-debt-consolidation', false)
         ->assertDontSee('data-footer-debt-consolidation', false)
         ->assertDontSee('data-home-debt-consolidation', false);
-
-    expect(str($response->getContent())->after('aria-label="Primary"')->before('</nav>')->toString())->toMatch('/>\s*Eligibility\s*<\/a>/');
 })->with([
     'switched off, hub published' => [false, true],
     'switched on, hub still a draft' => [true, false],
@@ -83,6 +133,7 @@ it('points the homepage buttons only at published pages', function () {
     $html = $this->get('/')->assertOk()->getContent();
     $feature = str($html)->after('data-home-debt-consolidation')->before('</section>')->toString();
     $mobileItem = str($html)->after('data-mobile-debt-consolidation')->before('Credit Score')->toString();
+    $strip = str($html)->after('data-debt-consolidation-strip')->before('data-locale-option')->toString();
 
     expect($feature)
         ->toContain('Explore debt consolidation')
@@ -90,7 +141,9 @@ it('points the homepage buttons only at published pages', function () {
         ->not->toContain(route('debt-consolidation.assessment'))
         ->not->toContain(route('debt-consolidation.calculator'))
         ->not->toContain(route('debt-consolidation.how-it-works'))
-        ->and($mobileItem)->not->toContain('Free assessment');
+        ->and($mobileItem)->not->toContain('Free assessment')
+        ->and($strip)->toContain('href="'.route('debt-consolidation.hub').'"')
+        ->not->toContain('data-debt-consolidation-strip-cta');
 });
 
 it('takes the homepage wording from the Debt Consolidation marketing section', function () {
@@ -145,15 +198,4 @@ it('shows the strip, menu and homepage feature in Hindi', function () {
         ->assertSee('मुफ़्त आकलन →')
         ->assertSee('कई EMI और कार्ड बिल चुका रहे हैं?')
         ->assertDontSee('Paying several EMIs and card bills?');
-});
-
-it('keeps the original desktop menu spacing while the service is off', function () {
-    $offNav = str($this->get('/')->getContent())->after('<nav')->before('aria-label="Primary"')->toString();
-
-    switchDebtConsolidation();
-    publishDebtPages('hub');
-    $onNav = str($this->get('/')->getContent())->after('<nav')->before('aria-label="Primary"')->toString();
-
-    expect($offNav)->toContain('xl:gap-6')
-        ->and($onNav)->not->toContain('xl:gap-6');
 });

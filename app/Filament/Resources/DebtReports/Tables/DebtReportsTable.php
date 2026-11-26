@@ -33,6 +33,7 @@ class DebtReportsTable
                 Action::make('download')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('gray')
+                    ->visible(fn (DebtReport $record): bool => (bool) auth()->user()?->can('view', $record))
                     ->action(function (DebtReport $record): StreamedResponse {
                         $record->application->recordEvent('report_downloaded', ['report' => $record->public_id], auth()->id());
 

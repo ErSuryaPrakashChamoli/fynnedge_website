@@ -87,6 +87,12 @@ class CalculatorPagesContent
                 'heading' => 'Daily SIP Calculator',
                 'description' => "Adjust the daily investment, expected return and tenure to estimate your daily SIP's maturity value.",
             ],
+            'debt_consolidation' => [
+                'meta_title' => 'Debt Consolidation Savings Calculator',
+                'meta_description' => 'Compare your current EMIs and total repayment with one consolidation loan, including processing fees and foreclosure charges.',
+                'heading' => 'Debt Consolidation Savings Calculator',
+                'description' => 'Enter what you owe on credit cards and loans to compare your monthly EMI and, more importantly, the total you would repay with one consolidation loan.',
+            ],
             'gst' => [
                 'meta_title' => 'GST Calculator',
                 'meta_description' => 'Add or remove GST from an amount and see the CGST/SGST split.',

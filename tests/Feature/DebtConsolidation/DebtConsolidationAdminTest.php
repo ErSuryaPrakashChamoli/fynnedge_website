@@ -9,6 +9,7 @@ use App\Filament\Resources\DebtApplications\Pages\CreateDebtApplication;
 use App\Filament\Resources\DebtApplications\Pages\ViewDebtApplication;
 use App\Filament\Resources\DebtApplications\RelationManagers\DocumentsRelationManager;
 use App\Filament\Resources\DebtApplications\RelationManagers\LiabilitiesRelationManager;
+use App\Filament\Resources\DebtApplications\RelationManagers\ReportsRelationManager;
 use App\Filament\Resources\DebtClosures\Pages\ViewDebtClosure;
 use App\Filament\Resources\DebtClosures\RelationManagers\PaymentsRelationManager;
 use App\Filament\Resources\DebtLenderPolicies\DebtLenderPolicyResource;
@@ -21,6 +22,7 @@ use App\Filament\Resources\Pages\Pages\EditPage;
 use App\Models\LenderProduct;
 use App\Models\Page;
 use App\Models\User;
+use App\Modules\Applications\Models\DocumentType;
 use App\Modules\DebtConsolidation\Actions\AssessDebtApplication;
 use App\Modules\DebtConsolidation\Actions\MatchLenders;
 use App\Modules\DebtConsolidation\Actions\RecordClosurePayment;
@@ -37,11 +39,13 @@ use App\Modules\DebtConsolidation\Models\DebtDocument;
 use App\Modules\DebtConsolidation\Models\DebtFinancialProfile;
 use App\Modules\DebtConsolidation\Models\DebtLenderPolicy;
 use App\Modules\DebtConsolidation\Models\DebtLiability;
+use App\Modules\DebtConsolidation\Models\DebtReport;
 use App\Modules\DebtConsolidation\Models\DebtScoringConfig;
 use App\Modules\DebtConsolidation\Services\DebtConsolidationRoles;
 use App\Modules\DebtConsolidation\Services\DebtConsolidationSettings as Settings;
 use BezhanSalleh\FilamentShield\Resources\Roles\Pages\EditRole;
 use Database\Seeders\RoleSeeder;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
@@ -312,5 +316,62 @@ describe('acceptance fixes', function () {
         Livewire::test(ViewDebtApplication::class, ['record' => $application->getRouteKey()])
             ->assertActionVisible('assess')
             ->assertActionVisible('match');
+    });
+});
+
+describe('security review fixes', function () {
+    beforeEach(function () {
+        $this->seed(RoleSeeder::class);
+        Storage::fake('local');
+        $this->actingAs(tap(User::factory()->create(['is_admin' => true]))->syncRoles([DebtConsolidationRoles::ADVISOR_ROLE]));
+    });
+
+    it('stores a document an advisor uploads, encrypted, on that case', function () {
+        $application = staffCase();
+        $type = DocumentType::factory()->create();
+
+        Livewire::test(DocumentsRelationManager::class, ['ownerRecord' => $application, 'pageClass' => ViewDebtApplication::class])
+            ->callTableAction('upload', data: ['file' => UploadedFile::fake()->createWithContent('statement.pdf', '%PDF-1.4 bank statement'), 'document_type_id' => $type->id])
+            ->assertHasNoTableActionErrors();
+
+        $document = DebtDocument::query()->sole();
+        expect($document->debt_application_id)->toBe($application->id)
+            ->and($document->contents())->toBe('%PDF-1.4 bank statement')
+            ->and(Storage::disk('local')->get($document->path))->not->toContain('bank statement');
+    });
+
+    it('refuses a file path sent in place of an upload and leaves that file untouched', function (string $path) {
+        $application = staffCase();
+        $type = DocumentType::factory()->create();
+        Storage::disk('local')->put($path, '%PDF-1.4 belongs elsewhere');
+
+        Livewire::test(DocumentsRelationManager::class, ['ownerRecord' => $application, 'pageClass' => ViewDebtApplication::class])
+            ->callTableAction('upload', data: ['file' => ['tampered' => $path], 'document_type_id' => $type->id]);
+
+        expect(DebtDocument::query()->exists())->toBeFalse()
+            ->and(Storage::disk('local')->get($path))->toBe('%PDF-1.4 belongs elsewhere');
+    })->with([
+        'another module\'s KYC file' => 'applications/77/aadhaar.pdf',
+        'another case\'s report' => 'debt-consolidation/DC-OTHER01/reports/advisor_assessment-v1.pdf.enc',
+    ]);
+
+    it('shows the full analysis and report downloads only to staff allowed to see them', function () {
+        $application = staffCase();
+        app(AssessDebtApplication::class)->handle($application, ActorType::Staff);
+        $report = DebtReport::factory()->for($application, 'application')->create();
+        $staff = tap(User::factory()->create(['is_admin' => true]))->syncRoles([]);
+        $staff->givePermissionTo('ViewAny:DebtApplication', 'View:DebtApplication', 'ViewAny:DebtReport');
+        $this->actingAs($staff);
+        $savingsTab = DebtApplicationResource::getUrl('view', ['record' => $application]).'?relation=savings';
+
+        $this->get($savingsTab)->assertOk()->assertDontSee('Existing versus proposed');
+        Livewire::test(ReportsRelationManager::class, ['ownerRecord' => $application, 'pageClass' => ViewDebtApplication::class])
+            ->assertTableActionHidden('download', $report);
+
+        $staff->givePermissionTo('ViewAny:DebtCalculationSnapshot', 'View:DebtReport');
+
+        $this->get($savingsTab)->assertSee('Existing versus proposed');
+        Livewire::test(ReportsRelationManager::class, ['ownerRecord' => $application, 'pageClass' => ViewDebtApplication::class])
+            ->assertTableActionVisible('download', $report);
     });
 });

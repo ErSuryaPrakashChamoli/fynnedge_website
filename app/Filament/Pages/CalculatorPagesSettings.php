@@ -57,6 +57,7 @@ class CalculatorPagesSettings extends Page
         'sip' => ['SIP Calculator', 'The "About this calculator" text is under Content → Calculator Pages.'],
         'daily_sip' => ['Daily SIP Calculator', 'The "About this calculator" text is under Content → Calculator Pages.'],
         'gst' => ['GST Calculator', 'The "About this calculator" text is under Content → Calculator Pages.'],
+        'debt_consolidation' => ['Debt Consolidation Savings Calculator', 'The "About this calculator" text is under Content → Calculator Pages.'],
     ];
 
     protected string $view = 'filament.pages.calculator-pages-settings';

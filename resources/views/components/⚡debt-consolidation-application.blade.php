@@ -303,6 +303,7 @@ new class extends Component
      */
     public function updatedLiabilities(): void
     {
+        $this->liabilities = LiabilityRows::limit($this->liabilities);
         $this->autosave();
     }
 

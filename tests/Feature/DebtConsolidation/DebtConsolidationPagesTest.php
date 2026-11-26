@@ -6,6 +6,7 @@ use App\Models\LoanProduct;
 use App\Models\Page;
 use App\Models\Setting;
 use App\Modules\DebtConsolidation\Services\DebtConsolidationSettings;
+use App\Support\Pages\DebtConsolidationPageContent;
 use App\Support\Pages\DebtConsolidationPages;
 use App\Support\Seo\Sitemap;
 use Illuminate\Contracts\Http\Kernel;
@@ -60,7 +61,7 @@ it('answers 404 for a draft page but shows it through a signed preview link', fu
     $this->get('/debt-consolidation/calculator')->assertNotFound();
     $this->get(URL::temporarySignedRoute('debt-consolidation.calculator', now()->addMinutes(30)))
         ->assertOk()
-        ->assertSee('Debt Consolidation Calculator');
+        ->assertSee('Debt Consolidation Analyser');
 });
 
 it('sends the flat slug to the page\'s one address', function () {
@@ -105,6 +106,83 @@ it('renders the calculator suite on the calculator page', function () {
         ->assertOk()
         ->assertSee('Your existing loans and cards')
         ->assertSee('Foreclosure cost');
+});
+
+it('names the loan-by-loan page the Debt Analyser and links the Savings Calculator beside it', function () {
+    enableDebtConsolidation();
+    publishDebtPage('hub');
+    publishDebtPage('calculator');
+    publishDebtPage('assessment');
+    $savingsCalculator = 'href="'.route('calculators.debt-consolidation').'"';
+
+    $response = $this->get('/debt-consolidation');
+
+    $response->assertSeeInOrder(['aria-label="Debt consolidation pages"', $savingsCalculator, 'data-debt-savings-calculator-link', 'Savings calculator', 'Debt analyser', 'Free assessment'], false)
+        ->assertSeeInOrder(['See your numbers first', $savingsCalculator, 'Open the savings calculator', 'href="'.route('debt-consolidation.calculator').'"', 'Analyse my loans', 'Start my free assessment'], false)
+        ->assertDontSee('Use the calculator');
+});
+
+it('offers the Savings Calculator card even when neither the analyser nor the assessment is live', function () {
+    enableDebtConsolidation();
+    publishDebtPage('hub');
+
+    $this->get('/debt-consolidation')
+        ->assertSeeInOrder(['See your numbers first', 'href="'.route('calculators.debt-consolidation').'"', 'Open the savings calculator'], false)
+        ->assertDontSee('Debt analyser');
+});
+
+it('never links the hidden Savings Calculator from a preview while the service is off', function (string $route) {
+    $this->get(URL::temporarySignedRoute($route, now()->addMinutes(30)))
+        ->assertOk()
+        ->assertDontSee(route('calculators.debt-consolidation'), false);
+})->with(['debt-consolidation.hub', 'debt-consolidation.calculator']);
+
+it('points visitors on the analyser page to the quick Savings Calculator', function () {
+    enableDebtConsolidation();
+    publishDebtPage('calculator');
+
+    $this->get('/debt-consolidation/calculator')
+        ->assertSeeInOrder(['data-debt-savings-calculator-hint', 'Only need a quick estimate?', 'href="'.route('calculators.debt-consolidation').'"', 'Debt Consolidation Savings Calculator', 'Your existing loans and cards'], false);
+});
+
+it('renames the calculator page to the Debt Analyser only where its shipped copy is unchanged', function () {
+    $page = Page::query()->where('slug', DebtConsolidationPages::slug('calculator'))->with('seoMeta')->firstOrFail();
+    $page->update(['title' => 'Debt Consolidation Calculator']);
+    $page->seoMeta->update(['title' => 'Our own SEO title']);
+
+    (require database_path('migrations/2026_11_26_072745_rename_debt_consolidation_calculator_page_to_debt_analyser.php'))->up();
+
+    expect($page->fresh()->title)->toBe('Debt Consolidation Analyser');
+    expect($page->seoMeta->fresh()->title)->toBe('Our own SEO title');
+});
+
+it('renames the shipped calculator wording in saved page settings, never wording an editor changed', function () {
+    $settings = fn (string $key): array => Setting::query()->where('key', $key)->value('value');
+    Setting::set(DebtConsolidationPageContent::SETTING_KEY, ['secondary_cta_label' => 'Use the calculator', 'calculator_card_title' => 'Our own tool name']);
+    Setting::set(DebtConsolidationPageContent::HINDI_SETTING_KEY, ['secondary_cta_label' => 'कैलकुलेटर इस्तेमाल करें']);
+    $rename = require database_path('migrations/2026_11_26_072745_rename_debt_consolidation_calculator_page_to_debt_analyser.php');
+
+    $rename->up();
+
+    expect($settings(DebtConsolidationPageContent::SETTING_KEY))->toBe(['secondary_cta_label' => 'Analyse my loans', 'calculator_card_title' => 'Our own tool name'])
+        ->and($settings(DebtConsolidationPageContent::HINDI_SETTING_KEY))->toBe(['secondary_cta_label' => 'मेरे लोन का विश्लेषण करें']);
+
+    $rename->down();
+
+    expect($settings(DebtConsolidationPageContent::SETTING_KEY))->toBe(['secondary_cta_label' => 'Use the calculator', 'calculator_card_title' => 'Our own tool name'])
+        ->and($settings(DebtConsolidationPageContent::HINDI_SETTING_KEY))->toBe(['secondary_cta_label' => 'कैलकुलेटर इस्तेमाल करें']);
+});
+
+it('leaves the renamed page looking unedited, so a full rollback still removes it', function () {
+    $slug = DebtConsolidationPages::slug('calculator');
+    $rename = require database_path('migrations/2026_11_26_072745_rename_debt_consolidation_calculator_page_to_debt_analyser.php');
+    $pages = require database_path('migrations/2026_11_25_150300_create_debt_consolidation_pages.php');
+    $this->travel(10)->minutes();
+
+    $rename->down();
+    $pages->down();
+
+    expect(Page::withTrashed()->where('slug', $slug)->exists())->toBeFalse();
 });
 
 it('links the hub from the site header only while it is live', function () {

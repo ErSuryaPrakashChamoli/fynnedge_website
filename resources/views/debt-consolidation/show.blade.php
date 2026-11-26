@@ -38,7 +38,7 @@
             'lg:grid-cols-[minmax(0,1fr)_28rem] lg:items-start lg:gap-14' => $showEnquiry,
         ])>
             @if ($showEnquiry)
-                <div id="debt-enquiry" class="scroll-mt-24 lg:sticky lg:top-24 lg:order-last">
+                <div id="debt-enquiry" class="scroll-mt-below-header lg:sticky lg:top-below-header lg:order-last">
                     <livewire:debt-consolidation-enquiry :source="$pageKey" :heading="$content['enquiry_heading']" :subheading="$content['enquiry_subheading']" />
                 </div>
             @endif
@@ -81,11 +81,17 @@
                 @if (count($navigation) > 1)
                     <nav class="mt-8 flex flex-wrap gap-2" aria-label="{{ __('Debt consolidation pages') }}">
                         @foreach ($navigation as $link)
-                            <a href="{{ $link['url'] }}" @if ($link['active']) aria-current="page" @endif @class([
-                                'rounded-full border px-4 py-1.5 text-sm font-medium transition-colors',
+                            <a href="{{ $link['url'] }}" @if ($link['active']) aria-current="page" @endif @if ($link['tool']) data-debt-savings-calculator-link @endif @class([
+                                'inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors',
                                 'border-accent bg-accent text-white' => $link['active'],
-                                'border-line bg-surface text-ink-muted hover:border-accent hover:text-accent' => ! $link['active'],
-                            ])>{{ $link['label'] }}</a>
+                                'border-line bg-surface text-ink-muted hover:border-accent hover:text-accent' => ! $link['active'] && ! $link['tool'],
+                                'border-accent/40 bg-accent-soft text-accent hover:border-accent' => $link['tool'],
+                            ])>
+                                @if ($link['tool'])
+                                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" class="h-4 w-4 shrink-0" aria-hidden="true"><rect x="4" y="2.75" width="12" height="14.5" rx="2" /><path stroke-linecap="round" d="M7 6.25h6M7 10h.01M10 10h.01M13 10h.01M7 13.25h.01M10 13.25h.01M13 13.25h.01" /></svg>
+                                @endif
+                                {{ $link['label'] }}
+                            </a>
                         @endforeach
                     </nav>
                 @endif
@@ -95,6 +101,12 @@
 
     @if ($pageKey === 'calculator')
         <section class="mx-auto max-w-7xl px-6 py-10 lg:px-8">
+            @if ($savingsCalculatorUrl)
+                <p class="mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-xl border border-line bg-surface-2 px-4 py-3 text-sm text-ink-muted" data-debt-savings-calculator-hint>
+                    {{ __('Only need a quick estimate?') }}
+                    <a href="{{ $savingsCalculatorUrl }}" class="inline-flex items-center gap-1 font-semibold text-accent hover:underline">{{ __('Debt Consolidation Savings Calculator') }} <span aria-hidden="true">→</span></a>
+                </p>
+            @endif
             <livewire:debt-consolidation-calculator />
         </section>
     @elseif ($pageKey === 'assessment')
@@ -172,18 +184,30 @@
             </div>
         @endif
 
-        @if ($shows('tools') && ($isLive('calculator') || $isLive('assessment')))
+        @php
+            /*
+                Quick estimate, then the loan-by-loan analyser, then the
+                assessment. The Savings Calculator lives under /calculators and
+                is linked whenever the service is live (not in a preview while
+                it is off); the other two only while their page is live.
+            */
+            $tools = array_values(array_filter([
+                $savingsCalculatorUrl ? ['url' => $savingsCalculatorUrl, 'title' => $content['savings_card_title'], 'body' => $content['savings_card_body'], 'cta' => $content['savings_cta_label']] : null,
+                $isLive('calculator') && $pageKey !== 'calculator' ? ['url' => $routeFor('calculator'), 'title' => $content['calculator_card_title'], 'body' => $content['calculator_card_body'], 'cta' => $content['secondary_cta_label']] : null,
+                $isLive('assessment') && $pageKey !== 'assessment' ? ['url' => $routeFor('assessment'), 'title' => $content['assessment_card_title'], 'body' => $content['assessment_card_body'], 'cta' => $content['primary_cta_label']] : null,
+            ]));
+        @endphp
+
+        @if ($shows('tools') && $tools !== [])
             <div class="mt-14" data-reveal="fade">
                 <h2 class="font-display text-2xl font-semibold text-ink">{{ $content['tools_heading'] }}</h2>
-                <div class="mt-6 grid gap-6 md:grid-cols-2">
-                    @foreach ([['key' => 'calculator', 'title' => $content['calculator_card_title'], 'body' => $content['calculator_card_body'], 'cta' => $content['secondary_cta_label']], ['key' => 'assessment', 'title' => $content['assessment_card_title'], 'body' => $content['assessment_card_body'], 'cta' => $content['primary_cta_label']]] as $tool)
-                        @if ($isLive($tool['key']) && $tool['key'] !== $pageKey)
-                            <a href="{{ $routeFor($tool['key']) }}" class="group flex flex-col rounded-2xl border border-line bg-surface p-6 shadow-sm transition-colors hover:border-accent">
-                                <h3 class="font-display text-lg font-semibold text-ink">{{ $tool['title'] }}</h3>
-                                <p class="mt-2 flex-1 text-sm text-ink-muted">{{ $tool['body'] }}</p>
-                                <span class="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent group-hover:underline">{{ $tool['cta'] }} <span aria-hidden="true">→</span></span>
-                            </a>
-                        @endif
+                <div @class(['mt-6 grid gap-6 md:grid-cols-2', 'lg:grid-cols-3' => count($tools) === 3])>
+                    @foreach ($tools as $tool)
+                        <a href="{{ $tool['url'] }}" class="group flex flex-col rounded-2xl border border-line bg-surface p-6 shadow-sm transition-colors hover:border-accent">
+                            <h3 class="font-display text-lg font-semibold text-ink">{{ $tool['title'] }}</h3>
+                            <p class="mt-2 flex-1 text-sm text-ink-muted">{{ $tool['body'] }}</p>
+                            <span class="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent group-hover:underline">{{ $tool['cta'] }} <span aria-hidden="true">→</span></span>
+                        </a>
                     @endforeach
                 </div>
             </div>

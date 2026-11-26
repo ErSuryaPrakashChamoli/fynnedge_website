@@ -35,7 +35,7 @@
         </div>
 
         <div class="relative mx-auto grid max-w-7xl gap-10 px-6 pb-8 pt-4 lg:grid-cols-[minmax(0,1fr)_28rem] lg:items-start lg:gap-14 lg:px-8 lg:pb-12 lg:pt-6">
-            <div id="enquiry-form" class="scroll-mt-24 lg:sticky lg:top-6 lg:order-last">
+            <div id="enquiry-form" class="scroll-mt-below-header lg:sticky lg:top-6 lg:order-last">
                 @if ($loanProducts->isEmpty())
                     <x-ui.alert tone="accent" :title="__('Online enquiries are paused')">
                         {!! __('We aren\'t taking online enquiries right now. <a href=":url" class="font-medium underline">Contact us</a> and we\'ll help you directly.', ['url' => e(route('contact'))]) !!}

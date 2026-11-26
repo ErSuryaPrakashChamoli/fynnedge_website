@@ -210,6 +210,7 @@ Route::get('/calculators/daily-sip', [CalculatorController::class, 'dailySip'])-
 Route::get('/calculators/gst', [CalculatorController::class, 'gst'])->name('calculators.gst');
 Route::get('/calculators/eligibility/{category}', [CalculatorController::class, 'eligibility'])->name('calculators.eligibility');
 Route::get('/calculators/prepayment/{category}', [CalculatorController::class, 'prepayment'])->name('calculators.prepayment');
+Route::get('/calculators/debt-consolidation', [CalculatorController::class, 'debtConsolidation'])->name('calculators.debt-consolidation');
 
 Route::get('/resources', [ArticleController::class, 'index'])->name('resources.index');
 Route::get('/resources/{article:slug}', [ArticleController::class, 'show'])->name('resources.show');

@@ -1,10 +1,26 @@
 # Debt Consolidation — master project status
 
-**Last updated:** 26 Nov 2026 · **Branch:** `feature/nov_24_redis_check` (uncommitted) · **Environment:** local only. Nothing is deployed; no production migration has been run.
+**Last updated:** 26 Nov 2026 (release-candidate stage) · **Branch:** `feature/nov_24_redis_check`: local commit `434ec8e` (the Owner's, not pushed) plus uncommitted release-candidate changes · **Environment:** local only. Nothing is deployed; no production migration has been run.
 
-> Resume instructions for any session: read this file, then `16-PRE-PRODUCTION-ACCEPTANCE-REPORT.md`, then `03-architecture.md`. Items are ticked only when code, tests and docs exist.
+> Resume instructions for any session: read this file, then `29-FINAL-PRODUCTION-READINESS-REPORT.md` and `30-RELEASE-GATE-MASTER-REGISTER.md`, then `16-PRE-PRODUCTION-ACCEPTANCE-REPORT.md` and `03-architecture.md`. Items are ticked only when code, tests and docs exist.
 
-**Current state: pre-production acceptance complete. Classification 2 — technically ready, business approvals pending.** Waiting for the business approvals (`16-…` §6) and the owner's explicit deployment authorisation. Nothing has been committed, deployed or switched on.
+**Current stage: Release candidate, awaiting human gates** (from 26 Nov 2026).
+- Engineering is complete and regression-tested.
+- The service is OFF in the release code and the pages are drafts.
+- Nothing has been committed by engineering, deployed or switched on.
+- **Production-deployment-ready: not yet.** Blocked by INF-02 (Docker PHP runtime), PR-02 to PR-05, CO-01 and DP-01.
+- **Authorised for live customer applications: no.**
+
+| Gate group (`30-…`) | Status (26 Nov 2026) |
+| --- | --- |
+| A. Business and operational approvals (11) | **0 approved**; 10 pending; HV-01 blocked |
+| B. Calculation validation BV-01 to BV-18 | **0 approved**; 17 pending; BV-13 blocked |
+| C. HV-00 historical document-use permission | Pending (decision pack `21-…`) |
+| D. Technical release gates | 6 of 9 complete (review, fixes, rehearsal); INF-02 blocked; INF-01 and CO-01 pending |
+| E. Deployment prerequisites PR-01 to PR-05 | PR-01 complete (run 8: 3,286 tests, 3,270 passed; the 15 pre-existing Experian failures; 1 test updated for the Savings Calculator gate W-01 and re-run green); PR-02 to PR-05 blocked (production access) |
+| F. Owner deployment authorisation (DP-01) | Pending |
+| G. Owner go-live authorisation (GL-01) | Pending |
+| Technical validation evidence (not approval) | Engine vs independent reference: 827/827; re-confirmed on 26 Nov (V01–V10 identical) |
 
 ## Phases
 
@@ -28,8 +44,10 @@
 | 19 | Schema (18 tables), models, factories, policies, roles, retention | ✅ `05-database-design.md` |
 | 20 | Security & compliance | ✅ controls; ⚠ legal items open — `09-security-compliance.md` |
 | 22/23 | Testing, regression, readiness | ✅ `08-testing-report.md`, `15-final-completion-report.md` |
+| 1c | **Owner requirement (26 Nov 2026): Debt Consolidation Savings Calculator** under Calculators (requirement 20) | ✅ `02-functional-requirements.md` |
 | 24 | **Pre-production acceptance** (independent reviews, financial validation workbook, baseline proof, deployment inspection). 24 defects found and fixed: 1 blocker, 6 major, 17 minor. | ✅ `16-PRE-PRODUCTION-ACCEPTANCE-REPORT.md`, `validation/` |
-| — | Business approvals (13 items) and deployment authorisation | ⏳ Pending — `16-…` §6 |
+| 25 | **Business validation and sign-off**: tracker, historical-case procedure, approver checklists | ⏳ In progress: documents ready; 0 of 13 approvals and 0 of 18 BV items signed — `17-…`, `18-…`, `19-…` |
+| 26 | **Release candidate (final master mandate)**: full regression vs the clean baseline; security audit and fixes; independent review; migration rehearsal; lender-policy readiness; historical-validation infrastructure and HV-00 pack; legal, operations, infrastructure and website reports; runbook, rollback, smoke tests, go-live checklist, gate register | ✅ engineering complete; ⏳ human gates open: `20-…` to `35-…`, `lender-policy/`, `release/`, `validation/historical/` |
 
 ## Outstanding decisions (business / legal sign-off; defaults in place and configurable)
 
@@ -53,7 +71,9 @@
 - A team email address for new-case alerts (Debt Consolidation Settings).
 - A parallel accuracy run by advisors on 10–20 anonymised past cases, against real lender foreclosure letters, before accepting real applications (HV-01 / BV-13 in `16-…`).
 - Operations to confirm: production mail transport; that `schedule:run` runs (it is not in the Docker image); persistent, backed-up `storage/app/private`.
-- Production deployment authorisation (`12-deployment.md`).
+- Production deployment authorisation (`31-DEPLOYMENT-RUNBOOK.md`; `12-deployment.md` is the earlier version).
+- **The Docker runtime image (PHP 8.3) cannot run the locked dependencies (PHP ≥ 8.4.1).** This is pre-existing. Confirm the real production build or approve `release/dockerfile-php-runtime.patch` (INF-02, `27-…`).
+- Legal/DPO decision HV-00 before any historical document is collected (`21-…`).
 
 ## Accepted limitations
 
@@ -74,4 +94,6 @@
 
 ## Test results
 
-Final full run (25–26 Nov 2026, after the acceptance fixes): **3,243 tests, 3,227 passed**. All 16 failures are pre-existing (15 Experian, plus 1 rates test that fails after midnight IST), so there are no regressions. Debt Consolidation suites: 64 unit and 151 feature tests, all passing. Financial validation: 827 of 827 figures agree with the independent reference. Details are in `08-testing-report.md`; the approvals and remaining actions are in `16-PRE-PRODUCTION-ACCEPTANCE-REPORT.md` §6 and §9.
+**Release candidate (run 8, 26 Nov 2026):** 3,286 tests, 3,270 passed. 15 of the 16 that did not pass are the same `ExternalExperianApiTest` failures as on the clean baseline `084825b` (3,011 tests, 2,996 passed, 15 failures). The 16th was a site-preference test whose expectation predated the Savings Calculator gate (W-01). It was updated to assert the exact new difference and passes (12/12). No test was removed and no assertion was weakened (`20-REGRESSION-CLOSURE-REPORT.md`; output in `evidence/`).
+
+Earlier: acceptance run 4 (25–26 Nov 2026): 3,243 tests, 3,227 passed, 16 pre-existing failures. Financial validation: 827 of 827 figures agree with the independent reference.

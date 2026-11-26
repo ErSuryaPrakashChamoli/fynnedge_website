@@ -183,7 +183,7 @@
             x-cloak
             x-show="selected.length > 0"
             x-transition.opacity
-            class="sticky top-20 z-30 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-accent bg-surface px-5 py-3 shadow-lg"
+            class="sticky top-below-header z-30 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-accent bg-surface px-5 py-3 shadow-lg"
         >
             <p class="text-sm text-ink">
                 <span class="font-semibold" x-text="@js(__(':selected of :max lenders selected')).replace(':selected', selected.length).replace(':max', maxCompare)"></span>

@@ -36,7 +36,7 @@ class DebtConsolidationPageContent
         'audiences' => 'Personal and business cards',
         'personal_points' => 'Debts covered for individuals',
         'business_points' => 'Debts covered for businesses',
-        'tools' => 'Calculator and assessment cards',
+        'tools' => 'Savings calculator, debt analyser and assessment cards',
         'related' => 'Related loan pages',
         'disclaimer' => 'Disclaimer',
     ];
@@ -56,7 +56,7 @@ class DebtConsolidationPageContent
         return [
             'hero_badge' => 'Debt consolidation advisory',
             'primary_cta_label' => 'Start my free assessment',
-            'secondary_cta_label' => 'Use the calculator',
+            'secondary_cta_label' => 'Analyse my loans',
             'trust_points' => [
                 ['text' => 'Free, no-obligation assessment'],
                 ['text' => 'We compare total cost, not just the EMI'],
@@ -89,8 +89,11 @@ class DebtConsolidationPageContent
                 ['text' => 'Invoice and merchant financing'],
             ],
             'tools_heading' => 'See your numbers first',
-            'calculator_card_title' => 'Debt consolidation calculator',
-            'calculator_card_body' => 'Add your loans and compare your current repayments with one consolidated loan — total cost, monthly outgo, foreclosure charges and break-even.',
+            'savings_card_title' => 'Debt consolidation savings calculator',
+            'savings_card_body' => 'A quick estimate: enter your credit card and loan balances to compare your EMI and the total you would repay with one consolidation loan.',
+            'savings_cta_label' => 'Open the savings calculator',
+            'calculator_card_title' => 'Debt analyser',
+            'calculator_card_body' => 'A detailed, loan-by-loan comparison: add each loan and card to see total cost, monthly outgo, foreclosure charges, affordability and break-even.',
             'assessment_card_title' => 'Free debt assessment',
             'assessment_card_body' => 'Save your loans, see your suitability score and let a FynnEdge advisor review your options with you.',
             'enquiry_heading' => 'Talk to a debt consolidation advisor',

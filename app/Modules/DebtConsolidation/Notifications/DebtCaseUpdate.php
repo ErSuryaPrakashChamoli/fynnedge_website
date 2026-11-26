@@ -3,6 +3,7 @@
 namespace App\Modules\DebtConsolidation\Notifications;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeEncrypted;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -16,7 +17,7 @@ use Illuminate\Notifications\Notification;
  * the visitor's language. Never carries figures, documents or lender
  * decisions beyond their status — those are seen in the signed-in portal.
  */
-class DebtCaseUpdate extends Notification implements ShouldQueue
+class DebtCaseUpdate extends Notification implements ShouldBeEncrypted, ShouldQueue
 {
     use Queueable;
 

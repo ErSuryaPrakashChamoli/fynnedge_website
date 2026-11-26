@@ -32,7 +32,7 @@ class SaveDebtApplicationDraft
             $existing = $application->liabilities()->get()->keyBy('public_id');
             $kept = [];
 
-            foreach (array_values($rows) as $order => $row) {
+            foreach (LiabilityRows::limit($rows) as $order => $row) {
                 $attributes = LiabilityRows::toAttributes($row);
                 $key = (string) ($row['key'] ?? '');
 

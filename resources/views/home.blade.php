@@ -171,7 +171,7 @@
                                 </x-ui.button>
                                 @if ($debtConsolidation['calculatorUrl'])
                                     <x-ui.button tag="a" :href="$debtConsolidation['calculatorUrl']" variant="outline">
-                                        {{ __('Try the calculator') }}
+                                        {{ __('Analyse my loans') }}
                                     </x-ui.button>
                                 @endif
                                 <a href="{{ $debtConsolidation['howItWorksUrl'] ?? $debtConsolidation['hubUrl'] }}" class="text-sm font-medium text-accent hover:underline">{{ __('How it works →') }}</a>

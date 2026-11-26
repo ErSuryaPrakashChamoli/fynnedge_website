@@ -18,6 +18,7 @@ use App\Modules\DebtConsolidation\Enums\LenderMatchStatus;
 use App\Modules\DebtConsolidation\Enums\NoteType;
 use App\Modules\DebtConsolidation\Enums\ReportType;
 use App\Modules\DebtConsolidation\Models\DebtApplication;
+use App\Modules\DebtConsolidation\Models\DebtCalculationSnapshot;
 use App\Modules\DebtConsolidation\Models\DebtConsent;
 use App\Modules\DebtConsolidation\Models\DebtReport;
 use App\Modules\DebtConsolidation\Services\DebtPresenter;
@@ -109,15 +110,19 @@ class ViewDebtApplication extends ViewRecord
             return $label === null ? $tab : $tab->label($label);
         };
 
+        // The full analysis is the calculation snapshot's content, so it needs the
+        // snapshot permission as well as access to the case.
+        $canSeeAnalysis = (bool) auth()->user()?->can('viewAny', DebtCalculationSnapshot::class);
+
         $tabs = [
             '' => $this->getContentTabComponent()->label('Overview'),
             'customer' => Tab::make('Customer profile')->schema([$view('customer')]),
             'liabilities' => $manager('liabilities', 'Existing liabilities'),
             'documents' => $manager('documents'),
-            'assessment' => Tab::make('Financial assessment')->schema([$view('assessment')]),
-            'suitability' => Tab::make('Suitability score')->schema([$view('suitability')]),
-            'savings' => Tab::make('Savings comparison')->schema([$view('savings')]),
-            'foreclosure' => Tab::make('Foreclosure analysis')->schema([$view('foreclosure')]),
+            'assessment' => $canSeeAnalysis ? Tab::make('Financial assessment')->schema([$view('assessment')]) : null,
+            'suitability' => $canSeeAnalysis ? Tab::make('Suitability score')->schema([$view('suitability')]) : null,
+            'savings' => $canSeeAnalysis ? Tab::make('Savings comparison')->schema([$view('savings')]) : null,
+            'foreclosure' => $canSeeAnalysis ? Tab::make('Foreclosure analysis')->schema([$view('foreclosure')]) : null,
             'matching' => $manager('matching', 'Lender matching'),
             'lender-applications' => $manager('lender-applications', 'Lender applications'),
             'closure' => $manager('closure', 'Debt closure'),

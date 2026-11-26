@@ -1,5 +1,7 @@
 # 12 — Deployment instructions
 
+> **Superseded for this release (26 Nov 2026).** Use `31-DEPLOYMENT-RUNBOOK.md`, `32-ROLLBACK-AND-RECOVERY-PLAN.md` and `33-PRODUCTION-SMOKE-TEST-CHECKLIST.md`. The release now has **8** migrations (the Analyser rename was added), so roll back the release batch with `migrate:rollback` after checking `--pretend`, not `--step=7`. The desktop "Eligibility" link has also been removed at the Owner's request. This page is kept as the earlier record.
+
 **Status:** release candidate on branch `feature/nov_24_redis_check`, tested locally, **uncommitted**. Nothing has been deployed and no production migration has run. **Production must not be changed without explicit authorisation.**
 
 ## 0. Read first: deploying the image IS migrating

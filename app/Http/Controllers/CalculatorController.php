@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\LoanCategory;
 use App\Models\CalculatorPage;
 use App\Models\LoanProduct;
+use App\Modules\DebtConsolidation\Services\DebtConsolidationSettings;
 use App\Support\Calculators\CalculatorCatalog;
 use App\Support\Calculators\CalculatorIndexing;
 use App\Support\Calculators\CalculatorPagesContent;
@@ -43,6 +44,18 @@ class CalculatorController extends Controller
             'about' => $loanCategory->isHybridRepayment()
                 ? $this->aboutFor('emi/'.$loanCategory->value, null, $this->explanationFor(LoanCalculatorPreset::productFor($loanCategory)))
                 : null,
+        ]);
+    }
+
+    public function debtConsolidation(): View
+    {
+        // Public only while the Debt Consolidation service is live (see CalculatorCatalog).
+        abort_unless(DebtConsolidationSettings::enabled(), 404);
+
+        return view('calculators.debt-consolidation', [
+            'about' => $this->aboutFor('debt-consolidation'),
+            'content' => $this->contentFor('debt_consolidation', 'debt-consolidation'),
+            'robots' => CalculatorIndexing::robotsFor('debt-consolidation'),
         ]);
     }
 

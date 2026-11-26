@@ -120,7 +120,7 @@ class DebtCaseNotifier
             return;
         }
 
-        $url = Route::has('portal.debt.show') ? route('portal.debt.show', $application) : null;
+        $url = Route::has('portal.debt.show') ? $this->siteUrl('portal.debt.show', $application) : null;
 
         try {
             $customer->notify(new DebtCaseUpdate(
@@ -135,6 +135,17 @@ class DebtCaseNotifier
         } catch (Throwable $exception) {
             report($exception);
         }
+    }
+
+    /**
+     * A link for an email, always on the configured site address (APP_URL).
+     * Emails are often sent during a visitor's request, and that request's
+     * Host header is the visitor's to choose: a link built from it could point
+     * staff or customers at a look-alike site.
+     */
+    private function siteUrl(string $name, DebtApplication $application): string
+    {
+        return rtrim((string) config('app.url'), '/').route($name, $application, false);
     }
 
     private function staff(DebtApplication $application, string $subject, string $summary): void
@@ -153,7 +164,7 @@ class DebtCaseNotifier
                 $subject,
                 $application->reference,
                 $summary,
-                route('filament.admin.resources.debt-applications.view', $application),
+                $this->siteUrl('filament.admin.resources.debt-applications.view', $application),
             ));
         } catch (Throwable $exception) {
             report($exception);

@@ -113,6 +113,30 @@ it('keeps the desktop header buttons on one line and level, dropping the duplica
     $html = $this->get('/')->getContent();
 
     expect($html)
-        ->toMatch('/<div class="[^"]*\bshrink-0\b[^"]*" data-header-cta>\s*<a class="[^"]*border-line-strong[^"]* whitespace-nowrap max-xl:hidden" href="[^"]*\/contact">Talk to us<\/a>\s*<a class="[^"]* whitespace-nowrap border border-transparent" href="[^"]*\/eligibility">Check Eligibility<\/a>/')
-        ->toMatch('/<nav[^>]*aria-label="Primary">.*class="[^"]*whitespace-nowrap max-xl:hidden"\s*>\s*Eligibility\s*<\/a>/s');
+        ->toMatch('/<div class="[^"]*\bshrink-0\b[^"]*" data-header-cta>\s*<a class="[^"]*border-line-strong[^"]* whitespace-nowrap max-xl:hidden" href="[^"]*\/contact">Talk to us<\/a>\s*<a class="[^"]* whitespace-nowrap border border-transparent" href="[^"]*\/eligibility">Check Eligibility<\/a>/');
+});
+
+it('leaves eligibility to the Check Eligibility button, with no Eligibility menu link', function () {
+    $html = $this->get('/')->assertOk()->getContent();
+
+    preg_match_all('/<nav[^>]*aria-label="Primary">.*?<\/nav>/s', $html, $menus);
+
+    expect($menus[0])->toHaveCount(2);
+
+    foreach ($menus[0] as $menu) {
+        expect($menu)->not->toContain('/eligibility"');
+    }
+
+    $header = str($html)->after('<header')->before('</header>')->toString();
+
+    // Desktop row and phone menu each keep the button.
+    expect(preg_match_all('/href="[^"]*\/eligibility"[^>]*>\s*Check Eligibility\s*<\/a>/', $header))->toBe(2);
+});
+
+it('shifts the desktop Calculators panel back inside the header row when it opens', function () {
+    $html = $this->get('/')->getContent();
+
+    expect($html)
+        ->toMatch('/x-init="\$watch\(\'open\', \(isOpen\) => isOpen && \$nextTick\(\(\) => place\(\)\)\)"\s*@resize\.window="open && place\(\)"[^>]*data-calculators-menu/')
+        ->toMatch('/data-calculators-menu.*x-ref="panel"\s*:style="\{ left: offset \+ \'px\' \}"\s*class="absolute left-0 top-full[^"]*"\s*>\s*<div class="nav-dropdown-panel/s');
 });

@@ -31,7 +31,7 @@
                 </p>
             </div>
 
-            <div class="lg:sticky lg:top-24">
+            <div class="lg:sticky lg:top-below-header">
                 @if (session('status'))
                     <x-ui.alert tone="accent" class="mb-4">{{ session('status') }}</x-ui.alert>
                 @endif

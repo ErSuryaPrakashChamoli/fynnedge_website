@@ -40,7 +40,7 @@
 
         <div class="mt-6 grid gap-8 lg:grid-cols-[230px_1fr]">
             <nav aria-label="{{ __('My account') }}" class="-mx-6 overflow-x-auto px-6 lg:mx-0 lg:overflow-visible lg:px-0">
-                <ul class="flex gap-1.5 lg:sticky lg:top-24 lg:flex-col">
+                <ul class="flex gap-1.5 lg:sticky lg:top-below-header lg:flex-col">
                     @foreach ($portalNavigation as $item)
                         @php $isActive = request()->routeIs($item['active']); @endphp
                         <li class="shrink-0">

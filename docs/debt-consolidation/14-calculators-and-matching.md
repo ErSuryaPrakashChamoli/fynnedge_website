@@ -32,3 +32,29 @@ Policies (`debt_lender_policies`) attach to existing lender offers. Only **Activ
 | Lender eligibility rules | the offer's active rule set in Eligibility Rules (reused unchanged) | a mandatory rule fails |
 
 Missing data (income, score, collateral…) makes the result **More information needed** instead of a guess. Outcome: any failure → Does not match; else any missing → More information needed; else **Potential match**. Each result stores the reasons, the missing items, the indicative amount and rate range, and the snapshot it used. Advisors record their own review (shortlist / not suitable, with reasoning); a changed outcome resets the review. A match is never shown or described as an approval or offer.
+
+## Debt consolidation savings calculator (/calculators/debt-consolidation)
+
+This calculator sits in the site's general Calculators section. It is upgraded on 26 Nov 2026 after research into leading calculators (break-even, payoff timeline, tenure trade-off, the minimum-due trap, FOIR norms).
+
+**Inputs**
+- Cards: balance, rate, and what is paid each month. The payment starts at the minimum due from settings (5%) and follows the balance until the visitor edits it.
+- Loans: balance, rate, months left, foreclosure %.
+- New loan: rate, tenure (1–7 years), fee %.
+- Optional net income.
+
+**How it calculates.** ONE engine run covers every tenure from 1 to 7 years.
+
+**What it shows**
+- A total-cost verdict: "Total saving" only when the net benefit is positive, otherwise "Extra cost".
+- The EMI change, the debt-free date before and after, and the fee break-even month.
+- An exact breakdown: interest today − interest on the new loan − fees, GST and foreclosure charges = net.
+- A tenure finder: biggest saving, best below today's EMI, and the lowest EMI that still saves, each with a "Use" button.
+- A year-by-year cumulative chart.
+- Each debt kept as is: months to clear and interest left. This exposes the minimum-due trap.
+- FOIR before and after, with 40% and 50% markers.
+- Computed plain-language insights, and the engine's warnings.
+
+**Sharing.** A link of the inputs reopens the same figures; values from the link are range-checked.
+
+**Next step.** The button leads to the free assessment while that page is live, otherwise to an advisor. The calculator itself is always available.

@@ -55,7 +55,7 @@
                 @endif
             </div>
 
-            <div class="lg:sticky lg:top-24">
+            <div class="lg:sticky lg:top-below-header">
                 <livewire:credit-score-check :bureau="$bureau->value" />
             </div>
         </div>

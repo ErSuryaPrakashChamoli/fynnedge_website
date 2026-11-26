@@ -2,6 +2,8 @@
 
 namespace App\Support\Calculators;
 
+use App\Modules\DebtConsolidation\Services\DebtConsolidationSettings;
+
 /**
  * Single source of truth for every calculator link shown in the header mega
  * menu and the /calculators directory page — so the two don't drift apart.
@@ -12,9 +14,12 @@ class CalculatorCatalog
      * Group label => its calculators, labels in the visitor's language (the
      * admin panel always runs in English).
      *
+     * $includeHidden adds calculators that are not public yet (see
+     * debtConsolidationCalculators()); only admin screens ask for them.
+     *
      * @return array<string, array<int, array{label: string, route: string, params: array<string, string>}>>
      */
-    public static function groups(): array
+    public static function groups(bool $includeHidden = false): array
     {
         return [
             __('Investment Calculators') => [
@@ -41,21 +46,40 @@ class CalculatorCatalog
                 ['label' => __('Home Loan Eligibility Calculator'), 'route' => 'calculators.eligibility', 'params' => ['category' => 'home-loan']],
                 ['label' => __('Home Loan Prepayment Calculator'), 'route' => 'calculators.prepayment', 'params' => ['category' => 'home-loan']],
                 ['label' => __('Personal Loan Prepayment Calculator'), 'route' => 'calculators.prepayment', 'params' => ['category' => 'personal-loan']],
+                ...self::debtConsolidationCalculators($includeHidden),
             ],
         ];
+    }
+
+    /**
+     * The Debt Consolidation Savings Calculator is public (menus, /calculators,
+     * sitemap, homepage count) only while the Debt Consolidation service is
+     * live. Its copy is part of the service's customer wording, so it goes
+     * public with the service and never before it. Admin screens still list it
+     * so its About text and indexing can be prepared, and so a saved indexing
+     * choice for it stays a valid option while the service is off.
+     *
+     * @return list<array{label: string, route: string, params: array<string, string>}>
+     */
+    private static function debtConsolidationCalculators(bool $includeHidden): array
+    {
+        return $includeHidden || DebtConsolidationSettings::enabled()
+            ? [['label' => __('Debt Consolidation Savings Calculator'), 'route' => 'calculators.debt-consolidation', 'params' => []]]
+            : [];
     }
 
     /**
      * Every calculator page as key => label, keyed by its path under
      * /calculators (CalculatorIndexing::pageKey(), e.g. `gst` or
      * `emi/home-loan`). The same key identifies the page's CalculatorPage
-     * "About" content and its search indexing setting.
+     * "About" content and its search indexing setting. Includes calculators
+     * that are not public yet: this list feeds admin screens only.
      *
      * @return array<string, string>
      */
     public static function pages(): array
     {
-        return collect(self::groups())
+        return collect(self::groups(includeHidden: true))
             ->flatten(1)
             ->mapWithKeys(fn (array $calculator): array => [
                 CalculatorIndexing::pageKey($calculator['route'], $calculator['params']) => $calculator['label'],
