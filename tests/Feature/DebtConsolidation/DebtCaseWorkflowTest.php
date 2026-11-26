@@ -17,6 +17,7 @@ use App\Modules\DebtConsolidation\Actions\ReviewDebtDocument;
 use App\Modules\DebtConsolidation\Actions\UpdateClosureStatus;
 use App\Modules\DebtConsolidation\Actions\UpdateLenderApplicationStatus;
 use App\Modules\DebtConsolidation\Actions\UploadDebtDocument;
+use App\Modules\DebtConsolidation\Actions\VerifyForeclosureQuotation;
 use App\Modules\DebtConsolidation\Enums\ActorType;
 use App\Modules\DebtConsolidation\Enums\ClosureStatus;
 use App\Modules\DebtConsolidation\Enums\ConsentPurpose;
@@ -24,6 +25,7 @@ use App\Modules\DebtConsolidation\Enums\DebtApplicationStatus;
 use App\Modules\DebtConsolidation\Enums\LenderApplicationStatus;
 use App\Modules\DebtConsolidation\Enums\LenderMatchStatus;
 use App\Modules\DebtConsolidation\Enums\ReportType;
+use App\Modules\DebtConsolidation\Enums\VerificationStatus;
 use App\Modules\DebtConsolidation\Models\DebtApplication;
 use App\Modules\DebtConsolidation\Models\DebtClosure;
 use App\Modules\DebtConsolidation\Models\DebtFinancialProfile;
@@ -42,10 +44,14 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
     Storage::fake('local');
     $this->staff = User::factory()->create(['is_admin' => true]);
+    // Confirming payments and verifying closures needs someone independent of
+    // the work (MakerChecker::ensureIndependent).
+    $this->checker = User::factory()->create(['is_admin' => true]);
 });
 
 function assessedCase(): DebtApplication
@@ -173,19 +179,19 @@ describe('closures', function () {
         expect(fn () => $status->handle($closure, ClosureStatus::PaymentConfirmed, $this->staff->id))->toThrow(ValidationException::class);
 
         $payment = $payments->record($closure, ['amount' => 500000, 'paid_on' => now()->toDateString(), 'payment_mode' => 'lender_direct', 'paid_by' => 'new_lender', 'utr_reference' => 'UTR123'], $this->staff->id);
-        $payments->confirm($payment, $this->staff->id);
+        $payments->confirm($payment, $this->checker->id);
         $status->handle($closure->fresh(), ClosureStatus::PaymentConfirmed, $this->staff->id);
 
-        expect(fn () => $status->handle($closure->fresh(), ClosureStatus::ClosureVerified, $this->staff->id))->toThrow(ValidationException::class);
+        expect(fn () => $status->handle($closure->fresh(), ClosureStatus::ClosureVerified, $this->checker->id))->toThrow(ValidationException::class, 'NOC');
 
         $noc = app(UploadDebtDocument::class)->handle($application, UploadedFile::fake()->createWithContent('noc.pdf', '%PDF-1.4 noc'), DocumentType::query()->where('key', 'noc_closure_letter')->sole(), ActorType::Staff, $this->staff->id, 'NOC', closureId: $closure->id);
         $status->handle($closure->fresh(), ClosureStatus::NocReceived, $this->staff->id, noc: $noc);
-        expect(fn () => $status->handle($closure->fresh(), ClosureStatus::ClosureVerified, $this->staff->id))->toThrow(ValidationException::class);
+        expect(fn () => $status->handle($closure->fresh(), ClosureStatus::ClosureVerified, $this->checker->id))->toThrow(ValidationException::class, 'Verify the NOC');
 
         app(ReviewDebtDocument::class)->verify($noc, $this->staff->id);
-        $status->handle($closure->fresh(), ClosureStatus::ClosureVerified, $this->staff->id);
+        $status->handle($closure->fresh(), ClosureStatus::ClosureVerified, $this->checker->id);
 
-        expect($closure->fresh())->status->toBe(ClosureStatus::ClosureVerified)->verified_by->toBe($this->staff->id)
+        expect($closure->fresh())->status->toBe(ClosureStatus::ClosureVerified)->verified_by->toBe($this->checker->id)
             ->and($application->fresh()->status)->toBe(DebtApplicationStatus::Completed);
     });
 
@@ -194,9 +200,9 @@ describe('closures', function () {
         $liability = $application->liabilities()->first();
         $closure = DebtClosure::factory()->for($liability, 'liability')->create(['debt_application_id' => $application->id, 'closure_type' => 'partial', 'final_closure_amount' => 100000]);
         $payment = app(RecordClosurePayment::class)->record($closure, ['amount' => 100000, 'paid_on' => now()->toDateString(), 'payment_mode' => 'neft', 'paid_by' => 'customer', 'utr_reference' => 'N123'], $this->staff->id);
-        app(RecordClosurePayment::class)->confirm($payment, $this->staff->id);
+        app(RecordClosurePayment::class)->confirm($payment, $this->checker->id);
 
-        app(UpdateClosureStatus::class)->handle($closure->fresh(), ClosureStatus::ClosureVerified, $this->staff->id);
+        app(UpdateClosureStatus::class)->handle($closure->fresh(), ClosureStatus::ClosureVerified, $this->checker->id);
 
         expect($closure->fresh()->status)->toBe(ClosureStatus::ClosureVerified);
     });
@@ -205,8 +211,8 @@ describe('closures', function () {
         $closure = DebtClosure::factory()->create();
         $payment = app(RecordClosurePayment::class)->record($closure, ['amount' => 10, 'paid_on' => now()->toDateString(), 'payment_mode' => 'neft', 'paid_by' => 'customer'], $this->staff->id);
 
-        app(RecordClosurePayment::class)->confirm($payment, $this->staff->id);
-    })->throws(ValidationException::class);
+        app(RecordClosurePayment::class)->confirm($payment, $this->checker->id);
+    })->throws(ValidationException::class, 'UTR');
 });
 
 describe('documents', function () {
@@ -324,7 +330,7 @@ describe('acceptance fixes', function () {
         $closure = DebtClosure::factory()->for($liability, 'liability')->create(['debt_application_id' => $application->id]);
         $payments = app(RecordClosurePayment::class);
         $status = app(UpdateClosureStatus::class);
-        $payments->confirm($payments->record($closure, ['amount' => 1, 'paid_on' => now()->toDateString(), 'payment_mode' => 'lender_direct', 'paid_by' => 'new_lender', 'utr_reference' => 'UTR1'], $this->staff->id), $this->staff->id);
+        $payments->confirm($payments->record($closure, ['amount' => 1, 'paid_on' => now()->toDateString(), 'payment_mode' => 'lender_direct', 'paid_by' => 'new_lender', 'utr_reference' => 'UTR1'], $this->staff->id), $this->checker->id);
 
         expect(fn () => $status->handle($closure->fresh(), ClosureStatus::PaymentConfirmed, $this->staff->id))
             ->toThrow(ValidationException::class, 'final closure amount');
@@ -334,7 +340,7 @@ describe('acceptance fixes', function () {
         expect(fn () => $status->handle($closure->fresh(), ClosureStatus::PaymentConfirmed, $this->staff->id))
             ->toThrow(ValidationException::class, 'do not cover');
 
-        $payments->confirm($payments->record($closure, ['amount' => 514999, 'paid_on' => now()->toDateString(), 'payment_mode' => 'lender_direct', 'paid_by' => 'new_lender', 'utr_reference' => 'UTR2'], $this->staff->id), $this->staff->id);
+        $payments->confirm($payments->record($closure, ['amount' => 514999, 'paid_on' => now()->toDateString(), 'payment_mode' => 'lender_direct', 'paid_by' => 'new_lender', 'utr_reference' => 'UTR2'], $this->staff->id), $this->checker->id);
         $status->handle($closure->fresh(), ClosureStatus::PaymentConfirmed, $this->staff->id);
 
         expect($closure->fresh())->status->toBe(ClosureStatus::PaymentConfirmed)->debt_foreclosure_quotation_id->not->toBeNull();
@@ -346,7 +352,7 @@ describe('acceptance fixes', function () {
         DebtForeclosureQuotation::factory()->for($liability, 'liability')->create(['total_amount' => 515000]);
         $closure = DebtClosure::factory()->for($liability, 'liability')->create(['debt_application_id' => $application->id, 'closure_type' => 'partial', 'final_closure_amount' => 100000]);
         $payments = app(RecordClosurePayment::class);
-        $payments->confirm($payments->record($closure, ['amount' => 100000, 'paid_on' => now()->toDateString(), 'payment_mode' => 'lender_direct', 'paid_by' => 'new_lender', 'utr_reference' => 'UTR3'], $this->staff->id), $this->staff->id);
+        $payments->confirm($payments->record($closure, ['amount' => 100000, 'paid_on' => now()->toDateString(), 'payment_mode' => 'lender_direct', 'paid_by' => 'new_lender', 'utr_reference' => 'UTR3'], $this->staff->id), $this->checker->id);
 
         app(UpdateClosureStatus::class)->handle($closure->fresh(), ClosureStatus::PaymentConfirmed, $this->staff->id);
 
@@ -378,9 +384,9 @@ describe('acceptance fixes', function () {
         $application->forceFill(['status' => $caseStatus])->save();
         $closure = DebtClosure::factory()->for($liability, 'liability')->create(['debt_application_id' => $application->id, 'closure_type' => 'partial', 'final_closure_amount' => 100000]);
         $payments = app(RecordClosurePayment::class);
-        $payments->confirm($payments->record($closure, ['amount' => 100000, 'paid_on' => now()->toDateString(), 'payment_mode' => 'lender_direct', 'paid_by' => 'new_lender', 'utr_reference' => 'UTR4'], $this->staff->id), $this->staff->id);
+        $payments->confirm($payments->record($closure, ['amount' => 100000, 'paid_on' => now()->toDateString(), 'payment_mode' => 'lender_direct', 'paid_by' => 'new_lender', 'utr_reference' => 'UTR4'], $this->staff->id), $this->checker->id);
 
-        app(UpdateClosureStatus::class)->handle($closure->fresh(), ClosureStatus::ClosureVerified, $this->staff->id);
+        app(UpdateClosureStatus::class)->handle($closure->fresh(), ClosureStatus::ClosureVerified, $this->checker->id);
 
         expect($application->fresh()->status)->toBe($expected);
 
@@ -392,4 +398,54 @@ describe('acceptance fixes', function () {
         'in closure' => [DebtApplicationStatus::ClosureInProgress, DebtApplicationStatus::Completed, true],
         'withdrawn by staff' => [DebtApplicationStatus::Withdrawn, DebtApplicationStatus::Withdrawn, false],
     ]);
+});
+
+describe('independent verification (OPS-D1)', function () {
+    it('never lets the person who recorded a closure payment confirm it, the super admin included', function () {
+        $superAdmin = tap(User::factory()->create(['is_admin' => true]))->assignRole(Role::findOrCreate('super_admin'));
+        $closure = DebtClosure::factory()->create();
+        $payments = app(RecordClosurePayment::class);
+        $payment = $payments->record($closure, ['amount' => 1000, 'paid_on' => now()->toDateString(), 'payment_mode' => 'neft', 'paid_by' => 'customer', 'utr_reference' => 'UTR9'], $superAdmin->id);
+
+        expect(fn () => $payments->confirm($payment, $superAdmin->id))->toThrow(ValidationException::class, 'different person')
+            ->and($payment->fresh()->confirmed_at)->toBeNull();
+
+        $payments->confirm($payment, $this->checker->id);
+
+        expect($payment->fresh()->confirmed_by)->toBe($this->checker->id);
+    });
+
+    it('never lets anyone who moved a closure through its statuses verify it', function () {
+        $application = assessedCase();
+        $closure = DebtClosure::factory()->for($application->liabilities()->first(), 'liability')->create(['debt_application_id' => $application->id, 'closure_type' => 'partial', 'final_closure_amount' => 1000]);
+        $payments = app(RecordClosurePayment::class);
+        $status = app(UpdateClosureStatus::class);
+        $payments->confirm($payments->record($closure, ['amount' => 1000, 'paid_on' => now()->toDateString(), 'payment_mode' => 'neft', 'paid_by' => 'customer', 'utr_reference' => 'UTR8'], $this->staff->id), $this->checker->id);
+        $status->handle($closure->fresh(), ClosureStatus::PaymentConfirmed, $this->staff->id);
+
+        expect(fn () => $status->handle($closure->fresh(), ClosureStatus::ClosureVerified, $this->staff->id))->toThrow(ValidationException::class, 'different person')
+            ->and($closure->fresh()->status)->toBe(ClosureStatus::PaymentConfirmed);
+
+        $status->handle($closure->fresh(), ClosureStatus::ClosureVerified, $this->checker->id);
+
+        expect($closure->fresh())->status->toBe(ClosureStatus::ClosureVerified)->verified_by->toBe($this->checker->id);
+    });
+
+    it('never lets the person who recorded or changed a foreclosure quotation verify it', function () {
+        $editor = User::factory()->create(['is_admin' => true]);
+        $quotation = DebtForeclosureQuotation::factory()->create(['recorded_by' => $this->staff->id]);
+        $verify = app(VerifyForeclosureQuotation::class);
+
+        expect(fn () => $verify->handle($quotation, $this->staff->id))->toThrow(ValidationException::class, 'different person');
+
+        $this->actingAs($editor);
+        $quotation->update(['notes' => 'Corrected the validity date from the letter']);
+
+        expect(fn () => $verify->handle($quotation->fresh(), $editor->id))->toThrow(ValidationException::class, 'different person')
+            ->and($quotation->fresh()->verification_status)->toBe(VerificationStatus::Unverified);
+
+        $verify->handle($quotation->fresh(), $this->checker->id);
+
+        expect($quotation->fresh())->verification_status->toBe(VerificationStatus::Verified)->verified_by->toBe($this->checker->id);
+    });
 });

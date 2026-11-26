@@ -17,8 +17,9 @@ Record each result as Pass / Fail plus initials. **Any failure in part B means a
 | A-01 | `php -v` in the container | The PHP version that satisfies `vendor/composer/platform_check.php` (≥ 8.4.1) | |
 | A-02 | `/` loads | 200; no "Composer detected issues in your platform" | |
 | A-03 | `php artisan about` | Environment production, debug off, cache drivers as configured | |
-| A-04 | Container log during start | Migrations, then config, route and view cache, with no errors | |
+| A-04 | Container log during start (INF-01) | A normal start with migrations pending **refuses** and lists them. The one-off start with `RUN_MIGRATIONS=true` shows 8 `DONE` lines. Then a normal start runs config, route and view cache with no errors. | |
 | A-05 | Parts B-01 to B-14 against staging | All pass | |
+| A-06 | `nginx -t`; `curl -H "Host: fynnedge.com" http://<staging>/up` and `curl -H "Host: example.com" http://<staging>/up` | Syntax OK; the first gives 200; the second gets no response (connection closed) | |
 
 ## B. Production, service OFF
 

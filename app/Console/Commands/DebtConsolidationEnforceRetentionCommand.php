@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Modules\DebtConsolidation\Actions\AnonymiseDebtApplication;
 use App\Modules\DebtConsolidation\Enums\DebtApplicationStatus;
 use App\Modules\DebtConsolidation\Models\DebtApplication;
 use App\Modules\DebtConsolidation\Models\DebtCalculationSnapshot;
@@ -10,7 +11,9 @@ use Illuminate\Console\Command;
 /**
  * Debt Consolidation retention (docs/debt-consolidation/09-security-compliance.md):
  *  - an unfinished draft (never submitted, not even as an enquiry) with no
- *    customer activity for `drafts_days` is withdrawn and soft-deleted;
+ *    customer activity for `drafts_days` has its personal data anonymised
+ *    (AnonymiseDebtApplication: Owner decision M3), then is withdrawn and
+ *    soft-deleted;
  *  - an anonymous calculator snapshot (never attached to a case) older than
  *    `calculator_snapshots_days` is deleted.
  * Submitted cases, their documents and reports are never touched here: their
@@ -23,7 +26,7 @@ class DebtConsolidationEnforceRetentionCommand extends Command
 
     protected $description = 'Withdraw abandoned debt consolidation drafts and delete old anonymous calculator snapshots';
 
-    public function handle(): int
+    public function handle(AnonymiseDebtApplication $anonymise): int
     {
         $draftsBefore = now()->subDays((int) config('debt_consolidation.retention.drafts_days'));
         $snapshotsBefore = now()->subDays((int) config('debt_consolidation.retention.calculator_snapshots_days'));
@@ -39,8 +42,8 @@ class DebtConsolidationEnforceRetentionCommand extends Command
         $snapshotCount = (clone $snapshots)->count();
 
         if (! $this->option('dry-run')) {
-            $drafts->each(function (DebtApplication $application): void {
-                $application->forceFill(['status' => DebtApplicationStatus::Withdrawn, 'closed_at' => now(), 'closure_reason' => 'Abandoned draft removed by retention policy'])->save();
+            $drafts->each(function (DebtApplication $application) use ($anonymise): void {
+                $anonymise->handle($application, AnonymiseDebtApplication::REASON_RETENTION);
                 $application->delete();
             });
             $snapshots->delete();

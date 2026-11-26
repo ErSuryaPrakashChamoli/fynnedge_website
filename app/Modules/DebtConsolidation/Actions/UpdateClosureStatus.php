@@ -10,6 +10,7 @@ use App\Modules\DebtConsolidation\Models\DebtApplication;
 use App\Modules\DebtConsolidation\Models\DebtClosure;
 use App\Modules\DebtConsolidation\Models\DebtDocument;
 use App\Modules\DebtConsolidation\Notifications\DebtCaseNotifier;
+use App\Modules\DebtConsolidation\Services\MakerChecker;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -39,6 +40,10 @@ class UpdateClosureStatus
 
         if ($from === ClosureStatus::ClosureVerified && $to !== $from) {
             throw ValidationException::withMessages(['status' => 'A verified closure cannot be changed.']);
+        }
+
+        if ($to === ClosureStatus::ClosureVerified) {
+            MakerChecker::ensureIndependent($closure, $userId, 'status', 'A different person must verify this closure: you recorded or changed it.');
         }
 
         if ($finalClosureAmount !== null) {

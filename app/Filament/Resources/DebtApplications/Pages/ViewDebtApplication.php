@@ -5,6 +5,7 @@ namespace App\Filament\Resources\DebtApplications\Pages;
 use App\Filament\Resources\DebtApplications\DebtApplicationResource;
 use App\Models\LenderProduct;
 use App\Models\User;
+use App\Modules\DebtConsolidation\Actions\AnonymiseDebtApplication;
 use App\Modules\DebtConsolidation\Actions\AssessDebtApplication;
 use App\Modules\DebtConsolidation\Actions\ChangeDebtApplicationStatus;
 use App\Modules\DebtConsolidation\Actions\CreateLenderApplication;
@@ -241,6 +242,17 @@ class ViewDebtApplication extends ViewRecord
                         Toggle::make('is_customer_visible')->label('Release to the customer\'s profile')->helperText('Never available for the internal advisor assessment.'),
                     ])
                     ->action(fn (array $data) => $this->attempt(fn () => app(GenerateDebtReport::class)->handle($this->getRecord(), ReportType::from($data['report_type']), auth()->id(), (bool) $data['is_customer_visible']), 'Report generated')),
+                // A customer's erasure request (Owner decision M3). Needs the case delete
+                // permission, which no role holds by default.
+                Action::make('anonymise')
+                    ->label('Anonymise personal data')
+                    ->icon('heroicon-o-user-minus')
+                    ->color('danger')
+                    ->visible(fn (): bool => ! $this->getRecord()->isAnonymised() && (bool) auth()->user()?->can('delete', $this->getRecord()))
+                    ->requiresConfirmation()
+                    ->modalDescription('For a customer\'s erasure request. Permanently removes the name, contact details, loans, finances, documents, reports and calculations; keeps the reference, dates, consent records and status history. This cannot be undone, and is refused once a lender has received the case. A lead-inbox enquiry for this case is a separate record: handle it there.')
+                    ->schema([TextInput::make('reference')->label('Erasure request reference')->required()->maxLength(150)])
+                    ->action(fn (array $data) => $this->attempt(fn () => app(AnonymiseDebtApplication::class)->handle($this->getRecord(), AnonymiseDebtApplication::REASON_REQUEST, auth()->id(), $data['reference']), 'Personal data anonymised')),
             ])->label('More')->button()->icon('heroicon-o-ellipsis-horizontal'),
         ];
     }

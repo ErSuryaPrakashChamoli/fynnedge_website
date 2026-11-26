@@ -20,9 +20,15 @@ The Owner replied "approved all". Applied:
 - the commit of the release candidate: done by the Owner as `65e315c`, with the approved follow-ups committed after it, locally (CO-01);
 - deployment authorisation (DP-01). It cannot be carried out until PR-02 to PR-05 and the staging build are done, and engineering has no production access.
 
+**Later the same day the Owner chose, and engineering built and tested:**
+- OPS-D1: mandatory independent maker-checker on quotations, closure payments and closure verification, with no exemption;
+- M3: anonymisation of abandoned drafts and of erasure requests;
+- INF-04: nginx answers fynnedge.com and www only.
+
+The Owner also decided there is no fee to borrowers (LA-03, Owner part).
+
 **Not treated as approved:**
 - the business, legal, credit, DPO and historical-validation items (A, B, C in `30-…`): they need named approvers and specific choices;
-- INF-04, which needs the production hostnames.
 
 The verdicts below still hold: **not yet deployable** (PR-02 to PR-05, staging build) and **not authorised for live customers**.
 
@@ -45,7 +51,7 @@ The verdicts below still hold: **not yet deployable** (PR-02 to PR-05, staging b
 | 5 | Legal and regulatory approval | **PENDING APPROVAL** | Decision pack A–L with DRAFT wording (`24-…`). Nothing is approved. |
 | 6 | Credit and lender policy approval | **PENDING APPROVAL** | 0 lender policies; 0 lender documents; all lenders UNVERIFIED (`lender-policy/`). Credit items in `23-…`. |
 | 7 | Operations readiness | **PENDING APPROVAL** | System support ready. 13 SOPs drafted; team email, training, retention, SMS and OPS-D1 undecided (`25-…`). |
-| 8 | Security and privacy readiness | **PENDING APPROVAL** | High and Medium code findings fixed and tested. M3 erasure needs Legal/DPO; INF-04 and INF-05 need the Owner (`26-…`). |
+| 8 | Security and privacy readiness | **PENDING APPROVAL** | All code findings fixed and tested, including M3 erasure (anonymisation built after the Owner's choice). INF-04 and INF-05 applied. What remains is Legal/DPO approval of retention periods and notices (LA-02, OD8). |
 | 9 | Infrastructure readiness | **BLOCKED** | INF-02 (PHP runtime) blocker; PR-02 to PR-05 need production evidence; INF-01 decision (`27-…`). |
 | 10 | Deployment readiness | **BLOCKED** | Depends on areas 9, CO-01 and DP-01. Runbook, rollback and smoke tests ready (`31-…`, `32-…`, `33-…`). |
 | 11 | Business go-live approval | **PENDING APPROVAL** | Gate G not requested. It needs areas 3–8 approved and `34-…` complete. |
@@ -73,8 +79,8 @@ Every fix below has a test that was run against the unfixed code and failed, the
 **Not fixed, by decision:**
 - **W-03:** two non-DC sticky panels; the team rule records leaving them. Owner decision.
 - **L4:** headline figures visible to anyone allowed to view a case; by design.
-- **M3:** erasure; Legal/DPO decision.
-- **INF-01, INF-02, INF-04, INF-05:** production configuration; Owner decisions. Patches are prepared for INF-01 and INF-02.
+- **M3:** erasure. Built after the Owner chose anonymisation on 26 Nov 2026; retention periods are still for Legal/DPO.
+- **INF-01, INF-02, INF-04, INF-05:** production configuration. All four were approved by the Owner on 26 Nov 2026 and applied (see the update at the top).
 
 ## 4. Regression results (summary of `20-…`)
 
@@ -82,7 +88,8 @@ Every fix below has a test that was run against the unfixed code and failed, the
 | --- | --- | ---: | ---: | ---: | --- |
 | Baseline | Clean `084825b` (pre-project) | 3,011 | 2,996 | 15 (Experian external API) | — |
 | 5 | Branch before this stage's fixes | 3,270 | 3,255 | 15 (same tests) | Yes |
-| **8** | **Release candidate (all fixes)** | **3,286** | **3,270** | **16**: 15 Experian (same as baseline) + 1 site-preference test (F-3), updated and green on re-run | **Yes, for the 15**; F-3 explained and closed |
+| **9** | **After the Owner decisions (final)** | **3,294** | **3,279** | **15**: exactly the baseline's Experian failures | **Yes** |
+| 8 | Release candidate (all fixes) | **3,286** | **3,270** | **16**: 15 Experian (same as baseline) + 1 site-preference test (F-3), updated and green on re-run | **Yes, for the 15**; F-3 explained and closed |
 
 **Test inventory:**
 - no baseline test is missing on the branch;
@@ -184,13 +191,13 @@ The deleted `validation/__pycache__/reference.cpython-314.pyc` must be committed
 
 | # | Decision | Where |
 | --- | --- | --- |
-| 1 | Confirm how production is built, and approve the PHP runtime patch or record the real build (**INF-02, blocker**) | `27-…` §6; `release/dockerfile-php-runtime.patch` |
-| 2 | Explicit migration step: apply the entrypoint patch, or keep migrate-on-start under runbook discipline (INF-01) | `27-…` §4.4 |
-| 3 | Restrict accepted hosts in nginx (INF-04); encrypt sessions (INF-05) | `27-…` §6 |
-| 4 | Confirm the parallel changes belong in this release; then commit, or authorise engineering to commit (CO-01) | §6.2, §6.4 |
-| 5 | W-03: move two non-DC sticky panels under the taller header, or leave them | `28-…` §4; `release/sticky-enquiry-panels.patch` |
-| 6 | Fee to borrowers, with Legal (LA-03) | `24-…` F–H |
-| 7 | Retention period for submitted cases (OD8), with Legal and Operations; erasure scope (M3) | `24-…` I; `26-…` §5 |
+| 1 | ~~Approve the PHP runtime patch (INF-02)~~ **Done 26 Nov 2026**. Remaining: Operations confirms with a staging build | `27-…` §6 |
+| 2 | ~~Explicit migration step (INF-01)~~ **Done 26 Nov 2026** | `27-…` §4.4 |
+| 3 | ~~Restrict accepted hosts in nginx (INF-04); encrypt sessions (INF-05)~~ **Done 26 Nov 2026** | `27-…` §6 |
+| 4 | ~~Confirm the parallel changes and commit (CO-01)~~ **Done**: Owner commit `65e315c` plus the follow-up commits (local; not pushed). **Remaining: push or merge when ready.** | §6.2, §6.4 |
+| 5 | ~~W-03 sticky panels~~ **Done 26 Nov 2026** | `28-…` §4 |
+| 6 | Fee to borrowers: **Owner decided no fee (26 Nov 2026)**. Legal confirms the position and the disclosure wording (LA-03) | `24-…` F–H |
+| 7 | Retention periods for drafts and submitted cases (OD8), with Legal and Operations. ~~Erasure scope (M3)~~ **decided and built: anonymise** | `24-…` I; `26-…` M3 |
 | 8 | SMS case-update templates: needed or not (OP-01) | `25-…` |
-| 9 | Deployment authorisation (DP-01), after items 1, 4 and PR-02 to PR-05 | `31-…` |
+| 9 | ~~Deployment authorisation (DP-01)~~ **Given 26 Nov 2026**. It takes effect after PR-02 to PR-05 and the staging build. | `31-…` |
 | 10 | Go-live authorisation (GL-01), only after `34-…` §1 is complete | `34-…` |

@@ -12,6 +12,7 @@ use App\Filament\Resources\DebtApplications\RelationManagers\LiabilitiesRelation
 use App\Filament\Resources\DebtApplications\RelationManagers\ReportsRelationManager;
 use App\Filament\Resources\DebtClosures\Pages\ViewDebtClosure;
 use App\Filament\Resources\DebtClosures\RelationManagers\PaymentsRelationManager;
+use App\Filament\Resources\DebtForeclosureQuotations\Pages\ListDebtForeclosureQuotations;
 use App\Filament\Resources\DebtLenderPolicies\DebtLenderPolicyResource;
 use App\Filament\Resources\DebtLenderPolicies\Pages\CreateDebtLenderPolicy;
 use App\Filament\Resources\DebtLenderPolicies\Pages\EditDebtLenderPolicy;
@@ -37,6 +38,7 @@ use App\Modules\DebtConsolidation\Models\DebtClosure;
 use App\Modules\DebtConsolidation\Models\DebtConsent;
 use App\Modules\DebtConsolidation\Models\DebtDocument;
 use App\Modules\DebtConsolidation\Models\DebtFinancialProfile;
+use App\Modules\DebtConsolidation\Models\DebtForeclosureQuotation;
 use App\Modules\DebtConsolidation\Models\DebtLenderPolicy;
 use App\Modules\DebtConsolidation\Models\DebtLiability;
 use App\Modules\DebtConsolidation\Models\DebtReport;
@@ -354,6 +356,14 @@ describe('security review fixes', function () {
         'another module\'s KYC file' => 'applications/77/aadhaar.pdf',
         'another case\'s report' => 'debt-consolidation/DC-OTHER01/reports/advisor_assessment-v1.pdf.enc',
     ]);
+
+    it('keeps a quotation unverified when the person who recorded it presses Verify', function () {
+        $quotation = DebtForeclosureQuotation::factory()->create(['recorded_by' => auth()->id()]);
+
+        Livewire::test(ListDebtForeclosureQuotations::class)->callTableAction('verify', $quotation);
+
+        expect($quotation->fresh()->verification_status)->toBe(VerificationStatus::Unverified);
+    });
 
     it('shows the full analysis and report downloads only to staff allowed to see them', function () {
         $application = staffCase();

@@ -202,8 +202,8 @@ These are checked once Legal decides. Engineering will then:
 | --- | --- | --- |
 | A, B (LA-01) | Legal / Compliance | PENDING APPROVAL |
 | C, D, E, J, K (LA-02) | Legal / DPO / Compliance | PENDING APPROVAL |
-| F, G, H (LA-03) | Legal + Owner | PENDING APPROVAL |
-| I (OD8) | Legal + Operations + Owner | PENDING APPROVAL |
+| F, G, H (LA-03) | Legal + Owner | **Owner decided 26 Nov 2026: no fee to borrowers.** Legal still to confirm the position and the disclosure wording (DRAFT "if no borrower fee"). H (refund policy) is not needed while no fee is charged. | 
+| I (OD8) | Legal + Operations + Owner | Erasure method decided by the Owner 26 Nov 2026: anonymise; built and tested. **Retention periods** (drafts 180 days, submitted cases) still PENDING APPROVAL. |
 | L | Legal (wording decisions); engineering scan COMPLETE | PENDING APPROVAL |
 
 **Legal and regulatory approval: PENDING APPROVAL.** Nothing here is approved.

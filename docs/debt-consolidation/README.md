@@ -40,7 +40,7 @@
 | `33-PRODUCTION-SMOKE-TEST-CHECKLIST.md` | Staging, post-deployment (off) and go-live smoke tests |
 | `34-GO-LIVE-AND-ACTIVATION-CHECKLIST.md` | Pre-conditions and steps for switching the service on (gate G) |
 | `35-KNOWN-LIMITATIONS-AND-RISKS.md` | Limitations, release risks, pre-existing defects |
-| `evidence/` | Durable test evidence: full-suite outputs for the release candidate (run 8, plus the one-file follow-up) and the clean baseline `084825b` |
+| `evidence/` | Durable test evidence: full-suite outputs for the clean baseline `084825b`, the release candidate (run 8, plus a one-file follow-up) and the final state after the Owner decisions (run 9) |
 | `lender-policy/` | Lender policy configuration checklist, validation report, pending-information register |
 | `release/` | Patches for the explicit migration entrypoint, the Docker PHP runtime and the sticky enquiry panels: **all three applied on 26 Nov 2026 after Owner approval** (kept for the record) |
 | `validation/` | Financial validation workbook (`DC-financial-validation-workbook.xlsx`), cases, engine harness, independent reference, comparison |

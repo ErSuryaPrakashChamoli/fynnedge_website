@@ -41,6 +41,12 @@ class DebtApplication extends Model
 
     private const REFERENCE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
+    /**
+     * The mobile stored once a case's personal data is anonymised (the column
+     * is required). No OTP can prove it, so the case can never be reclaimed.
+     */
+    public const ANONYMISED_MOBILE = '0000000000';
+
     protected static function newFactory(): DebtApplicationFactory
     {
         return DebtApplicationFactory::new();
@@ -201,6 +207,14 @@ class DebtApplication extends Model
     public function isSubmitted(): bool
     {
         return $this->submitted_at !== null;
+    }
+
+    /**
+     * Whether AnonymiseDebtApplication has removed this case's personal data.
+     */
+    public function isAnonymised(): bool
+    {
+        return $this->mobile === self::ANONYMISED_MOBILE;
     }
 
     /**

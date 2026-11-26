@@ -6,6 +6,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | --- | --- |
 | app/Models/Achievement.php,app/Filament/Resources/Achievements/**,resources/views/components/site/hero-stats.blade.php | .ai/rules/achievements-views-components-site.md |
 | app/Models/Achievement.php,app/Filament/Resources/Achievements/**,resources/views/home.blade.php | .ai/rules/achievements-views.md |
+| app/Modules/DebtConsolidation/Actions/AnonymiseDebtApplication.php,app/Console/Commands/DebtConsolidationEnforceRetentionCommand.php | .ai/rules/actions-console-commands.md |
 | app/Modules/Customers/Services/**,app/Http/Controllers/Portal/**,resources/views/components/⚡credit-score-check.blade.php,app/Modules/CreditScore/Actions/SubmitCreditScoreCheck.php | .ai/rules/actions.md |
 | app/Filament/Clusters/**,app/Filament/Resources/**,app/Filament/Pages/**,app/Support/Admin/** | .ai/rules/admin.md |
 | app/Support/Privacy/**,app/Support/Analytics/**,resources/views/components/site/cookie-consent.blade.php | .ai/rules/analytics-views-components-site.md |
@@ -53,6 +54,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | resources/views/components/site/promo-bar.blade.php,resources/js/app.js,resources/css/app.css | .ai/rules/css.md |
 | app/Modules/DebtConsolidation/Actions/UploadDebtDocument.php, app/Modules/DebtConsolidation/Actions/** | .ai/rules/debt-consolidation-actions.md |
 | app/Modules/DebtConsolidation/** | .ai/rules/debt-consolidation.md |
+| docker/nginx/nginx.conf | .ai/rules/docker-nginx.md |
 | docker/entrypoint.sh | .ai/rules/docker.md |
 | resources/views/emails/**,resources/views/components/emails/** | .ai/rules/emails.md |
 | resources/views/**,app/Http/Controllers/**,app/Support/**,app/Enums/**,lang/** | .ai/rules/enums.md |
@@ -103,6 +105,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Modules/**/Models/*.php | .ai/rules/models.md |
 | app/Modules/Customers/**,resources/views/components/⚡credit-score-check.blade.php,app/Modules/CreditScore/Actions/SubmitCreditScoreCheck.php | .ai/rules/modules-credit-score-actions.md |
 | app/Modules/CreditScore/** | .ai/rules/modules-credit-score.md |
+| app/Modules/DebtConsolidation/Services/MakerChecker.php,app/Modules/DebtConsolidation/Actions/** | .ai/rules/modules-debt-consolidation-actions.md |
 | app/Http/Controllers/**,app/Modules/**,resources/js/app.js | .ai/rules/modules-js.md |
 | app/Models/**,app/Modules/**/Models/*.php | .ai/rules/modules-models.md |
 | app/Http/Controllers/RobotsController.php,app/Http/Controllers/SitemapController.php,app/Support/Seo/SearchEngineIndexing.php,docker/nginx/nginx.conf | .ai/rules/nginx.md |

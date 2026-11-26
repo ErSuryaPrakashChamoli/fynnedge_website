@@ -15,8 +15,8 @@
 | L-07 | The Savings Calculator holds the card payment fixed (minimum due at the start) | Approved default to be confirmed (BV-04) | Savings tend to be understated, not overstated (`23-…` §3.2) | Credit (BV-04) |
 | L-08 | No SMS case updates; only OTP SMS | DLT templates not decided | Customers rely on email and the portal | Operations (OP-01) |
 | L-09 | No complaints or escalation module; handled by procedure (SOP-13) | Scope | Depends on staff discipline | Operations |
-| L-10 | Second-person checks on quotations, closure payments and closure verification are procedural, not enforced | Scope | One person could do both steps | Operations (OPS-D1) |
-| L-11 | No customer-data erasure function; abandoned drafts are only soft-deleted | Awaits Legal/DPO decision | DPDP erasure requests handled manually by engineering until built | Legal/DPO (`26-…` M3) |
+| L-10 | ~~Second-person checks were procedural~~ **Closed 26 Nov 2026**: enforced by the system, no exemption (OPS-D1) | — | — | — |
+| L-11 | ~~No erasure function~~ **Closed 26 Nov 2026**: abandoned drafts are anonymised by the retention job; erasure requests via *Anonymise personal data* on the case page (M3). Cases a lender has received are refused (record-keeping, OD8); the lead-inbox enquiry is a separate record. | — | — | Legal/DPO to confirm retention periods |
 | L-12 | Customers see a lender as "Your advisor suggests…", not as a multi-lender offer list with APR or KFS | Depends on LA-01 | May need a change if Legal decides FynnEdge is a multi-lender LSP | Legal (LA-01) |
 
 ## 2. Release and infrastructure risks
@@ -30,7 +30,7 @@
 | R-05 | `APP_KEY` loss makes every DC document and report unreadable | Low / severe | Separate key backup (PR-05) | Operations |
 | R-06 | Scheduler not running in production | Unknown | PR-03 | Operations |
 | R-07 | Mail transport not confirmed | Unknown | PR-02; part C of the smoke test checks the links and delivery | Operations |
-| R-08 | Any host header accepted by nginx (site-wide) | Low (DC emails fixed) | INF-04 | Owner |
+| R-08 | ~~Any host accepted by nginx~~ **Applied 26 Nov 2026**: only fynnedge.com, www.fynnedge.com and localhost are answered (INF-04) | Low | Load balancer or uptime checks must send `Host: fynnedge.com`; check `nginx -t` in staging | Operations |
 | R-09 | Sessions not encrypted (site-wide) | Low | INF-05 applied as the compose default; the production `.env` must not set it to false | Operations |
 | R-10 | No monitoring or alerting in the repository | Medium | INF-06 | Operations |
 | R-11 | Two non-DC sticky enquiry panels sit further under the taller sticky header (W-03) | Certain / cosmetic | **Fixed 26 Nov** (Owner approval) | Closed |

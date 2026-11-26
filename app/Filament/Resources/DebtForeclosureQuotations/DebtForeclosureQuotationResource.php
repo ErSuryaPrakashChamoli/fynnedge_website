@@ -5,6 +5,7 @@ namespace App\Filament\Resources\DebtForeclosureQuotations;
 use App\Filament\Clusters\Concerns\BelongsToAdminModule;
 use App\Filament\Resources\DebtApplications\DebtApplicationResource;
 use App\Filament\Resources\DebtForeclosureQuotations\Pages\ListDebtForeclosureQuotations;
+use App\Modules\DebtConsolidation\Actions\VerifyForeclosureQuotation;
 use App\Modules\DebtConsolidation\Enums\VerificationStatus;
 use App\Modules\DebtConsolidation\Models\DebtForeclosureQuotation;
 use App\Modules\DebtConsolidation\Services\DebtPresenter;
@@ -14,6 +15,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -22,6 +24,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Debt Consolidation → Foreclosure Analysis: lenders' foreclosure
@@ -83,7 +86,14 @@ class DebtForeclosureQuotationResource extends Resource
                     ->visible(fn (DebtForeclosureQuotation $record): bool => $record->verification_status !== VerificationStatus::Verified && (bool) auth()->user()?->can('update', $record))
                     ->requiresConfirmation()
                     ->modalDescription('Confirm the amount and validity match the lender\'s foreclosure letter. Then Recalculate the case.')
-                    ->action(fn (DebtForeclosureQuotation $record) => $record->update(['verification_status' => VerificationStatus::Verified, 'verified_by' => auth()->id(), 'verified_at' => now()])),
+                    ->action(function (DebtForeclosureQuotation $record): void {
+                        try {
+                            app(VerifyForeclosureQuotation::class)->handle($record, auth()->id());
+                            Notification::make()->title('Quotation verified. Recalculate the case.')->success()->send();
+                        } catch (ValidationException $exception) {
+                            Notification::make()->title('Not verified')->body(implode(' ', $exception->validator->errors()->all()))->danger()->send();
+                        }
+                    }),
             ])
             ->defaultSort('valid_until');
     }

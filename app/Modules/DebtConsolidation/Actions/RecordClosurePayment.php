@@ -6,12 +6,14 @@ use App\Modules\DebtConsolidation\Enums\ClosurePaymentMode;
 use App\Modules\DebtConsolidation\Models\DebtClosure;
 use App\Modules\DebtConsolidation\Models\DebtClosurePayment;
 use App\Modules\DebtConsolidation\Models\DebtDocument;
+use App\Modules\DebtConsolidation\Services\MakerChecker;
 use Illuminate\Validation\ValidationException;
 
 /**
  * Records a payment towards closing a liability, and its confirmation. A
- * payment is confirmed only with evidence: a UTR / reference or a proof
- * document attached to the case.
+ * payment is confirmed only with evidence (a UTR / reference or a proof
+ * document attached to the case) and only by someone independent of it
+ * (MakerChecker::ensureIndependent, no exemption).
  */
 class RecordClosurePayment
 {
@@ -45,6 +47,8 @@ class RecordClosurePayment
         if (blank($payment->utr_reference) && $payment->debt_document_id === null) {
             throw ValidationException::withMessages(['utr_reference' => 'Add the UTR / reference or attach the payment proof before confirming.']);
         }
+
+        MakerChecker::ensureIndependent($payment, $userId, 'confirmed_by', 'A different person must confirm this payment: you recorded or changed it.');
 
         $payment->forceFill(['confirmed_at' => now(), 'confirmed_by' => $userId])->save();
 

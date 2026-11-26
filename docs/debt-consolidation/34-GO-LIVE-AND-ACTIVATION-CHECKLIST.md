@@ -20,7 +20,7 @@ Switching on needs no deployment. It is the *Debt Consolidation is live* setting
 | G-08 | HV-00 decided, then HV-01 / BV-13 accepted (or Finance and Credit record that go-live may proceed without it, with their reasons) | C, B | Legal/DPO; Head of Advisory + Credit | `21-…` §10; `22-…` | ☐ |
 | G-09 | LP-01: at least one real partner policy entered from a lender document, approved by a second person, and tested on a copy. Demo lenders confirmed absent or inactive (P-02). | A | Credit | `lender-policy/LP-C` | ☐ |
 | G-10 | OP-01: team alert email set, SOPs approved (`25-…`, including SOP-05 = BV-08), advisors trained, retention (OD8) decided, SMS decision made | A, B | Operations + Owner | Training record; settings | ☐ |
-| G-11 | Security: M3 erasure decided and, if required, built; INF-04 and INF-05 decided | A | Legal/DPO; Owner | `26-…` | ☐ |
+| G-11 | Security: M3 erasure (anonymisation built 26 Nov 2026); INF-04 and INF-05 applied 26 Nov 2026. Remaining: the production `.env` must not set `SESSION_ENCRYPT=false`, and staging `nginx -t` must pass | A | Operations | `26-…`; `27-…` | ☐ |
 | G-12 | Pages reviewed in preview by Marketing and Legal: hub, personal, business, how it works, analyser, assessment, FAQs, Savings Calculator (EN + HI) | A | Marketing + Legal | Review note | ☐ |
 
 ## 2. Activation (Owner, in a controlled window)

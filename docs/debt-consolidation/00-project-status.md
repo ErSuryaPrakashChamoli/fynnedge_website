@@ -14,7 +14,11 @@
   - W-03 sticky panels;
   - INF-05 encrypted sessions by default;
   - CO-01: Owner commit `65e315c` plus the follow-up commit, both local and not pushed;
-  - DP-01 authorised.
+  - DP-01 authorised;
+  - OPS-D1 mandatory independent maker-checker (built);
+  - M3 anonymisation and erasure (built);
+  - INF-04 nginx hosts limited to fynnedge.com and www;
+  - LA-03 Owner part: no fee to borrowers (Legal still confirms).
 - **Production-deployment-ready: not yet.** Waits for PR-02 to PR-05 (Operations evidence) and a staging build of the PHP 8.5 image.
 - **Authorised for live customer applications: no.**
 
@@ -100,6 +104,8 @@
 - None open in Debt Consolidation: all 24 acceptance defects are fixed and tested (`16-…` §5).
 
 ## Test results
+
+**Final (run 9, 26 Nov 2026, after the Owner decisions):** 3,294 tests, 3,279 passed. The 15 failures are exactly the clean baseline's Experian set.
 
 **Release candidate (run 8, 26 Nov 2026):** 3,286 tests, 3,270 passed. 15 of the 16 that did not pass are the same `ExternalExperianApiTest` failures as on the clean baseline `084825b` (3,011 tests, 2,996 passed, 15 failures). The 16th was a site-preference test whose expectation predated the Savings Calculator gate (W-01). It was updated to assert the exact new difference and passes (12/12). No test was removed and no assertion was weakened (`20-REGRESSION-CLOSURE-REPORT.md`; output in `evidence/`).
 

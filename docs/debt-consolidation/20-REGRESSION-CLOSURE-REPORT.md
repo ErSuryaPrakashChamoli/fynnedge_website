@@ -6,6 +6,7 @@
 - The release candidate passes every test except the same 15 tests that fail on the clean pre-project code (the external Experian API, F-1).
 - One test failed in run 8 because of this stage's own Savings Calculator gate (W-01). Its expectation was updated to the exact new behaviour, and it passes (F-3).
 - No test was removed or weakened.
+- **Run 9 (final, after the Owner decisions):** 3,294 tests, 3,279 passed. The 15 that fail are exactly the clean baseline's 15 Experian failures: nothing new, nothing missing (`evidence/run9-full-suite-after-owner-decisions.txt`).
 
 ## 1. How the runs were made
 
@@ -25,6 +26,7 @@
 | 8 (first attempt) | — | lost: the machine restarted at 15:43 IST during the run; re-run from the start | | | | | |
 | **8** | **Release candidate (final)** | **3,286** | **3,270** | **15** | **1** | **13,718** | **15 m 38 s** |
 | 8 follow-up | `DebtConsolidationSitePreferenceTest` after updating one expectation (F-3) | 12 | 12 | 0 | 0 | 70 | 3 s |
+| **9** | **After the Owner decisions (INF-01/02/04/05, W-03, OPS-D1, M3)** | **3,294** | **3,279** | **14** | **1** | **13,786** | **19 m 57 s** |
 
 **Raw outputs.**
 - Run 8's full output is kept in the repository at `evidence/run8-full-suite-release-candidate.txt`.

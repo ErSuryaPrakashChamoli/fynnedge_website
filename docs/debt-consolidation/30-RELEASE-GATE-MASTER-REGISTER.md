@@ -24,7 +24,13 @@
 
 **It was not recorded as approval** of:
 - any A, B or C item: each needs its named approver and, for most, a specific choice (`17-…`, `19-…`);
-- INF-04 (nginx hosts), which needs the production hostnames and proxy behaviour first.
+- INF-04 (nginx hosts) at first, until the hostnames were known. The Owner then gave them (below).
+
+**Owner choices of 26 Nov 2026, applied and tested:**
+- **OPS-D1:** mandatory independent maker-checker on quotations, closure payments and closure verification, with no exemption.
+- **M3:** anonymise abandoned drafts and erasure requests.
+- **LA-03 (Owner part):** no fee to borrowers. Legal still confirms the position and the wording.
+- **INF-04:** nginx answers fynnedge.com and www.fynnedge.com only.
 
 ## Summary by gate group
 
@@ -44,7 +50,7 @@
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | LA-01 | Regulatory position (RBI digital lending: LSP / DSA / referral), multi-lender display, money flows, grievance | Legal / Compliance | `24-…` A, B; `09-…` §3 | PENDING APPROVAL | Partner agreements (`LP-C` P-03) | | | |
 | LA-02 | Consents, notices (DPDP), disclaimers, warnings (with BV-18), privacy policy and terms; EN + HI | Legal / DPO + Compliance | `24-…` C, D, E, J, K (DRAFT wording) | PENDING APPROVAL | LA-01, LA-03 | | | |
-| LA-03 | Borrower fee: whether any; disclosure; refund policy | Legal + Owner | `24-…` F, G, H | PENDING APPROVAL | LA-01 | | | |
+| LA-03 | Borrower fee: whether any; disclosure; refund policy | Legal + Owner | `24-…` F, G, H | PENDING APPROVAL (Legal part). **Owner part decided 26 Nov 2026: no fee to borrowers**; refund policy not needed while no fee is charged. | LA-01 | | Owner (fee decision) | Owner, chat 26 Nov 2026 |
 | FA-01 | Financial assumptions (GST 18%, card 5%, 60 months, 1.5 points, 90 DPD) and BV-01 to 06, BV-15 | Finance + Credit | `23-…`; workbook; 827/827 | PENDING APPROVAL | HV-01 (final sign-off of BV-01, BV-06) | | | |
 | FA-02 | Methods: loan sizing, net benefit, break-even, part-prepayment (BV-07, 09, 10, 11) | Finance + Head of Advisory | `23-…`; Check C | PENDING APPROVAL | HV-01 (BV-09) | | | |
 | SC-01 | Suitability score (BV-14) | Head of Advisory + Compliance | `23-…`; Check D | PENDING APPROVAL | SC-02, FA-02 | | | |
@@ -52,7 +58,7 @@
 | LP-01 | Partner lender policies entered from documents and approved by a second person | Credit (maker + checker) | `lender-policy/LP-A`, `LP-B`, `LP-C` (0 policies; 0 documents) | PENDING APPROVAL | LP-02 (BV-16), LA-01, lender documents | | | |
 | LP-02 | Standard options, Savings Calculator defaults, route matrix (BV-16, BV-17) | Credit | `23-…` §3.2 | PENDING APPROVAL | — (can start now) | | | |
 | HV-01 | Historical case validation accepted (BV-13) | Head of Advisory + Credit | Infrastructure (`22-…`); 0 cases | **BLOCKED** | HV-00; source documents | | | |
-| OP-01 | Team email, training, retention (OD8), SMS decision, SOPs incl. SOP-05 (BV-08), OPS-D1 | Operations + Owner | `25-…` (13 SOPs, draft) | PENDING APPROVAL | LA-02 (training wording) | | | |
+| OP-01 | Team email, training, retention (OD8), SMS decision, SOPs incl. SOP-05 (BV-08), OPS-D1 | Operations + Owner | `25-…` (13 SOPs, draft) | PENDING APPROVAL. **OPS-D1 decided and built** (mandatory independent checks); the rest remains open. | LA-02 (training wording) | | | |
 
 `CO-01` and `DP-01` (also among the 13 approvals of `16-…`) are placed in groups D and F below, where they belong.
 
@@ -103,7 +109,7 @@
 
 | Gate | Description | Owner | Evidence | Status | Blocking dependency | Completion date | Approver | Approval reference |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| PR-01 | Full regression suite on the release candidate, compared with the clean baseline | Engineering | `20-…` (run 7) | COMPLETE | — | 26 Nov 2026 | Engineering evidence | `20-…` |
+| PR-01 | Full regression suite on the release candidate, compared with the clean baseline | Engineering | `20-…` (run 9: 3,294 tests, 3,279 passed, the baseline's 15 Experian failures only) | COMPLETE | — | 26 Nov 2026 | Engineering evidence | `20-…` |
 | PR-02 | Production mail transport and delivery test | Operations | Procedure `27-…` §5 | **BLOCKED** | Production access | | | |
 | PR-03 | Scheduler running and monitored | Operations | Procedure `27-…` §5 | **BLOCKED** | Production access | | | |
 | PR-04 | Persistent, backed-up private storage | Operations | Procedure `27-…` §5 | **BLOCKED** | Production access | | | |

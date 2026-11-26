@@ -26,7 +26,7 @@ Screens named below are in the admin under **Debt Consolidation**. Field names a
 | Debt closure follow-up | One closure record per old loan: Planned → Quotation requested / received → Payment initiated / confirmed → Closure requested → NOC awaited / received → Closure verified (or On hold / Cancelled). *Closure pending* count on the dashboard. | — | READY |
 | NOC verification | A full closure cannot reach *NOC received* without an NOC document, or *Closure verified* unless that NOC is **verified**. The NOC must be on the same case, for the same loan, uploaded as an NOC, and not reused. A verified closure cannot change. | — | READY |
 | Customer complaints | No complaints module in DC. The site's grievance page and contact route apply. SOP-13 records the complaint as a note on the case. | Grievance officer details (LA-01/LA-02) | READY (procedure) |
-| Second-person checks on quotations, closure payments and closure verification | The system records who did each step | **Not enforced in the system.** Lender policies and scoring are enforced (maker-checker); these three are procedural. Decision OPS-D1: keep them procedural, or have engineering enforce them (about half a day, with tests). | PENDING DECISION |
+| Second-person checks on quotations, closure payments and closure verification | **Enforced by the system** (Owner decision OPS-D1, 26 Nov 2026): mandatory and independent, no exemption, the super admin included. The person who recorded or changed the record, or moved it through its statuses, is refused. | — | READY |
 | Failed application handling | A lender rejection is recorded with its reason. The case stays open to try another shortlisted lender, or moves to *Not proceeding*. The customer is notified of status changes. | — | READY |
 | Audit trail | Audit history tab (who changed which field, when); insert-only status history; activity timeline (consents, documents, downloads, reports, API reads) | — | READY |
 | Operations dashboard | *Debt Consolidation → Dashboard*: total and new enquiries, applications in progress, individual vs business, total debt assessed, under assessment, potentially suitable, lender submissions, lender-confirmed approvals, disbursements, closures pending, completed | — | READY |
@@ -92,7 +92,7 @@ Each SOP covers: when, who, steps, controls, records and exceptions.
 
 ### SOP-05 Foreclosure quotation verification (BV-08)
 - **When:** before any figure is relied on for a lender application or a closure payment.
-- **Who:** the Debt Advisor records it; **a second person (Credit) verifies it**. This is a procedural control. The system stores who recorded and who verified the quotation, but does not stop one person doing both (decision OPS-D1).
+- **Who:** the Debt Advisor records it; **a second person (Credit) verifies it**. The system enforces this: the person who recorded or changed the quotation cannot verify it (OPS-D1, no exemption).
 - **Steps:**
   1. Request a foreclosure letter or quotation from each old lender (closure status *Quotation requested*).
   2. Record it on the liability: amount, quotation date, **valid until**, and the breakdown (principal, interest, charges, GST) if given. Attach the letter as a document.
@@ -154,7 +154,7 @@ Each SOP covers: when, who, steps, controls, records and exceptions.
 
 ### SOP-10 Old liability repayment
 - **When:** after disbursal, for each closure record.
-- **Who:** the Debt Advisor records the payment; a second person confirms it. This is procedural: the system stores *recorded by* and *confirmed by*, but does not block the same person (OPS-D1).
+- **Who:** the Debt Advisor records the payment; a second person confirms it. Enforced: the person who recorded or changed the payment cannot confirm it (OPS-D1, no exemption).
 - **Steps:**
   1. Record each payment: amount, date, mode (lender direct, customer, other), who paid, and the UTR or reference. Attach the payment proof.
   2. *Confirm* the payment only after checking the proof. Confirmation is checked against the final amount or the verified quotation.
@@ -163,7 +163,7 @@ Each SOP covers: when, who, steps, controls, records and exceptions.
 
 ### SOP-11 Closure confirmation and NOC verification
 - **When:** the old lender confirms closure.
-- **Who:** the Debt Advisor; a second person verifies the closure. This is procedural: the system stores *verified by* (OPS-D1).
+- **Who:** the Debt Advisor; a second person verifies the closure. Enforced: anyone who changed the closure or recorded one of its status steps cannot verify it (OPS-D1, no exemption).
 - **Steps:**
   1. Ask the old lender for the NOC or closure letter (closure status *NOC awaited*).
   2. Upload it as type **NOC / closure letter**, linked to that loan.
@@ -212,7 +212,7 @@ Each SOP covers: when, who, steps, controls, records and exceptions.
 | Team alert email set | Operations | | | |
 | SMS case-update templates: needed? | Operations + Owner | | | |
 | Time limits | Operations | | | |
-| OPS-D1: enforce second-person checks in the system for quotations, payments and closure verification? | Operations + Head of Advisory | | | |
+| OPS-D1: enforce second-person checks in the system for quotations, payments and closure verification? | Owner | **Decided: mandatory independent maker-checker, no exemption; implemented and tested** | 26 Nov 2026 | Owner, chat |
 | Advisors trained (names, dates) | Operations | | | |
 
 **Operations readiness: PENDING APPROVAL.** The system support is complete and tested. The SOPs, the team email, training and the SMS decision await Operations, and training follows LA-02.

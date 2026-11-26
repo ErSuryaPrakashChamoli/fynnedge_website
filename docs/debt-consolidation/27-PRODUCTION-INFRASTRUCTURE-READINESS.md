@@ -17,7 +17,7 @@
 | INF-01 explicit migration step | `docker/entrypoint.sh` now migrates only when started with `RUN_MIGRATIONS=true` (`--isolated`). Otherwise it refuses to start while migrations are pending. Checked: with one pending migration, the check counts 1 and would refuse. |
 | INF-02 PHP runtime | `Dockerfile` runtime is now `php:8.5-fpm-alpine`, the version the test suite runs on. **Still required:** a build on a staging host and smoke-test part A (`33-…`), because the development machine has no container engine. |
 | INF-05 sessions | `docker-compose.yml` defaults `SESSION_ENCRYPT` to `true`. A production `.env` that sets `SESSION_ENCRYPT=false` still wins, so Operations must remove that line or set it to `true`. Everyone is signed out once. |
-| INF-04 hosts | **Not applied.** Restricting hosts without knowing the production proxy can return errors on every request (if the proxy rewrites `Host`). Needs: the public hostnames (e.g. `fynnedge.com`, `www.fynnedge.com`) and whether the proxy passes the original `Host` header. |
+| INF-04 hosts | **Applied 26 Nov 2026** (Owner: fynnedge.com + www). `docker/nginx/nginx.conf` now has a `default_server` that returns 444; the site server answers `fynnedge.com`, `www.fynnedge.com`, `localhost` and `127.0.0.1`. **Staging must run `nginx -t`.** Any load balancer or uptime check that calls by IP must send `Host: fynnedge.com`. |
 
 The sections below describe the analysis as it was before these decisions. Where they say "not applied" for INF-01 or INF-02, read "applied".
 
@@ -171,7 +171,7 @@ See `32-ROLLBACK-AND-RECOVERY-PLAN.md`.
 | INF-01 | Migrations run on every start | Apply the explicit-migration patch (§4.4) | Owner | PENDING APPROVAL |
 | INF-02 | **Blocker.** The runtime image is PHP 8.3, but the locked dependencies need PHP ≥ 8.4.1, so an image built from the committed Dockerfile cannot serve requests. This predates DC. | First confirm how production is actually built today. Then either apply `release/dockerfile-php-runtime.patch` (runtime → `php:8.5-fpm-alpine`, the version the tests run on; 8.4 would also work) or record the real production build. Build on a staging host and run `33-…` there before production. No container engine is installed on the development machine, so engineering could not build the image. | Owner / Operations | **BLOCKED** (confirmation and decision) |
 | INF-03 | The scheduler is not part of the image | Add a `schedule:work` supervisor program, or a host cron (PR-03) | Operations | PENDING |
-| INF-04 | nginx accepts any host (`server_name _`); Laravel does not restrict hosts | Set `server_name fynnedge.com www.fynnedge.com;` and add a default server that returns 444. DC emails are already safe (`26-…` M2). This protects the rest of the site. | Owner / Operations | PENDING APPROVAL |
+| INF-04 | nginx accepted any host (`server_name _`) | Applied 26 Nov 2026: production hostnames only; other hosts get 444 | Owner | **DONE** (verify in staging) |
 | INF-05 | Sessions are not encrypted | `SESSION_ENCRYPT=true` | Owner | PENDING APPROVAL |
 | INF-06 | No monitoring or alerting in the repository | Uptime checks on `/up`; alert on failed jobs and on 5xx errors | Operations | PENDING |
 | INF-07 | The `public/storage` symlink is checked at start | Already warned by the entrypoint. DC files never use the public disk. | — | OK |

@@ -28,7 +28,7 @@
 | --- | --- | --- | --- |
 | 1.1 | Read `migrate:status` on production (read-only) and confirm that exactly the 8 migrations in `27-…` §4.2 are pending, and nothing else. **If anything else is pending, stop and ask engineering.** | Operations | ☐ |
 | 1.2 | On a **copy** of the production database, run `php artisan migrate --pretend` with the release image. Keep the SQL output. Then run `php artisan migrate` on that copy, open the admin, and run `php artisan migrate:rollback --pretend` to check that the rollback list is the same 8. | Operations | ☐ |
-| 1.3 | Build the release image on a staging host and run the smoke tests (`33-…`, part A) there. This proves INF-02 is resolved. | Operations | ☐ |
+| 1.3 | Build the release image on a staging host and run the smoke tests (`33-…`, part A) there. This proves INF-02 is resolved. Also run `nginx -t` in the container. Check that a request with `Host: fynnedge.com` is served and that one with any other host gets no response (INF-04). | Operations | ☐ |
 | 1.4 | Confirm PR-02 (mail), PR-03 (scheduler) and PR-04 (persistent, backed-up `storage/app`) with evidence (`27-…` §5) | Operations | ☐ |
 | 1.5 | Agree the window, the people, and the go/no-go call with the Owner | Owner | ☐ |
 
