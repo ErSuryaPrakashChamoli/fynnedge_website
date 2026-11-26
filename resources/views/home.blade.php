@@ -127,6 +127,82 @@
 
     <x-site.hero-stats :achievements="$achievements" :derived="$heroStats" />
 
+    {{--
+        Debt Consolidation takes the first place under the hero: the user asked
+        (2026-11-25) for the service to be preferred across the site. Shown only
+        while the service is on and its hub page is published, and every button
+        points at a published page. Wording comes from the
+        home_debt_consolidation marketing section, falling back to the copy
+        here. It never promises a saving: the assessment decides that.
+    --}}
+    @if ($debtConsolidation)
+        <section class="border-t border-line bg-bg" data-home-debt-consolidation>
+            <div data-reveal="up" class="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-14">
+                <div class="relative overflow-hidden rounded-3xl border border-accent/25 bg-surface p-6 shadow-sm sm:p-8 lg:p-10">
+                    <div class="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-accent/10 blur-3xl" aria-hidden="true"></div>
+                    <div class="relative grid items-center gap-8 lg:grid-cols-[3fr_2fr] lg:gap-12">
+                        <div class="min-w-0">
+                            <p class="inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-[0.14em] text-accent">
+                                <span class="nav-champagne-badge rounded-full px-1.5 text-[0.6rem] leading-4">{{ __('New') }}</span>
+                                {{ __('Debt Consolidation') }}
+                            </p>
+                            <h2 class="mt-3 text-balance font-display text-2xl font-semibold leading-tight text-ink sm:text-3xl">
+                                {{ $debtConsolidation['marketing']?->heading ?: __('Paying several EMIs and card bills?') }}
+                                <span class="text-accent">{{ $debtConsolidation['marketing']?->subheading ?: __('See whether one loan would really cost you less.') }}</span>
+                            </h2>
+                            <p class="mt-4 max-w-2xl text-ink-muted">
+                                {{ $debtConsolidation['marketing']?->description ?: __('Tell us what you owe today. We compare it with realistic options, counting interest, foreclosure charges, processing fees and GST, and we tell you plainly when consolidating would not save you money.') }}
+                            </p>
+                            <ul class="mt-5 grid gap-2.5 text-sm text-ink sm:grid-cols-2">
+                                @if (count($debtConsolidation['applicantTypes']) === 2)
+                                    <li class="flex gap-2"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" class="mt-0.5 h-4 w-4 shrink-0 text-pass" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m5 10.5 3 3 7-7" /></svg>{{ __('For personal and business debt') }}</li>
+                                @elseif (in_array(\App\Modules\DebtConsolidation\Enums\ApplicantType::Individual, $debtConsolidation['applicantTypes'], true))
+                                    <li class="flex gap-2"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" class="mt-0.5 h-4 w-4 shrink-0 text-pass" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m5 10.5 3 3 7-7" /></svg>{{ __('For personal loans and credit cards') }}</li>
+                                @elseif (count($debtConsolidation['applicantTypes']) === 1)
+                                    <li class="flex gap-2"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" class="mt-0.5 h-4 w-4 shrink-0 text-pass" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m5 10.5 3 3 7-7" /></svg>{{ __('For business loans and credit lines') }}</li>
+                                @endif
+                                <li class="flex gap-2"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" class="mt-0.5 h-4 w-4 shrink-0 text-pass" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m5 10.5 3 3 7-7" /></svg>{{ __('Free to check, and no credit report is pulled') }}</li>
+                                <li class="flex gap-2"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" class="mt-0.5 h-4 w-4 shrink-0 text-pass" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m5 10.5 3 3 7-7" /></svg>{{ __('Compares the total cost, not just the EMI') }}</li>
+                                <li class="flex gap-2"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" class="mt-0.5 h-4 w-4 shrink-0 text-pass" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m5 10.5 3 3 7-7" /></svg>{{ __('Nothing goes to a lender without your consent') }}</li>
+                            </ul>
+                            <div class="mt-7 flex flex-wrap items-center gap-3">
+                                <x-ui.button tag="a" :href="$debtConsolidation['marketing']?->cta_url ?: ($debtConsolidation['assessmentUrl'] ?? $debtConsolidation['hubUrl'])" class="shadow-lg shadow-accent/25 hover:-translate-y-0.5 active:translate-y-0">
+                                    {{ $debtConsolidation['marketing']?->cta_label ?: ($debtConsolidation['assessmentUrl'] ? __('Start your free assessment') : __('Explore debt consolidation')) }}
+                                </x-ui.button>
+                                @if ($debtConsolidation['calculatorUrl'])
+                                    <x-ui.button tag="a" :href="$debtConsolidation['calculatorUrl']" variant="outline">
+                                        {{ __('Try the calculator') }}
+                                    </x-ui.button>
+                                @endif
+                                <a href="{{ $debtConsolidation['howItWorksUrl'] ?? $debtConsolidation['hubUrl'] }}" class="text-sm font-medium text-accent hover:underline">{{ __('How it works →') }}</a>
+                            </div>
+                        </div>
+
+                        <div class="rounded-2xl border border-line bg-surface-2 p-5 sm:p-6">
+                            <p class="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-ink-faint">{{ __('Your assessment shows') }}</p>
+                            <ol class="mt-4 flex flex-col gap-4">
+                                @foreach ([
+                                    [__('What you pay in total today, and after consolidating'), __('Interest on every loan and card, with each rupee of principal counted once.')],
+                                    [__('Foreclosure charges, processing fees and GST'), __('The cost of switching is added before any saving is shown.')],
+                                    [__('When those costs are recovered'), __('The break-even month, so you know how long it takes to come out ahead.')],
+                                    [__('Whether the new EMI fits your income'), __('Checked against the share of income lenders usually allow.')],
+                                ] as [$title, $detail])
+                                    <li class="flex gap-3">
+                                        <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/10 font-mono text-xs font-semibold text-accent" aria-hidden="true">{{ $loop->iteration }}</span>
+                                        <span>
+                                            <span class="block text-sm font-semibold text-ink">{{ $title }}</span>
+                                            <span class="mt-0.5 block text-sm text-ink-muted">{{ $detail }}</span>
+                                        </span>
+                                    </li>
+                                @endforeach
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    @endif
+
     {{-- Straight under the hero stats, above the product grid: the fastest exit
          from "I'm interested" to "someone will call me", for the visitor who
          does not want to read a product page first. --}}

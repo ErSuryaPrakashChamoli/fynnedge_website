@@ -1,0 +1,161 @@
+[
+    {
+        "key": "V01",
+        "title": "Multiple personal loans (EMI+months, months only, EMI only)",
+        "applicant_type": "individual",
+        "as_of": "2026-11-25",
+        "liabilities": [
+            {"key": "pl_a", "type": "personal_loan", "lender_name": "Bank A", "outstanding_principal": 320000, "annual_interest_rate": 16.5, "remaining_months": 30, "foreclosure_charge_percent": 4},
+            {"key": "pl_b", "type": "personal_loan", "lender_name": "Bank B", "outstanding_principal": 180000, "annual_interest_rate": 18, "monthly_payment": 8157, "remaining_months": 27, "foreclosure_charge_percent": 5, "foreclosure_charge_fixed": 1000},
+            {"key": "pl_c", "type": "personal_loan", "lender_name": "NBFC C", "outstanding_principal": 95000, "annual_interest_rate": 24, "monthly_payment": 4500, "foreclosure_charge_percent": 3}
+        ],
+        "scenarios": [
+            {"key": "pl60", "label": "Personal loan 14% / 60 m / 2% fee deducted", "annual_interest_rate": 14, "tenure_months": 60, "processing_fee_percent": 2, "route": "personal_loan"},
+            {"key": "pl36", "label": "Personal loan 14% / 36 m / 2% fee deducted", "annual_interest_rate": 14, "tenure_months": 36, "processing_fee_percent": 2, "route": "personal_loan"}
+        ],
+        "individual_finances": {"net_monthly_income": 120000, "monthly_living_expenses": 40000}
+    },
+    {
+        "key": "V02",
+        "title": "Multiple credit cards (planned payments, no payment, card EMI)",
+        "applicant_type": "individual",
+        "as_of": "2026-11-25",
+        "liabilities": [
+            {"key": "cc_1", "type": "credit_card_outstanding", "lender_name": "Card 1", "outstanding_principal": 125000, "annual_interest_rate": 42, "monthly_payment": 10000},
+            {"key": "cc_2", "type": "credit_card_outstanding", "lender_name": "Card 2", "outstanding_principal": 60000, "annual_interest_rate": 39, "monthly_payment": 3000},
+            {"key": "cc_3", "type": "credit_card_outstanding", "lender_name": "Card 3", "outstanding_principal": 40000, "annual_interest_rate": 45},
+            {"key": "cc_emi", "type": "credit_card_emi", "lender_name": "Card 1", "outstanding_principal": 50000, "annual_interest_rate": 16, "remaining_months": 10}
+        ],
+        "scenarios": [
+            {"key": "pl60", "label": "Personal loan 14% / 60 m / 2% fee deducted", "annual_interest_rate": 14, "tenure_months": 60, "processing_fee_percent": 2, "route": "personal_loan"},
+            {"key": "pl36_upfront", "label": "Personal loan 15% / 36 m / 1.5% fee paid upfront", "annual_interest_rate": 15, "tenure_months": 36, "processing_fee_percent": 1.5, "fees_deducted_from_disbursal": false, "route": "personal_loan"}
+        ],
+        "individual_finances": {"net_monthly_income": 75000, "monthly_living_expenses": 30000, "other_monthly_obligations": 5000}
+    },
+    {
+        "key": "V03",
+        "title": "Business loans (term, NBFC, overdraft) with a secured machinery loan kept out",
+        "applicant_type": "business",
+        "as_of": "2026-11-25",
+        "liabilities": [
+            {"key": "ubl", "type": "unsecured_business_loan", "lender_name": "Bank D", "outstanding_principal": 1200000, "annual_interest_rate": 19, "remaining_months": 30, "foreclosure_charge_percent": 4},
+            {"key": "nbfc", "type": "nbfc_business_loan", "lender_name": "NBFC E", "outstanding_principal": 600000, "annual_interest_rate": 22, "monthly_payment": 26180, "remaining_months": 30, "foreclosure_charge_percent": 5},
+            {"key": "od", "type": "overdraft", "lender_name": "Bank D", "outstanding_principal": 500000, "annual_interest_rate": 13, "remaining_months": 12},
+            {"key": "machinery", "type": "machinery_loan", "lender_name": "Bank F", "outstanding_principal": 900000, "annual_interest_rate": 12.5, "remaining_months": 48, "mode": "exclude"}
+        ],
+        "scenarios": [
+            {"key": "ubl48", "label": "Unsecured business loan 17% / 48 m / 2% fee deducted", "annual_interest_rate": 17, "tenure_months": 48, "processing_fee_percent": 2, "route": "unsecured_business_loan"},
+            {"key": "sbl84", "label": "Secured business loan 11.5% / 84 m / 1% fee deducted", "annual_interest_rate": 11.5, "tenure_months": 84, "processing_fee_percent": 1, "route": "secured_business_loan"}
+        ],
+        "business_finances": {"average_monthly_revenue": 900000, "monthly_operating_expenses": 720000, "business_vintage_months": 60}
+    },
+    {
+        "key": "V04",
+        "title": "Secured and unsecured debts moved to a loan against property",
+        "applicant_type": "individual",
+        "as_of": "2026-11-25",
+        "liabilities": [
+            {"key": "pl", "type": "personal_loan", "lender_name": "Bank A", "outstanding_principal": 400000, "annual_interest_rate": 15.5, "remaining_months": 40, "foreclosure_charge_percent": 4},
+            {"key": "cc", "type": "credit_card_outstanding", "lender_name": "Card 1", "outstanding_principal": 200000, "annual_interest_rate": 40, "monthly_payment": 12000},
+            {"key": "car", "type": "vehicle_loan", "lender_name": "Bank G", "outstanding_principal": 350000, "annual_interest_rate": 10.5, "remaining_months": 36, "foreclosure_charge_percent": 5},
+            {"key": "gold", "type": "gold_loan", "lender_name": "NBFC H", "outstanding_principal": 150000, "annual_interest_rate": 11, "remaining_months": 8}
+        ],
+        "scenarios": [
+            {"key": "lap120", "label": "Loan against property 10.5% / 120 m / 1% fee deducted", "annual_interest_rate": 10.5, "tenure_months": 120, "processing_fee_percent": 1, "route": "loan_against_property"},
+            {"key": "pl60", "label": "Personal loan 14% / 60 m / 2% fee deducted", "annual_interest_rate": 14, "tenure_months": 60, "processing_fee_percent": 2, "route": "personal_loan"}
+        ],
+        "individual_finances": {"net_monthly_income": 150000, "monthly_living_expenses": 50000}
+    },
+    {
+        "key": "V05",
+        "title": "Partial consolidation (part-prepay one loan, clear a card, keep the home loan)",
+        "applicant_type": "individual",
+        "as_of": "2026-11-25",
+        "liabilities": [
+            {"key": "pl", "type": "personal_loan", "lender_name": "Bank A", "outstanding_principal": 500000, "annual_interest_rate": 17, "remaining_months": 48, "foreclosure_charge_percent": 4, "mode": "partial", "partial_amount": 200000},
+            {"key": "cc", "type": "credit_card_outstanding", "lender_name": "Card 1", "outstanding_principal": 150000, "annual_interest_rate": 40, "monthly_payment": 9000},
+            {"key": "home", "type": "home_loan", "lender_name": "Bank I", "outstanding_principal": 3000000, "annual_interest_rate": 8.6, "remaining_months": 180, "mode": "exclude"}
+        ],
+        "scenarios": [
+            {"key": "pl60", "label": "Personal loan 14% / 60 m / 2% fee deducted", "annual_interest_rate": 14, "tenure_months": 60, "processing_fee_percent": 2, "route": "personal_loan"}
+        ],
+        "individual_finances": {"net_monthly_income": 180000, "monthly_living_expenses": 50000}
+    },
+    {
+        "key": "V06",
+        "title": "Same debts, three tenures (24 / 48 / 84 months)",
+        "applicant_type": "individual",
+        "as_of": "2026-11-25",
+        "liabilities": [
+            {"key": "pl", "type": "personal_loan", "lender_name": "Bank A", "outstanding_principal": 300000, "annual_interest_rate": 16, "remaining_months": 36, "foreclosure_charge_percent": 3},
+            {"key": "cc", "type": "credit_card_outstanding", "lender_name": "Card 1", "outstanding_principal": 100000, "annual_interest_rate": 42, "monthly_payment": 8000}
+        ],
+        "scenarios": [
+            {"key": "t24", "label": "13.5% / 24 m / 1.5% fee deducted", "annual_interest_rate": 13.5, "tenure_months": 24, "processing_fee_percent": 1.5, "route": "personal_loan"},
+            {"key": "t48", "label": "13.5% / 48 m / 1.5% fee deducted", "annual_interest_rate": 13.5, "tenure_months": 48, "processing_fee_percent": 1.5, "route": "personal_loan"},
+            {"key": "t84", "label": "13.5% / 84 m / 1.5% fee deducted", "annual_interest_rate": 13.5, "tenure_months": 84, "processing_fee_percent": 1.5, "route": "personal_loan"}
+        ],
+        "individual_finances": {"net_monthly_income": 90000, "monthly_living_expenses": 35000}
+    },
+    {
+        "key": "V07",
+        "title": "Foreclosure dues, charges, GST, a verified quotation; fees deducted vs paid upfront; a lower sanction",
+        "applicant_type": "individual",
+        "as_of": "2026-11-25",
+        "liabilities": [
+            {"key": "pl", "type": "personal_loan", "lender_name": "Bank A", "outstanding_principal": 250000, "annual_interest_rate": 18, "monthly_payment": 12481, "remaining_months": 24, "account_status": "overdue", "days_past_due": 20, "overdue_amount": 8500, "pending_instalment": 12481, "accrued_interest": 1850, "foreclosure_charge_percent": 4, "foreclosure_charge_fixed": 500, "other_charges": 1200},
+            {"key": "car", "type": "vehicle_loan", "lender_name": "Bank G", "outstanding_principal": 300000, "annual_interest_rate": 11, "remaining_months": 30, "foreclosure_charge_percent": 5, "quoted_closure_amount": 314600, "quotation_valid_until": "2026-12-15", "quotation_verified": true},
+            {"key": "cc", "type": "credit_card_outstanding", "lender_name": "Card 1", "outstanding_principal": 80000, "annual_interest_rate": 42, "monthly_payment": 6000}
+        ],
+        "scenarios": [
+            {"key": "deducted", "label": "14% / 48 m / 2% + Rs 999 fee deducted, closure costs financed", "annual_interest_rate": 14, "tenure_months": 48, "processing_fee_percent": 2, "processing_fee_fixed": 999, "route": "personal_loan"},
+            {"key": "upfront", "label": "14% / 48 m / 2% + Rs 999 fee and closure costs paid upfront", "annual_interest_rate": 14, "tenure_months": 48, "processing_fee_percent": 2, "processing_fee_fixed": 999, "fees_deducted_from_disbursal": false, "closure_costs_financed": false, "route": "personal_loan"},
+            {"key": "sanction", "label": "14% / 48 m / 2% fee deducted, lender sanctions Rs 6,00,000", "annual_interest_rate": 14, "tenure_months": 48, "processing_fee_percent": 2, "loan_amount_override": 600000, "route": "personal_loan"}
+        ],
+        "individual_finances": {"net_monthly_income": 110000, "monthly_living_expenses": 40000}
+    },
+    {
+        "key": "V08",
+        "title": "Lower EMI but higher total cost (consolidation increases cost)",
+        "applicant_type": "individual",
+        "as_of": "2026-11-25",
+        "liabilities": [
+            {"key": "pl_1", "type": "personal_loan", "lender_name": "Bank A", "outstanding_principal": 300000, "annual_interest_rate": 14, "remaining_months": 18, "foreclosure_charge_percent": 4},
+            {"key": "pl_2", "type": "personal_loan", "lender_name": "Bank B", "outstanding_principal": 200000, "annual_interest_rate": 15, "remaining_months": 20, "foreclosure_charge_percent": 4}
+        ],
+        "scenarios": [
+            {"key": "pl60", "label": "Personal loan 13% / 60 m / 2% fee deducted", "annual_interest_rate": 13, "tenure_months": 60, "processing_fee_percent": 2, "route": "personal_loan"}
+        ],
+        "individual_finances": {"net_monthly_income": 100000, "monthly_living_expenses": 35000}
+    },
+    {
+        "key": "V09",
+        "title": "Financially unsuitable: no rate gain, stretched income, an NPA loan and a lock-in",
+        "applicant_type": "individual",
+        "as_of": "2026-11-25",
+        "liabilities": [
+            {"key": "pl", "type": "personal_loan", "lender_name": "Bank A", "outstanding_principal": 600000, "annual_interest_rate": 12.5, "remaining_months": 40, "foreclosure_charge_percent": 4},
+            {"key": "cc", "type": "credit_card_outstanding", "lender_name": "Card 1", "outstanding_principal": 50000, "annual_interest_rate": 36, "monthly_payment": 5000},
+            {"key": "npa", "type": "personal_loan", "lender_name": "NBFC J", "outstanding_principal": 120000, "annual_interest_rate": 26, "monthly_payment": 6000, "account_status": "non_performing", "days_past_due": 120, "overdue_amount": 24000},
+            {"key": "lockin", "type": "personal_loan", "lender_name": "Bank K", "outstanding_principal": 200000, "annual_interest_rate": 13, "remaining_months": 34, "lock_in_ends_on": "2027-03-31", "foreclosure_charge_percent": 4}
+        ],
+        "scenarios": [
+            {"key": "pl60", "label": "Personal loan 14% / 60 m / 2% fee deducted", "annual_interest_rate": 14, "tenure_months": 60, "processing_fee_percent": 2, "route": "personal_loan"}
+        ],
+        "individual_finances": {"net_monthly_income": 45000, "monthly_living_expenses": 18000}
+    },
+    {
+        "key": "V10",
+        "title": "Flat-rate loan (stated 10% flat) and a business with weak cash flow",
+        "applicant_type": "business",
+        "as_of": "2026-11-25",
+        "liabilities": [
+            {"key": "flat", "type": "business_term_loan", "lender_name": "NBFC L", "outstanding_principal": 252000, "annual_interest_rate": 10, "monthly_payment": 10833, "remaining_months": 28, "foreclosure_charge_percent": 5},
+            {"key": "merchant", "type": "merchant_financing", "lender_name": "Fintech M", "outstanding_principal": 180000, "annual_interest_rate": 30, "monthly_payment": 18000, "foreclosure_charge_percent": 3}
+        ],
+        "scenarios": [
+            {"key": "ubl48", "label": "Unsecured business loan 17% / 48 m / 2% fee deducted", "annual_interest_rate": 17, "tenure_months": 48, "processing_fee_percent": 2, "route": "unsecured_business_loan"}
+        ],
+        "business_finances": {"average_monthly_revenue": 250000, "monthly_operating_expenses": 220000, "business_vintage_months": 30}
+    }
+]

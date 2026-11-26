@@ -3,6 +3,7 @@
 namespace App\Modules\Enquiries\Actions;
 
 use App\Enums\EnquiryStatus;
+use App\Enums\EnquiryType;
 use App\Models\ContactEnquiry;
 use App\Modules\Enquiries\DataTransferObjects\EnquiryDraft;
 use App\Modules\Enquiries\Enums\EnquiryOutcome;
@@ -131,13 +132,25 @@ class RecordEnquiry
                 $draft->loanProductId !== null,
                 fn (Builder $query) => $query->where('loan_product_id', $draft->loanProductId),
             )
+            ->when(
+                $draft->type === EnquiryType::DebtConsolidation,
+                fn (Builder $query) => $query->where('enquiry_type', EnquiryType::DebtConsolidation),
+            )
             ->first();
     }
 
+    /**
+     * A debt consolidation enquiry is a different request from a loan enquiry
+     * by the same number, so it is matched and throttled on its own: merging
+     * it into an earlier personal-loan enquiry would lose the fact that the
+     * customer asked about consolidating their debts.
+     */
     private function identityKey(EnquiryDraft $draft): string
     {
         [$phone, $loanProductId] = $draft->identity();
 
-        return $phone.':'.($loanProductId ?? 'general');
+        $scope = $draft->type === EnquiryType::DebtConsolidation ? 'debt-consolidation' : ($loanProductId ?? 'general');
+
+        return $phone.':'.$scope;
     }
 }

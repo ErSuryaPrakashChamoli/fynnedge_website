@@ -5,6 +5,8 @@ use App\Filament\Clusters\Administration\AdministrationCluster;
 use App\Filament\Pages\Dashboard;
 use App\Filament\Resources\CibilCreditRequests\CibilCreditRequestResource;
 use App\Filament\Resources\CrifReports\CrifReportResource;
+use App\Filament\Resources\DebtLenderPolicies\DebtLenderPolicyResource;
+use App\Filament\Resources\DebtScoringConfigs\DebtScoringConfigResource;
 use App\Filament\Resources\EquifaxCreditRequests\EquifaxCreditRequestResource;
 use App\Filament\Resources\ExperianCreditRequests\ExperianCreditRequestResource;
 use App\Filament\Resources\LenderProductRates\LenderProductRateResource;
@@ -34,7 +36,9 @@ return [
             'pages' => true,
             'widgets' => true,
             'resources' => true,
-            'custom_permissions' => false,
+            // On for Debt Consolidation's child records (see custom_permissions below):
+            // a permission the role form does not list is removed when a role is saved.
+            'custom_permissions' => true,
         ],
     ],
 
@@ -243,6 +247,14 @@ return [
                 'viewRaw',
                 'downloadPdf',
             ],
+            // Debt Consolidation maker-checker (see App\Modules\DebtConsolidation\Services\DebtConsolidationRoles):
+            // Approve puts a lender policy in force; Activate makes a scoring version live.
+            DebtLenderPolicyResource::class => [
+                'approve',
+            ],
+            DebtScoringConfigResource::class => [
+                'activate',
+            ],
         ],
         'exclude' => [
             //
@@ -304,7 +316,26 @@ return [
     |
     */
 
-    'custom_permissions' => [],
+    // Debt Consolidation records worked inside a case (no resource of their own), so
+    // the role form lists them here; without this, saving a role would strip them.
+    'custom_permissions' => [
+        'ViewAny:DebtDocument' => 'Debt documents: list',
+        'View:DebtDocument' => 'Debt documents: view and download',
+        'Create:DebtDocument' => 'Debt documents: upload',
+        'Update:DebtDocument' => 'Debt documents: verify or reject',
+        'Delete:DebtDocument' => 'Debt documents: delete',
+        'ViewAny:DebtNote' => 'Debt case notes: list',
+        'View:DebtNote' => 'Debt case notes: view',
+        'Create:DebtNote' => 'Debt case notes: add',
+        'Update:DebtNote' => 'Debt case notes: edit and mark done',
+        'ViewAny:DebtCollateral' => 'Debt collateral: list',
+        'View:DebtCollateral' => 'Debt collateral: view',
+        'Create:DebtCollateral' => 'Debt collateral: add',
+        'Update:DebtCollateral' => 'Debt collateral: edit',
+        'ViewAny:DebtConsent' => 'Debt consents: list',
+        'View:DebtConsent' => 'Debt consents: view',
+        'Create:DebtConsent' => 'Debt consents: record for a customer',
+    ],
 
     /*
     |--------------------------------------------------------------------------

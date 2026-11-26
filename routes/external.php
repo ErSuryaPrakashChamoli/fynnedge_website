@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\CibilController;
+use App\Http\Controllers\Api\V1\DebtConsolidationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,4 +28,17 @@ Route::prefix('api/v1/external/cibil')
         Route::get('/reports/{cibilRequest}', [CibilController::class, 'show'])->name('reports.show');
         Route::post('/reports/{cibilRequest}/pdf', [CibilController::class, 'pdf'])->name('reports.pdf');
         Route::get('/requests/{cibilRequest}/status', [CibilController::class, 'status'])->name('requests.status');
+    });
+
+/*
+ * Debt Consolidation — read-only, versioned access to a case's structured data
+ * for an authorised analysis service (docs/debt-consolidation/07-api.md). Needs
+ * an API key whose role may view cases AND the customer's consent to external
+ * analysis on that case. Never writes, never returns contact details.
+ */
+Route::prefix('api/v1/external/debt-consolidation')
+    ->name('api.v1.external.debt-consolidation.')
+    ->middleware(['cibil.json', 'auth:api-client', 'throttle:debt-consolidation-api'])
+    ->group(function (): void {
+        Route::get('/cases/{reference}', [DebtConsolidationController::class, 'show'])->where('reference', 'DC-[A-Z0-9]{8}')->name('cases.show');
     });

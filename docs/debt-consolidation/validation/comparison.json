@@ -1,0 +1,6756 @@
+[
+ {
+  "case": "V01",
+  "item": "liability pl_a",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_a",
+  "field": "monthly_obligation",
+  "engine": 13089.63,
+  "reference": 13089.63,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_a",
+  "field": "remaining_months",
+  "engine": 30,
+  "reference": 30,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_a",
+  "field": "remaining_repayment",
+  "engine": 392689.04,
+  "reference": 392689.04,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_a",
+  "field": "remaining_interest",
+  "engine": 72689.04,
+  "reference": 72689.04,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_a",
+  "field": "effective_annual_rate",
+  "engine": 16.5,
+  "reference": 16.5,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_a",
+  "field": "closure_total",
+  "engine": 335104.0,
+  "reference": 335104.0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_b",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_b",
+  "field": "monthly_obligation",
+  "engine": 8157.0,
+  "reference": 8157.0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_b",
+  "field": "remaining_months",
+  "engine": 27,
+  "reference": 27,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_b",
+  "field": "remaining_repayment",
+  "engine": 220230.68,
+  "reference": 220230.68,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_b",
+  "field": "remaining_interest",
+  "engine": 40230.68,
+  "reference": 40230.68,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_b",
+  "field": "effective_annual_rate",
+  "engine": 18.0,
+  "reference": 18.0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_b",
+  "field": "closure_total",
+  "engine": 191800.0,
+  "reference": 191800.0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_c",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_c",
+  "field": "monthly_obligation",
+  "engine": 4500.0,
+  "reference": 4500.0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_c",
+  "field": "remaining_months",
+  "engine": 28,
+  "reference": 28,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_c",
+  "field": "remaining_repayment",
+  "engine": 124666.86,
+  "reference": 124666.86,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_c",
+  "field": "remaining_interest",
+  "engine": 29666.86,
+  "reference": 29666.86,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_c",
+  "field": "effective_annual_rate",
+  "engine": 24.0,
+  "reference": 24.0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "liability pl_c",
+  "field": "closure_total",
+  "engine": 98363.0,
+  "reference": 98363.0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "portfolio",
+  "field": "total_outstanding",
+  "engine": 595000.0,
+  "reference": 595000.0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "portfolio",
+  "field": "total_monthly_obligation",
+  "engine": 25746.63,
+  "reference": 25746.63,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "portfolio",
+  "field": "secured_outstanding",
+  "engine": 0.0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "portfolio",
+  "field": "remaining_repayment",
+  "engine": 737586.58,
+  "reference": 737586.58,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "portfolio",
+  "field": "remaining_interest",
+  "engine": 142586.58,
+  "reference": 142586.58,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "portfolio",
+  "field": "weighted_average_rate",
+  "engine": 18.15,
+  "reference": 18.15126050420168,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "current affordability",
+  "field": "foir",
+  "engine": 21.46,
+  "reference": 21.455525,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "included_keys",
+  "engine": [
+   "pl_a",
+   "pl_b",
+   "pl_c"
+  ],
+  "reference": [
+   "pl_a",
+   "pl_b",
+   "pl_c"
+  ],
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "principal_closed",
+  "engine": 595000.0,
+  "reference": 595000.0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "dues_cleared",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "closure_costs",
+  "engine": 30267.0,
+  "reference": 30267.0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "loan_amount",
+  "engine": 640380.0,
+  "reference": 640380.0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "processing_fee",
+  "engine": 12807.6,
+  "reference": 12807.6,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "processing_fee_tax",
+  "engine": 2305.37,
+  "reference": 2305.37,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "net_disbursal",
+  "engine": 625267.03,
+  "reference": 625267.03,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "upfront_cash",
+  "engine": -0.03,
+  "reference": -0.03,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "new_emi",
+  "engine": 14900.52,
+  "reference": 14900.52,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "new_loan_total_repayment",
+  "engine": 894031.36,
+  "reference": 894031.36,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "new_loan_interest",
+  "engine": 253651.36,
+  "reference": 253651.36,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "existing_monthly_outflow",
+  "engine": 25746.63,
+  "reference": 25746.63,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "proposed_monthly_outflow",
+  "engine": 14900.52,
+  "reference": 14900.52,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "existing_total_outflow",
+  "engine": 737586.58,
+  "reference": 737586.58,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "proposed_total_outflow",
+  "engine": 894031.33,
+  "reference": 894031.33,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "existing_interest",
+  "engine": 142586.58,
+  "reference": 142586.58,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "proposed_interest",
+  "engine": 253651.36,
+  "reference": 253651.36,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "net_financial_benefit",
+  "engine": -156444.75,
+  "reference": -156444.75,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "benefit_percent",
+  "engine": -21.21,
+  "reference": -21.210357433563935,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "total_consolidation_costs",
+  "engine": 45379.97,
+  "reference": 45379.97,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "existing_months",
+  "engine": 30,
+  "reference": 30,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "proposed_months",
+  "engine": 60,
+  "reference": 60,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "cost_break_even_month",
+  "engine": null,
+  "reference": null,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "cash_break_even_month",
+  "engine": 0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "weighted_existing_rate",
+  "engine": 18.15,
+  "reference": 18.15126050420168,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "rate_improvement_points",
+  "engine": 4.15,
+  "reference": 4.151260504201681,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "proposed_affordability",
+  "engine": 12.42,
+  "reference": 12.4171,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "suitability_score",
+  "engine": 37.05,
+  "reference": 37.05,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl60",
+  "field": "suitability_band",
+  "engine": "not_beneficial",
+  "reference": "not_beneficial",
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "included_keys",
+  "engine": [
+   "pl_a",
+   "pl_b",
+   "pl_c"
+  ],
+  "reference": [
+   "pl_a",
+   "pl_b",
+   "pl_c"
+  ],
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "principal_closed",
+  "engine": 595000.0,
+  "reference": 595000.0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "dues_cleared",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "closure_costs",
+  "engine": 30267.0,
+  "reference": 30267.0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "loan_amount",
+  "engine": 640380.0,
+  "reference": 640380.0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "processing_fee",
+  "engine": 12807.6,
+  "reference": 12807.6,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "processing_fee_tax",
+  "engine": 2305.37,
+  "reference": 2305.37,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "net_disbursal",
+  "engine": 625267.03,
+  "reference": 625267.03,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "upfront_cash",
+  "engine": -0.03,
+  "reference": -0.03,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "new_emi",
+  "engine": 21886.67,
+  "reference": 21886.67,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "new_loan_total_repayment",
+  "engine": 787920.12,
+  "reference": 787920.12,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "new_loan_interest",
+  "engine": 147540.12,
+  "reference": 147540.12,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "existing_monthly_outflow",
+  "engine": 25746.63,
+  "reference": 25746.63,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "proposed_monthly_outflow",
+  "engine": 21886.67,
+  "reference": 21886.67,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "existing_total_outflow",
+  "engine": 737586.58,
+  "reference": 737586.58,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "proposed_total_outflow",
+  "engine": 787920.09,
+  "reference": 787920.09,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "existing_interest",
+  "engine": 142586.58,
+  "reference": 142586.58,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "proposed_interest",
+  "engine": 147540.12,
+  "reference": 147540.12,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "net_financial_benefit",
+  "engine": -50333.51,
+  "reference": -50333.51,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "benefit_percent",
+  "engine": -6.82,
+  "reference": -6.824081587818477,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "total_consolidation_costs",
+  "engine": 45379.97,
+  "reference": 45379.97,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "existing_months",
+  "engine": 30,
+  "reference": 30,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "proposed_months",
+  "engine": 36,
+  "reference": 36,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "cost_break_even_month",
+  "engine": null,
+  "reference": null,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "cash_break_even_month",
+  "engine": 0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "weighted_existing_rate",
+  "engine": 18.15,
+  "reference": 18.15126050420168,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "rate_improvement_points",
+  "engine": 4.15,
+  "reference": 4.151260504201681,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "proposed_affordability",
+  "engine": 18.24,
+  "reference": 18.238891666666667,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "suitability_score",
+  "engine": 43.71,
+  "reference": 43.71,
+  "match": true
+ },
+ {
+  "case": "V01",
+  "item": "scenario pl36",
+  "field": "suitability_band",
+  "engine": "not_beneficial",
+  "reference": "not_beneficial",
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_1",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_1",
+  "field": "monthly_obligation",
+  "engine": 10000.0,
+  "reference": 10000.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_1",
+  "field": "remaining_months",
+  "engine": 17,
+  "reference": 17,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_1",
+  "field": "remaining_repayment",
+  "engine": 167284.28,
+  "reference": 167284.28,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_1",
+  "field": "remaining_interest",
+  "engine": 42284.28,
+  "reference": 42284.28,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_1",
+  "field": "effective_annual_rate",
+  "engine": 42.0,
+  "reference": 42.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_1",
+  "field": "closure_total",
+  "engine": 125000.0,
+  "reference": 125000.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_2",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_2",
+  "field": "monthly_obligation",
+  "engine": 3000.0,
+  "reference": 3000.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_2",
+  "field": "remaining_months",
+  "engine": 33,
+  "reference": 33,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_2",
+  "field": "remaining_repayment",
+  "engine": 98479.92,
+  "reference": 98479.92,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_2",
+  "field": "remaining_interest",
+  "engine": 38479.92,
+  "reference": 38479.92,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_2",
+  "field": "effective_annual_rate",
+  "engine": 39.0,
+  "reference": 39.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_2",
+  "field": "closure_total",
+  "engine": 60000.0,
+  "reference": 60000.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_3",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_3",
+  "field": "monthly_obligation",
+  "engine": 2000.0,
+  "reference": 2000.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_3",
+  "field": "remaining_months",
+  "engine": 60,
+  "reference": 60,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_3",
+  "field": "remaining_repayment",
+  "engine": 101103.83,
+  "reference": 101103.83,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_3",
+  "field": "remaining_interest",
+  "engine": 61103.83,
+  "reference": 61103.83,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_3",
+  "field": "effective_annual_rate",
+  "engine": 45.0,
+  "reference": 45.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_3",
+  "field": "closure_total",
+  "engine": 40000.0,
+  "reference": 40000.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_emi",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_emi",
+  "field": "monthly_obligation",
+  "engine": 5373.95,
+  "reference": 5373.95,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_emi",
+  "field": "remaining_months",
+  "engine": 10,
+  "reference": 10,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_emi",
+  "field": "remaining_repayment",
+  "engine": 53739.5,
+  "reference": 53739.5,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_emi",
+  "field": "remaining_interest",
+  "engine": 3739.5,
+  "reference": 3739.5,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_emi",
+  "field": "effective_annual_rate",
+  "engine": 16.0,
+  "reference": 16.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "liability cc_emi",
+  "field": "closure_total",
+  "engine": 50000.0,
+  "reference": 50000.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "portfolio",
+  "field": "total_outstanding",
+  "engine": 275000.0,
+  "reference": 275000.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "portfolio",
+  "field": "total_monthly_obligation",
+  "engine": 20373.95,
+  "reference": 20373.95,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "portfolio",
+  "field": "secured_outstanding",
+  "engine": 0.0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "portfolio",
+  "field": "remaining_repayment",
+  "engine": 420607.53,
+  "reference": 420607.53,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "portfolio",
+  "field": "remaining_interest",
+  "engine": 145607.53,
+  "reference": 145607.53,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "portfolio",
+  "field": "weighted_average_rate",
+  "engine": 37.05,
+  "reference": 37.054545454545455,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "current affordability",
+  "field": "foir",
+  "engine": 33.83,
+  "reference": 33.83193333333333,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "included_keys",
+  "engine": [
+   "cc_1",
+   "cc_2",
+   "cc_3",
+   "cc_emi"
+  ],
+  "reference": [
+   "cc_1",
+   "cc_2",
+   "cc_3",
+   "cc_emi"
+  ],
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "principal_closed",
+  "engine": 275000.0,
+  "reference": 275000.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "dues_cleared",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "closure_costs",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "loan_amount",
+  "engine": 281647.0,
+  "reference": 281647.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "processing_fee",
+  "engine": 5632.94,
+  "reference": 5632.94,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "processing_fee_tax",
+  "engine": 1013.93,
+  "reference": 1013.93,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "net_disbursal",
+  "engine": 275000.13,
+  "reference": 275000.13,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "upfront_cash",
+  "engine": -0.13,
+  "reference": -0.13,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "new_emi",
+  "engine": 6553.43,
+  "reference": 6553.43,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "new_loan_total_repayment",
+  "engine": 393206.03,
+  "reference": 393206.03,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "new_loan_interest",
+  "engine": 111559.03,
+  "reference": 111559.03,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "existing_monthly_outflow",
+  "engine": 20059.02,
+  "reference": 20059.02,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "proposed_monthly_outflow",
+  "engine": 6553.43,
+  "reference": 6553.43,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "existing_total_outflow",
+  "engine": 420607.53,
+  "reference": 420607.53,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "proposed_total_outflow",
+  "engine": 393205.9,
+  "reference": 393205.9,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "existing_interest",
+  "engine": 145607.53,
+  "reference": 145607.53,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "proposed_interest",
+  "engine": 111559.03,
+  "reference": 111559.03,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "net_financial_benefit",
+  "engine": 27401.63,
+  "reference": 27401.63,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "benefit_percent",
+  "engine": 6.51,
+  "reference": 6.514773998458848,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "total_consolidation_costs",
+  "engine": 6646.87,
+  "reference": 6646.87,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "existing_months",
+  "engine": 60,
+  "reference": 60,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "proposed_months",
+  "engine": 60,
+  "reference": 60,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "cost_break_even_month",
+  "engine": 2,
+  "reference": 2,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "cash_break_even_month",
+  "engine": 0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "weighted_existing_rate",
+  "engine": 37.05,
+  "reference": 37.054545454545455,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "rate_improvement_points",
+  "engine": 23.05,
+  "reference": 23.054545454545455,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "proposed_affordability",
+  "engine": 15.4,
+  "reference": 15.404573333333333,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "suitability_score",
+  "engine": 85.45,
+  "reference": 85.46,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl60",
+  "field": "suitability_band",
+  "engine": "potentially_suitable",
+  "reference": "potentially_suitable",
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "included_keys",
+  "engine": [
+   "cc_1",
+   "cc_2",
+   "cc_3",
+   "cc_emi"
+  ],
+  "reference": [
+   "cc_1",
+   "cc_2",
+   "cc_3",
+   "cc_emi"
+  ],
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "principal_closed",
+  "engine": 275000.0,
+  "reference": 275000.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "dues_cleared",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "closure_costs",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "loan_amount",
+  "engine": 275000.0,
+  "reference": 275000.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "processing_fee",
+  "engine": 4125.0,
+  "reference": 4125.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "processing_fee_tax",
+  "engine": 742.5,
+  "reference": 742.5,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "net_disbursal",
+  "engine": 275000.0,
+  "reference": 275000.0,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "upfront_cash",
+  "engine": 4867.5,
+  "reference": 4867.5,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "new_emi",
+  "engine": 9532.97,
+  "reference": 9532.97,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "new_loan_total_repayment",
+  "engine": 343186.69,
+  "reference": 343186.69,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "new_loan_interest",
+  "engine": 68186.69,
+  "reference": 68186.69,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "existing_monthly_outflow",
+  "engine": 20416.77,
+  "reference": 20416.77,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "proposed_monthly_outflow",
+  "engine": 9532.97,
+  "reference": 9532.97,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "existing_total_outflow",
+  "engine": 393045.55,
+  "reference": 393045.55,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "proposed_total_outflow",
+  "engine": 348054.19,
+  "reference": 348054.19,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "existing_interest",
+  "engine": 118045.55,
+  "reference": 118045.55,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "proposed_interest",
+  "engine": 68186.69,
+  "reference": 68186.69,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "net_financial_benefit",
+  "engine": 44991.36,
+  "reference": 44991.36,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "benefit_percent",
+  "engine": 11.45,
+  "reference": 11.4468564775762,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "total_consolidation_costs",
+  "engine": 4867.5,
+  "reference": 4867.5,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "existing_months",
+  "engine": 36,
+  "reference": 36,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "proposed_months",
+  "engine": 36,
+  "reference": 36,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "cost_break_even_month",
+  "engine": 1,
+  "reference": 1,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "cash_break_even_month",
+  "engine": 1,
+  "reference": 1,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "weighted_existing_rate",
+  "engine": 37.05,
+  "reference": 37.054545454545455,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "rate_improvement_points",
+  "engine": 22.05,
+  "reference": 22.054545454545455,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "proposed_affordability",
+  "engine": 19.38,
+  "reference": 19.377293333333334,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "suitability_score",
+  "engine": 97.69,
+  "reference": 97.69,
+  "match": true
+ },
+ {
+  "case": "V02",
+  "item": "scenario pl36_upfront",
+  "field": "suitability_band",
+  "engine": "potentially_suitable",
+  "reference": "potentially_suitable",
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability ubl",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability ubl",
+  "field": "monthly_obligation",
+  "engine": 50559.28,
+  "reference": 50559.28,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability ubl",
+  "field": "remaining_months",
+  "engine": 30,
+  "reference": 30,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability ubl",
+  "field": "remaining_repayment",
+  "engine": 1516778.45,
+  "reference": 1516778.45,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability ubl",
+  "field": "remaining_interest",
+  "engine": 316778.45,
+  "reference": 316778.45,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability ubl",
+  "field": "effective_annual_rate",
+  "engine": 19.0,
+  "reference": 19.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability ubl",
+  "field": "closure_total",
+  "engine": 1256640.0,
+  "reference": 1256640.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability nbfc",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability nbfc",
+  "field": "monthly_obligation",
+  "engine": 26180.0,
+  "reference": 26180.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability nbfc",
+  "field": "remaining_months",
+  "engine": 30,
+  "reference": 30,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability nbfc",
+  "field": "remaining_repayment",
+  "engine": 785396.93,
+  "reference": 785396.93,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability nbfc",
+  "field": "remaining_interest",
+  "engine": 185396.93,
+  "reference": 185396.93,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability nbfc",
+  "field": "effective_annual_rate",
+  "engine": 22.0,
+  "reference": 22.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability nbfc",
+  "field": "closure_total",
+  "engine": 635400.0,
+  "reference": 635400.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability od",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability od",
+  "field": "monthly_obligation",
+  "engine": 5416.67,
+  "reference": 5416.67,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability od",
+  "field": "remaining_months",
+  "engine": 12,
+  "reference": 12,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability od",
+  "field": "remaining_repayment",
+  "engine": 565000.04,
+  "reference": 565000.04,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability od",
+  "field": "remaining_interest",
+  "engine": 65000.04,
+  "reference": 65000.04,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability od",
+  "field": "effective_annual_rate",
+  "engine": 13.0,
+  "reference": 13.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability od",
+  "field": "closure_total",
+  "engine": 500000.0,
+  "reference": 500000.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability machinery",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability machinery",
+  "field": "monthly_obligation",
+  "engine": 23922.0,
+  "reference": 23922.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability machinery",
+  "field": "remaining_months",
+  "engine": 48,
+  "reference": 48,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability machinery",
+  "field": "remaining_repayment",
+  "engine": 1148255.92,
+  "reference": 1148255.92,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability machinery",
+  "field": "remaining_interest",
+  "engine": 248255.92,
+  "reference": 248255.92,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability machinery",
+  "field": "effective_annual_rate",
+  "engine": 12.5,
+  "reference": 12.5,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "liability machinery",
+  "field": "closure_total",
+  "engine": 900000.0,
+  "reference": 900000.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "portfolio",
+  "field": "total_outstanding",
+  "engine": 3200000.0,
+  "reference": 3200000.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "portfolio",
+  "field": "total_monthly_obligation",
+  "engine": 106077.95,
+  "reference": 106077.95,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "portfolio",
+  "field": "secured_outstanding",
+  "engine": 900000.0,
+  "reference": 900000.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "portfolio",
+  "field": "remaining_repayment",
+  "engine": 4015431.34,
+  "reference": 4015431.34,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "portfolio",
+  "field": "remaining_interest",
+  "engine": 815431.34,
+  "reference": 815431.34,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "portfolio",
+  "field": "weighted_average_rate",
+  "engine": 16.8,
+  "reference": 16.796875,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "current affordability",
+  "field": "dscr",
+  "engine": 1.7,
+  "reference": 1.6968653711728026,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "included_keys",
+  "engine": [
+   "ubl",
+   "nbfc",
+   "od"
+  ],
+  "reference": [
+   "ubl",
+   "nbfc",
+   "od"
+  ],
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "principal_closed",
+  "engine": 2300000.0,
+  "reference": 2300000.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "dues_cleared",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "closure_costs",
+  "engine": 92040.0,
+  "reference": 92040.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "loan_amount",
+  "engine": 2449857.0,
+  "reference": 2449857.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "processing_fee",
+  "engine": 48997.14,
+  "reference": 48997.14,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "processing_fee_tax",
+  "engine": 8819.49,
+  "reference": 8819.49,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "net_disbursal",
+  "engine": 2392040.37,
+  "reference": 2392040.37,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "upfront_cash",
+  "engine": -0.37,
+  "reference": -0.37,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "new_emi",
+  "engine": 70690.73,
+  "reference": 70690.73,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "new_loan_total_repayment",
+  "engine": 3393154.88,
+  "reference": 3393154.88,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "new_loan_interest",
+  "engine": 943297.88,
+  "reference": 943297.88,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "existing_monthly_outflow",
+  "engine": 82155.95,
+  "reference": 82155.95,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "proposed_monthly_outflow",
+  "engine": 70690.73,
+  "reference": 70690.73,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "existing_total_outflow",
+  "engine": 2867175.42,
+  "reference": 2867175.42,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "proposed_total_outflow",
+  "engine": 3393154.51,
+  "reference": 3393154.51,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "existing_interest",
+  "engine": 567175.42,
+  "reference": 567175.42,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "proposed_interest",
+  "engine": 943297.88,
+  "reference": 943297.88,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "net_financial_benefit",
+  "engine": -525979.09,
+  "reference": -525979.09,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "benefit_percent",
+  "engine": -18.34,
+  "reference": -18.34485209140081,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "total_consolidation_costs",
+  "engine": 149856.63,
+  "reference": 149856.63,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "existing_months",
+  "engine": 30,
+  "reference": 30,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "proposed_months",
+  "engine": 48,
+  "reference": 48,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "cost_break_even_month",
+  "engine": null,
+  "reference": null,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "cash_break_even_month",
+  "engine": 0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "weighted_existing_rate",
+  "engine": 18.48,
+  "reference": 18.47826086956522,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "rate_improvement_points",
+  "engine": 1.48,
+  "reference": 1.4782608695652173,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "proposed_affordability",
+  "engine": 1.9,
+  "reference": 1.9024924024494378,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "suitability_score",
+  "engine": 33.7,
+  "reference": 33.7,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario ubl48",
+  "field": "suitability_band",
+  "engine": "not_beneficial",
+  "reference": "not_beneficial",
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "included_keys",
+  "engine": [
+   "ubl",
+   "nbfc",
+   "od"
+  ],
+  "reference": [
+   "ubl",
+   "nbfc",
+   "od"
+  ],
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "principal_closed",
+  "engine": 2300000.0,
+  "reference": 2300000.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "dues_cleared",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "closure_costs",
+  "engine": 92040.0,
+  "reference": 92040.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "loan_amount",
+  "engine": 2420604.0,
+  "reference": 2420604.0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "processing_fee",
+  "engine": 24206.04,
+  "reference": 24206.04,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "processing_fee_tax",
+  "engine": 4357.09,
+  "reference": 4357.09,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "net_disbursal",
+  "engine": 2392040.87,
+  "reference": 2392040.87,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "upfront_cash",
+  "engine": -0.87,
+  "reference": -0.87,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "new_emi",
+  "engine": 42085.74,
+  "reference": 42085.74,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "new_loan_total_repayment",
+  "engine": 3535201.68,
+  "reference": 3535201.68,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "new_loan_interest",
+  "engine": 1114597.68,
+  "reference": 1114597.68,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "existing_monthly_outflow",
+  "engine": 82155.95,
+  "reference": 82155.95,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "proposed_monthly_outflow",
+  "engine": 42085.74,
+  "reference": 42085.74,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "existing_total_outflow",
+  "engine": 2867175.42,
+  "reference": 2867175.42,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "proposed_total_outflow",
+  "engine": 3535200.81,
+  "reference": 3535200.81,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "existing_interest",
+  "engine": 567175.42,
+  "reference": 567175.42,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "proposed_interest",
+  "engine": 1114597.68,
+  "reference": 1114597.68,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "net_financial_benefit",
+  "engine": -668025.39,
+  "reference": -668025.39,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "benefit_percent",
+  "engine": -23.3,
+  "reference": -23.299076343225625,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "total_consolidation_costs",
+  "engine": 120603.13,
+  "reference": 120603.13,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "existing_months",
+  "engine": 30,
+  "reference": 30,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "proposed_months",
+  "engine": 84,
+  "reference": 84,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "cost_break_even_month",
+  "engine": null,
+  "reference": null,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "cash_break_even_month",
+  "engine": 0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "weighted_existing_rate",
+  "engine": 18.48,
+  "reference": 18.47826086956522,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "rate_improvement_points",
+  "engine": 6.98,
+  "reference": 6.978260869565218,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "proposed_affordability",
+  "engine": 2.73,
+  "reference": 2.7269529300654742,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "suitability_score",
+  "engine": 45.51,
+  "reference": 45.5,
+  "match": true
+ },
+ {
+  "case": "V03",
+  "item": "scenario sbl84",
+  "field": "suitability_band",
+  "engine": "not_beneficial",
+  "reference": "not_beneficial",
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability pl",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability pl",
+  "field": "monthly_obligation",
+  "engine": 12867.84,
+  "reference": 12867.84,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability pl",
+  "field": "remaining_months",
+  "engine": 40,
+  "reference": 40,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability pl",
+  "field": "remaining_repayment",
+  "engine": 514713.72,
+  "reference": 514713.72,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability pl",
+  "field": "remaining_interest",
+  "engine": 114713.72,
+  "reference": 114713.72,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability pl",
+  "field": "effective_annual_rate",
+  "engine": 15.5,
+  "reference": 15.5,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability pl",
+  "field": "closure_total",
+  "engine": 418880.0,
+  "reference": 418880.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability cc",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability cc",
+  "field": "monthly_obligation",
+  "engine": 12000.0,
+  "reference": 12000.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability cc",
+  "field": "remaining_months",
+  "engine": 25,
+  "reference": 25,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability cc",
+  "field": "remaining_repayment",
+  "engine": 296812.44,
+  "reference": 296812.44,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability cc",
+  "field": "remaining_interest",
+  "engine": 96812.44,
+  "reference": 96812.44,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability cc",
+  "field": "effective_annual_rate",
+  "engine": 40.0,
+  "reference": 40.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability cc",
+  "field": "closure_total",
+  "engine": 200000.0,
+  "reference": 200000.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability car",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability car",
+  "field": "monthly_obligation",
+  "engine": 11375.86,
+  "reference": 11375.86,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability car",
+  "field": "remaining_months",
+  "engine": 36,
+  "reference": 36,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability car",
+  "field": "remaining_repayment",
+  "engine": 409530.76,
+  "reference": 409530.76,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability car",
+  "field": "remaining_interest",
+  "engine": 59530.76,
+  "reference": 59530.76,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability car",
+  "field": "effective_annual_rate",
+  "engine": 10.5,
+  "reference": 10.5,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability car",
+  "field": "closure_total",
+  "engine": 370650.0,
+  "reference": 370650.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability gold",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability gold",
+  "field": "monthly_obligation",
+  "engine": 1375.0,
+  "reference": 1375.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability gold",
+  "field": "remaining_months",
+  "engine": 8,
+  "reference": 8,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability gold",
+  "field": "remaining_repayment",
+  "engine": 161000.0,
+  "reference": 161000.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability gold",
+  "field": "remaining_interest",
+  "engine": 11000.0,
+  "reference": 11000.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability gold",
+  "field": "effective_annual_rate",
+  "engine": 11.0,
+  "reference": 11.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "liability gold",
+  "field": "closure_total",
+  "engine": 150000.0,
+  "reference": 150000.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "portfolio",
+  "field": "total_outstanding",
+  "engine": 1100000.0,
+  "reference": 1100000.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "portfolio",
+  "field": "total_monthly_obligation",
+  "engine": 37618.7,
+  "reference": 37618.7,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "portfolio",
+  "field": "secured_outstanding",
+  "engine": 500000.0,
+  "reference": 500000.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "portfolio",
+  "field": "remaining_repayment",
+  "engine": 1382056.92,
+  "reference": 1382056.92,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "portfolio",
+  "field": "remaining_interest",
+  "engine": 282056.92,
+  "reference": 282056.92,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "portfolio",
+  "field": "weighted_average_rate",
+  "engine": 17.75,
+  "reference": 17.75,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "current affordability",
+  "field": "foir",
+  "engine": 25.08,
+  "reference": 25.079133333333335,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "included_keys",
+  "engine": [
+   "pl",
+   "cc",
+   "car",
+   "gold"
+  ],
+  "reference": [
+   "pl",
+   "cc",
+   "car",
+   "gold"
+  ],
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "principal_closed",
+  "engine": 1100000.0,
+  "reference": 1100000.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "dues_cleared",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "closure_costs",
+  "engine": 39530.0,
+  "reference": 39530.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "loan_amount",
+  "engine": 1153138.0,
+  "reference": 1153138.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "processing_fee",
+  "engine": 11531.38,
+  "reference": 11531.38,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "processing_fee_tax",
+  "engine": 2075.65,
+  "reference": 2075.65,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "net_disbursal",
+  "engine": 1139530.97,
+  "reference": 1139530.97,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "upfront_cash",
+  "engine": -0.97,
+  "reference": -0.97,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "new_emi",
+  "engine": 15559.87,
+  "reference": 15559.87,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "new_loan_total_repayment",
+  "engine": 1867183.79,
+  "reference": 1867183.79,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "new_loan_interest",
+  "engine": 714045.79,
+  "reference": 714045.79,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "existing_monthly_outflow",
+  "engine": 37618.7,
+  "reference": 37618.7,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "proposed_monthly_outflow",
+  "engine": 15559.87,
+  "reference": 15559.87,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "existing_total_outflow",
+  "engine": 1382056.92,
+  "reference": 1382056.92,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "proposed_total_outflow",
+  "engine": 1867182.82,
+  "reference": 1867182.82,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "existing_interest",
+  "engine": 282056.92,
+  "reference": 282056.92,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "proposed_interest",
+  "engine": 714045.79,
+  "reference": 714045.79,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "net_financial_benefit",
+  "engine": -485125.9,
+  "reference": -485125.9,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "benefit_percent",
+  "engine": -35.1,
+  "reference": -35.10173083175185,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "total_consolidation_costs",
+  "engine": 53137.03,
+  "reference": 53137.03,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "existing_months",
+  "engine": 40,
+  "reference": 40,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "proposed_months",
+  "engine": 120,
+  "reference": 120,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "cost_break_even_month",
+  "engine": null,
+  "reference": null,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "cash_break_even_month",
+  "engine": 0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "weighted_existing_rate",
+  "engine": 17.75,
+  "reference": 17.75,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "rate_improvement_points",
+  "engine": 7.25,
+  "reference": 7.25,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "proposed_affordability",
+  "engine": 10.37,
+  "reference": 10.373246666666667,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "suitability_score",
+  "engine": 47.3,
+  "reference": 47.31,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario lap120",
+  "field": "suitability_band",
+  "engine": "not_beneficial",
+  "reference": "not_beneficial",
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "included_keys",
+  "engine": [
+   "pl",
+   "cc",
+   "car",
+   "gold"
+  ],
+  "reference": [
+   "pl",
+   "cc",
+   "car",
+   "gold"
+  ],
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "principal_closed",
+  "engine": 1100000.0,
+  "reference": 1100000.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "dues_cleared",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "closure_costs",
+  "engine": 39530.0,
+  "reference": 39530.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "loan_amount",
+  "engine": 1167073.0,
+  "reference": 1167073.0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "processing_fee",
+  "engine": 23341.46,
+  "reference": 23341.46,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "processing_fee_tax",
+  "engine": 4201.46,
+  "reference": 4201.46,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "net_disbursal",
+  "engine": 1139530.08,
+  "reference": 1139530.08,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "upfront_cash",
+  "engine": -0.08,
+  "reference": -0.08,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "new_emi",
+  "engine": 27155.75,
+  "reference": 27155.75,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "new_loan_total_repayment",
+  "engine": 1629344.78,
+  "reference": 1629344.78,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "new_loan_interest",
+  "engine": 462271.78,
+  "reference": 462271.78,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "existing_monthly_outflow",
+  "engine": 37618.7,
+  "reference": 37618.7,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "proposed_monthly_outflow",
+  "engine": 27155.75,
+  "reference": 27155.75,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "existing_total_outflow",
+  "engine": 1382056.92,
+  "reference": 1382056.92,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "proposed_total_outflow",
+  "engine": 1629344.7,
+  "reference": 1629344.7,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "existing_interest",
+  "engine": 282056.92,
+  "reference": 282056.92,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "proposed_interest",
+  "engine": 462271.78,
+  "reference": 462271.78,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "net_financial_benefit",
+  "engine": -247287.78,
+  "reference": -247287.78,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "benefit_percent",
+  "engine": -17.89,
+  "reference": -17.892734837578182,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "total_consolidation_costs",
+  "engine": 67072.92,
+  "reference": 67072.92,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "existing_months",
+  "engine": 40,
+  "reference": 40,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "proposed_months",
+  "engine": 60,
+  "reference": 60,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "cost_break_even_month",
+  "engine": null,
+  "reference": null,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "cash_break_even_month",
+  "engine": 0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "weighted_existing_rate",
+  "engine": 17.75,
+  "reference": 17.75,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "rate_improvement_points",
+  "engine": 3.75,
+  "reference": 3.75,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "proposed_affordability",
+  "engine": 18.1,
+  "reference": 18.103833333333334,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "suitability_score",
+  "engine": 39.57,
+  "reference": 39.58,
+  "match": true
+ },
+ {
+  "case": "V04",
+  "item": "scenario pl60",
+  "field": "suitability_band",
+  "engine": "not_beneficial",
+  "reference": "not_beneficial",
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability pl",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability pl",
+  "field": "monthly_obligation",
+  "engine": 14427.52,
+  "reference": 14427.52,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability pl",
+  "field": "remaining_months",
+  "engine": 48,
+  "reference": 48,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability pl",
+  "field": "remaining_repayment",
+  "engine": 692521.02,
+  "reference": 692521.02,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability pl",
+  "field": "remaining_interest",
+  "engine": 192521.02,
+  "reference": 192521.02,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability pl",
+  "field": "effective_annual_rate",
+  "engine": 17.0,
+  "reference": 17.0,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability pl",
+  "field": "closure_total",
+  "engine": 523600.0,
+  "reference": 523600.0,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability cc",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability cc",
+  "field": "monthly_obligation",
+  "engine": 9000.0,
+  "reference": 9000.0,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability cc",
+  "field": "remaining_months",
+  "engine": 25,
+  "reference": 25,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability cc",
+  "field": "remaining_repayment",
+  "engine": 222609.33,
+  "reference": 222609.33,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability cc",
+  "field": "remaining_interest",
+  "engine": 72609.33,
+  "reference": 72609.33,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability cc",
+  "field": "effective_annual_rate",
+  "engine": 40.0,
+  "reference": 40.0,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability cc",
+  "field": "closure_total",
+  "engine": 150000.0,
+  "reference": 150000.0,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability home",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability home",
+  "field": "monthly_obligation",
+  "engine": 29718.3,
+  "reference": 29718.3,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability home",
+  "field": "remaining_months",
+  "engine": 180,
+  "reference": 180,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability home",
+  "field": "remaining_repayment",
+  "engine": 5349294.57,
+  "reference": 5349294.57,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability home",
+  "field": "remaining_interest",
+  "engine": 2349294.57,
+  "reference": 2349294.57,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability home",
+  "field": "effective_annual_rate",
+  "engine": 8.6,
+  "reference": 8.6,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "liability home",
+  "field": "closure_total",
+  "engine": 3000000.0,
+  "reference": 3000000.0,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "portfolio",
+  "field": "total_outstanding",
+  "engine": 3650000.0,
+  "reference": 3650000.0,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "portfolio",
+  "field": "total_monthly_obligation",
+  "engine": 53145.82,
+  "reference": 53145.82,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "portfolio",
+  "field": "secured_outstanding",
+  "engine": 3000000.0,
+  "reference": 3000000.0,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "portfolio",
+  "field": "remaining_repayment",
+  "engine": 6264424.92,
+  "reference": 6264424.92,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "portfolio",
+  "field": "remaining_interest",
+  "engine": 2614424.92,
+  "reference": 2614424.92,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "portfolio",
+  "field": "weighted_average_rate",
+  "engine": 11.04,
+  "reference": 11.04109589041096,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "current affordability",
+  "field": "foir",
+  "engine": 29.53,
+  "reference": 29.525455555555556,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "included_keys",
+  "engine": [
+   "pl",
+   "cc"
+  ],
+  "reference": [
+   "pl",
+   "cc"
+  ],
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "principal_closed",
+  "engine": 350000.0,
+  "reference": 350000.0,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "dues_cleared",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "closure_costs",
+  "engine": 9440.0,
+  "reference": 9440.0,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "loan_amount",
+  "engine": 368128.0,
+  "reference": 368128.0,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "processing_fee",
+  "engine": 7362.56,
+  "reference": 7362.56,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "processing_fee_tax",
+  "engine": 1325.26,
+  "reference": 1325.26,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "net_disbursal",
+  "engine": 359440.18,
+  "reference": 359440.18,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "upfront_cash",
+  "engine": -0.18,
+  "reference": -0.18,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "new_emi",
+  "engine": 8565.69,
+  "reference": 8565.69,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "new_loan_total_repayment",
+  "engine": 513941.77,
+  "reference": 513941.77,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "new_loan_interest",
+  "engine": 145813.77,
+  "reference": 145813.77,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "existing_monthly_outflow",
+  "engine": 23427.52,
+  "reference": 23427.52,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "proposed_monthly_outflow",
+  "engine": 22993.21,
+  "reference": 22993.21,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "existing_total_outflow",
+  "engine": 915130.35,
+  "reference": 915130.35,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "proposed_total_outflow",
+  "engine": 871850.31,
+  "reference": 871850.31,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "existing_interest",
+  "engine": 265130.35,
+  "reference": 265130.35,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "proposed_interest",
+  "engine": 203722.49,
+  "reference": 203722.49,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "net_financial_benefit",
+  "engine": 43280.04,
+  "reference": 43280.04,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "benefit_percent",
+  "engine": 4.73,
+  "reference": 4.729385272819331,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "total_consolidation_costs",
+  "engine": 18127.82,
+  "reference": 18127.82,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "existing_months",
+  "engine": 48,
+  "reference": 48,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "proposed_months",
+  "engine": 60,
+  "reference": 60,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "cost_break_even_month",
+  "engine": 6,
+  "reference": 6,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "cash_break_even_month",
+  "engine": 0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "weighted_existing_rate",
+  "engine": 26.86,
+  "reference": 26.857142857142858,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "rate_improvement_points",
+  "engine": 12.86,
+  "reference": 12.857142857142858,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "proposed_affordability",
+  "engine": 29.28,
+  "reference": 29.28417222222222,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "suitability_score",
+  "engine": 69.1,
+  "reference": 69.09,
+  "match": true
+ },
+ {
+  "case": "V05",
+  "item": "scenario pl60",
+  "field": "suitability_band",
+  "engine": "needs_review",
+  "reference": "needs_review",
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "liability pl",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "liability pl",
+  "field": "monthly_obligation",
+  "engine": 10547.11,
+  "reference": 10547.11,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "liability pl",
+  "field": "remaining_months",
+  "engine": 36,
+  "reference": 36,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "liability pl",
+  "field": "remaining_repayment",
+  "engine": 379695.97,
+  "reference": 379695.97,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "liability pl",
+  "field": "remaining_interest",
+  "engine": 79695.97,
+  "reference": 79695.97,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "liability pl",
+  "field": "effective_annual_rate",
+  "engine": 16.0,
+  "reference": 16.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "liability pl",
+  "field": "closure_total",
+  "engine": 310620.0,
+  "reference": 310620.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "liability cc",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "liability cc",
+  "field": "monthly_obligation",
+  "engine": 8000.0,
+  "reference": 8000.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "liability cc",
+  "field": "remaining_months",
+  "engine": 17,
+  "reference": 17,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "liability cc",
+  "field": "remaining_repayment",
+  "engine": 133827.43,
+  "reference": 133827.43,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "liability cc",
+  "field": "remaining_interest",
+  "engine": 33827.43,
+  "reference": 33827.43,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "liability cc",
+  "field": "effective_annual_rate",
+  "engine": 42.0,
+  "reference": 42.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "liability cc",
+  "field": "closure_total",
+  "engine": 100000.0,
+  "reference": 100000.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "portfolio",
+  "field": "total_outstanding",
+  "engine": 400000.0,
+  "reference": 400000.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "portfolio",
+  "field": "total_monthly_obligation",
+  "engine": 18547.11,
+  "reference": 18547.11,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "portfolio",
+  "field": "secured_outstanding",
+  "engine": 0.0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "portfolio",
+  "field": "remaining_repayment",
+  "engine": 513523.4,
+  "reference": 513523.4,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "portfolio",
+  "field": "remaining_interest",
+  "engine": 113523.4,
+  "reference": 113523.4,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "portfolio",
+  "field": "weighted_average_rate",
+  "engine": 22.5,
+  "reference": 22.5,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "current affordability",
+  "field": "foir",
+  "engine": 20.61,
+  "reference": 20.6079,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "included_keys",
+  "engine": [
+   "pl",
+   "cc"
+  ],
+  "reference": [
+   "pl",
+   "cc"
+  ],
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "principal_closed",
+  "engine": 400000.0,
+  "reference": 400000.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "dues_cleared",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "closure_costs",
+  "engine": 10620.0,
+  "reference": 10620.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "loan_amount",
+  "engine": 418019.0,
+  "reference": 418019.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "processing_fee",
+  "engine": 6270.29,
+  "reference": 6270.29,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "processing_fee_tax",
+  "engine": 1128.65,
+  "reference": 1128.65,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "net_disbursal",
+  "engine": 410620.06,
+  "reference": 410620.06,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "upfront_cash",
+  "engine": -0.06,
+  "reference": -0.06,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "new_emi",
+  "engine": 19971.7,
+  "reference": 19971.7,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "new_loan_total_repayment",
+  "engine": 479320.8,
+  "reference": 479320.8,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "new_loan_interest",
+  "engine": 61301.8,
+  "reference": 61301.8,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "existing_monthly_outflow",
+  "engine": 18547.11,
+  "reference": 18547.11,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "proposed_monthly_outflow",
+  "engine": 19971.7,
+  "reference": 19971.7,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "existing_total_outflow",
+  "engine": 513523.4,
+  "reference": 513523.4,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "proposed_total_outflow",
+  "engine": 479320.74,
+  "reference": 479320.74,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "existing_interest",
+  "engine": 113523.4,
+  "reference": 113523.4,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "proposed_interest",
+  "engine": 61301.8,
+  "reference": 61301.8,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "net_financial_benefit",
+  "engine": 34202.66,
+  "reference": 34202.66,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "benefit_percent",
+  "engine": 6.66,
+  "reference": 6.660389769969586,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "total_consolidation_costs",
+  "engine": 18018.94,
+  "reference": 18018.94,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "existing_months",
+  "engine": 36,
+  "reference": 36,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "proposed_months",
+  "engine": 24,
+  "reference": 24,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "cost_break_even_month",
+  "engine": 8,
+  "reference": 8,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "cash_break_even_month",
+  "engine": 0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "weighted_existing_rate",
+  "engine": 22.5,
+  "reference": 22.5,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "rate_improvement_points",
+  "engine": 9.0,
+  "reference": 9.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "proposed_affordability",
+  "engine": 22.19,
+  "reference": 22.19077777777778,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "suitability_score",
+  "engine": 80.05,
+  "reference": 80.05,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t24",
+  "field": "suitability_band",
+  "engine": "potentially_suitable",
+  "reference": "potentially_suitable",
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "included_keys",
+  "engine": [
+   "pl",
+   "cc"
+  ],
+  "reference": [
+   "pl",
+   "cc"
+  ],
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "principal_closed",
+  "engine": 400000.0,
+  "reference": 400000.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "dues_cleared",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "closure_costs",
+  "engine": 10620.0,
+  "reference": 10620.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "loan_amount",
+  "engine": 418019.0,
+  "reference": 418019.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "processing_fee",
+  "engine": 6270.29,
+  "reference": 6270.29,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "processing_fee_tax",
+  "engine": 1128.65,
+  "reference": 1128.65,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "net_disbursal",
+  "engine": 410620.06,
+  "reference": 410620.06,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "upfront_cash",
+  "engine": -0.06,
+  "reference": -0.06,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "new_emi",
+  "engine": 11318.42,
+  "reference": 11318.42,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "new_loan_total_repayment",
+  "engine": 543284.0,
+  "reference": 543284.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "new_loan_interest",
+  "engine": 125265.0,
+  "reference": 125265.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "existing_monthly_outflow",
+  "engine": 18547.11,
+  "reference": 18547.11,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "proposed_monthly_outflow",
+  "engine": 11318.42,
+  "reference": 11318.42,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "existing_total_outflow",
+  "engine": 513523.4,
+  "reference": 513523.4,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "proposed_total_outflow",
+  "engine": 543283.94,
+  "reference": 543283.94,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "existing_interest",
+  "engine": 113523.4,
+  "reference": 113523.4,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "proposed_interest",
+  "engine": 125265.0,
+  "reference": 125265.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "net_financial_benefit",
+  "engine": -29760.54,
+  "reference": -29760.54,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "benefit_percent",
+  "engine": -5.8,
+  "reference": -5.795362002977859,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "total_consolidation_costs",
+  "engine": 18018.94,
+  "reference": 18018.94,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "existing_months",
+  "engine": 36,
+  "reference": 36,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "proposed_months",
+  "engine": 48,
+  "reference": 48,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "cost_break_even_month",
+  "engine": 9,
+  "reference": 9,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "cash_break_even_month",
+  "engine": 0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "weighted_existing_rate",
+  "engine": 22.5,
+  "reference": 22.5,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "rate_improvement_points",
+  "engine": 9.0,
+  "reference": 9.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "proposed_affordability",
+  "engine": 12.58,
+  "reference": 12.576022222222223,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "suitability_score",
+  "engine": 56.74,
+  "reference": 56.74,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t48",
+  "field": "suitability_band",
+  "engine": "not_beneficial",
+  "reference": "not_beneficial",
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "included_keys",
+  "engine": [
+   "pl",
+   "cc"
+  ],
+  "reference": [
+   "pl",
+   "cc"
+  ],
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "principal_closed",
+  "engine": 400000.0,
+  "reference": 400000.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "dues_cleared",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "closure_costs",
+  "engine": 10620.0,
+  "reference": 10620.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "loan_amount",
+  "engine": 418019.0,
+  "reference": 418019.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "processing_fee",
+  "engine": 6270.29,
+  "reference": 6270.29,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "processing_fee_tax",
+  "engine": 1128.65,
+  "reference": 1128.65,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "net_disbursal",
+  "engine": 410620.06,
+  "reference": 410620.06,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "upfront_cash",
+  "engine": -0.06,
+  "reference": -0.06,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "new_emi",
+  "engine": 7718.68,
+  "reference": 7718.68,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "new_loan_total_repayment",
+  "engine": 648368.55,
+  "reference": 648368.55,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "new_loan_interest",
+  "engine": 230349.55,
+  "reference": 230349.55,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "existing_monthly_outflow",
+  "engine": 18547.11,
+  "reference": 18547.11,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "proposed_monthly_outflow",
+  "engine": 7718.68,
+  "reference": 7718.68,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "existing_total_outflow",
+  "engine": 513523.4,
+  "reference": 513523.4,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "proposed_total_outflow",
+  "engine": 648368.49,
+  "reference": 648368.49,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "existing_interest",
+  "engine": 113523.4,
+  "reference": 113523.4,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "proposed_interest",
+  "engine": 230349.55,
+  "reference": 230349.55,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "net_financial_benefit",
+  "engine": -134845.09,
+  "reference": -134845.09,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "benefit_percent",
+  "engine": -26.26,
+  "reference": -26.258801448969997,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "total_consolidation_costs",
+  "engine": 18018.94,
+  "reference": 18018.94,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "existing_months",
+  "engine": 36,
+  "reference": 36,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "proposed_months",
+  "engine": 84,
+  "reference": 84,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "cost_break_even_month",
+  "engine": 11,
+  "reference": 11,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "cash_break_even_month",
+  "engine": 0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "weighted_existing_rate",
+  "engine": 22.5,
+  "reference": 22.5,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "rate_improvement_points",
+  "engine": 9.0,
+  "reference": 9.0,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "proposed_affordability",
+  "engine": 8.58,
+  "reference": 8.576311111111112,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "suitability_score",
+  "engine": 50.07,
+  "reference": 50.07,
+  "match": true
+ },
+ {
+  "case": "V06",
+  "item": "scenario t84",
+  "field": "suitability_band",
+  "engine": "not_beneficial",
+  "reference": "not_beneficial",
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability pl",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability pl",
+  "field": "monthly_obligation",
+  "engine": 12481.0,
+  "reference": 12481.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability pl",
+  "field": "remaining_months",
+  "engine": 24,
+  "reference": 24,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability pl",
+  "field": "remaining_repayment",
+  "engine": 299544.72,
+  "reference": 299544.72,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability pl",
+  "field": "remaining_interest",
+  "engine": 49544.72,
+  "reference": 49544.72,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability pl",
+  "field": "effective_annual_rate",
+  "engine": 18.0,
+  "reference": 18.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability pl",
+  "field": "closure_total",
+  "engine": 286421.0,
+  "reference": 286421.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability car",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability car",
+  "field": "monthly_obligation",
+  "engine": 11483.42,
+  "reference": 11483.42,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability car",
+  "field": "remaining_months",
+  "engine": 30,
+  "reference": 30,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability car",
+  "field": "remaining_repayment",
+  "engine": 344502.53,
+  "reference": 344502.53,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability car",
+  "field": "remaining_interest",
+  "engine": 44502.53,
+  "reference": 44502.53,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability car",
+  "field": "effective_annual_rate",
+  "engine": 11.0,
+  "reference": 11.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability car",
+  "field": "closure_total",
+  "engine": 314600.0,
+  "reference": 314600.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability cc",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability cc",
+  "field": "monthly_obligation",
+  "engine": 6000.0,
+  "reference": 6000.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability cc",
+  "field": "remaining_months",
+  "engine": 19,
+  "reference": 19,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability cc",
+  "field": "remaining_repayment",
+  "engine": 109657.01,
+  "reference": 109657.01,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability cc",
+  "field": "remaining_interest",
+  "engine": 29657.01,
+  "reference": 29657.01,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability cc",
+  "field": "effective_annual_rate",
+  "engine": 42.0,
+  "reference": 42.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "liability cc",
+  "field": "closure_total",
+  "engine": 80000.0,
+  "reference": 80000.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "portfolio",
+  "field": "total_outstanding",
+  "engine": 630000.0,
+  "reference": 630000.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "portfolio",
+  "field": "total_monthly_obligation",
+  "engine": 29964.42,
+  "reference": 29964.42,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "portfolio",
+  "field": "secured_outstanding",
+  "engine": 300000.0,
+  "reference": 300000.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "portfolio",
+  "field": "remaining_repayment",
+  "engine": 753704.26,
+  "reference": 753704.26,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "portfolio",
+  "field": "remaining_interest",
+  "engine": 123704.26,
+  "reference": 123704.26,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "portfolio",
+  "field": "weighted_average_rate",
+  "engine": 17.71,
+  "reference": 17.714285714285715,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "current affordability",
+  "field": "foir",
+  "engine": 27.24,
+  "reference": 27.240381818181817,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "included_keys",
+  "engine": [
+   "pl",
+   "car",
+   "cc"
+  ],
+  "reference": [
+   "pl",
+   "car",
+   "cc"
+  ],
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "principal_closed",
+  "engine": 630000.0,
+  "reference": 630000.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "dues_cleared",
+  "engine": 22831.0,
+  "reference": 22831.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "closure_costs",
+  "engine": 28190.0,
+  "reference": 28190.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "loan_amount",
+  "engine": 698689.0,
+  "reference": 698689.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "processing_fee",
+  "engine": 14972.78,
+  "reference": 14972.78,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "processing_fee_tax",
+  "engine": 2695.1,
+  "reference": 2695.1,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "net_disbursal",
+  "engine": 681021.12,
+  "reference": 681021.12,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "upfront_cash",
+  "engine": -0.12,
+  "reference": -0.12,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "new_emi",
+  "engine": 19092.71,
+  "reference": 19092.71,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "new_loan_total_repayment",
+  "engine": 916449.99,
+  "reference": 916449.99,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "new_loan_interest",
+  "engine": 217760.99,
+  "reference": 217760.99,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "existing_monthly_outflow",
+  "engine": 29964.42,
+  "reference": 29964.42,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "proposed_monthly_outflow",
+  "engine": 19092.71,
+  "reference": 19092.71,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "existing_total_outflow",
+  "engine": 774685.26,
+  "reference": 774685.26,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "proposed_total_outflow",
+  "engine": 916449.87,
+  "reference": 916449.87,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "existing_interest",
+  "engine": 123704.26,
+  "reference": 123704.26,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "proposed_interest",
+  "engine": 217760.99,
+  "reference": 217760.99,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "net_financial_benefit",
+  "engine": -141764.61,
+  "reference": -141764.61,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "benefit_percent",
+  "engine": -18.3,
+  "reference": -18.299639520700318,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "total_consolidation_costs",
+  "engine": 45857.88,
+  "reference": 45857.88,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "existing_months",
+  "engine": 30,
+  "reference": 30,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "proposed_months",
+  "engine": 48,
+  "reference": 48,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "cost_break_even_month",
+  "engine": null,
+  "reference": null,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "cash_break_even_month",
+  "engine": 0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "weighted_existing_rate",
+  "engine": 17.71,
+  "reference": 17.714285714285715,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "rate_improvement_points",
+  "engine": 3.71,
+  "reference": 3.7142857142857144,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "proposed_affordability",
+  "engine": 17.36,
+  "reference": 17.35700909090909,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "suitability_score",
+  "engine": 39.28,
+  "reference": 39.29,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario deducted",
+  "field": "suitability_band",
+  "engine": "not_beneficial",
+  "reference": "not_beneficial",
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "included_keys",
+  "engine": [
+   "pl",
+   "car",
+   "cc"
+  ],
+  "reference": [
+   "pl",
+   "car",
+   "cc"
+  ],
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "principal_closed",
+  "engine": 630000.0,
+  "reference": 630000.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "dues_cleared",
+  "engine": 22831.0,
+  "reference": 22831.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "closure_costs",
+  "engine": 28190.0,
+  "reference": 28190.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "loan_amount",
+  "engine": 652831.0,
+  "reference": 652831.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "processing_fee",
+  "engine": 14055.62,
+  "reference": 14055.62,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "processing_fee_tax",
+  "engine": 2530.01,
+  "reference": 2530.01,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "net_disbursal",
+  "engine": 652831.0,
+  "reference": 652831.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "upfront_cash",
+  "engine": 44775.63,
+  "reference": 44775.63,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "new_emi",
+  "engine": 17839.57,
+  "reference": 17839.57,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "new_loan_total_repayment",
+  "engine": 856299.39,
+  "reference": 856299.39,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "new_loan_interest",
+  "engine": 203468.39,
+  "reference": 203468.39,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "existing_monthly_outflow",
+  "engine": 29964.42,
+  "reference": 29964.42,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "proposed_monthly_outflow",
+  "engine": 17839.57,
+  "reference": 17839.57,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "existing_total_outflow",
+  "engine": 774685.26,
+  "reference": 774685.26,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "proposed_total_outflow",
+  "engine": 901075.02,
+  "reference": 901075.02,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "existing_interest",
+  "engine": 123704.26,
+  "reference": 123704.26,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "proposed_interest",
+  "engine": 203468.39,
+  "reference": 203468.39,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "net_financial_benefit",
+  "engine": -126389.76,
+  "reference": -126389.76,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "benefit_percent",
+  "engine": -16.31,
+  "reference": -16.314981906329287,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "total_consolidation_costs",
+  "engine": 44775.63,
+  "reference": 44775.63,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "existing_months",
+  "engine": 30,
+  "reference": 30,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "proposed_months",
+  "engine": 48,
+  "reference": 48,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "cost_break_even_month",
+  "engine": null,
+  "reference": null,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "cash_break_even_month",
+  "engine": 2,
+  "reference": 2,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "weighted_existing_rate",
+  "engine": 17.71,
+  "reference": 17.714285714285715,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "rate_improvement_points",
+  "engine": 3.71,
+  "reference": 3.7142857142857144,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "proposed_affordability",
+  "engine": 16.22,
+  "reference": 16.21779090909091,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "suitability_score",
+  "engine": 39.28,
+  "reference": 39.29,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario upfront",
+  "field": "suitability_band",
+  "engine": "not_beneficial",
+  "reference": "not_beneficial",
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "included_keys",
+  "engine": [
+   "pl",
+   "car",
+   "cc"
+  ],
+  "reference": [
+   "pl",
+   "car",
+   "cc"
+  ],
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "principal_closed",
+  "engine": 630000.0,
+  "reference": 630000.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "dues_cleared",
+  "engine": 22831.0,
+  "reference": 22831.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "closure_costs",
+  "engine": 28190.0,
+  "reference": 28190.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "loan_amount",
+  "engine": 600000.0,
+  "reference": 600000.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "processing_fee",
+  "engine": 12000.0,
+  "reference": 12000.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "processing_fee_tax",
+  "engine": 2160.0,
+  "reference": 2160.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "net_disbursal",
+  "engine": 585840.0,
+  "reference": 585840.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "upfront_cash",
+  "engine": 95181.0,
+  "reference": 95181.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "new_emi",
+  "engine": 16395.89,
+  "reference": 16395.89,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "new_loan_total_repayment",
+  "engine": 787002.46,
+  "reference": 787002.46,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "new_loan_interest",
+  "engine": 187002.46,
+  "reference": 187002.46,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "existing_monthly_outflow",
+  "engine": 29964.42,
+  "reference": 29964.42,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "proposed_monthly_outflow",
+  "engine": 16395.89,
+  "reference": 16395.89,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "existing_total_outflow",
+  "engine": 774685.26,
+  "reference": 774685.26,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "proposed_total_outflow",
+  "engine": 882183.46,
+  "reference": 882183.46,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "existing_interest",
+  "engine": 123704.26,
+  "reference": 123704.26,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "proposed_interest",
+  "engine": 187002.46,
+  "reference": 187002.46,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "net_financial_benefit",
+  "engine": -107498.2,
+  "reference": -107498.2,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "benefit_percent",
+  "engine": -13.88,
+  "reference": -13.876370901906666,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "total_consolidation_costs",
+  "engine": 42350.0,
+  "reference": 42350.0,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "existing_months",
+  "engine": 30,
+  "reference": 30,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "proposed_months",
+  "engine": 48,
+  "reference": 48,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "cost_break_even_month",
+  "engine": null,
+  "reference": null,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "cash_break_even_month",
+  "engine": 6,
+  "reference": 6,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "weighted_existing_rate",
+  "engine": 17.71,
+  "reference": 17.714285714285715,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "rate_improvement_points",
+  "engine": 3.71,
+  "reference": 3.7142857142857144,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "proposed_affordability",
+  "engine": 14.91,
+  "reference": 14.905354545454545,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "suitability_score",
+  "engine": 39.28,
+  "reference": 39.29,
+  "match": true
+ },
+ {
+  "case": "V07",
+  "item": "scenario sanction",
+  "field": "suitability_band",
+  "engine": "not_beneficial",
+  "reference": "not_beneficial",
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "liability pl_1",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "liability pl_1",
+  "field": "monthly_obligation",
+  "engine": 18574.55,
+  "reference": 18574.55,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "liability pl_1",
+  "field": "remaining_months",
+  "engine": 18,
+  "reference": 18,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "liability pl_1",
+  "field": "remaining_repayment",
+  "engine": 334341.94,
+  "reference": 334341.94,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "liability pl_1",
+  "field": "remaining_interest",
+  "engine": 34341.94,
+  "reference": 34341.94,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "liability pl_1",
+  "field": "effective_annual_rate",
+  "engine": 14.0,
+  "reference": 14.0,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "liability pl_1",
+  "field": "closure_total",
+  "engine": 314160.0,
+  "reference": 314160.0,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "liability pl_2",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "liability pl_2",
+  "field": "monthly_obligation",
+  "engine": 11364.08,
+  "reference": 11364.08,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "liability pl_2",
+  "field": "remaining_months",
+  "engine": 20,
+  "reference": 20,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "liability pl_2",
+  "field": "remaining_repayment",
+  "engine": 227281.56,
+  "reference": 227281.56,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "liability pl_2",
+  "field": "remaining_interest",
+  "engine": 27281.56,
+  "reference": 27281.56,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "liability pl_2",
+  "field": "effective_annual_rate",
+  "engine": 15.0,
+  "reference": 15.0,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "liability pl_2",
+  "field": "closure_total",
+  "engine": 209440.0,
+  "reference": 209440.0,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "portfolio",
+  "field": "total_outstanding",
+  "engine": 500000.0,
+  "reference": 500000.0,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "portfolio",
+  "field": "total_monthly_obligation",
+  "engine": 29938.63,
+  "reference": 29938.63,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "portfolio",
+  "field": "secured_outstanding",
+  "engine": 0.0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "portfolio",
+  "field": "remaining_repayment",
+  "engine": 561623.5,
+  "reference": 561623.5,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "portfolio",
+  "field": "remaining_interest",
+  "engine": 61623.5,
+  "reference": 61623.5,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "portfolio",
+  "field": "weighted_average_rate",
+  "engine": 14.4,
+  "reference": 14.4,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "current affordability",
+  "field": "foir",
+  "engine": 29.94,
+  "reference": 29.93863,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "included_keys",
+  "engine": [
+   "pl_1",
+   "pl_2"
+  ],
+  "reference": [
+   "pl_1",
+   "pl_2"
+  ],
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "principal_closed",
+  "engine": 500000.0,
+  "reference": 500000.0,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "dues_cleared",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "closure_costs",
+  "engine": 23600.0,
+  "reference": 23600.0,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "loan_amount",
+  "engine": 536256.0,
+  "reference": 536256.0,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "processing_fee",
+  "engine": 10725.12,
+  "reference": 10725.12,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "processing_fee_tax",
+  "engine": 1930.52,
+  "reference": 1930.52,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "net_disbursal",
+  "engine": 523600.36,
+  "reference": 523600.36,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "upfront_cash",
+  "engine": -0.36,
+  "reference": -0.36,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "new_emi",
+  "engine": 12201.47,
+  "reference": 12201.47,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "new_loan_total_repayment",
+  "engine": 732088.34,
+  "reference": 732088.34,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "new_loan_interest",
+  "engine": 195832.34,
+  "reference": 195832.34,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "existing_monthly_outflow",
+  "engine": 29938.63,
+  "reference": 29938.63,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "proposed_monthly_outflow",
+  "engine": 12201.47,
+  "reference": 12201.47,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "existing_total_outflow",
+  "engine": 561623.5,
+  "reference": 561623.5,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "proposed_total_outflow",
+  "engine": 732087.98,
+  "reference": 732087.98,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "existing_interest",
+  "engine": 61623.5,
+  "reference": 61623.5,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "proposed_interest",
+  "engine": 195832.34,
+  "reference": 195832.34,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "net_financial_benefit",
+  "engine": -170464.48,
+  "reference": -170464.48,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "benefit_percent",
+  "engine": -30.35,
+  "reference": -30.35209174829757,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "total_consolidation_costs",
+  "engine": 36255.64,
+  "reference": 36255.64,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "existing_months",
+  "engine": 20,
+  "reference": 20,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "proposed_months",
+  "engine": 60,
+  "reference": 60,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "cost_break_even_month",
+  "engine": null,
+  "reference": null,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "cash_break_even_month",
+  "engine": 0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "weighted_existing_rate",
+  "engine": 14.4,
+  "reference": 14.4,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "rate_improvement_points",
+  "engine": 1.4,
+  "reference": 1.4,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "proposed_affordability",
+  "engine": 12.2,
+  "reference": 12.20147,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "suitability_score",
+  "engine": 28.5,
+  "reference": 28.5,
+  "match": true
+ },
+ {
+  "case": "V08",
+  "item": "scenario pl60",
+  "field": "suitability_band",
+  "engine": "not_beneficial",
+  "reference": "not_beneficial",
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability pl",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability pl",
+  "field": "monthly_obligation",
+  "engine": 18418.27,
+  "reference": 18418.27,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability pl",
+  "field": "remaining_months",
+  "engine": 40,
+  "reference": 40,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability pl",
+  "field": "remaining_repayment",
+  "engine": 736730.6,
+  "reference": 736730.6,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability pl",
+  "field": "remaining_interest",
+  "engine": 136730.6,
+  "reference": 136730.6,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability pl",
+  "field": "effective_annual_rate",
+  "engine": 12.5,
+  "reference": 12.5,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability pl",
+  "field": "closure_total",
+  "engine": 628320.0,
+  "reference": 628320.0,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability cc",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability cc",
+  "field": "monthly_obligation",
+  "engine": 5000.0,
+  "reference": 5000.0,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability cc",
+  "field": "remaining_months",
+  "engine": 13,
+  "reference": 13,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability cc",
+  "field": "remaining_repayment",
+  "engine": 60337.73,
+  "reference": 60337.73,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability cc",
+  "field": "remaining_interest",
+  "engine": 10337.73,
+  "reference": 10337.73,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability cc",
+  "field": "effective_annual_rate",
+  "engine": 36.0,
+  "reference": 36.0,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability cc",
+  "field": "closure_total",
+  "engine": 50000.0,
+  "reference": 50000.0,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability npa",
+  "field": "consolidatable_now",
+  "engine": false,
+  "reference": false,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability npa",
+  "field": "monthly_obligation",
+  "engine": 6000.0,
+  "reference": 6000.0,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability npa",
+  "field": "remaining_months",
+  "engine": 27,
+  "reference": 27,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability npa",
+  "field": "remaining_repayment",
+  "engine": 159001.87,
+  "reference": 159001.87,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability npa",
+  "field": "remaining_interest",
+  "engine": 39001.87,
+  "reference": 39001.87,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability npa",
+  "field": "effective_annual_rate",
+  "engine": 26.0,
+  "reference": 26.0,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability npa",
+  "field": "closure_total",
+  "engine": 144000.0,
+  "reference": 144000.0,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability lockin",
+  "field": "consolidatable_now",
+  "engine": false,
+  "reference": false,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability lockin",
+  "field": "monthly_obligation",
+  "engine": 7063.49,
+  "reference": 7063.49,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability lockin",
+  "field": "remaining_months",
+  "engine": 34,
+  "reference": 34,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability lockin",
+  "field": "remaining_repayment",
+  "engine": 240158.7,
+  "reference": 240158.7,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability lockin",
+  "field": "remaining_interest",
+  "engine": 40158.7,
+  "reference": 40158.7,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability lockin",
+  "field": "effective_annual_rate",
+  "engine": 13.0,
+  "reference": 13.0,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "liability lockin",
+  "field": "closure_total",
+  "engine": 209440.0,
+  "reference": 209440.0,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "portfolio",
+  "field": "total_outstanding",
+  "engine": 970000.0,
+  "reference": 970000.0,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "portfolio",
+  "field": "total_monthly_obligation",
+  "engine": 36481.76,
+  "reference": 36481.76,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "portfolio",
+  "field": "secured_outstanding",
+  "engine": 0.0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "portfolio",
+  "field": "remaining_repayment",
+  "engine": 1196228.9,
+  "reference": 1196228.9,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "portfolio",
+  "field": "remaining_interest",
+  "engine": 226228.9,
+  "reference": 226228.9,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "portfolio",
+  "field": "weighted_average_rate",
+  "engine": 15.48,
+  "reference": 15.484536082474227,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "current affordability",
+  "field": "foir",
+  "engine": 81.07,
+  "reference": 81.07057777777777,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "included_keys",
+  "engine": [
+   "pl",
+   "cc"
+  ],
+  "reference": [
+   "pl",
+   "cc"
+  ],
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "principal_closed",
+  "engine": 650000.0,
+  "reference": 650000.0,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "dues_cleared",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "closure_costs",
+  "engine": 28320.0,
+  "reference": 28320.0,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "loan_amount",
+  "engine": 694716.0,
+  "reference": 694716.0,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "processing_fee",
+  "engine": 13894.32,
+  "reference": 13894.32,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "processing_fee_tax",
+  "engine": 2500.98,
+  "reference": 2500.98,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "net_disbursal",
+  "engine": 678320.7,
+  "reference": 678320.7,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "upfront_cash",
+  "engine": -0.7,
+  "reference": -0.7,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "new_emi",
+  "engine": 16164.83,
+  "reference": 16164.83,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "new_loan_total_repayment",
+  "engine": 969889.48,
+  "reference": 969889.48,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "new_loan_interest",
+  "engine": 275173.48,
+  "reference": 275173.48,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "existing_monthly_outflow",
+  "engine": 23418.27,
+  "reference": 23418.27,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "proposed_monthly_outflow",
+  "engine": 16164.83,
+  "reference": 16164.83,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "existing_total_outflow",
+  "engine": 797068.33,
+  "reference": 797068.33,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "proposed_total_outflow",
+  "engine": 969888.78,
+  "reference": 969888.78,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "existing_interest",
+  "engine": 147068.33,
+  "reference": 147068.33,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "proposed_interest",
+  "engine": 275173.48,
+  "reference": 275173.48,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "net_financial_benefit",
+  "engine": -172820.45,
+  "reference": -172820.45,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "benefit_percent",
+  "engine": -21.68,
+  "reference": -21.682011879709233,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "total_consolidation_costs",
+  "engine": 44715.3,
+  "reference": 44715.3,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "existing_months",
+  "engine": 40,
+  "reference": 40,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "proposed_months",
+  "engine": 60,
+  "reference": 60,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "cost_break_even_month",
+  "engine": null,
+  "reference": null,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "cash_break_even_month",
+  "engine": 0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "weighted_existing_rate",
+  "engine": 14.31,
+  "reference": 14.307692307692308,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "rate_improvement_points",
+  "engine": 0.31,
+  "reference": 0.3076923076923077,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "proposed_affordability",
+  "engine": 64.95,
+  "reference": 64.95182222222222,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "suitability_score",
+  "engine": 9.43,
+  "reference": 9.42,
+  "match": true
+ },
+ {
+  "case": "V09",
+  "item": "scenario pl60",
+  "field": "suitability_band",
+  "engine": "not_beneficial",
+  "reference": "not_beneficial",
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "liability flat",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "liability flat",
+  "field": "monthly_obligation",
+  "engine": 10833.0,
+  "reference": 10833.0,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "liability flat",
+  "field": "remaining_months",
+  "engine": 28,
+  "reference": 28,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "liability flat",
+  "field": "remaining_repayment",
+  "engine": 303324.02,
+  "reference": 303324.02,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "liability flat",
+  "field": "remaining_interest",
+  "engine": 51324.02,
+  "reference": 51324.02,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "liability flat",
+  "field": "effective_annual_rate",
+  "engine": 15.91,
+  "reference": 15.913859031740168,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "liability flat",
+  "field": "closure_total",
+  "engine": 266868.0,
+  "reference": 266868.0,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "liability merchant",
+  "field": "consolidatable_now",
+  "engine": true,
+  "reference": true,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "liability merchant",
+  "field": "monthly_obligation",
+  "engine": 18000.0,
+  "reference": 18000.0,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "liability merchant",
+  "field": "remaining_months",
+  "engine": 12,
+  "reference": 12,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "liability merchant",
+  "field": "remaining_repayment",
+  "engine": 209760.04,
+  "reference": 209760.04,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "liability merchant",
+  "field": "remaining_interest",
+  "engine": 29760.04,
+  "reference": 29760.04,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "liability merchant",
+  "field": "effective_annual_rate",
+  "engine": 30.0,
+  "reference": 30.0,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "liability merchant",
+  "field": "closure_total",
+  "engine": 186372.0,
+  "reference": 186372.0,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "portfolio",
+  "field": "total_outstanding",
+  "engine": 432000.0,
+  "reference": 432000.0,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "portfolio",
+  "field": "total_monthly_obligation",
+  "engine": 28833.0,
+  "reference": 28833.0,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "portfolio",
+  "field": "secured_outstanding",
+  "engine": 0.0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "portfolio",
+  "field": "remaining_repayment",
+  "engine": 513084.06,
+  "reference": 513084.06,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "portfolio",
+  "field": "remaining_interest",
+  "engine": 81084.06,
+  "reference": 81084.06,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "portfolio",
+  "field": "weighted_average_rate",
+  "engine": 21.78,
+  "reference": 21.783084435181767,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "current affordability",
+  "field": "dscr",
+  "engine": 1.04,
+  "reference": 1.0404744563520965,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "included_keys",
+  "engine": [
+   "flat",
+   "merchant"
+  ],
+  "reference": [
+   "flat",
+   "merchant"
+  ],
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "principal_closed",
+  "engine": 432000.0,
+  "reference": 432000.0,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "dues_cleared",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "closure_costs",
+  "engine": 21240.0,
+  "reference": 21240.0,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "loan_amount",
+  "engine": 464195.0,
+  "reference": 464195.0,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "processing_fee",
+  "engine": 9283.9,
+  "reference": 9283.9,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "processing_fee_tax",
+  "engine": 1671.1,
+  "reference": 1671.1,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "net_disbursal",
+  "engine": 453240.0,
+  "reference": 453240.0,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "upfront_cash",
+  "engine": 0.0,
+  "reference": 0.0,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "new_emi",
+  "engine": 13394.37,
+  "reference": 13394.37,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "new_loan_total_repayment",
+  "engine": 642929.5,
+  "reference": 642929.5,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "new_loan_interest",
+  "engine": 178734.5,
+  "reference": 178734.5,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "existing_monthly_outflow",
+  "engine": 28833.0,
+  "reference": 28833.0,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "proposed_monthly_outflow",
+  "engine": 13394.37,
+  "reference": 13394.37,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "existing_total_outflow",
+  "engine": 513084.06,
+  "reference": 513084.06,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "proposed_total_outflow",
+  "engine": 642929.5,
+  "reference": 642929.5,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "existing_interest",
+  "engine": 81084.06,
+  "reference": 81084.06,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "proposed_interest",
+  "engine": 178734.5,
+  "reference": 178734.5,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "net_financial_benefit",
+  "engine": -129845.44,
+  "reference": -129845.44,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "benefit_percent",
+  "engine": -25.31,
+  "reference": -25.306855176908048,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "total_consolidation_costs",
+  "engine": 32195.0,
+  "reference": 32195.0,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "existing_months",
+  "engine": 28,
+  "reference": 28,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "proposed_months",
+  "engine": 48,
+  "reference": 48,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "cost_break_even_month",
+  "engine": null,
+  "reference": null,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "cash_break_even_month",
+  "engine": 0,
+  "reference": 0,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "weighted_existing_rate",
+  "engine": 21.78,
+  "reference": 21.783084435181767,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "rate_improvement_points",
+  "engine": 4.78,
+  "reference": 4.783084435181765,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "proposed_affordability",
+  "engine": 2.24,
+  "reference": 2.239746998179086,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "suitability_score",
+  "engine": 41.39,
+  "reference": 41.4,
+  "match": true
+ },
+ {
+  "case": "V10",
+  "item": "scenario ubl48",
+  "field": "suitability_band",
+  "engine": "not_beneficial",
+  "reference": "not_beneficial",
+  "match": true
+ }
+]

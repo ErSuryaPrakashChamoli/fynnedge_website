@@ -10,9 +10,11 @@ use App\Models\PageSeo;
 use App\Models\Redirect;
 use App\Models\SeoMeta;
 use App\Modules\CreditScore\Enums\BureauName;
+use App\Modules\DebtConsolidation\Services\DebtConsolidationSettings;
 use App\Support\Calculators\CalculatorCatalog;
 use App\Support\Calculators\CalculatorIndexing;
 use App\Support\Pages\CreditScoreIndexing;
+use App\Support\Pages\DebtConsolidationPages;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -89,7 +91,7 @@ class Sitemap
      */
     public static function pageRouteName(string $slug): string
     {
-        return self::PAGE_ROUTE_NAMES[$slug] ?? $slug;
+        return self::PAGE_ROUTE_NAMES[$slug] ?? DebtConsolidationPages::routeNameFor($slug) ?? $slug;
     }
 
     /**
@@ -144,7 +146,7 @@ class Sitemap
      */
     public static function publicPageSlugs(): array
     {
-        return [...self::ROUTED_PAGE_SLUGS, ...self::CONTROLLER_PAGE_SLUGS];
+        return [...self::ROUTED_PAGE_SLUGS, ...self::CONTROLLER_PAGE_SLUGS, ...DebtConsolidationPages::slugs()];
     }
 
     /**
@@ -354,8 +356,12 @@ class Sitemap
      */
     private static function cmsPages(): Collection
     {
+        $debtConsolidationLive = DebtConsolidationSettings::enabled();
+
         $pages = Page::query()->published()->get()
             ->filter(fn (Page $page): bool => self::pageRoute($page->slug) !== null)
+            // The Debt Consolidation pages answer 404 while the service is switched off.
+            ->reject(fn (Page $page): bool => ! $debtConsolidationLive && in_array($page->slug, DebtConsolidationPages::slugs(), true))
             ->values();
 
         return self::fromRecords(

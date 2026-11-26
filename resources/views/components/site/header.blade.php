@@ -7,14 +7,33 @@
     The mobile menu repeats the language switch for a phone visitor who has
     scrolled down.
 --}}
+@php $debtConsolidationLive = \App\Support\Pages\DebtConsolidationPages::hubIsLive(); @endphp
+
 <div class="border-b border-line bg-surface" data-language-strip>
-    <div class="mx-auto flex max-w-7xl items-center justify-end gap-2 px-6 py-1.5 sm:gap-3 lg:px-8">
-        <span class="hidden items-center gap-1.5 text-xs text-ink-faint sm:inline-flex" aria-hidden="true">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-end gap-x-2 gap-y-1 px-6 py-1.5 sm:flex-nowrap sm:gap-3 lg:px-8">
+        {{--
+            Debt Consolidation is the service the user asked (2026-11-25) to be
+            preferred across the site, so while it is live it opens the strip at
+            every width: on the left from sm, and as its own line above the
+            language switch on phones, where the row has no room for it. Below
+            1280px the header row is already full, so this is its desktop entry
+            there. Everything else in the strip is shrink-0 so only the tagline
+            gives way (with an ellipsis) when space runs short.
+        --}}
+        @if ($debtConsolidationLive)
+            <a href="{{ route('debt-consolidation.hub') }}" class="group inline-flex min-w-0 basis-full items-center gap-1.5 text-xs sm:mr-auto sm:basis-auto" data-debt-consolidation-strip>
+                <span class="nav-champagne-badge shrink-0 rounded-full px-1.5 font-mono text-[0.6rem] font-semibold uppercase leading-4 tracking-wider">{{ __('New') }}</span>
+                <span class="shrink-0 font-semibold text-ink transition-colors group-hover:text-accent">{{ __('Debt Consolidation') }}</span>
+                <span class="hidden truncate text-ink-muted lg:inline">— {{ __('Many EMIs? See if one loan would really cost less.') }}</span>
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" class="h-3 w-3 shrink-0 text-accent transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m8 5 5 5-5 5" /></svg>
+            </a>
+        @endif
+        <span class="hidden shrink-0 items-center gap-1.5 whitespace-nowrap text-xs text-ink-faint sm:inline-flex" aria-hidden="true">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><circle cx="10" cy="10" r="7.25" /><path stroke-linecap="round" d="M2.75 10h14.5M10 2.75c1.9 2 2.9 4.4 2.9 7.25S11.9 15.25 10 17.25C8.1 15.25 7.1 12.85 7.1 10S8.1 4.75 10 2.75Z" /></svg>
             Language · <span lang="hi">भाषा</span>
         </span>
         <x-site.language-switch />
-        <span class="h-4 w-px bg-line-strong" aria-hidden="true"></span>
+        <span class="h-4 w-px shrink-0 bg-line-strong" aria-hidden="true"></span>
         @auth('customer')
             <a href="{{ route('portal.dashboard') }}" class="portal-pill group inline-flex shrink-0 items-center gap-1.5 rounded-full p-[3px] pr-3 text-xs font-semibold leading-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" data-portal-link>
                 <span class="portal-pill-avatar relative flex h-6 w-6 items-center justify-center rounded-full">
@@ -83,7 +102,7 @@
 
         @php $loanCategories = \App\Support\Loans\LoanMegaMenu::categories(); @endphp
 
-        <nav class="hidden items-center gap-3.5 lg:flex xl:gap-6" aria-label="{{ __('Primary') }}">
+        <nav @class(['hidden items-center gap-3.5 lg:flex', 'xl:gap-6' => ! $debtConsolidationLive]) aria-label="{{ __('Primary') }}">
             @if (count($loanCategories))
                 <div x-data="{ open: false, active: '{{ $loanCategories[0]['overviewParams']['loanProduct'] }}' }" @click.outside="open = false" @keydown.escape="open = false" @mouseenter="open = true" @mouseleave="open = false" class="relative">
                     <button
@@ -121,6 +140,31 @@
                 </div>
             @else
                 <x-site.nav-link route="loans.index" :label="__('Loans')" />
+            @endif
+            {{--
+                Debt Consolidation sits straight after Loans, in full ink with a
+                "New" tag floated above it (absolute, so it costs no row width).
+                It takes the room of the Eligibility link (the same page as the
+                Check Eligibility button), which shows only while the service is
+                off, and the xl gap drops to the lg one (xl:gap-6 returns while
+                the service is off, as before it existed): even so the English row at
+                1280px has under 20px to spare (see .ai/rules/site.md). Below
+                xl there is no room at all: the strip above carries it there.
+            --}}
+            @if ($debtConsolidationLive)
+                <a
+                    href="{{ route('debt-consolidation.hub') }}"
+                    @if (request()->routeIs('debt-consolidation.*')) aria-current="true" @endif
+                    @class([
+                        'relative whitespace-nowrap text-sm transition-colors max-xl:hidden',
+                        'text-accent font-semibold' => request()->routeIs('debt-consolidation.*'),
+                        'font-medium text-ink hover:text-accent' => ! request()->routeIs('debt-consolidation.*'),
+                    ])
+                    data-nav-debt-consolidation
+                >
+                    {{ __('Debt Consolidation') }}
+                    <span class="nav-champagne-badge pointer-events-none absolute -right-2 -top-3.5 rounded-full px-1 font-mono text-[0.55rem] font-semibold uppercase leading-3.5 tracking-wider">{{ __('New') }}</span>
+                </a>
             @endif
             <x-site.nav-dropdown :label="__('Credit Score')" activeWhen="credit-score.*" featured :badge="__('Free')">
                 <x-site.nav-link route="credit-score.show" :parameters="['bureau' => 'cibil']" :label="__('Free :bureau Score', ['bureau' => 'CIBIL'])" class="block whitespace-nowrap rounded-lg px-3 py-1 hover:bg-surface-2" />
@@ -176,9 +220,12 @@
             {{--
                 nowrap: a two-word Hindi label (हमारे बारे में) otherwise breaks onto two lines at 1024px.
                 Below xl the row has no room for every item, so the Eligibility link (same page as the
-                Check Eligibility button) is dropped there rather than letting the buttons wrap.
+                Check Eligibility button) is dropped there rather than letting the buttons wrap, and
+                everywhere while Debt Consolidation takes its room.
             --}}
-            <x-site.nav-link route="eligibility.index" :label="__('Eligibility')" class="whitespace-nowrap max-xl:hidden" />
+            @unless ($debtConsolidationLive)
+                <x-site.nav-link route="eligibility.index" :label="__('Eligibility')" class="whitespace-nowrap max-xl:hidden" />
+            @endunless
             <x-site.nav-link route="resources.index" :label="__('Resources')" class="whitespace-nowrap" />
             <x-site.nav-link route="faqs.index" :label="__('FAQs')" class="whitespace-nowrap" />
             <x-site.nav-link route="about" :label="__('About')" class="whitespace-nowrap" />
@@ -241,6 +288,22 @@
                     </div>
                 @else
                     <x-site.nav-link route="loans.index" :label="__('Loans')" />
+                @endif
+
+                @if ($debtConsolidationLive)
+                    <div class="flex items-center justify-between gap-3" data-mobile-debt-consolidation>
+                        <a href="{{ route('debt-consolidation.hub') }}" @class([
+                            'inline-flex items-center gap-1.5 text-sm font-semibold transition-colors',
+                            'text-accent' => request()->routeIs('debt-consolidation.*'),
+                            'text-ink hover:text-accent' => ! request()->routeIs('debt-consolidation.*'),
+                        ])>
+                            <span class="nav-champagne-badge rounded-full px-1.5 font-mono text-[0.6rem] font-semibold uppercase leading-4 tracking-wider">{{ __('New') }}</span>
+                            {{ __('Debt Consolidation') }}
+                        </a>
+                        @if (in_array('assessment', \App\Support\Pages\DebtConsolidationPages::publishedKeys(), true))
+                            <a href="{{ route('debt-consolidation.assessment') }}" class="shrink-0 text-xs font-medium text-accent hover:underline">{{ __('Free assessment →') }}</a>
+                        @endif
+                    </div>
                 @endif
 
                 <div x-data="{ creditScoreOpen: false }">

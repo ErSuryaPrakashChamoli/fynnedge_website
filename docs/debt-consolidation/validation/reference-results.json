@@ -1,0 +1,1107 @@
+{
+  "interpretations": [
+    "I1 A revolving balance with no planned payment is amortised over each scenario tenure (like-for-like); outside a scenario over the default 60 months; its FOIR obligation is 5% of the balance.",
+    "I2 EMI and months both known: the stated rate drives the schedule when the implied reducing rate is within 1.5 points; otherwise the implied rate is used and the final instalment clears the balance.",
+    "I3 Accrued interest is a due cleared at full closure, not a consolidation cost.",
+    "I4 A partially paid-down amortising loan keeps its EMI and finishes sooner.",
+    "I5 Cost break-even: first month in which cumulative interest saved reaches all consolidation costs. Cash break-even: first month (0 = the day of consolidation) in which cumulative cash under the proposal is no more than under the existing plan.",
+    "I6 Weighted existing rate is weighted by the principal being closed.",
+    "I7 Fees deducted from the payout: the loan is the smallest whole-rupee amount whose payout after the fee and its GST (each rounded to the paisa) covers the amount to finance."
+  ],
+  "cases": {
+    "V01": {
+      "portfolio": {
+        "total_outstanding": 595000.0,
+        "total_monthly_obligation": 25746.63,
+        "secured_outstanding": 0,
+        "remaining_repayment": 737586.58,
+        "remaining_interest": 142586.58,
+        "weighted_average_rate": 18.15126050420168
+      },
+      "liabilities": {
+        "pl_a": {
+          "consolidatable_now": true,
+          "monthly_obligation": 13089.63,
+          "remaining_months": 30,
+          "remaining_repayment": 392689.04,
+          "remaining_interest": 72689.04,
+          "effective_annual_rate": 16.5,
+          "closure_total": 335104.0
+        },
+        "pl_b": {
+          "consolidatable_now": true,
+          "monthly_obligation": 8157.0,
+          "remaining_months": 27,
+          "remaining_repayment": 220230.68,
+          "remaining_interest": 40230.68,
+          "effective_annual_rate": 18.0,
+          "closure_total": 191800.0
+        },
+        "pl_c": {
+          "consolidatable_now": true,
+          "monthly_obligation": 4500.0,
+          "remaining_months": 28,
+          "remaining_repayment": 124666.86,
+          "remaining_interest": 29666.86,
+          "effective_annual_rate": 24.0,
+          "closure_total": 98363.0
+        }
+      },
+      "scenarios": {
+        "pl60": {
+          "included": [
+            "pl_a",
+            "pl_b",
+            "pl_c"
+          ],
+          "principal_closed": 595000.0,
+          "dues_cleared": 0.0,
+          "closure_costs": 30267.0,
+          "loan_amount": 640380.0,
+          "processing_fee": 12807.6,
+          "processing_fee_tax": 2305.37,
+          "net_disbursal": 625267.03,
+          "upfront_cash": -0.03,
+          "new_emi": 14900.52,
+          "new_loan_total_repayment": 894031.36,
+          "new_loan_interest": 253651.36,
+          "existing_monthly_outflow": 25746.63,
+          "proposed_monthly_outflow": 14900.52,
+          "existing_total_outflow": 737586.58,
+          "proposed_total_outflow": 894031.33,
+          "existing_interest": 142586.58,
+          "proposed_interest": 253651.36,
+          "net_financial_benefit": -156444.75,
+          "benefit_percent": -21.210357433563935,
+          "total_consolidation_costs": 45379.97,
+          "existing_months": 30,
+          "proposed_months": 60,
+          "cost_break_even_month": null,
+          "cash_break_even_month": 0,
+          "weighted_existing_rate": 18.15126050420168,
+          "rate_improvement_points": 4.151260504201681,
+          "proposed_affordability": 12.4171,
+          "score": 37.05,
+          "band": "not_beneficial"
+        },
+        "pl36": {
+          "included": [
+            "pl_a",
+            "pl_b",
+            "pl_c"
+          ],
+          "principal_closed": 595000.0,
+          "dues_cleared": 0.0,
+          "closure_costs": 30267.0,
+          "loan_amount": 640380.0,
+          "processing_fee": 12807.6,
+          "processing_fee_tax": 2305.37,
+          "net_disbursal": 625267.03,
+          "upfront_cash": -0.03,
+          "new_emi": 21886.67,
+          "new_loan_total_repayment": 787920.12,
+          "new_loan_interest": 147540.12,
+          "existing_monthly_outflow": 25746.63,
+          "proposed_monthly_outflow": 21886.67,
+          "existing_total_outflow": 737586.58,
+          "proposed_total_outflow": 787920.09,
+          "existing_interest": 142586.58,
+          "proposed_interest": 147540.12,
+          "net_financial_benefit": -50333.51,
+          "benefit_percent": -6.824081587818477,
+          "total_consolidation_costs": 45379.97,
+          "existing_months": 30,
+          "proposed_months": 36,
+          "cost_break_even_month": null,
+          "cash_break_even_month": 0,
+          "weighted_existing_rate": 18.15126050420168,
+          "rate_improvement_points": 4.151260504201681,
+          "proposed_affordability": 18.238891666666667,
+          "score": 43.71,
+          "band": "not_beneficial"
+        }
+      },
+      "current": {
+        "foir": 21.455525
+      }
+    },
+    "V02": {
+      "portfolio": {
+        "total_outstanding": 275000.0,
+        "total_monthly_obligation": 20373.95,
+        "secured_outstanding": 0,
+        "remaining_repayment": 420607.53,
+        "remaining_interest": 145607.53,
+        "weighted_average_rate": 37.054545454545455
+      },
+      "liabilities": {
+        "cc_1": {
+          "consolidatable_now": true,
+          "monthly_obligation": 10000.0,
+          "remaining_months": 17,
+          "remaining_repayment": 167284.28,
+          "remaining_interest": 42284.28,
+          "effective_annual_rate": 42.0,
+          "closure_total": 125000.0
+        },
+        "cc_2": {
+          "consolidatable_now": true,
+          "monthly_obligation": 3000.0,
+          "remaining_months": 33,
+          "remaining_repayment": 98479.92,
+          "remaining_interest": 38479.92,
+          "effective_annual_rate": 39.0,
+          "closure_total": 60000.0
+        },
+        "cc_3": {
+          "consolidatable_now": true,
+          "monthly_obligation": 2000.0,
+          "remaining_months": 60,
+          "remaining_repayment": 101103.83,
+          "remaining_interest": 61103.83,
+          "effective_annual_rate": 45.0,
+          "closure_total": 40000.0
+        },
+        "cc_emi": {
+          "consolidatable_now": true,
+          "monthly_obligation": 5373.95,
+          "remaining_months": 10,
+          "remaining_repayment": 53739.5,
+          "remaining_interest": 3739.5,
+          "effective_annual_rate": 16.0,
+          "closure_total": 50000.0
+        }
+      },
+      "scenarios": {
+        "pl60": {
+          "included": [
+            "cc_1",
+            "cc_2",
+            "cc_3",
+            "cc_emi"
+          ],
+          "principal_closed": 275000.0,
+          "dues_cleared": 0.0,
+          "closure_costs": 0.0,
+          "loan_amount": 281647.0,
+          "processing_fee": 5632.94,
+          "processing_fee_tax": 1013.93,
+          "net_disbursal": 275000.13,
+          "upfront_cash": -0.13,
+          "new_emi": 6553.43,
+          "new_loan_total_repayment": 393206.03,
+          "new_loan_interest": 111559.03,
+          "existing_monthly_outflow": 20059.02,
+          "proposed_monthly_outflow": 6553.43,
+          "existing_total_outflow": 420607.53,
+          "proposed_total_outflow": 393205.9,
+          "existing_interest": 145607.53,
+          "proposed_interest": 111559.03,
+          "net_financial_benefit": 27401.63,
+          "benefit_percent": 6.514773998458848,
+          "total_consolidation_costs": 6646.87,
+          "existing_months": 60,
+          "proposed_months": 60,
+          "cost_break_even_month": 2,
+          "cash_break_even_month": 0,
+          "weighted_existing_rate": 37.054545454545455,
+          "rate_improvement_points": 23.054545454545455,
+          "proposed_affordability": 15.404573333333333,
+          "score": 85.46,
+          "band": "potentially_suitable"
+        },
+        "pl36_upfront": {
+          "included": [
+            "cc_1",
+            "cc_2",
+            "cc_3",
+            "cc_emi"
+          ],
+          "principal_closed": 275000.0,
+          "dues_cleared": 0.0,
+          "closure_costs": 0.0,
+          "loan_amount": 275000.0,
+          "processing_fee": 4125.0,
+          "processing_fee_tax": 742.5,
+          "net_disbursal": 275000.0,
+          "upfront_cash": 4867.5,
+          "new_emi": 9532.97,
+          "new_loan_total_repayment": 343186.69,
+          "new_loan_interest": 68186.69,
+          "existing_monthly_outflow": 20416.77,
+          "proposed_monthly_outflow": 9532.97,
+          "existing_total_outflow": 393045.55,
+          "proposed_total_outflow": 348054.19,
+          "existing_interest": 118045.55,
+          "proposed_interest": 68186.69,
+          "net_financial_benefit": 44991.36,
+          "benefit_percent": 11.4468564775762,
+          "total_consolidation_costs": 4867.5,
+          "existing_months": 36,
+          "proposed_months": 36,
+          "cost_break_even_month": 1,
+          "cash_break_even_month": 1,
+          "weighted_existing_rate": 37.054545454545455,
+          "rate_improvement_points": 22.054545454545455,
+          "proposed_affordability": 19.377293333333334,
+          "score": 97.69,
+          "band": "potentially_suitable"
+        }
+      },
+      "current": {
+        "foir": 33.83193333333333
+      }
+    },
+    "V03": {
+      "portfolio": {
+        "total_outstanding": 3200000.0,
+        "total_monthly_obligation": 106077.95,
+        "secured_outstanding": 900000.0,
+        "remaining_repayment": 4015431.34,
+        "remaining_interest": 815431.34,
+        "weighted_average_rate": 16.796875
+      },
+      "liabilities": {
+        "ubl": {
+          "consolidatable_now": true,
+          "monthly_obligation": 50559.28,
+          "remaining_months": 30,
+          "remaining_repayment": 1516778.45,
+          "remaining_interest": 316778.45,
+          "effective_annual_rate": 19.0,
+          "closure_total": 1256640.0
+        },
+        "nbfc": {
+          "consolidatable_now": true,
+          "monthly_obligation": 26180.0,
+          "remaining_months": 30,
+          "remaining_repayment": 785396.93,
+          "remaining_interest": 185396.93,
+          "effective_annual_rate": 22.0,
+          "closure_total": 635400.0
+        },
+        "od": {
+          "consolidatable_now": true,
+          "monthly_obligation": 5416.67,
+          "remaining_months": 12,
+          "remaining_repayment": 565000.04,
+          "remaining_interest": 65000.04,
+          "effective_annual_rate": 13.0,
+          "closure_total": 500000.0
+        },
+        "machinery": {
+          "consolidatable_now": true,
+          "monthly_obligation": 23922.0,
+          "remaining_months": 48,
+          "remaining_repayment": 1148255.92,
+          "remaining_interest": 248255.92,
+          "effective_annual_rate": 12.5,
+          "closure_total": 900000.0
+        }
+      },
+      "scenarios": {
+        "ubl48": {
+          "included": [
+            "ubl",
+            "nbfc",
+            "od"
+          ],
+          "principal_closed": 2300000.0,
+          "dues_cleared": 0.0,
+          "closure_costs": 92040.0,
+          "loan_amount": 2449857.0,
+          "processing_fee": 48997.14,
+          "processing_fee_tax": 8819.49,
+          "net_disbursal": 2392040.37,
+          "upfront_cash": -0.37,
+          "new_emi": 70690.73,
+          "new_loan_total_repayment": 3393154.88,
+          "new_loan_interest": 943297.88,
+          "existing_monthly_outflow": 82155.95,
+          "proposed_monthly_outflow": 70690.73,
+          "existing_total_outflow": 2867175.42,
+          "proposed_total_outflow": 3393154.51,
+          "existing_interest": 567175.42,
+          "proposed_interest": 943297.88,
+          "net_financial_benefit": -525979.09,
+          "benefit_percent": -18.34485209140081,
+          "total_consolidation_costs": 149856.63,
+          "existing_months": 30,
+          "proposed_months": 48,
+          "cost_break_even_month": null,
+          "cash_break_even_month": 0,
+          "weighted_existing_rate": 18.47826086956522,
+          "rate_improvement_points": 1.4782608695652173,
+          "proposed_affordability": 1.9024924024494378,
+          "score": 33.7,
+          "band": "not_beneficial"
+        },
+        "sbl84": {
+          "included": [
+            "ubl",
+            "nbfc",
+            "od"
+          ],
+          "principal_closed": 2300000.0,
+          "dues_cleared": 0.0,
+          "closure_costs": 92040.0,
+          "loan_amount": 2420604.0,
+          "processing_fee": 24206.04,
+          "processing_fee_tax": 4357.09,
+          "net_disbursal": 2392040.87,
+          "upfront_cash": -0.87,
+          "new_emi": 42085.74,
+          "new_loan_total_repayment": 3535201.68,
+          "new_loan_interest": 1114597.68,
+          "existing_monthly_outflow": 82155.95,
+          "proposed_monthly_outflow": 42085.74,
+          "existing_total_outflow": 2867175.42,
+          "proposed_total_outflow": 3535200.81,
+          "existing_interest": 567175.42,
+          "proposed_interest": 1114597.68,
+          "net_financial_benefit": -668025.39,
+          "benefit_percent": -23.299076343225625,
+          "total_consolidation_costs": 120603.13,
+          "existing_months": 30,
+          "proposed_months": 84,
+          "cost_break_even_month": null,
+          "cash_break_even_month": 0,
+          "weighted_existing_rate": 18.47826086956522,
+          "rate_improvement_points": 6.978260869565218,
+          "proposed_affordability": 2.7269529300654742,
+          "score": 45.5,
+          "band": "not_beneficial"
+        }
+      },
+      "current": {
+        "dscr": 1.6968653711728026
+      }
+    },
+    "V04": {
+      "portfolio": {
+        "total_outstanding": 1100000.0,
+        "total_monthly_obligation": 37618.7,
+        "secured_outstanding": 500000.0,
+        "remaining_repayment": 1382056.92,
+        "remaining_interest": 282056.92,
+        "weighted_average_rate": 17.75
+      },
+      "liabilities": {
+        "pl": {
+          "consolidatable_now": true,
+          "monthly_obligation": 12867.84,
+          "remaining_months": 40,
+          "remaining_repayment": 514713.72,
+          "remaining_interest": 114713.72,
+          "effective_annual_rate": 15.5,
+          "closure_total": 418880.0
+        },
+        "cc": {
+          "consolidatable_now": true,
+          "monthly_obligation": 12000.0,
+          "remaining_months": 25,
+          "remaining_repayment": 296812.44,
+          "remaining_interest": 96812.44,
+          "effective_annual_rate": 40.0,
+          "closure_total": 200000.0
+        },
+        "car": {
+          "consolidatable_now": true,
+          "monthly_obligation": 11375.86,
+          "remaining_months": 36,
+          "remaining_repayment": 409530.76,
+          "remaining_interest": 59530.76,
+          "effective_annual_rate": 10.5,
+          "closure_total": 370650.0
+        },
+        "gold": {
+          "consolidatable_now": true,
+          "monthly_obligation": 1375.0,
+          "remaining_months": 8,
+          "remaining_repayment": 161000.0,
+          "remaining_interest": 11000.0,
+          "effective_annual_rate": 11.0,
+          "closure_total": 150000.0
+        }
+      },
+      "scenarios": {
+        "lap120": {
+          "included": [
+            "pl",
+            "cc",
+            "car",
+            "gold"
+          ],
+          "principal_closed": 1100000.0,
+          "dues_cleared": 0.0,
+          "closure_costs": 39530.0,
+          "loan_amount": 1153138.0,
+          "processing_fee": 11531.38,
+          "processing_fee_tax": 2075.65,
+          "net_disbursal": 1139530.97,
+          "upfront_cash": -0.97,
+          "new_emi": 15559.87,
+          "new_loan_total_repayment": 1867183.79,
+          "new_loan_interest": 714045.79,
+          "existing_monthly_outflow": 37618.7,
+          "proposed_monthly_outflow": 15559.87,
+          "existing_total_outflow": 1382056.92,
+          "proposed_total_outflow": 1867182.82,
+          "existing_interest": 282056.92,
+          "proposed_interest": 714045.79,
+          "net_financial_benefit": -485125.9,
+          "benefit_percent": -35.10173083175185,
+          "total_consolidation_costs": 53137.03,
+          "existing_months": 40,
+          "proposed_months": 120,
+          "cost_break_even_month": null,
+          "cash_break_even_month": 0,
+          "weighted_existing_rate": 17.75,
+          "rate_improvement_points": 7.25,
+          "proposed_affordability": 10.373246666666667,
+          "score": 47.31,
+          "band": "not_beneficial"
+        },
+        "pl60": {
+          "included": [
+            "pl",
+            "cc",
+            "car",
+            "gold"
+          ],
+          "principal_closed": 1100000.0,
+          "dues_cleared": 0.0,
+          "closure_costs": 39530.0,
+          "loan_amount": 1167073.0,
+          "processing_fee": 23341.46,
+          "processing_fee_tax": 4201.46,
+          "net_disbursal": 1139530.08,
+          "upfront_cash": -0.08,
+          "new_emi": 27155.75,
+          "new_loan_total_repayment": 1629344.78,
+          "new_loan_interest": 462271.78,
+          "existing_monthly_outflow": 37618.7,
+          "proposed_monthly_outflow": 27155.75,
+          "existing_total_outflow": 1382056.92,
+          "proposed_total_outflow": 1629344.7,
+          "existing_interest": 282056.92,
+          "proposed_interest": 462271.78,
+          "net_financial_benefit": -247287.78,
+          "benefit_percent": -17.892734837578182,
+          "total_consolidation_costs": 67072.92,
+          "existing_months": 40,
+          "proposed_months": 60,
+          "cost_break_even_month": null,
+          "cash_break_even_month": 0,
+          "weighted_existing_rate": 17.75,
+          "rate_improvement_points": 3.75,
+          "proposed_affordability": 18.103833333333334,
+          "score": 39.58,
+          "band": "not_beneficial"
+        }
+      },
+      "current": {
+        "foir": 25.079133333333335
+      }
+    },
+    "V05": {
+      "portfolio": {
+        "total_outstanding": 3650000.0,
+        "total_monthly_obligation": 53145.82,
+        "secured_outstanding": 3000000.0,
+        "remaining_repayment": 6264424.92,
+        "remaining_interest": 2614424.92,
+        "weighted_average_rate": 11.04109589041096
+      },
+      "liabilities": {
+        "pl": {
+          "consolidatable_now": true,
+          "monthly_obligation": 14427.52,
+          "remaining_months": 48,
+          "remaining_repayment": 692521.02,
+          "remaining_interest": 192521.02,
+          "effective_annual_rate": 17.0,
+          "closure_total": 523600.0
+        },
+        "cc": {
+          "consolidatable_now": true,
+          "monthly_obligation": 9000.0,
+          "remaining_months": 25,
+          "remaining_repayment": 222609.33,
+          "remaining_interest": 72609.33,
+          "effective_annual_rate": 40.0,
+          "closure_total": 150000.0
+        },
+        "home": {
+          "consolidatable_now": true,
+          "monthly_obligation": 29718.3,
+          "remaining_months": 180,
+          "remaining_repayment": 5349294.57,
+          "remaining_interest": 2349294.57,
+          "effective_annual_rate": 8.6,
+          "closure_total": 3000000.0
+        }
+      },
+      "scenarios": {
+        "pl60": {
+          "included": [
+            "pl",
+            "cc"
+          ],
+          "principal_closed": 350000.0,
+          "dues_cleared": 0.0,
+          "closure_costs": 9440.0,
+          "loan_amount": 368128.0,
+          "processing_fee": 7362.56,
+          "processing_fee_tax": 1325.26,
+          "net_disbursal": 359440.18,
+          "upfront_cash": -0.18,
+          "new_emi": 8565.69,
+          "new_loan_total_repayment": 513941.77,
+          "new_loan_interest": 145813.77,
+          "existing_monthly_outflow": 23427.52,
+          "proposed_monthly_outflow": 22993.21,
+          "existing_total_outflow": 915130.35,
+          "proposed_total_outflow": 871850.31,
+          "existing_interest": 265130.35,
+          "proposed_interest": 203722.49,
+          "net_financial_benefit": 43280.04,
+          "benefit_percent": 4.729385272819331,
+          "total_consolidation_costs": 18127.82,
+          "existing_months": 48,
+          "proposed_months": 60,
+          "cost_break_even_month": 6,
+          "cash_break_even_month": 0,
+          "weighted_existing_rate": 26.857142857142858,
+          "rate_improvement_points": 12.857142857142858,
+          "proposed_affordability": 29.28417222222222,
+          "score": 69.09,
+          "band": "needs_review"
+        }
+      },
+      "current": {
+        "foir": 29.525455555555556
+      }
+    },
+    "V06": {
+      "portfolio": {
+        "total_outstanding": 400000.0,
+        "total_monthly_obligation": 18547.11,
+        "secured_outstanding": 0,
+        "remaining_repayment": 513523.4,
+        "remaining_interest": 113523.4,
+        "weighted_average_rate": 22.5
+      },
+      "liabilities": {
+        "pl": {
+          "consolidatable_now": true,
+          "monthly_obligation": 10547.11,
+          "remaining_months": 36,
+          "remaining_repayment": 379695.97,
+          "remaining_interest": 79695.97,
+          "effective_annual_rate": 16.0,
+          "closure_total": 310620.0
+        },
+        "cc": {
+          "consolidatable_now": true,
+          "monthly_obligation": 8000.0,
+          "remaining_months": 17,
+          "remaining_repayment": 133827.43,
+          "remaining_interest": 33827.43,
+          "effective_annual_rate": 42.0,
+          "closure_total": 100000.0
+        }
+      },
+      "scenarios": {
+        "t24": {
+          "included": [
+            "pl",
+            "cc"
+          ],
+          "principal_closed": 400000.0,
+          "dues_cleared": 0.0,
+          "closure_costs": 10620.0,
+          "loan_amount": 418019.0,
+          "processing_fee": 6270.29,
+          "processing_fee_tax": 1128.65,
+          "net_disbursal": 410620.06,
+          "upfront_cash": -0.06,
+          "new_emi": 19971.7,
+          "new_loan_total_repayment": 479320.8,
+          "new_loan_interest": 61301.8,
+          "existing_monthly_outflow": 18547.11,
+          "proposed_monthly_outflow": 19971.7,
+          "existing_total_outflow": 513523.4,
+          "proposed_total_outflow": 479320.74,
+          "existing_interest": 113523.4,
+          "proposed_interest": 61301.8,
+          "net_financial_benefit": 34202.66,
+          "benefit_percent": 6.660389769969586,
+          "total_consolidation_costs": 18018.94,
+          "existing_months": 36,
+          "proposed_months": 24,
+          "cost_break_even_month": 8,
+          "cash_break_even_month": 0,
+          "weighted_existing_rate": 22.5,
+          "rate_improvement_points": 9.0,
+          "proposed_affordability": 22.19077777777778,
+          "score": 80.05,
+          "band": "potentially_suitable"
+        },
+        "t48": {
+          "included": [
+            "pl",
+            "cc"
+          ],
+          "principal_closed": 400000.0,
+          "dues_cleared": 0.0,
+          "closure_costs": 10620.0,
+          "loan_amount": 418019.0,
+          "processing_fee": 6270.29,
+          "processing_fee_tax": 1128.65,
+          "net_disbursal": 410620.06,
+          "upfront_cash": -0.06,
+          "new_emi": 11318.42,
+          "new_loan_total_repayment": 543284.0,
+          "new_loan_interest": 125265.0,
+          "existing_monthly_outflow": 18547.11,
+          "proposed_monthly_outflow": 11318.42,
+          "existing_total_outflow": 513523.4,
+          "proposed_total_outflow": 543283.94,
+          "existing_interest": 113523.4,
+          "proposed_interest": 125265.0,
+          "net_financial_benefit": -29760.54,
+          "benefit_percent": -5.795362002977859,
+          "total_consolidation_costs": 18018.94,
+          "existing_months": 36,
+          "proposed_months": 48,
+          "cost_break_even_month": 9,
+          "cash_break_even_month": 0,
+          "weighted_existing_rate": 22.5,
+          "rate_improvement_points": 9.0,
+          "proposed_affordability": 12.576022222222223,
+          "score": 56.74,
+          "band": "not_beneficial"
+        },
+        "t84": {
+          "included": [
+            "pl",
+            "cc"
+          ],
+          "principal_closed": 400000.0,
+          "dues_cleared": 0.0,
+          "closure_costs": 10620.0,
+          "loan_amount": 418019.0,
+          "processing_fee": 6270.29,
+          "processing_fee_tax": 1128.65,
+          "net_disbursal": 410620.06,
+          "upfront_cash": -0.06,
+          "new_emi": 7718.68,
+          "new_loan_total_repayment": 648368.55,
+          "new_loan_interest": 230349.55,
+          "existing_monthly_outflow": 18547.11,
+          "proposed_monthly_outflow": 7718.68,
+          "existing_total_outflow": 513523.4,
+          "proposed_total_outflow": 648368.49,
+          "existing_interest": 113523.4,
+          "proposed_interest": 230349.55,
+          "net_financial_benefit": -134845.09,
+          "benefit_percent": -26.258801448969997,
+          "total_consolidation_costs": 18018.94,
+          "existing_months": 36,
+          "proposed_months": 84,
+          "cost_break_even_month": 11,
+          "cash_break_even_month": 0,
+          "weighted_existing_rate": 22.5,
+          "rate_improvement_points": 9.0,
+          "proposed_affordability": 8.576311111111112,
+          "score": 50.07,
+          "band": "not_beneficial"
+        }
+      },
+      "current": {
+        "foir": 20.6079
+      }
+    },
+    "V07": {
+      "portfolio": {
+        "total_outstanding": 630000.0,
+        "total_monthly_obligation": 29964.42,
+        "secured_outstanding": 300000.0,
+        "remaining_repayment": 753704.26,
+        "remaining_interest": 123704.26,
+        "weighted_average_rate": 17.714285714285715
+      },
+      "liabilities": {
+        "pl": {
+          "consolidatable_now": true,
+          "monthly_obligation": 12481.0,
+          "remaining_months": 24,
+          "remaining_repayment": 299544.72,
+          "remaining_interest": 49544.72,
+          "effective_annual_rate": 18.0,
+          "closure_total": 286421.0
+        },
+        "car": {
+          "consolidatable_now": true,
+          "monthly_obligation": 11483.42,
+          "remaining_months": 30,
+          "remaining_repayment": 344502.53,
+          "remaining_interest": 44502.53,
+          "effective_annual_rate": 11.0,
+          "closure_total": 314600.0
+        },
+        "cc": {
+          "consolidatable_now": true,
+          "monthly_obligation": 6000.0,
+          "remaining_months": 19,
+          "remaining_repayment": 109657.01,
+          "remaining_interest": 29657.01,
+          "effective_annual_rate": 42.0,
+          "closure_total": 80000.0
+        }
+      },
+      "scenarios": {
+        "deducted": {
+          "included": [
+            "pl",
+            "car",
+            "cc"
+          ],
+          "principal_closed": 630000.0,
+          "dues_cleared": 22831.0,
+          "closure_costs": 28190.0,
+          "loan_amount": 698689.0,
+          "processing_fee": 14972.78,
+          "processing_fee_tax": 2695.1,
+          "net_disbursal": 681021.12,
+          "upfront_cash": -0.12,
+          "new_emi": 19092.71,
+          "new_loan_total_repayment": 916449.99,
+          "new_loan_interest": 217760.99,
+          "existing_monthly_outflow": 29964.42,
+          "proposed_monthly_outflow": 19092.71,
+          "existing_total_outflow": 774685.26,
+          "proposed_total_outflow": 916449.87,
+          "existing_interest": 123704.26,
+          "proposed_interest": 217760.99,
+          "net_financial_benefit": -141764.61,
+          "benefit_percent": -18.299639520700318,
+          "total_consolidation_costs": 45857.88,
+          "existing_months": 30,
+          "proposed_months": 48,
+          "cost_break_even_month": null,
+          "cash_break_even_month": 0,
+          "weighted_existing_rate": 17.714285714285715,
+          "rate_improvement_points": 3.7142857142857144,
+          "proposed_affordability": 17.35700909090909,
+          "score": 39.29,
+          "band": "not_beneficial"
+        },
+        "upfront": {
+          "included": [
+            "pl",
+            "car",
+            "cc"
+          ],
+          "principal_closed": 630000.0,
+          "dues_cleared": 22831.0,
+          "closure_costs": 28190.0,
+          "loan_amount": 652831.0,
+          "processing_fee": 14055.62,
+          "processing_fee_tax": 2530.01,
+          "net_disbursal": 652831.0,
+          "upfront_cash": 44775.63,
+          "new_emi": 17839.57,
+          "new_loan_total_repayment": 856299.39,
+          "new_loan_interest": 203468.39,
+          "existing_monthly_outflow": 29964.42,
+          "proposed_monthly_outflow": 17839.57,
+          "existing_total_outflow": 774685.26,
+          "proposed_total_outflow": 901075.02,
+          "existing_interest": 123704.26,
+          "proposed_interest": 203468.39,
+          "net_financial_benefit": -126389.76,
+          "benefit_percent": -16.314981906329287,
+          "total_consolidation_costs": 44775.63,
+          "existing_months": 30,
+          "proposed_months": 48,
+          "cost_break_even_month": null,
+          "cash_break_even_month": 2,
+          "weighted_existing_rate": 17.714285714285715,
+          "rate_improvement_points": 3.7142857142857144,
+          "proposed_affordability": 16.21779090909091,
+          "score": 39.29,
+          "band": "not_beneficial"
+        },
+        "sanction": {
+          "included": [
+            "pl",
+            "car",
+            "cc"
+          ],
+          "principal_closed": 630000.0,
+          "dues_cleared": 22831.0,
+          "closure_costs": 28190.0,
+          "loan_amount": 600000.0,
+          "processing_fee": 12000.0,
+          "processing_fee_tax": 2160.0,
+          "net_disbursal": 585840.0,
+          "upfront_cash": 95181.0,
+          "new_emi": 16395.89,
+          "new_loan_total_repayment": 787002.46,
+          "new_loan_interest": 187002.46,
+          "existing_monthly_outflow": 29964.42,
+          "proposed_monthly_outflow": 16395.89,
+          "existing_total_outflow": 774685.26,
+          "proposed_total_outflow": 882183.46,
+          "existing_interest": 123704.26,
+          "proposed_interest": 187002.46,
+          "net_financial_benefit": -107498.2,
+          "benefit_percent": -13.876370901906666,
+          "total_consolidation_costs": 42350.0,
+          "existing_months": 30,
+          "proposed_months": 48,
+          "cost_break_even_month": null,
+          "cash_break_even_month": 6,
+          "weighted_existing_rate": 17.714285714285715,
+          "rate_improvement_points": 3.7142857142857144,
+          "proposed_affordability": 14.905354545454545,
+          "score": 39.29,
+          "band": "not_beneficial"
+        }
+      },
+      "current": {
+        "foir": 27.240381818181817
+      }
+    },
+    "V08": {
+      "portfolio": {
+        "total_outstanding": 500000.0,
+        "total_monthly_obligation": 29938.63,
+        "secured_outstanding": 0,
+        "remaining_repayment": 561623.5,
+        "remaining_interest": 61623.5,
+        "weighted_average_rate": 14.4
+      },
+      "liabilities": {
+        "pl_1": {
+          "consolidatable_now": true,
+          "monthly_obligation": 18574.55,
+          "remaining_months": 18,
+          "remaining_repayment": 334341.94,
+          "remaining_interest": 34341.94,
+          "effective_annual_rate": 14.0,
+          "closure_total": 314160.0
+        },
+        "pl_2": {
+          "consolidatable_now": true,
+          "monthly_obligation": 11364.08,
+          "remaining_months": 20,
+          "remaining_repayment": 227281.56,
+          "remaining_interest": 27281.56,
+          "effective_annual_rate": 15.0,
+          "closure_total": 209440.0
+        }
+      },
+      "scenarios": {
+        "pl60": {
+          "included": [
+            "pl_1",
+            "pl_2"
+          ],
+          "principal_closed": 500000.0,
+          "dues_cleared": 0.0,
+          "closure_costs": 23600.0,
+          "loan_amount": 536256.0,
+          "processing_fee": 10725.12,
+          "processing_fee_tax": 1930.52,
+          "net_disbursal": 523600.36,
+          "upfront_cash": -0.36,
+          "new_emi": 12201.47,
+          "new_loan_total_repayment": 732088.34,
+          "new_loan_interest": 195832.34,
+          "existing_monthly_outflow": 29938.63,
+          "proposed_monthly_outflow": 12201.47,
+          "existing_total_outflow": 561623.5,
+          "proposed_total_outflow": 732087.98,
+          "existing_interest": 61623.5,
+          "proposed_interest": 195832.34,
+          "net_financial_benefit": -170464.48,
+          "benefit_percent": -30.35209174829757,
+          "total_consolidation_costs": 36255.64,
+          "existing_months": 20,
+          "proposed_months": 60,
+          "cost_break_even_month": null,
+          "cash_break_even_month": 0,
+          "weighted_existing_rate": 14.4,
+          "rate_improvement_points": 1.4,
+          "proposed_affordability": 12.20147,
+          "score": 28.5,
+          "band": "not_beneficial"
+        }
+      },
+      "current": {
+        "foir": 29.93863
+      }
+    },
+    "V09": {
+      "portfolio": {
+        "total_outstanding": 970000.0,
+        "total_monthly_obligation": 36481.76,
+        "secured_outstanding": 0,
+        "remaining_repayment": 1196228.9,
+        "remaining_interest": 226228.9,
+        "weighted_average_rate": 15.484536082474227
+      },
+      "liabilities": {
+        "pl": {
+          "consolidatable_now": true,
+          "monthly_obligation": 18418.27,
+          "remaining_months": 40,
+          "remaining_repayment": 736730.6,
+          "remaining_interest": 136730.6,
+          "effective_annual_rate": 12.5,
+          "closure_total": 628320.0
+        },
+        "cc": {
+          "consolidatable_now": true,
+          "monthly_obligation": 5000.0,
+          "remaining_months": 13,
+          "remaining_repayment": 60337.73,
+          "remaining_interest": 10337.73,
+          "effective_annual_rate": 36.0,
+          "closure_total": 50000.0
+        },
+        "npa": {
+          "consolidatable_now": false,
+          "monthly_obligation": 6000.0,
+          "remaining_months": 27,
+          "remaining_repayment": 159001.87,
+          "remaining_interest": 39001.87,
+          "effective_annual_rate": 26.0,
+          "closure_total": 144000.0
+        },
+        "lockin": {
+          "consolidatable_now": false,
+          "monthly_obligation": 7063.49,
+          "remaining_months": 34,
+          "remaining_repayment": 240158.7,
+          "remaining_interest": 40158.7,
+          "effective_annual_rate": 13.0,
+          "closure_total": 209440.0
+        }
+      },
+      "scenarios": {
+        "pl60": {
+          "included": [
+            "pl",
+            "cc"
+          ],
+          "principal_closed": 650000.0,
+          "dues_cleared": 0.0,
+          "closure_costs": 28320.0,
+          "loan_amount": 694716.0,
+          "processing_fee": 13894.32,
+          "processing_fee_tax": 2500.98,
+          "net_disbursal": 678320.7,
+          "upfront_cash": -0.7,
+          "new_emi": 16164.83,
+          "new_loan_total_repayment": 969889.48,
+          "new_loan_interest": 275173.48,
+          "existing_monthly_outflow": 23418.27,
+          "proposed_monthly_outflow": 16164.83,
+          "existing_total_outflow": 797068.33,
+          "proposed_total_outflow": 969888.78,
+          "existing_interest": 147068.33,
+          "proposed_interest": 275173.48,
+          "net_financial_benefit": -172820.45,
+          "benefit_percent": -21.682011879709233,
+          "total_consolidation_costs": 44715.3,
+          "existing_months": 40,
+          "proposed_months": 60,
+          "cost_break_even_month": null,
+          "cash_break_even_month": 0,
+          "weighted_existing_rate": 14.307692307692308,
+          "rate_improvement_points": 0.3076923076923077,
+          "proposed_affordability": 64.95182222222222,
+          "score": 9.42,
+          "band": "not_beneficial"
+        }
+      },
+      "current": {
+        "foir": 81.07057777777777
+      }
+    },
+    "V10": {
+      "portfolio": {
+        "total_outstanding": 432000.0,
+        "total_monthly_obligation": 28833.0,
+        "secured_outstanding": 0,
+        "remaining_repayment": 513084.06,
+        "remaining_interest": 81084.06,
+        "weighted_average_rate": 21.783084435181767
+      },
+      "liabilities": {
+        "flat": {
+          "consolidatable_now": true,
+          "monthly_obligation": 10833.0,
+          "remaining_months": 28,
+          "remaining_repayment": 303324.02,
+          "remaining_interest": 51324.02,
+          "effective_annual_rate": 15.913859031740168,
+          "closure_total": 266868.0
+        },
+        "merchant": {
+          "consolidatable_now": true,
+          "monthly_obligation": 18000.0,
+          "remaining_months": 12,
+          "remaining_repayment": 209760.04,
+          "remaining_interest": 29760.04,
+          "effective_annual_rate": 30.0,
+          "closure_total": 186372.0
+        }
+      },
+      "scenarios": {
+        "ubl48": {
+          "included": [
+            "flat",
+            "merchant"
+          ],
+          "principal_closed": 432000.0,
+          "dues_cleared": 0.0,
+          "closure_costs": 21240.0,
+          "loan_amount": 464195.0,
+          "processing_fee": 9283.9,
+          "processing_fee_tax": 1671.1,
+          "net_disbursal": 453240.0,
+          "upfront_cash": 0.0,
+          "new_emi": 13394.37,
+          "new_loan_total_repayment": 642929.5,
+          "new_loan_interest": 178734.5,
+          "existing_monthly_outflow": 28833.0,
+          "proposed_monthly_outflow": 13394.37,
+          "existing_total_outflow": 513084.06,
+          "proposed_total_outflow": 642929.5,
+          "existing_interest": 81084.06,
+          "proposed_interest": 178734.5,
+          "net_financial_benefit": -129845.44,
+          "benefit_percent": -25.306855176908048,
+          "total_consolidation_costs": 32195.0,
+          "existing_months": 28,
+          "proposed_months": 48,
+          "cost_break_even_month": null,
+          "cash_break_even_month": 0,
+          "weighted_existing_rate": 21.783084435181767,
+          "rate_improvement_points": 4.783084435181765,
+          "proposed_affordability": 2.239746998179086,
+          "score": 41.4,
+          "band": "not_beneficial"
+        }
+      },
+      "current": {
+        "dscr": 1.0404744563520965
+      }
+    }
+  }
+}

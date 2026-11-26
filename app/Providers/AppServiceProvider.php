@@ -294,6 +294,8 @@ class AppServiceProvider extends ServiceProvider
 
         // The external CIBIL API (routes/external.php): per API client (its service
         // account), so one system's runaway loop cannot spend the Surepass balance.
+        RateLimiter::for('debt-consolidation-api', fn (Request $request) => Limit::perMinute(60)->by('debt-consolidation-api:'.($request->user()?->getAuthIdentifier() ?? $request->ip())));
+
         RateLimiter::for('cibil-external-api', fn (Request $request) => Limit::perMinute(60)->by('cibil-external:'.($request->user()?->getAuthIdentifier() ?? $request->ip())));
 
         RateLimiter::for('mobile-otp-verify', fn (Request $request) => app()->runningUnitTests()

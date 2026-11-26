@@ -9,6 +9,7 @@ use App\Http\Controllers\CareerController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CreditScoreController;
 use App\Http\Controllers\CustomerSessionController;
+use App\Http\Controllers\DebtConsolidationPageController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JourneyController;
@@ -23,6 +24,7 @@ use App\Http\Controllers\PartnerLenderController;
 use App\Http\Controllers\Portal\CreditReportController as PortalCreditReportController;
 use App\Http\Controllers\Portal\CreditScoreOverviewController as PortalCreditScoreOverviewController;
 use App\Http\Controllers\Portal\DashboardController as PortalDashboardController;
+use App\Http\Controllers\Portal\DebtConsolidationController as PortalDebtConsolidationController;
 use App\Http\Controllers\Portal\DocumentController as PortalDocumentController;
 use App\Http\Controllers\Portal\LoanApplicationController as PortalLoanApplicationController;
 use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
@@ -33,6 +35,7 @@ use App\Http\Controllers\QuickEnquiryPageController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SitemapController;
 use App\Support\Localization\SiteLocale;
+use App\Support\Pages\DebtConsolidationPages;
 use App\Support\Seo\Sitemap;
 use Illuminate\Support\Facades\Route;
 
@@ -54,6 +57,17 @@ Route::get('/robots.txt', RobotsController::class)->name('robots');
 Route::get('/about', AboutController::class)->name('about');
 Route::get('/careers', CareerController::class)->name('careers');
 Route::get('/partners', PartnerLenderController::class)->name('partners.index');
+
+/*
+ * Debt Consolidation (docs/debt-consolidation). Each address is a General
+ * Pages row (DebtConsolidationPages), so marketing edits the copy, FAQs and
+ * SEO there; the pages answer 404 while the service is switched off in
+ * Website Settings → Debt Consolidation Settings, unless previewed with a
+ * signed link from the page editor.
+ */
+foreach (DebtConsolidationPages::PAGES as $key => $debtPage) {
+    Route::get($debtPage['path'], DebtConsolidationPageController::class)->name($debtPage['route'])->defaults('pageKey', $key);
+}
 
 foreach (Sitemap::ROUTED_PAGE_SLUGS as $slug) {
     Route::get("/{$slug}", [PageController::class, 'show'])->name($slug)->defaults('slug', $slug);
@@ -170,6 +184,14 @@ Route::prefix('my-profile')
         Route::get('/loan-applications', [PortalLoanApplicationController::class, 'index'])->name('applications');
         Route::get('/documents', [PortalDocumentController::class, 'index'])->name('documents');
         Route::get('/documents/{document}', [PortalDocumentController::class, 'show'])->whereUuid('document')->name('documents.show');
+        Route::get('/debt-consolidation', [PortalDebtConsolidationController::class, 'index'])->name('debt.index');
+        Route::get('/debt-consolidation/{application}', [PortalDebtConsolidationController::class, 'show'])->whereUuid('application')->name('debt.show');
+        Route::post('/debt-consolidation/{application}/documents', [PortalDebtConsolidationController::class, 'uploadDocument'])->whereUuid('application')->name('debt.documents.store');
+        Route::get('/debt-consolidation/{application}/documents/{document}', [PortalDebtConsolidationController::class, 'document'])->whereUuid(['application', 'document'])->name('debt.documents.show');
+        Route::get('/debt-consolidation/{application}/reports/{report}', [PortalDebtConsolidationController::class, 'report'])->whereUuid(['application', 'report'])->name('debt.reports.show');
+        Route::post('/debt-consolidation/{application}/lender-consent', [PortalDebtConsolidationController::class, 'consentToLender'])->whereUuid('application')->name('debt.lender-consent');
+        Route::post('/debt-consolidation/{application}/consents/{consent}/withdraw', [PortalDebtConsolidationController::class, 'withdrawConsent'])->whereUuid(['application', 'consent'])->name('debt.consents.withdraw');
+        Route::get('/notifications', [PortalDebtConsolidationController::class, 'notifications'])->name('notifications');
         Route::get('/help', PortalSupportController::class)->name('support');
         Route::get('/settings', PortalSettingsController::class)->name('settings');
         Route::post('/logout', [CustomerSessionController::class, 'destroy'])->name('logout');

@@ -1,0 +1,39 @@
+# 09 — Security, privacy and compliance
+
+## 1. Controls implemented
+
+| Area | Control | Where |
+| --- | --- | --- |
+| Staff access | Shield permissions per model (`ViewAny/View/Create/Update/Delete:Debt…`), policies auto-discovered; `Debt Advisor` role works cases; deleting cases, approving lender policies, activating scoring and the settings screen are ungranted by default | `DebtConsolidationRoles`, `app/Modules/DebtConsolidation/Policies` |
+| Maker-checker | A lender policy or scoring configuration cannot be approved/activated by its author **or anyone who changed the draft** (audit trail; super admin exempt). Approved policies and active scoring versions are locked at model level, including from an edit page opened before approval. Approve / Activate and the case child-record permissions are listed in the Shield role editor, so saving a role keeps them | `DebtLenderPolicyResource`, `DebtScoringConfigResource` |
+| Customer isolation | Every portal query starts from `DebtApplication::ownedBy($customer)`: linked to the account **and** opened from its OTP-verified mobile; other customers' cases, documents and reports answer 404 (existence not revealed) | `Portal\DebtConsolidationController`, `DebtConsolidationPortalTest` |
+| Journey ownership | Each Livewire action re-checks that the signed-in customer owns the case (403 otherwise), including auto-save | `⚡debt-consolidation-application`, test "never lets another signed-in customer act" |
+| Identity | Mobile OTP (existing `MobileOtp`, purpose `debt_consolidation`, refused by the public OTP API), single-use (`consumeFor`), per-challenge attempts, per-IP wrong-code limit; nothing is stored before verification | enquiry and application components |
+| Documents | Type sniffed from the bytes (PDF/JPG/PNG only), size limit (10 MB), encrypted at rest (`Crypt`, `.enc`), private disk, SHA-256, versioned (never overwritten), always served as attachment with `nosniff` and `no-store`; downloads logged | `UploadDebtDocument`, portal and admin download actions |
+| Reports | Encrypted at rest with SHA-256; customer sees only reports staff released; internal advisor report can never be released | `GenerateDebtReport` |
+| Sensitive fields | Loan/card numbers encrypted (`encrypted` cast), only last 4 shown; identity fields (name, email, mobile, DOB, GSTIN, employer, account numbers, file names) excluded from audit rows | model `auditExcept()` |
+| Audit | Every create/update/delete of case data in `audit_logs` (data-correction trail, super-admin view); status changes insert-only with actor and note (updates and deletes refused); activity events (consents, documents, downloads, reports, API reads) | `Auditable`, `HasStatusHistory`, `recordEvent()` |
+| Consent | Purpose-specific (assessment, contact, lender sharing per lender, external analysis) with exact wording, version and SHA-256, IP and user agent; staff-recorded consents need documented evidence; withdrawal recorded (portal or admin), never edited; lender applications refuse to open or be submitted without an active lender-sharing consent; what the lender decides afterwards is always recorded; the team is alerted when a customer withdraws a consent | `RecordDebtConsent`, `CreateLenderApplication`, `UpdateLenderApplicationStatus` |
+| Lender decisions | No status from "Submitted" onward can be set without the evidence the lender gave; disbursement never closes an old loan; closure verified only with confirmed payment and verified NOC (full) | `UpdateLenderApplicationStatus`, `UpdateClosureStatus` Payment can be confirmed only against a known amount (final amount, or the loan's foreclosure quotation for a full closure, even one recorded after the closure opened); the NOC must be an NOC / closure letter for that loan, used by no other closure; a case auto-completes only from "Closure in progress". |
+| API | `auth:api-client` (hashed keys, IP allow-list, revocable), role permission, customer consent for external analysis, 60/min per client, no contact details in the payload, reads logged | `Api\V1\DebtConsolidationController` The permission is checked before the reference is looked up, so a key without it cannot learn which references exist. |
+| Web hardening | CSRF (web), route throttles, Livewire per-IP OTP throttle, portal `no-store`/`noindex`, Blade escaping (`{{ }}`) for all customer text, validation on every input, `/my-profile` disallowed in robots | existing middleware + new rules |
+| Retention | Abandoned drafts withdrawn after 180 days, anonymous calculator snapshots deleted after 90 days (daily `debt-consolidation:enforce-retention`) | `DebtConsolidationEnforceRetentionCommand` |
+| Engine integrity | Snapshots immutable (any change refused; the only write is linking a visitor's calculator snapshot to their case once; only anonymous calculator snapshots can be deleted, by retention), inputs hash re-checkable (`inputsIntact()`), formula and scoring versions on every snapshot and report | `DebtCalculationSnapshot` |
+
+Explicitly **not** implemented, per mandate: OCR, document AI, automatic extraction or classification, confidence scoring.
+
+## 2. Backup and recovery
+
+The module adds tables to the existing MySQL database and files under `storage/app/private/debt-consolidation/`. Both must be included in the existing backup routine (database dump + private storage). Encrypted files can only be decrypted with the application's `APP_KEY`: back up the key securely and separately — losing it makes every stored document and report unreadable. Rolling back the release: `php artisan migrate:rollback --step=7` (verified on MySQL), after exporting any case data to keep.
+
+## 3. Regulatory assumptions — need legal / contractual confirmation
+
+FynnEdge Advisory (OPC) Pvt Ltd is assumed to act as a **loan advisor / DSA / lending service provider (LSP)** for partner banks and NBFCs, not as a regulated entity (RE). These points could not be decided from the code and are **open items** (OD5):
+
+1. **RBI Digital Lending Directions (2025).** If FynnEdge is an LSP of its partner REs for these loans: (a) the RE must provide the Key Fact Statement with APR before execution — FynnEdge must not present indicative scenarios as offers (the site and reports already say "not an offer"); (b) LSPs facilitating multiple lenders are expected to show matching lenders' offers in an unbiased way with APR and a KFS link — the portal currently shows only advisor-shortlisted lenders and indicative terms, which may need to change; (c) no fee may be charged to the borrower by the LSP unless permitted by the RE arrangement — confirm fee disclosure wording (OD6); (d) loan proceeds normally go to the borrower's account; paying existing lenders directly (balance-transfer style) must fall within a permitted exemption — confirm with each lender; (e) grievance redressal officer details for the LSP must be published (the site already has a grievance page).
+2. **Digital Personal Data Protection Act 2023 and Rules.** Consent notices here are itemised by purpose, but the final wording, language versions, notice content (purposes, rights, grievance and Data Protection Board details), the consent-manager question and retention periods for submitted cases must be confirmed against the commencement schedule of the Rules.
+3. **Telemarketing (TRAI TCCCPR).** The contact consent covers calls/SMS/WhatsApp to DND-registered numbers; confirm the wording and that outbound campaigns use registered headers/templates.
+4. **Record retention** for submitted cases (lender agreements may require a minimum period) — no automatic deletion until decided.
+5. **Lender data sharing** — the per-lender consent text names the lender; confirm it matches each lender's DSA/LSP agreement.
+
+Draft consent and disclaimer texts are editable in Website Settings → Debt Consolidation Settings; editing them creates a new consent version automatically.

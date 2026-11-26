@@ -4,6 +4,7 @@ paths:
   - 'config/cache.php,config/queue.php,config/session.php,.env*'
   - 'config/{cache,queue,session}.php'
   - config/livewire.php
+  - config/filament-shield.php
 ---
 
 # Config
@@ -21,3 +22,12 @@ Verified (2026-08-28, Phase 12): `php artisan config:cache`, `route:cache`, and 
 
 ## Keep Livewire payload.max_nesting_depth at 32 for the rich editor
 Filament's RichEditor syncs its TipTap document as nested data, and the browser sends each edit by its full dotted path. Text in a table cell is 13 levels deep (data.body.content.N.content.r.content.c.content.p.content.t.text), and links and nested lists go deeper. Livewire 4's default of 10 broke editing loan bodies on production with MaxNestingDepthExceededException (2026-11-12). It is 32, as Filament's rich editor docs advise. Don't lower it, and never re-publish config/livewire.php over it (livewire:publish --config overwrites the file). Pinned by LoanProductBodyEditorTest "accepts an edit typed inside a table cell".
+
+## Every checked permission must be listed in Shield's role form, or saving a role deletes it
+Shield's role editor syncs a role to exactly the checkboxes it shows, so a permission that is checked in a policy but not listed in the form is silently removed whenever someone saves the role. This was found in acceptance on 2026-11-25: saving "Debt Advisor" stripped 15 permissions, and saving a checker role stripped Approve, Activate and Delete:DebtDocument.
+
+To keep a permission grantable:
+- a custom verb on a resource goes in `resources.manage` (e.g. DebtLenderPolicyResource ['approve']);
+- a model with no resource of its own goes in `custom_permissions` (DebtDocument, DebtNote, DebtCollateral, DebtConsent), and `shield_resource.tabs.custom_permissions` must stay true.
+
+Pinned by DebtConsolidationAdminTest "keeps every Debt Consolidation permission when a role is saved in the role editor".

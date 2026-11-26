@@ -31,13 +31,19 @@ enum MobileOtpPurpose: string implements HasLabel
     case CustomerLogin = 'customer_login';
 
     /**
+     * The Debt Consolidation enquiry and application forms. Issued and redeemed
+     * only by those Livewire forms, never through the public API.
+     */
+    case DebtConsolidation = 'debt_consolidation';
+
+    /**
      * The purposes the public JSON API may issue and verify codes for.
      *
      * @return list<self>
      */
     public static function apiPurposes(): array
     {
-        return array_values(array_filter(self::cases(), fn (self $purpose): bool => $purpose !== self::CustomerLogin));
+        return array_values(array_filter(self::cases(), fn (self $purpose): bool => ! in_array($purpose, [self::CustomerLogin, self::DebtConsolidation], true)));
     }
 
     public function getLabel(): string
@@ -48,6 +54,7 @@ enum MobileOtpPurpose: string implements HasLabel
             self::CreditScoreCheck => 'Credit score check',
             self::ContactEnquiry => 'Contact form',
             self::CustomerLogin => 'Customer portal login',
+            self::DebtConsolidation => 'Debt consolidation',
         };
     }
 }

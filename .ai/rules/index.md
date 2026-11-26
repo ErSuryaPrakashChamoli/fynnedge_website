@@ -32,7 +32,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Support/Media/ResponsiveImage.php,app/Models/Concerns/HasResponsiveImage.php,resources/views/components/site/banner-carousel.blade.php | .ai/rules/concerns-views-components-site.md |
 | app/Filament/RelationManagers/**,app/Filament/Concerns/** | .ai/rules/concerns.md |
 | config/filesystems.php,app/Filament/**/*Form.php,docker/entrypoint.sh | .ai/rules/config-filament.md |
-| config/database.php,.env*, config/cache.php,config/queue.php,config/session.php,.env*, config/{cache,queue,session}.php, config/livewire.php | .ai/rules/config.md |
+| config/database.php,.env*, config/cache.php,config/queue.php,config/session.php,.env*, config/{cache,queue,session}.php, config/livewire.php, config/filament-shield.php | .ai/rules/config.md |
 | app/Support/Media/ResponsiveImage.php,app/Models/Banner.php,app/Console/Commands/GenerateResponsiveImages.php | .ai/rules/console-commands.md |
 | app/Models/ContactEnquiry.php,app/Modules/Enquiries/**,app/Http/Controllers/QuickEnquiryController.php,app/Http/Controllers/LoanEnquiryController.php,app/Support/Enquiries/**,app/Filament/Resources/ContactEnquiries/**,resources/views/components/site/loan-enquiry*.blade.php | .ai/rules/contact-enquiries.md |
 | app/Support/Contact/** | .ai/rules/contact.md |
@@ -49,6 +49,9 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Support/Pages/CreditScorePageContent.php,app/Filament/Pages/CreditScorePageSettings.php,resources/views/credit-score/show.blade.php | .ai/rules/credit-score.md |
 | resources/css/filament/admin/theme.css | .ai/rules/css-filament-admin.md |
 | resources/views/components/site/promo-bar.blade.php,resources/js/app.js,resources/css/app.css | .ai/rules/css.md |
+| app/Modules/DebtConsolidation/Actions/UploadDebtDocument.php, app/Modules/DebtConsolidation/Actions/** | .ai/rules/debt-consolidation-actions.md |
+| app/Modules/DebtConsolidation/** | .ai/rules/debt-consolidation.md |
+| docker/entrypoint.sh | .ai/rules/docker.md |
 | resources/views/emails/**,resources/views/components/emails/** | .ai/rules/emails.md |
 | resources/views/**,app/Http/Controllers/**,app/Support/**,app/Enums/**,lang/** | .ai/rules/enums.md |
 | app/Modules/Equifax/** | .ai/rules/equifax.md |
@@ -66,6 +69,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Filament/Schemas/HtmlBodyEditor.php | .ai/rules/filament-schemas.md |
 | app/Models/User.php,app/Filament/**,config/filament-shield.php,config/permission.php,database/seeders/RoleSeeder.php | .ai/rules/filament-seeders.md |
 | app/Enums/**,app/Filament/** | .ai/rules/filament.md |
+| app/Modules/DebtConsolidation/Services/Finance/** | .ai/rules/finance.md |
 | app/Filament/Forms/Components/CoverFramePicker.php,app/Filament/Resources/SocialVideos/**,resources/views/filament/forms/components/cover-frame-picker.blade.php | .ai/rules/forms-components.md |
 | .env*,config/app.php | .ai/rules/general.md |
 | app/Modules/Newsletter/**,app/Mail/Newsletter/**,app/Http/Controllers/NewsletterController.php | .ai/rules/http-controllers.md |
@@ -123,7 +127,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Models/Redirect.php,app/Http/Middleware/HandleRedirects.php,app/Filament/Resources/Redirects/** | .ai/rules/redirects.md |
 | app/Filament/Resources/LenderProductRates/**,app/Support/Rates/RateWorkflow.php,app/Filament/RelationManagers/** | .ai/rules/relation-managers.md |
 | resources/css/app.css | .ai/rules/resources-css.md |
-| app/Filament/Resources/**/Pages/List*.php | .ai/rules/resources-pages.md |
+| app/Filament/Resources/**/Pages/List*.php, app/Filament/Resources/**/Pages/View*.php | .ai/rules/resources-pages.md |
 | app/Support/UrlPath.php,app/Http/Middleware/HandleRedirects.php,app/Filament/Resources/Redirects/** | .ai/rules/resources-redirects.md |
 | app/Filament/Schemas/HtmlBodyEditor.php,app/Filament/Resources/**/Schemas/*Form.php | .ai/rules/resources-schemas.md |
 | resources/css/filament/admin/theme.css,app/Filament/Resources/**/Tables/*.php | .ai/rules/resources-tables.md |

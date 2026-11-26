@@ -4,6 +4,8 @@ namespace App\Filament\RelationManagers;
 
 use App\Enums\PublishStatus;
 use App\Filament\Schemas\HindiTranslationSection;
+use App\Models\Faq;
+use Filament\Actions\BulkAction;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -16,6 +18,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Shared by every model that morphs FAQs onto itself (LoanProduct, Page).
@@ -87,6 +90,13 @@ class FaqsRelationManager extends RelationManager
                 DeleteAction::make(),
             ])
             ->toolbarActions([
+                // Starter FAQs (e.g. the Debt Consolidation pages') arrive as drafts for review;
+                // this publishes the reviewed ones in one step.
+                BulkAction::make('publish')
+                    ->label('Publish selected')
+                    ->icon('heroicon-o-check-circle')
+                    ->requiresConfirmation()
+                    ->action(fn (Collection $records) => $records->each(fn (Faq $faq) => $faq->update(['status' => PublishStatus::Published]))),
                 DeleteBulkAction::make(),
             ])
             ->reorderable('sort_order');

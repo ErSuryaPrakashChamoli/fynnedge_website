@@ -121,6 +121,7 @@ describe('send', function () {
     })->with([
         'country' => [['country_code' => 'US'], 'country_code', 'Only Indian mobile numbers (country_code "IN") are supported.'],
         'purpose' => [['purpose' => 'password_reset'], 'purpose', 'The purpose is not recognised.'],
+        'debt consolidation form purpose' => [['purpose' => 'debt_consolidation'], 'purpose', 'The purpose is not recognised.'],
     ]);
 
     it('holds a resend until the cooldown has passed', function () {

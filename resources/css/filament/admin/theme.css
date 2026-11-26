@@ -87,6 +87,11 @@
     --fe-accent-soft: #e0f2fe;
 }
 
+[data-module='debt-consolidation'] {
+    --fe-accent: #7c3aed;
+    --fe-accent-soft: #ede9fe;
+}
+
 [data-module='loan-catalog'] {
     --fe-accent: #059669;
     --fe-accent-soft: #d1fae5;

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Modules\Cibil\Services\CibilRoles;
 use App\Modules\CreditBureau\Services\CrifRoles;
+use App\Modules\DebtConsolidation\Services\DebtConsolidationRoles;
 use App\Modules\Equifax\Services\EquifaxRoles;
 use App\Modules\Experian\Services\ExperianRoles;
 use App\Support\Rates\RateRoles;
@@ -105,6 +106,10 @@ class RoleSeeder extends Seeder
         // CIBIL: the Credit Officer role gets the everyday CIBIL set; fresh pulls,
         // reconciliation, raw JSON and CIBIL Settings stay ungranted.
         CibilRoles::grant();
+
+        // Debt Consolidation: the Debt Advisor role works cases; lender policies,
+        // scoring configurations, deletions and settings stay ungranted.
+        DebtConsolidationRoles::grant();
     }
 
     /**

@@ -69,6 +69,9 @@ Schedule::command('experian:enforce-retention')->dailyAt('02:50')->withoutOverla
 Schedule::command('cibil:flag-stale')->everyFiveMinutes()->withoutOverlapping();
 Schedule::command('cibil:enforce-retention')->dailyAt('02:55')->withoutOverlapping();
 
+// Debt Consolidation: withdraw abandoned drafts, drop old anonymous calculator snapshots.
+Schedule::command('debt-consolidation:enforce-retention')->dailyAt('03:00')->withoutOverlapping();
+
 /*
  * Missing pages (Admin → Missing pages (404)): drops paths nobody has asked
  * for within config('seo.not_found.retention_days'), so the list holds what

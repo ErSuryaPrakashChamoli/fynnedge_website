@@ -8,6 +8,7 @@ use App\Modules\Cibil\Models\CibilCreditRequest;
 use App\Modules\CreditBureau\Models\CrifReport;
 use App\Modules\CreditBureau\Services\PanNumber;
 use App\Modules\CreditScore\Models\CreditScoreCheck;
+use App\Modules\DebtConsolidation\Notifications\DebtCaseUpdate;
 use App\Modules\Equifax\Enums\Gender;
 use App\Modules\Equifax\Models\EquifaxCreditRequest;
 use App\Modules\Experian\Models\ExperianCreditRequest;
@@ -22,6 +23,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Notifications\Notification;
 
 /**
  * A customer — and, once a mobile number has been proved by OTP, their FynnOn
@@ -48,7 +51,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Customer extends Model implements AuthenticatableContract
 {
     /** @use HasFactory<CustomerFactory> */
-    use Auditable, Authenticatable, HasFactory, HasPublicId;
+    use Auditable, Authenticatable, HasFactory, HasPublicId, Notifiable;
 
     /**
      * The profile fields that count towards "profile completion".
@@ -82,6 +85,18 @@ class Customer extends Model implements AuthenticatableContract
             'pan_encrypted' => 'encrypted',
             'identity_verified_at' => 'datetime',
         ];
+    }
+
+    /**
+     * A debt consolidation update goes to the address the customer gave on
+     * that case (the enquiry and application collect it; the account may not
+     * have one); anything else to the account's own address.
+     */
+    public function routeNotificationForMail(Notification $notification): ?string
+    {
+        return $notification instanceof DebtCaseUpdate && filled($notification->recipientEmail)
+            ? $notification->recipientEmail
+            : $this->email;
     }
 
     public function journeySessions(): HasMany

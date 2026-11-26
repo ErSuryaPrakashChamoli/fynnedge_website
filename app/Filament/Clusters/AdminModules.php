@@ -5,6 +5,7 @@ namespace App\Filament\Clusters;
 use App\Filament\Clusters\Administration\AdministrationCluster;
 use App\Filament\Clusters\Content\ContentCluster;
 use App\Filament\Clusters\CreditBureau\CreditBureauCluster;
+use App\Filament\Clusters\DebtConsolidation\DebtConsolidationCluster;
 use App\Filament\Clusters\Leads\LeadsCluster;
 use App\Filament\Clusters\LoanCatalog\LoanCatalogCluster;
 use App\Filament\Clusters\Marketing\MarketingCluster;
@@ -35,6 +36,7 @@ final class AdminModules
     {
         return [
             LeadsCluster::class,
+            DebtConsolidationCluster::class,
             LoanCatalogCluster::class,
             CreditBureauCluster::class,
             WebsitePagesCluster::class,
@@ -64,6 +66,21 @@ final class AdminModules
             Pages\AnalyticsDashboard::class => ['cluster' => LeadsCluster::class, 'group' => 'Analytics & LMS', 'sort' => 71],
             Pages\FynnOnSync::class => ['cluster' => LeadsCluster::class, 'group' => 'Analytics & LMS', 'sort' => 72],
 
+            // Debt Consolidation — cases from first enquiry to verified closure of the old loans.
+            Pages\DebtConsolidationDashboard::class => ['cluster' => DebtConsolidationCluster::class, 'group' => null, 'sort' => 1],
+            Pages\DebtConsolidationEnquiries::class => ['cluster' => DebtConsolidationCluster::class, 'group' => null, 'sort' => 5],
+            Resources\DebtApplications\DebtApplicationResource::class => ['cluster' => DebtConsolidationCluster::class, 'group' => null, 'sort' => 10, 'label' => 'Applications'],
+            Pages\DebtConsolidationCustomers::class => ['cluster' => DebtConsolidationCluster::class, 'group' => null, 'sort' => 20],
+            Resources\DebtLiabilities\DebtLiabilityResource::class => ['cluster' => DebtConsolidationCluster::class, 'group' => 'Case work', 'sort' => 30],
+            Resources\DebtCalculationSnapshots\DebtCalculationSnapshotResource::class => ['cluster' => DebtConsolidationCluster::class, 'group' => 'Case work', 'sort' => 31],
+            Resources\DebtForeclosureQuotations\DebtForeclosureQuotationResource::class => ['cluster' => DebtConsolidationCluster::class, 'group' => 'Case work', 'sort' => 32],
+            Resources\DebtScenarios\DebtScenarioResource::class => ['cluster' => DebtConsolidationCluster::class, 'group' => 'Case work', 'sort' => 33],
+            Resources\DebtLenderMatches\DebtLenderMatchResource::class => ['cluster' => DebtConsolidationCluster::class, 'group' => 'Lenders & closure', 'sort' => 40],
+            Resources\DebtLenderApplications\DebtLenderApplicationResource::class => ['cluster' => DebtConsolidationCluster::class, 'group' => 'Lenders & closure', 'sort' => 41],
+            Resources\DebtClosures\DebtClosureResource::class => ['cluster' => DebtConsolidationCluster::class, 'group' => 'Lenders & closure', 'sort' => 42],
+            Resources\DebtReports\DebtReportResource::class => ['cluster' => DebtConsolidationCluster::class, 'group' => null, 'sort' => 50],
+            Resources\DebtScoringConfigs\DebtScoringConfigResource::class => ['cluster' => DebtConsolidationCluster::class, 'group' => null, 'sort' => 60],
+
             // Loan Products & Lenders — business configuration, not page copy.
             Resources\LoanProducts\LoanProductResource::class => ['cluster' => LoanCatalogCluster::class, 'group' => null, 'sort' => 10],
             Resources\Lenders\LenderResource::class => ['cluster' => LoanCatalogCluster::class, 'group' => null, 'sort' => 20],
@@ -72,6 +89,7 @@ final class AdminModules
             Resources\EligibilityRuleSets\EligibilityRuleSetResource::class => ['cluster' => LoanCatalogCluster::class, 'group' => 'Eligibility', 'sort' => 50],
             Pages\EligibilityTester::class => ['cluster' => LoanCatalogCluster::class, 'group' => 'Eligibility', 'sort' => 51],
             Resources\Employers\EmployerResource::class => ['cluster' => LoanCatalogCluster::class, 'group' => 'Eligibility', 'sort' => 52],
+            Resources\DebtLenderPolicies\DebtLenderPolicyResource::class => ['cluster' => LoanCatalogCluster::class, 'group' => 'Eligibility', 'sort' => 53],
             Resources\JourneyDefinitions\JourneyDefinitionResource::class => ['cluster' => LoanCatalogCluster::class, 'group' => 'Application setup', 'sort' => 60],
             Resources\DocumentTypes\DocumentTypeResource::class => ['cluster' => LoanCatalogCluster::class, 'group' => 'Application setup', 'sort' => 61],
             Resources\DocumentRequirements\DocumentRequirementResource::class => ['cluster' => LoanCatalogCluster::class, 'group' => 'Application setup', 'sort' => 62],
@@ -136,6 +154,8 @@ final class AdminModules
             Pages\QuickEnquiryPageSettings::class => ['cluster' => SiteSettingsCluster::class, 'group' => null, 'sort' => 30],
             Pages\CalculatorPagesSettings::class => ['cluster' => SiteSettingsCluster::class, 'group' => null, 'sort' => 40],
             Pages\CreditScorePageSettings::class => ['cluster' => SiteSettingsCluster::class, 'group' => null, 'sort' => 50],
+            Pages\DebtConsolidationSettings::class => ['cluster' => SiteSettingsCluster::class, 'group' => 'Debt Consolidation', 'sort' => 55],
+            Pages\DebtConsolidationPagesSettings::class => ['cluster' => SiteSettingsCluster::class, 'group' => 'Debt Consolidation', 'sort' => 56],
             Resources\HowItWorksSteps\HowItWorksStepResource::class => ['cluster' => SiteSettingsCluster::class, 'group' => 'Company information', 'sort' => 60],
             Resources\GrievanceLevels\GrievanceLevelResource::class => ['cluster' => SiteSettingsCluster::class, 'group' => 'Company information', 'sort' => 61],
             Resources\JobOpenings\JobOpeningResource::class => ['cluster' => SiteSettingsCluster::class, 'group' => 'Company information', 'sort' => 62],

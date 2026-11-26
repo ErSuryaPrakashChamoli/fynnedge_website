@@ -100,6 +100,9 @@
             <div>
                 <p class="border-b border-line pb-2 font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-accent">{{ __('Loans') }}</p>
                 <ul class="mt-3 flex flex-col gap-2">
+                    @if (\App\Support\Pages\DebtConsolidationPages::hubIsLive())
+                        <li><a href="{{ route('debt-consolidation.hub') }}" class="text-sm font-semibold text-ink transition-colors hover:text-accent" data-footer-debt-consolidation>{{ __('Debt Consolidation') }}</a></li>
+                    @endif
                     @forelse ($loanProducts ?? [] as $product)
                         <li><a href="{{ route('loans.show', $product) }}" class="text-sm font-medium text-ink-muted transition-colors hover:text-ink">{{ $product->name }}</a></li>
                     @empty

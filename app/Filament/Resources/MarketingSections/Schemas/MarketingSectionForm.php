@@ -22,6 +22,7 @@ class MarketingSectionForm
                     ->required()
                     ->live()
                     ->options([
+                        'home_debt_consolidation' => 'Homepage — Debt Consolidation feature (below the hero; shown only while the service is on and its hub page is published)',
                         'home_finance_cta' => 'Homepage — "Not sure which loan fits?" CTA',
                         'home_emi_cta' => 'Homepage — "Plan your EMI" CTA',
                         'home_final_cta' => 'Homepage — closing "Ready to see what you\'re eligible for?" CTA',
@@ -41,6 +42,7 @@ class MarketingSectionForm
                         // keeps the product's own name in the heading.
                         'loan_enquiry_form' => 'The heading beside the form. Write :product where the loan name should appear, e.g. "Apply for a :product".',
                         'home_quick_enquiry' => 'The heading above the Quick Enquiry box, e.g. "Get Started with a Quick Enquiry".',
+                        'home_debt_consolidation' => 'The first line of the heading, e.g. "Paying several EMIs and card bills?"',
                         SocialVideos::SECTION_PLACEMENT => 'The section heading, e.g. "Loan clarity, one reel at a time."',
                         default => null,
                     }),
@@ -50,6 +52,7 @@ class MarketingSectionForm
                         'loan_enquiry_form' => 'The small label above the form itself, e.g. "Instant :product". The rate and loan ceiling below it come from the loan product\'s own fields.',
                         'home_quick_enquiry' => 'The small note under the mobile number field, e.g. "We only need your number to call you back. No forms and no documents at this stage."',
                         SocialVideos::SECTION_PLACEMENT => 'The small badge above the heading, e.g. "As seen on social".',
+                        'home_debt_consolidation' => 'The highlighted second line of the heading, e.g. "See whether one loan would really cost you less."',
                         default => null,
                     }),
                 Textarea::make('description')
@@ -58,6 +61,7 @@ class MarketingSectionForm
                     ->helperText(fn (callable $get) => match ($get('placement')) {
                         'home_flexi_hybrid_ticker' => 'The scrolling marquee text, e.g. "Flexi Hybrid Term Loan (Overdraft) — Bajaj Finance // Tata Capital // Aditya Birla Finance // Piramal Finance".',
                         SocialVideos::SECTION_PLACEMENT => 'The line under the heading. The videos themselves are managed under Content → Social media videos.',
+                        'home_debt_consolidation' => 'The paragraph under the heading. Never promise savings: the assessment decides whether consolidating saves money. Leave the button link blank to send visitors to the free assessment.',
                         default => null,
                     }),
                 FileUpload::make('image_path')
