@@ -128,7 +128,7 @@
         </div>
 
         {{-- Right: the form. Same component on every loan page. --}}
-        <div class="lg:sticky lg:top-6">
+        <div class="lg:sticky lg:top-below-header">
             <x-site.loan-enquiry-form
                 :loan-product="$loanProduct"
                 :eyebrow="$content['eyebrow']"

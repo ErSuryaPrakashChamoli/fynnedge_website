@@ -10,6 +10,17 @@
 
 **Engineering has no access to production.** It has not seen the production host, its `.env`, its database or its proxy. Every production fact below is therefore marked **"to confirm"** where it cannot be read from the repository. Nothing in production was read or changed.
 
+## Update: Owner decisions applied (26 Nov 2026)
+
+| Item | Applied |
+| --- | --- |
+| INF-01 explicit migration step | `docker/entrypoint.sh` now migrates only when started with `RUN_MIGRATIONS=true` (`--isolated`). Otherwise it refuses to start while migrations are pending. Checked: with one pending migration, the check counts 1 and would refuse. |
+| INF-02 PHP runtime | `Dockerfile` runtime is now `php:8.5-fpm-alpine`, the version the test suite runs on. **Still required:** a build on a staging host and smoke-test part A (`33-…`), because the development machine has no container engine. |
+| INF-05 sessions | `docker-compose.yml` defaults `SESSION_ENCRYPT` to `true`. A production `.env` that sets `SESSION_ENCRYPT=false` still wins, so Operations must remove that line or set it to `true`. Everyone is signed out once. |
+| INF-04 hosts | **Not applied.** Restricting hosts without knowing the production proxy can return errors on every request (if the proxy rewrites `Host`). Needs: the public hostnames (e.g. `fynnedge.com`, `www.fynnedge.com`) and whether the proxy passes the original `Host` header. |
+
+The sections below describe the analysis as it was before these decisions. Where they say "not applied" for INF-01 or INF-02, read "applied".
+
 ## 1. Summary
 
 | Item | Status |

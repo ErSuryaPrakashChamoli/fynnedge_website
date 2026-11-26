@@ -10,6 +10,22 @@
 - the service is **off** in the release code;
 - pages ship as **drafts**.
 
+## Update: Owner decisions applied (26 Nov 2026)
+
+The Owner replied "approved all". Applied:
+- the PHP runtime patch (INF-02);
+- the explicit migration step (INF-01);
+- the sticky-panel fix (W-03);
+- encrypted sessions by default (INF-05);
+- the commit of the release candidate: done by the Owner as `65e315c`, with the approved follow-ups committed after it, locally (CO-01);
+- deployment authorisation (DP-01). It cannot be carried out until PR-02 to PR-05 and the staging build are done, and engineering has no production access.
+
+**Not treated as approved:**
+- the business, legal, credit, DPO and historical-validation items (A, B, C in `30-…`): they need named approvers and specific choices;
+- INF-04, which needs the production hostnames.
+
+The verdicts below still hold: **not yet deployable** (PR-02 to PR-05, staging build) and **not authorised for live customers**.
+
 ## 1. Verdict
 
 | Question | Answer |

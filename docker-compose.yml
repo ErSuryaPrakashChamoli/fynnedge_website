@@ -18,6 +18,8 @@ services:
             DB_USERNAME: "${DB_USERNAME:-fynnedge}"
             DB_PASSWORD: "${DB_PASSWORD:-fynnedge}"
             SESSION_DRIVER: "${SESSION_DRIVER:-database}"
+            # Sessions hold calculator inputs and sign-ins: encrypted at rest (INF-05).
+            SESSION_ENCRYPT: "${SESSION_ENCRYPT:-true}"
             CACHE_STORE: "${CACHE_STORE:-database}"
             QUEUE_CONNECTION: "${QUEUE_CONNECTION:-database}"
             REDIS_HOST: redis

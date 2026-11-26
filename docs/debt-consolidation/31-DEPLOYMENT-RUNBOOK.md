@@ -10,6 +10,8 @@
 - **INF-02 resolved**: the PHP runtime image can run the locked dependencies (`27-…` §6).
 - **The Owner has given written deployment authorisation (DP-01, gate F).** Record its reference here: ____________
 
+> **Update (26 Nov 2026).** INF-01 is applied, so use **§3a**. §3b no longer applies. A start without `RUN_MIGRATIONS=true` refuses to boot while the 8 migrations are pending: that is intended. INF-02 is applied (PHP 8.5 runtime), so step 1.3, the staging build, is mandatory.
+
 ## 0. What changes in production
 
 | Change | Detail |

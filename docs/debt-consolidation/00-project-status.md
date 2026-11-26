@@ -8,7 +8,14 @@
 - Engineering is complete and regression-tested.
 - The service is OFF in the release code and the pages are drafts.
 - Nothing has been committed by engineering, deployed or switched on.
-- **Production-deployment-ready: not yet.** Blocked by INF-02 (Docker PHP runtime), PR-02 to PR-05, CO-01 and DP-01.
+- **Owner decisions applied 26 Nov 2026:**
+  - INF-01 explicit migrations;
+  - INF-02 PHP 8.5 runtime;
+  - W-03 sticky panels;
+  - INF-05 encrypted sessions by default;
+  - CO-01: Owner commit `65e315c` plus the follow-up commit, both local and not pushed;
+  - DP-01 authorised.
+- **Production-deployment-ready: not yet.** Waits for PR-02 to PR-05 (Operations evidence) and a staging build of the PHP 8.5 image.
 - **Authorised for live customer applications: no.**
 
 | Gate group (`30-…`) | Status (26 Nov 2026) |
@@ -16,9 +23,9 @@
 | A. Business and operational approvals (11) | **0 approved**; 10 pending; HV-01 blocked |
 | B. Calculation validation BV-01 to BV-18 | **0 approved**; 17 pending; BV-13 blocked |
 | C. HV-00 historical document-use permission | Pending (decision pack `21-…`) |
-| D. Technical release gates | 6 of 9 complete (review, fixes, rehearsal); INF-02 blocked; INF-01 and CO-01 pending |
+| D. Technical release gates | 9 of 9 complete (INF-02 needs a staging build to confirm) |
 | E. Deployment prerequisites PR-01 to PR-05 | PR-01 complete (run 8: 3,286 tests, 3,270 passed; the 15 pre-existing Experian failures; 1 test updated for the Savings Calculator gate W-01 and re-run green); PR-02 to PR-05 blocked (production access) |
-| F. Owner deployment authorisation (DP-01) | Pending |
+| F. Owner deployment authorisation (DP-01) | Authorised by the Owner on 26 Nov; waits for PR-02 to PR-05 and the staging build |
 | G. Owner go-live authorisation (GL-01) | Pending |
 | Technical validation evidence (not approval) | Engine vs independent reference: 827/827; re-confirmed on 26 Nov (V01–V10 identical) |
 

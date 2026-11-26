@@ -23,17 +23,17 @@
 
 | # | Risk | Likelihood / impact | Mitigation | Owner |
 | --- | --- | --- | --- | --- |
-| R-01 | **The runtime image is PHP 8.3; the locked dependencies need ≥ 8.4.1** (pre-existing) | Certain if built as committed / site down | Confirm the real production build; apply `release/dockerfile-php-runtime.patch`; staging build and part A of the smoke test | Owner / Operations (INF-02) |
-| R-02 | Container start runs migrations automatically, including on unplanned restarts | Medium / schema changes without a decision | Explicit-migration patch (INF-01), or runbook discipline (`31-…` §3b) | Owner |
+| R-01 | **The runtime image is PHP 8.3; the locked dependencies need ≥ 8.4.1** (pre-existing) | Certain if built as committed / site down | **Patch applied 26 Nov (PHP 8.5 runtime).** Remaining: staging build and part A of the smoke test | Operations (INF-02) |
+| R-02 | Container start runs migrations automatically, including on unplanned restarts | Medium / schema changes without a decision | **Patch applied 26 Nov (INF-01)**: migrations run only with `RUN_MIGRATIONS=true`; otherwise the start is refused | Closed |
 | R-03 | Production state unknown to engineering (migrations, `.env`, CMS edits) | Medium | `31-…` §1.1 and §1.2 read-only checks; `migrate --pretend` on a copy | Operations |
 | R-04 | MySQL rollback of the release batch was rehearsed at acceptance for migrations 1–7. In this stage only SQLite was available (it cannot run migration 5's foreign-key drop). | Low | Rehearse `migrate` and `migrate:rollback --pretend` on a production copy (`31-…` §1.2) | Operations |
 | R-05 | `APP_KEY` loss makes every DC document and report unreadable | Low / severe | Separate key backup (PR-05) | Operations |
 | R-06 | Scheduler not running in production | Unknown | PR-03 | Operations |
 | R-07 | Mail transport not confirmed | Unknown | PR-02; part C of the smoke test checks the links and delivery | Operations |
 | R-08 | Any host header accepted by nginx (site-wide) | Low (DC emails fixed) | INF-04 | Owner |
-| R-09 | Sessions not encrypted (site-wide) | Low | INF-05 | Owner |
+| R-09 | Sessions not encrypted (site-wide) | Low | INF-05 applied as the compose default; the production `.env` must not set it to false | Operations |
 | R-10 | No monitoring or alerting in the repository | Medium | INF-06 | Operations |
-| R-11 | Two non-DC sticky enquiry panels sit further under the taller sticky header (W-03) | Certain / cosmetic | One-line class change each, awaiting decision | Owner / Marketing |
+| R-11 | Two non-DC sticky enquiry panels sit further under the taller sticky header (W-03) | Certain / cosmetic | **Fixed 26 Nov** (Owner approval) | Closed |
 
 ## 3. Pre-existing defects outside Debt Consolidation (not caused by this release)
 

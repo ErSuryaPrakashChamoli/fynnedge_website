@@ -34,7 +34,22 @@ if [ ! -e public/storage ]; then
     echo "WARNING: public/storage symlink is missing — uploaded images will 404." >&2
 fi
 
-php artisan migrate --force
+# Migrations run only when this start was told to run them. A restart, a
+# crash loop or a scale-out never touches the schema. The release process
+# runs the migration once, deliberately, and watches its output
+# (docs/debt-consolidation/31-DEPLOYMENT-RUNBOOK.md).
+if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
+    echo "RUN_MIGRATIONS=true: applying pending migrations." >&2
+    php artisan migrate --force --isolated
+else
+    PENDING=$(php artisan migrate:status --pending 2>/dev/null | grep -c "Pending" || true)
+    if [ "${PENDING:-0}" -gt 0 ]; then
+        echo "REFUSING TO START: ${PENDING} migration(s) pending and RUN_MIGRATIONS is not true." >&2
+        echo "Run the release migration step, or go back to the previous image." >&2
+        php artisan migrate:status --pending >&2 || true
+        exit 1
+    fi
+fi
 
 php artisan config:cache
 php artisan route:cache

@@ -91,7 +91,7 @@ it('offsets every public sticky panel and scroll target by the measured header h
 
     $offenders = collect(File::allFiles(resource_path('views')))
         ->reject(fn (SplFileInfo $file): bool => str_contains($file->getPathname(), '/filament/'))
-        ->filter(fn (SplFileInfo $file): bool => (bool) preg_match('/class="[^"]*\bsticky\b[^"]*\btop-(?:1[2-9]|2\d|3\d)\b|class="[^"]*\bscroll-mt-(?:1[2-9]|2\d|3\d)\b/', $file->getContents()))
+        ->filter(fn (SplFileInfo $file): bool => (bool) preg_match('/class="[^"]*\bsticky\b[^"]*\btop-(?:[1-9]|[1-3]\d)\b|class="[^"]*\bscroll-mt-(?:1[2-9]|2\d|3\d)\b/', $file->getContents()))
         ->map(fn (SplFileInfo $file): string => $file->getRelativePathname())
         ->values()
         ->all();

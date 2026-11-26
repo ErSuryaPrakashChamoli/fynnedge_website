@@ -42,6 +42,6 @@
 | `35-KNOWN-LIMITATIONS-AND-RISKS.md` | Limitations, release risks, pre-existing defects |
 | `evidence/` | Durable test evidence: full-suite outputs for the release candidate (run 8, plus the one-file follow-up) and the clean baseline `084825b` |
 | `lender-policy/` | Lender policy configuration checklist, validation report, pending-information register |
-| `release/` | Proposed (not applied) patches: explicit migration entrypoint; Docker PHP runtime; sticky enquiry panels (W-03) |
+| `release/` | Patches for the explicit migration entrypoint, the Docker PHP runtime and the sticky enquiry panels: **all three applied on 26 Nov 2026 after Owner approval** (kept for the record) |
 | `validation/` | Financial validation workbook (`DC-financial-validation-workbook.xlsx`), cases, engine harness, independent reference, comparison |
 | `validation/historical/` | Historical validation workbook (empty), case-pack template, harness (refuses to run without HV-00) |

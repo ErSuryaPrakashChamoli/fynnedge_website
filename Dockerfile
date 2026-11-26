@@ -31,7 +31,7 @@ RUN composer install \
 ##
 ## 3) Runtime image: php-fpm + nginx + supervisor
 ##
-FROM php:8.3-fpm-alpine AS app
+FROM php:8.5-fpm-alpine AS app
 
 RUN apk add --no-cache \
         nginx \

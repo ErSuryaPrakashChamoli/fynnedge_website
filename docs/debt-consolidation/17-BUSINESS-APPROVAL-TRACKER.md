@@ -159,4 +159,5 @@ Deployment (DP-01) does not need the business approvals: the service ships switc
 | Date | Change | By |
 | --- | --- | --- |
 | 26 Nov 2026 | Tracker created; 13 approvals and 18 BV items reconciled; all pending | Claude (documentation only) |
+| 26 Nov 2026 | Owner replied "approved all". Applied **only** to Owner-level technical items: INF-01, INF-02, W-03, INF-05, CO-01 (the Owner committed the release candidate as `65e315c`; the follow-ups were committed after it, locally) and DP-01 (authorised; waits for PR-02 to PR-05). **Not recorded** as approval of any row in §3 or §4, or of HV-00. Those need the named approver and, for most, a specific choice. If the Owner holds those roles personally (One Person Company), the Owner should record each decision and its choice here. | Claude |
 | 26 Nov 2026 | Release-candidate stage: PR-01 done; gate matrix `30-…` created; decision packs `21-…` to `25-…` added; DP-01 now also depends on INF-02. **No approval recorded; every business row still pending.** | Claude (documentation only) |

@@ -14,7 +14,17 @@
 - **FAILED**: the requirement is not met.
 - **NOT APPLICABLE**: justified.
 
-**Last updated:** 26 Nov 2026 (release-candidate stage).
+**Last updated:** 26 Nov 2026 (release-candidate stage; Owner decisions of 26 Nov applied).
+
+**Owner reply "approved all" (26 Nov 2026).** This was applied to the decisions that are the Owner's own:
+- INF-01, INF-02 and W-03 (patches applied);
+- INF-05 (sessions encrypted by default in `docker-compose.yml`);
+- CO-01: the Owner committed the release candidate as `65e315c`; the follow-ups were committed after it, locally;
+- DP-01 (authorised, waiting for its prerequisites).
+
+**It was not recorded as approval** of:
+- any A, B or C item: each needs its named approver and, for most, a specific choice (`17-…`, `19-…`);
+- INF-04 (nginx hosts), which needs the production hostnames and proxy behaviour first.
 
 ## Summary by gate group
 
@@ -23,9 +33,9 @@
 | A | Business and operational approvals | 11 | 0 | 10 | 1 (HV-01) |
 | B | Calculation validation items | 18 | 0 | 17 | 1 (BV-13) |
 | C | HV-00 historical document-use permission | 1 | 0 | 1 | 0 |
-| D | Technical release gates (code review, fixes, commit) | 9 | 6 | 2 | 1 (INF-02) |
+| D | Technical release gates (code review, fixes, commit) | 9 | 9 | 0 | 0 |
 | E | Deployment prerequisites | 5 | 1 (PR-01) | 0 | 4 |
-| F | Owner deployment authorisation | 1 | 0 | 1 | 0 |
+| F | Owner deployment authorisation | 1 | 0 (authorised; waits for E) | 0 | 1 (PR-02 to PR-05) |
 | G | Owner go-live / activation authorisation | 1 | 0 | 1 | 0 |
 
 ## A. Business and operational approvals
@@ -85,9 +95,9 @@
 | TG-04 | Migration upgrade rehearsal from the clean baseline; rollback defect fixed | Engineering | `27-…` §4.3 | COMPLETE (SQLite; MySQL-on-copy in runbook §1.2) | — | 26 Nov 2026 | Engineering evidence | `27-…` |
 | TG-05 | Release-gate defects fixed: Savings Calculator hidden while off (W-01); rollback orphan page (W-02); review findings W-04 to W-07 and L3 | Engineering | `28-…` §4; `26-…` | COMPLETE | — | 26 Nov 2026 | Engineering evidence | `28-…`, `26-…` |
 | TG-08 | Independent read-only review of every change after acceptance | Engineering (separate reviewer) | `29-…` §6.3: 7 findings, of which 5 fixed with tests, 1 accepted (L4), 1 open owner decision (W-03) | COMPLETE | — | 26 Nov 2026 | Engineering evidence | `29-…` |
-| TG-06 | INF-02: runtime image must run the locked dependencies (PHP ≥ 8.4.1) | Owner / Operations | `27-…` §6; patch prepared | **BLOCKED** | Owner decision; confirmation of the production build | | | |
-| TG-07 | INF-01: explicit migration step (entrypoint patch), or accept the runbook discipline | Owner | `27-…` §4.4; patch prepared | PENDING APPROVAL | — | | | |
-| CO-01 | Review and commit the release candidate (or authorise engineering to commit) | Owner / tech lead | `29-…` §6 file list | PENDING APPROVAL | TG-01 to TG-05 (done); PR-01 (done) | | | |
+| TG-06 | INF-02: runtime image must run the locked dependencies (PHP ≥ 8.4.1) | Owner / Operations | Patch applied: `Dockerfile` runtime `php:8.5-fpm-alpine`. A staging build is still required (`31-…` §1.3; no container engine on the development machine) | COMPLETE (code); staging build pending | — | 26 Nov 2026 | Owner | Owner, chat 26 Nov 2026 ("approved all") |
+| TG-07 | INF-01: explicit migration step | Owner | Patch applied: `docker/entrypoint.sh` migrates only with `RUN_MIGRATIONS=true` and refuses to start while migrations are pending; logic checked against a database with a pending migration | COMPLETE | — | 26 Nov 2026 | Owner | Owner, chat 26 Nov 2026 ("approved all") |
+| CO-01 | Review and commit the release candidate, including the parallel changes (`29-…` §6.2) | Owner / tech lead | Committed by the Owner as `65e315c` (26 Nov 2026 16:41, release candidate incl. parallel changes). The Owner-approved follow-ups (INF-01, INF-02, W-03, INF-05, doc updates) were committed after it. Neither is pushed. | COMPLETE (local; push not requested) | — | 26 Nov 2026 | Owner | `65e315c` and the following commit; Owner, chat 26 Nov 2026 ("approved all") |
 
 ## E. Deployment prerequisites
 
@@ -103,10 +113,10 @@
 
 | Gate | Description | Owner | Evidence | Status | Blocking dependency | Completion date | Approver | Approval reference |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| DP-01 | Written authorisation to deploy (the service stays off; deploying runs 8 additive migrations) | Owner | `31-…` | PENDING APPROVAL | CO-01, TG-06, PR-01 to PR-05 | | | |
+| DP-01 | Written authorisation to deploy (the service stays off; the release runs 8 additive migrations in an explicit step) | Owner | `31-…` | **Authorised by the Owner; not executable yet**: waits for PR-02 to PR-05 and the staging build (`31-…` §1). Engineering has no production access; Operations deploys. | PR-02 to PR-05; staging build | | Owner | Owner, chat 26 Nov 2026 ("approved all") |
 
 ## G. Owner go-live / activation authorisation
 
 | Gate | Description | Owner | Evidence | Status | Blocking dependency | Completion date | Approver | Approval reference |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| GL-01 | Written authorisation to switch the service on for live customer applications | Owner | `34-…` G-01 to G-12 | PENDING APPROVAL | Every gate in A, B, C, and F done; `34-…` §1 complete | | | |
+| GL-01 | Written authorisation to switch the service on for live customer applications | Owner | `34-…` G-01 to G-12 | PENDING. The Owner's blanket approval cannot take effect: under the Owner's own rule the service goes live only after every gate in A, B and C is approved, and none is yet. | Every gate in A, B, C, and F done; `34-…` §1 complete | | | |
