@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\PublishStatus;
+use App\Models\Faq;
 use App\Models\LoanLandingPage;
 use App\Models\LoanProduct;
 use App\Models\Page;
@@ -9,6 +10,7 @@ use App\Modules\DebtConsolidation\Services\DebtConsolidationSettings;
 use App\Support\Pages\DebtConsolidationPageContent;
 use App\Support\Pages\DebtConsolidationPages;
 use App\Support\Seo\Sitemap;
+use Database\Seeders\PublishDebtConsolidationPagesSeeder;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
@@ -36,6 +38,29 @@ it('ships every page as an unpublished draft with starter copy, SEO and FAQs', f
         ->and($pages->flatMap->faqs->every(fn ($faq): bool => $faq->status === PublishStatus::Draft))->toBeTrue()
         ->and($pages->every(fn (Page $page): bool => filled($page->seoMeta?->title)))->toBeTrue()
         ->and($pages->firstWhere('slug', 'debt-consolidation-faqs')->faqs)->toHaveCount(10);
+});
+
+it('publishes every Debt Consolidation page and its FAQs now with the publish seeder, fixing a future date and touching nothing else', function () {
+    $this->freezeTime();
+    $dcPages = fn () => Page::query()->whereIn('slug', DebtConsolidationPages::slugs())->get();
+    // A time typed in Indian time is read as UTC: 5½ hours in the future.
+    Page::query()->where('slug', DebtConsolidationPages::slug('hub'))->sole()->update(['status' => PublishStatus::Published, 'published_at' => now()->addMinutes(330)]);
+    $otherPage = Page::factory()->create(['status' => PublishStatus::Draft]);
+
+    $this->seed(PublishDebtConsolidationPagesSeeder::class);
+    $this->seed(PublishDebtConsolidationPagesSeeder::class);
+
+    $faqs = Faq::query()->where('faqable_type', (new Page)->getMorphClass())->whereIn('faqable_id', $dcPages()->modelKeys())->get();
+    expect($dcPages())->toHaveCount(7)
+        ->and($dcPages()->every(fn (Page $page): bool => $page->isCurrentlyPublished() && $page->expires_at === null))->toBeTrue()
+        ->and($faqs)->not->toBeEmpty()
+        ->and($faqs->every(fn (Faq $faq): bool => $faq->isCurrentlyPublished()))->toBeTrue()
+        ->and($otherPage->fresh()->status)->toBe(PublishStatus::Draft);
+
+    enableDebtConsolidation();
+
+    $this->get('/debt-consolidation')->assertOk();
+    $this->get('/')->assertSee('data-debt-consolidation-strip', false);
 });
 
 it('serves a published page at its nested address once the service is on', function () {

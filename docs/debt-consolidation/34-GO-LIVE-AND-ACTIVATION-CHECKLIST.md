@@ -28,7 +28,7 @@ Switching on needs no deployment. It is the *Debt Consolidation is live* setting
 | # | Step | Done |
 | --- | --- | --- |
 | 2.1 | The Owner gives written go-live authorisation. Reference: __________ | ☐ |
-| 2.2 | Publish the approved pages (*Website Pages → General Pages*), each with its FAQs | ☐ |
+| 2.2 | Publish the approved pages, each with its FAQs: in *Website Pages → General Pages* (leave *Published at* empty; the box is read in UTC), or all seven at once with `php artisan db:seed --class=PublishDebtConsolidationPagesSeeder --force` | ☐ |
 | 2.3 | Choose the applicant types to accept (individual / business) | ☐ |
 | 2.4 | Tick **Debt Consolidation is live** | ☐ |
 | 2.5 | Run part C of `33-…` | ☐ |
