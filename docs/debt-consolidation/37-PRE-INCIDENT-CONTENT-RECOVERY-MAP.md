@@ -63,6 +63,11 @@ The operator runs it from the application root, one phase at a time: `OPERATOR="
 | 7 | `verify` | CMS records, publication states, personal loan relationships, DC pages and FAQs, DC application, journeys, no row lost; a second preview finds nothing left. | Any check fails |
 | 8 | `smoke` | HTTP checks of the restored URLs, 404s, legal pages, DC pages, the paused notice and the sitemap (cache-busted). | Any probe fails |
 
+**Where it runs.** It needs the application code (with commit `b7916cb`), its PHP CLI and configuration, `bash`, `gzip`, `curl` and, for `backup`, `mysqldump`.
+- The Docker image is Alpine and ships none of `bash` or `mysqldump`. In that container, first run `apk add --no-cache bash mariadb-client`; this lasts until the container restarts. Record it in the action log.
+- Alternatively, take the backup on the database host with the same `mysqldump` options, and run `run.sh verify-backup FILE`.
+- `docs/` ships in the image (`COPY . .`).
+
 Not part of this operation (Owner): no migrations, no seeders, no whole-database restore. The command needs only to be deployed. Its release has no migrations, and the entrypoint migrates only with `RUN_MIGRATIONS=true`.
 
 The steps below are the reasoning behind each phase.
