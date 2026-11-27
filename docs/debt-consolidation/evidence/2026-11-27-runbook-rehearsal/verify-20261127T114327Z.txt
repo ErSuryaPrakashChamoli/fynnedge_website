@@ -1,0 +1,41 @@
+INFO | app environment | local
+INFO | app url | http://127.0.0.1:8000
+INFO | database | mysql://restore@127.0.0.1:3307/fynnedge_prod_restore
+INFO | database server | 8.4.13-0ubuntu0.26.04.2
+INFO | session time zone | +05:30 (system IST)
+INFO | database now, as the app reads it | 2026-11-27 17:13:27
+PASS | products #2–#12 back to their earlier publication date | 11/11
+PASS | product #1 personal-loans untouched and published
+PASS | duplicate product #14 hidden, or kept because staff edited it (Owner decision) | published, staff-edited
+PASS | the 12 moved pages are back on personal-loans and published | 12/12
+PASS | the 25 pages created on #14 are hidden | 0 still published
+PASS | About and the 6 legal/careers pages no longer carry starter text
+PASS | articles #1–#10 back to their earlier dates
+PASS | starter testimonials #1–#6 back to draft
+PASS | FAQs #158–#165 created by the seeder are hidden
+PASS | no DEMO lender active | 0 active
+PASS | no active offer from a DEMO lender (matching and eligibility read offers) | 0 active
+PASS | no demo eligibility rule set active | 0 active
+PASS | no DC lender policy exists for a DEMO offer
+PASS | DC pages stay on (no rollback)
+PASS | new DC applications paused | {"service on":true,"accept individuals":false,"accept businesses":false}
+PASS | 7 DC pages published, not deleted
+PASS | DC pages still carry their 13:22:32 publication | 2026-11-26 13:22:32
+PASS | 25 DC FAQs published | 25 found
+PASS | DC application #1 present and not deleted | DC-RLTMX6SD, enquiry_received
+PASS | its consent and status history present
+PASS | its audit trail present
+PASS | the 5 journeys on the duplicate product present
+PASS | demo eligibility result #1468 preserved as evidence
+PASS | no customers row lost | 137 → 137
+PASS | no contact_enquiries row lost | 53 → 53
+PASS | no applications row lost | 0 → 0
+PASS | no debt_applications row lost | 1 → 1
+PASS | no debt_consents row lost | 1 → 1
+PASS | no debt_status_changes row lost | 2 → 2
+PASS | no debt_liabilities row lost | 0 → 0
+PASS | no journey_sessions row lost | 1442 → 1442
+PASS | no journey_responses row lost | 1087 → 1087
+PASS | no eligibility_results row lost | 1467 → 1467
+PASS | no eligibility_result_reasons row lost | 6 → 6
+PASS | no credit_score_checks row lost | 128 → 128

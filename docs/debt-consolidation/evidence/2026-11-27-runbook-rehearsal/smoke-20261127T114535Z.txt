@@ -1,0 +1,33 @@
+PASS | / 200 (expected 200), without "DEMO Lender"
+PASS | /partners 200 (expected 200), without "DEMO Lender"
+PASS | /loans/personal-loans 200 (expected 200)
+PASS | /loans/gold-loan 200 (expected 200), without "Quick funding against your gold jewellery", with "use the gold you already have"
+PASS | /loans/personal-loans/1-lakh-personal-loan 200 (expected 200)
+PASS | /loans/personal-loans/3-lakh-personal-loan 200 (expected 200)
+PASS | /loans/personal-loans/5-lakh-personal-loan 200 (expected 200)
+PASS | /loans/personal-loans/10-lakh-personal-loan 200 (expected 200)
+PASS | /loans/personal-loans/personal-loan-for-salaried 200 (expected 200)
+PASS | /loans/personal-loans/personal-loan-for-self-employed 200 (expected 200)
+PASS | /loans/personal-loans/personal-loan-for-women 200 (expected 200)
+PASS | /loans/personal-loans/personal-loan-for-senior-citizens 200 (expected 200)
+PASS | /loans/personal-loans/personal-loan-for-medical-expenses 200 (expected 200)
+PASS | /loans/personal-loans/personal-loan-for-travel 200 (expected 200)
+PASS | /loans/personal-loans/personal-loan-for-home-renovation 200 (expected 200)
+PASS | /loans/personal-loans/personal-loan-for-debt-consolidation 200 (expected 200)
+PASS | /loans/personal-loan/personal-loan-in-delhi 404 (expected 404)
+PASS | /about 200 (expected 200), without "November 26, 2026"
+PASS | /privacy-policy 200 (expected 200), without "November 26, 2026"
+PASS | /terms 200 (expected 200), without "November 26, 2026"
+PASS | /disclaimer 200 (expected 200), without "November 26, 2026"
+PASS | /grievance 200 (expected 200), without "November 26, 2026"
+PASS | /careers 200 (expected 200), without "November 26, 2026"
+PASS | /credit-report-terms 200 (expected 200), without "November 26, 2026"
+PASS | /debt-consolidation 200 (expected 200)
+PASS | /personal-debt-consolidation 200 (expected 200)
+PASS | /business-debt-consolidation 200 (expected 200)
+PASS | /debt-consolidation/how-it-works 200 (expected 200)
+PASS | /debt-consolidation/calculator 200 (expected 200)
+PASS | /debt-consolidation/faqs 200 (expected 200)
+PASS | /debt-consolidation/assessment 200 (expected 200), with "Online assessments are paused"
+INFO | /loans/personal-loan answers 200 (404 when hidden; 200 if the Owner kept it)
+PASS | sitemap entries still dated 13:05 or 13:09 on 26 Nov: 0

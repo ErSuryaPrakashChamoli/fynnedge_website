@@ -1,0 +1,8 @@
+PASS | rule set #3 is the demo set on offer #359 written at 13:05 | offer #359, created 2026-11-26 13:05:45
+PASS | rule set #3 archived | was active
+PASS | rule set #4 is the demo set on offer #7 written at 13:05 | offer #7, created 2026-11-26 13:05:45
+PASS | rule set #4 archived | was active
+PASS | no DEMO lender active | 0 active
+PASS | no active offer from a DEMO lender (matching and eligibility read offers) | 0 active
+PASS | no demo eligibility rule set active | 0 active
+PASS | no DC lender policy exists for a DEMO offer

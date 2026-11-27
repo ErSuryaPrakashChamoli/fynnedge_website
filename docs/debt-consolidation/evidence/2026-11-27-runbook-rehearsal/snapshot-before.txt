@@ -1,0 +1,12 @@
+customers	137
+contact_enquiries	53
+applications	0
+debt_applications	1
+debt_consents	1
+debt_status_changes	2
+debt_liabilities	0
+journey_sessions	1442
+journey_responses	1087
+eligibility_results	1467
+eligibility_result_reasons	6
+credit_score_checks	128

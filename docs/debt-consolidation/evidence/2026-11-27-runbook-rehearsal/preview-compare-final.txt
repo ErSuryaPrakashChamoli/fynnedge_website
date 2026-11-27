@@ -1,0 +1,3 @@
+Rehearsal: 819 fields to restore, 39 created to hide
+Production: 819 fields to restore, 38 created to hide, 1 left as they are
+EXPLAINED: created record edited by staff, kept live: LoanProduct #14 (personal-loan)

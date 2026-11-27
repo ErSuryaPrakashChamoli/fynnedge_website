@@ -1,0 +1,23 @@
+INFO | app environment | local
+INFO | app url | http://127.0.0.1:8000
+INFO | database | mysql://restore@127.0.0.1:3307/fynnedge_prod_restore
+INFO | database server | 8.4.13-0ubuntu0.26.04.2
+INFO | session time zone | +05:30 (system IST)
+INFO | database now, as the app reads it | 2026-11-27 17:12:10
+PASS | console writes in the approved window = 991 (export of 27 Nov) | 991
+PASS | run one 13:05:43–49 = 517, run two 13:09:07–12 = 474 | 517 / 474
+PASS | product #1 is personal-loans, #14 is the duplicate personal-loan
+INFO | duplicate product #14 | published
+INFO | staff edits after the window, any content model | 1
+INFO | rule set #3 | offer #359, active, created 2026-11-26 13:05:45
+INFO | rule set #4 | offer #7, active, created 2026-11-26 13:05:45
+PASS | DC pages stay on (no rollback)
+PASS | new DC applications paused | {"service on":true,"accept individuals":false,"accept businesses":false}
+PASS | 7 DC pages published, not deleted
+PASS | DC pages still carry their 13:22:32 publication | 2026-11-26 13:22:32
+PASS | 25 DC FAQs published | 25 found
+PASS | DC application #1 present and not deleted | DC-RLTMX6SD, enquiry_received
+PASS | its consent and status history present
+PASS | its audit trail present
+PASS | the 5 journeys on the duplicate product present
+PASS | demo eligibility result #1468 preserved as evidence

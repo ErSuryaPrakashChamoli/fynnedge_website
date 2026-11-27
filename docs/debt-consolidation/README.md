@@ -40,6 +40,10 @@
 | `33-PRODUCTION-SMOKE-TEST-CHECKLIST.md` | Staging, post-deployment (off) and go-live smoke tests |
 | `34-GO-LIVE-AND-ACTIVATION-CHECKLIST.md` | Pre-conditions and steps for switching the service on (gate G) |
 | `35-KNOWN-LIMITATIONS-AND-RISKS.md` | Limitations, release risks, pre-existing defects |
+| `36-CONTENT-PUBLISHING-INCIDENT-REPORT.md` | 26 Nov 2026 content incident: timeline, root cause, impact, evidence |
+| `37-PRE-INCIDENT-CONTENT-RECOVERY-MAP.md` | Recovery point, classification, restore plan for approval, unrecoverable content |
+| `38-CONTENT-RESTORATION-VERIFICATION.md` | Post-restore checklist, DC preservation, test results, outstanding issues |
+| `39-CUSTOMER-IMPACT-REVIEW.md` | The customer shown a DEMO lender result and the 26 Nov DC enquiry; draft correction for approval |
 | `evidence/` | Durable test evidence: full-suite outputs for the clean baseline `084825b`, the release candidate (run 8, plus a one-file follow-up) and the final state after the Owner decisions (run 9) |
 | `lender-policy/` | Lender policy configuration checklist, validation report, pending-information register |
 | `release/` | Patches for the explicit migration entrypoint, the Docker PHP runtime and the sticky enquiry panels: **all three applied on 26 Nov 2026 after Owner approval** (kept for the record) |

@@ -4,6 +4,7 @@ use App\Enums\LenderStatus;
 use App\Models\Lender;
 use App\Models\LenderProduct;
 use App\Models\LoanProduct;
+use App\Modules\Eligibility\Enums\EligibilityRuleSetStatus;
 use App\Modules\Eligibility\Enums\EligibilityStatus;
 use App\Modules\Eligibility\Enums\RuleLogic;
 use App\Modules\Eligibility\Enums\RuleOperator;
@@ -162,6 +163,30 @@ it('does not claim eligibility when no rule set has been configured yet', functi
     $session = sessionWithJourneyResponses($loanProduct, []);
 
     $result = app(EligibilityEngine::class)->evaluateSession($session)->first();
+
+    expect($result->status)->toBe(EligibilityStatus::NotEligible);
+});
+
+it('leaves an inactive lender offer out of the evaluation', function () {
+    ['loanProduct' => $loanProduct, 'lenderProduct' => $lenderProduct] = eligibilitySetup();
+    $inactiveOffer = LenderProduct::factory()->create([
+        'lender_id' => Lender::factory()->create(['status' => LenderStatus::Inactive])->id,
+        'loan_product_id' => $loanProduct->id,
+        'status' => LenderStatus::Inactive,
+    ]);
+    EligibilityRuleSet::factory()->create(['lender_product_id' => $inactiveOffer->id]);
+
+    $results = app(EligibilityEngine::class)->evaluateSession(sessionWithJourneyResponses($loanProduct, ['age' => 30]));
+
+    expect($results->pluck('lender_product_id')->all())->toBe([$lenderProduct->id]);
+});
+
+it('stops using a rule set once it is archived, so its rules can no longer make anyone eligible', function () {
+    ['loanProduct' => $loanProduct, 'ruleSet' => $ruleSet] = eligibilitySetup();
+    addRule($ruleSet, 'Minimum age', RulePriority::Mandatory, 'age', RuleOperator::GreaterThanOrEqual, 21);
+    $ruleSet->update(['status' => EligibilityRuleSetStatus::Archived]);
+
+    $result = app(EligibilityEngine::class)->evaluateSession(sessionWithJourneyResponses($loanProduct, ['age' => 30]))->first();
 
     expect($result->status)->toBe(EligibilityStatus::NotEligible);
 });

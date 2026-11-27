@@ -23,6 +23,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Support/Calculators/CalculatorPagesContent.php,app/Filament/Pages/CalculatorPagesSettings.php,resources/views/calculators/** | .ai/rules/calculators.md |
 | app/Modules/Cibil/** | .ai/rules/cibil.md |
 | app/Support/Media/**,app/Models/Concerns/HasResponsiveImage.php,app/Console/Commands/GenerateResponsiveImages.php,app/Filament/Pages/Settings.php | .ai/rules/commands-filament-pages.md |
+| app/Console/Commands/RestoreContentFromAuditLogCommand.php,app/Models/Concerns/Auditable.php | .ai/rules/commands-models-concerns.md |
 | app/Support/Rates/RateBook.php,app/Console/Commands/RatesStatusCommand.php | .ai/rules/commands.md |
 | resources/css/filament/admin/theme.css,resources/views/filament/**,resources/views/components/admin/** | .ai/rules/components-admin.md |
 | app/Support/Seo/SeoDefaults.php,app/Support/Seo/Sitemap.php,app/Support/Seo/CrawlerPolicy.php,resources/views/components/layouts/app.blade.php | .ai/rules/components-layouts.md |
@@ -145,7 +146,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Support/Seo/**,app/Filament/Pages/StructuredData.php,app/Filament/Resources/SchemaTemplates/**,app/Filament/Schemas/SeoFormSection.php | .ai/rules/schemas.md |
 | app/Support/Seo/OrganizationSchema.php,database/seeders/BusinessProfileSeeder.php,app/Filament/Pages/Settings.php | .ai/rules/seeders-filament-pages.md |
 | database/seeders/FlexiHybridTermLoanSeeder.php,database/seeders/JourneySeeder.php | .ai/rules/seeders-seeders.md |
-| database/seeders/**, database/seeders/LegalPageSeeder.php | .ai/rules/seeders.md |
+| database/seeders/**, database/seeders/LegalPageSeeder.php, database/seeders/DatabaseSeeder.php | .ai/rules/seeders.md |
 | app/Support/Seo/SearchEngineIndexing.php,config/seo.php,app/Filament/Pages/SeoAnalytics.php | .ai/rules/seo-filament-pages.md |
 | resources/views/robots.blade.php,app/Support/Seo/CrawlerPolicy.php,app/Http/Controllers/RobotsController.php | .ai/rules/seo-http-controllers.md |
 | app/Filament/Resources/Customers/**,app/Modules/Customers/Services/CustomersCsv.php,app/Modules/Customers/Services/CustomerLocation.php,app/Filament/Schemas/IndiaDateRangeFilter.php | .ai/rules/services-filament-schemas.md |

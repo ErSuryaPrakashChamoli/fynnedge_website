@@ -2,6 +2,7 @@
 paths:
   - 'database/seeders/**'
   - database/seeders/LegalPageSeeder.php
+  - database/seeders/DatabaseSeeder.php
 ---
 
 # Seeders
@@ -11,3 +12,6 @@ paths:
 
 ## Disclaimer now follows the numbered-accordion pattern (like Privacy Policy &amp; Terms)
 disclaimer() was rewritten from a 5-section plain <h2>/<p> page to a 12-section native <details>/<summary> accordion (same not-prose wrapper, numbered-badge, and chevron markup as privacyPolicy()/terms()). Section 12 ("Contact FynnEdge") deliberately links to /contact and /grievance instead of hardcoding phone/email/address, so it can't go stale relative to the Settings-driven Contact page. grievance() and creditReportTerms() are the two remaining legal pages still in the old plain-HTML/placeholder format if they're ever revisited.
+
+## DatabaseSeeder only fills an empty database; never run bare db:seed on production
+On 2026-11-26 13:09 UTC a bare `php artisan db:seed --force` on production overwrote all 12 loan products, 435 landing/location pages, About and legal pages via updateOrCreate, created a duplicate `personal-loan` product (prod's is `personal-loans`) that stole its landing pages (live URLs 404'd), and published 10 starter articles. DatabaseSeeder now refuses when loan_products/loan_landing_pages/articles/lenders/testimonials/job_openings hold rows: always on production, elsewhere unless confirmed at the console. Don't weaken it; don't use `pages`/`faqs` as the signal (migrations fill them). Production content ships as migrations; targeted seeders only with --class. To undo an unattended write, use `php artisan content:restore-from-audit-log --from --to` (preview first). See docs/debt-consolidation/36-38.

@@ -1,0 +1,7 @@
+INFO | before | {"service on":true,"accept individuals":true,"accept businesses":true}
+INFO | after | {"service on":true,"accept individuals":false,"accept businesses":false}
+PASS | DC pages stay on (no rollback)
+PASS | new DC applications paused | {"service on":true,"accept individuals":false,"accept businesses":false}
+PASS | 7 DC pages published, not deleted
+PASS | DC pages still carry their 13:22:32 publication | 2026-11-26 13:22:32
+PASS | 25 DC FAQs published | 25 found

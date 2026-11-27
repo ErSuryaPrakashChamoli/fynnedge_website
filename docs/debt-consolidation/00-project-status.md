@@ -2,6 +2,23 @@
 
 **Last updated:** 26 Nov 2026 (release-candidate stage) · **Branch:** `feature/nov_24_redis_check`: local commit `434ec8e` (the Owner's, not pushed) plus uncommitted release-candidate changes · **Environment:** local only. Nothing is deployed; no production migration has been run.
 
+> **⚠ Content incident, 26 Nov 2026: open (production restore awaiting Owner approval). Read `36-…`, `37-…` and `38-…` before any other work.**
+> - **Production:** a bare `php artisan db:seed --force` ran **twice** on production, outside any Claude session, at 18:35 and 18:39 IST (13:05 and 13:09 UTC). It replaced 11 loan products, 437 landing pages, About, legal and careers pages, 10 articles, testimonials and FAQs with starter text. It also created a duplicate `personal-loan` product with 25 pages, and active "DEMO Lender" rows and eligibility rules.
+> - **Restore rehearsed (27 Nov)** on a private copy of the production export: 480 records restored, 39 hidden, nothing left to restore afterwards. Production restore waits for Owner approval (`37-…` §4, window 13:05:00–13:09:59 UTC).
+> - **A real DC enquiry was created on production** (26 Nov 20:52 UTC), although live applications are not authorised (see below). The same customer had just been shown a DEMO lender "not eligible" result (`39-…`).
+> - **Owner decisions of 27 Nov:**
+>   - approve the selective restore with mandatory controls;
+>   - **pause new DC applications** (pages stay on);
+>   - disable the DEMO lenders, offer and rule sets;
+>   - keep all customer applications and journeys;
+>   - no local rebuild from the export.
+>
+>   Production steps are scripted and rehearsed: `release/content-restore-2026-11-27/run.sh` (`37-…` §4). Status per decision: `38-…` §6.
+> - **Local:** earlier, at 11:29 IST, a test run under a cached config wiped the local database, which was then rebuilt from seeders at the Owner's request.
+> - **Debt Consolidation was not the cause and is intact.**
+> - **Fixed in code (27 Nov, not committed):** `DatabaseSeeder` now refuses to overwrite existing content (always on production), and `php artisan content:restore-from-audit-log` reverts the overwrite field by field from production's `audit_logs`.
+> - **Correction to the line above:** the DC release *was* deployed on 26 Nov (`bb33a97` pushed to `origin/production`, then `79a9324`). The service is on in production and the 7 DC pages have been live since 13:22 UTC.
+
 > Resume instructions for any session: read this file, then `29-FINAL-PRODUCTION-READINESS-REPORT.md` and `30-RELEASE-GATE-MASTER-REGISTER.md`, then `16-PRE-PRODUCTION-ACCEPTANCE-REPORT.md` and `03-architecture.md`. Items are ticked only when code, tests and docs exist.
 
 **Current stage: Release candidate, awaiting human gates** (from 26 Nov 2026).

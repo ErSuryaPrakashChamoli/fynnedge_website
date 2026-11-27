@@ -11,16 +11,28 @@ use App\Models\Page;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use RuntimeException;
 use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
     /**
+     * Tables the default seeders write that no migration fills: a row in any of
+     * them means the database already holds real website content.
+     *
+     * @var list<string>
+     */
+    private const CONTENT_TABLES = ['loan_products', 'loan_landing_pages', 'articles', 'lenders', 'testimonials', 'job_openings'];
+
+    /**
      * Seed the application's database.
      */
     public function run(): void
     {
+        $this->refuseToOverwriteExistingContent();
+
         $admin = User::query()->firstOrNew(['email' => 'fynnedge@gmail.com']);
         $isNewAdmin = ! $admin->exists;
 
@@ -145,5 +157,35 @@ class DatabaseSeeder extends Seeder
 
         // Last: it translates the content every seeder above created.
         $this->call(HindiContentSeeder::class);
+    }
+
+    /**
+     * The seeders above use updateOrCreate, so on a database that already holds
+     * website content they replace customised wording with the starter text
+     * and publish it. On 2026-11-26 a bare `php artisan db:seed --force` did
+     * that to production. Content for production ships as migrations; this
+     * seeder only fills an empty database unless someone confirms the overwrite
+     * at the console, and never runs over existing content on production.
+     */
+    private function refuseToOverwriteExistingContent(): void
+    {
+        $existingRows = collect(self::CONTENT_TABLES)
+            ->mapWithKeys(fn (string $table): array => [$table => DB::table($table)->count()])
+            ->filter();
+
+        if ($existingRows->isEmpty()) {
+            return;
+        }
+
+        $this->command?->warn('This database already holds website content. The default seeders overwrite matching loan products, landing pages, About and legal pages, articles, FAQs, testimonials and role permissions with starter content, and publish them.');
+        $this->command?->table(['Table', 'Existing rows'], $existingRows->map(fn (int $count, string $table): array => [$table, $count])->values()->all());
+
+        if (app()->isProduction()) {
+            throw new RuntimeException('Refused: the default seeders never run on production over existing content. Ship content changes as migrations, or run only the specific seeder you need with --class.');
+        }
+
+        if (! $this->command?->confirm('Overwrite the existing content listed above with the default starter content?', false)) {
+            throw new RuntimeException('Refused: existing website content was left unchanged. Back up the database first, then run db:seed interactively and confirm if you really want the starter content.');
+        }
     }
 }
