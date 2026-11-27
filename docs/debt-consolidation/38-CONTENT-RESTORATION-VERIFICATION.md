@@ -97,7 +97,7 @@ Forensic copies (outside the repo, owner-only permissions): `~/fynnedge-backups/
 6. **Local database** is starter content until a production export is imported (`37-…` §6).
 7. **`bootstrap/cache/config.php` keeps reappearing** (cause unknown, outside the app). The `TestCase` guard blocks a wipe, but the cause should be found.
 8. **Production has dev dependencies installed.** `DatabaseSeeder` used `fakerphp/faker` (`require-dev`): the DEMO lender names are faker output. Both runs got through testimonials, and the first reached the newsletter seeder (13:05:49). Make sure production installs with `--no-dev`.
-9. **Not committed or deployed:** the new code is in the local working tree on `feature/nov_27_backup`. The `production` branch has `79a9324`, which this branch does not.
+9. **Committed, not pushed or deployed:** commit `b7916cb` on `feature/nov_27_backup`. It sits directly on `origin/production` (`79a9324`) and changes no migrations, so releasing it is a fast-forward of `production`. The operator deploys it, then runs `release/content-restore-2026-11-27/run.sh`.
 10. The two full-seed tests in `DatabaseSeederTest` take about 1 minute each.
 11. **DEMO lenders and eligibility rules are live on production:**
    - 4 "DEMO Lender" rows and DEMO offer #359 are active.
